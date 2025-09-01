@@ -1,0 +1,38 @@
+{
+	"name": "@nan0web/ui-cli",
+	"version": "1.0.0",
+	"description": "NaN•Web UI CLI. Command line interface for One application logic (algorithm) and many UI.",
+	"main": "src/index.js",
+	"types": "types/index.d.ts",
+	"type": "module",
+	"scripts": {
+		"build": "tsc",
+		"playground": "node playground/main.js",
+		"test": "node --test"
+	},
+	"exports": {
+		".": {
+			"import": "./src/index.js",
+			"types": "./types/index.d.ts"
+		}
+	},
+	"keywords": [
+		"ui",
+		"ui-cli",
+		"nan0web"
+	],
+	"author": "ЯRаСлав (YaRaSLove) <support@yaro.page>",
+	"license": "ISC",
+	"packageManager": "pnpm@10.11.0",
+	"devDependencies": {
+		"@nan0web/db-fs": "workspace:*",
+		"@nan0web/i18n": "workspace:*",
+		"@nan0web/test": "workspace:*",
+		"@nan0web/ui": "workspace:*"
+	},
+	"dependencies": {
+	},
+	"peerDependencies": {
+		"@nan0web/ui": "^1.0.0"
+	}
+}

@@ -1,0 +1,22 @@
+# System files
+.DS_Store
+
+# Coverage
+coverage/
+
+# Node modules
+node_modules/
+
+# Current chat
+/chat/
+/nan0web/
+/me.md
+
+# Cursor
+.cursorrules
+
+# VSCode
+.vscode/
+
+# Temporary
+/apps/
