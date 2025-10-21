@@ -12,7 +12,7 @@ const pause = async (ms) => new Promise((resolve) => setTimeout(resolve, ms))
  * @param {string | string[] | undefined} conf - Confirmation message or one of messages if array or any if undefined.
  * @returns {Promise<string>}
  */
-const next = async (conf) => {
+const next = async (conf = undefined) => {
 	return new Promise((resolve, reject) => {
 		if (process.stdin.isRaw) {
 			reject(new Error('stdin is already in raw mode'))

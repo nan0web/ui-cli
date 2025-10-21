@@ -1,6 +1,7 @@
+export const renderers: Map<string, (data: any) => string>;
 export default CLIInputAdapter;
 import CLIInputAdapter from './InputAdapter.js';
-import { CancelError } from './ui/errors.js';
+import { CancelError } from '@nan0web/ui/core';
 import { createInput } from './ui/index.js';
 import { ask } from './ui/index.js';
 import { Input } from './ui/index.js';

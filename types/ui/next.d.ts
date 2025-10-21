@@ -3,7 +3,7 @@
  * @param {string | string[] | undefined} conf - Confirmation message or one of messages if array or any if undefined.
  * @returns {Promise<string>}
  */
-export function next(conf: string | string[] | undefined): Promise<string>;
+export function next(conf?: string | string[] | undefined): Promise<string>;
 /**
  * Make a pause.
  * @param {number} ms - Amount in miliseconds

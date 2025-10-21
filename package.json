@@ -7,32 +7,32 @@
 	"type": "module",
 	"scripts": {
 		"build": "tsc",
+		"test": "node --test --test-timeout=3333 \"src/**/*.test.js\" | nan0test parse --fail",
+		"test:coverage": "node --experimental-test-coverage --test-coverage-include=\"src/**/*.js\" --test-coverage-exclude=\"src/**/*.test.js\" --test \"src/**/*.test.js\"",
+		"test:coverage:collect": "nan0test coverage",
+		"test:docs": "node --test --test-timeout=3333 src/README.md.js",
+		"test:release": "node --test \"releases/**/*.test.js\"",
+		"test:status": "nan0test status --hide-name --debug",
 		"playground": "node playground/main.js",
-		"test": "node --test"
-	},
-	"exports": {
-		".": {
-			"import": "./src/index.js",
-			"types": "./types/index.d.ts"
-		}
+		"precommit": "npm test",
+		"prepush": "npm test",
+		"prepare": "husky",
+		"release": "nan0release publish",
+		"clean": "rm -rf .cache/ && rm -rf dist/",
+		"clean:modules": "rm -rf node_modules"
 	},
 	"keywords": [
 		"ui",
-		"ui-cli",
-		"nan0web"
+		"cli",
+		"input",
+		"adapter"
 	],
 	"author": "ЯRаСлав (YaRaSLove) <support@yaro.page>",
 	"license": "ISC",
-	"packageManager": "pnpm@10.11.0",
 	"devDependencies": {
-		"@nan0web/db-fs": "workspace:*",
-		"@nan0web/i18n": "workspace:*",
+		"@nan0web/log": "workspace:*",
 		"@nan0web/test": "workspace:*",
-		"@nan0web/ui": "workspace:*"
-	},
-	"dependencies": {
-	},
-	"peerDependencies": {
-		"@nan0web/ui": "^1.0.0"
+		"@nan0web/ui": "workspace:*",
+		"@nan0web/db-fs": "workspace:*"
 	}
 }

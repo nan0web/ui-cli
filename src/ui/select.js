@@ -1,5 +1,5 @@
 import createInput from "./input.js"
-import { CancelError } from "./errors.js"
+import { CancelError } from '@nan0web/ui/core'
 
 /**
  * Generic selection prompt for CLI.
