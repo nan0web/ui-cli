@@ -7,6 +7,7 @@ import { createAgeForm } from './forms/ageForm.js'
 import { createAddressForm } from './forms/addressForm.js'
 import { createProfileForm } from './forms/profileForm.js'
 import createT, { localesMap } from "./vocabs/index.js"
+import CLIMessage from '../src/CLIMessage.js'
 
 console = new Logger()
 
@@ -28,7 +29,7 @@ if (langResult.action === 'select-cancel') {
 	process.exit(0)
 }
 
-const selectedLang = langResult.value
+const selectedLang = langResult.value.body
 const t = createT(selectedLang)
 
 console.success(`${t('Language selection')}: ${t(selectedLang)}`)
@@ -79,3 +80,72 @@ if (profileResult.action === 'form-submit') {
 } else {
 	console.warn('Profile update cancelled')
 }
+
+// CLIMessage example usage
+console.info('\n=== CLIMessage Example ===')
+const cliMessageSchemas = [{
+	name: 'config',
+	help: 'Configuration commands',
+	Children: [{
+		name: 'set',
+		help: 'Set configuration value',
+		Schema: class {
+			static key = ""
+			static keyHelp = "Configuration key to set"
+
+			static value = ""
+			static valueHelp = "Value to set"
+		}
+	}, {
+		name: 'get',
+		help: 'Get configuration value',
+		Schema: class {
+			static key = ""
+			static keyHelp = "Configuration key to get"
+		}
+	}]
+}]
+
+const cliMessage = new CLIMessage(cliMessageSchemas)
+const parsedMessage = cliMessage.parse(['config', 'set', '--key', 'language', '--value', 'en'])
+console.info('Parsed CLI message:', parsedMessage)
+
+// Command example usage
+console.info('\n=== Command Example ===')
+import Command from '../src/Command.js'
+
+const configSetCommand = new Command({
+	name: 'set',
+	help: 'Set configuration value',
+	options: {
+		key: [String, '', 'Configuration key to set'],
+		value: [String, '', 'Value to set']
+	},
+	run: async function* (message) {
+		yield `Setting ${message.opts.key} to ${message.opts.value}`
+	}
+})
+
+const commandMessage = configSetCommand.parse(['--key', 'theme', '--value', 'dark'])
+console.info('Command message:', commandMessage)
+console.info('Help text:\n', configSetCommand.generateHelp())
+
+for await (const result of configSetCommand.execute(commandMessage)) {
+	console.info('Command execution result:', result)
+}
+
+// CommandMessage example usage
+console.info('\n=== CommandMessage Example ===')
+import CommandMessage from '../src/CommandMessage.js'
+
+const simpleMessage = CommandMessage.parse(['user', 'create', '--name', 'John', '--email', 'john@example.com'])
+console.info('Simple command message:', simpleMessage.toString())
+console.info('Arguments:', simpleMessage.argv)
+console.info('Options:', simpleMessage.opts)
+
+const complexMessage = new CommandMessage({
+	name: 'app',
+	argv: ['start', '--port', '3000'],
+	opts: { debug: true, config: '/path/to/config' }
+})
+console.info('Complex command message:', complexMessage.toString())
