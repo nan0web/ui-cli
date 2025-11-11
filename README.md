@@ -4,9 +4,7 @@ A tiny, zero‑dependency UI input adapter for Java•Script projects.
 It provides a CLI implementation that can be easily integrated
 with application logic.
 
-|[Status](https://github.com/nan0web/monorepo/blob/main/system.md#написання-сценаріїв)|Documentation|Test coverage|Features|Npm version|
-|---|---|---|---|---|
- |🟢 `96.1%` |🧪 [English 🏴󠁧󠁢󠁥󠁮󠁧󠁿](https://github.com/nan0web/ui-cli/blob/main/README.md)<br />[Українською 🇺🇦](https://github.com/nan0web/ui-cli/blob/main/docs/uk/README.md) |🟡 `77.9%` |✅ d.ts 📜 system.md 🕹️ playground |— |
+<!-- %PACKAGE_STATUS% -->
 
 ## Description
 
@@ -99,7 +97,7 @@ const config = {
 }
 
 const result = await adapter.requestSelect(config)
-console.info(result.value) // ← Message { body: "en", head: {} }
+console.info(result) // ← en
 ```
 ### Input Utilities
 

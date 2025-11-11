@@ -1,0 +1,28 @@
+/**
+ * @class
+ */
+export default class CommandParser {
+    /**
+     * @param {Array<Function>} [rootClasses=[]] - Root message classes.
+     */
+    constructor(rootClasses?: Function[] | undefined);
+    /** @type {Array<Function>} */
+    rootClasses: Array<Function>;
+    /**
+     * Parse the provided input into a message hierarchy.
+     *
+     * @param {string|string[]} [input=process.argv.slice(2)] - CLI arguments.
+     * @returns {Message}
+     * @throws {Error} If no command is supplied or unknown root command.
+     */
+    parse(input?: string | string[] | undefined): Message;
+    /**
+     * Generate help text for a given message class.
+     *
+     * @param {typeof Message} MessageClass
+     * @returns {string}
+     */
+    generateHelp(MessageClass: typeof Message): string;
+    #private;
+}
+import { Message } from "@nan0web/co";

@@ -1,40 +1,45 @@
+/**
+ * Command – defines a CLI command with options, sub‑commands and execution logic.
+ *
+ * @module Command
+ */
+
 import CommandMessage from "./CommandMessage.js"
 import CommandError from "./CommandError.js"
 
 /**
- * Command – an act of proven will
+ * Represents a command definition.
  *
- * **Philosophy**: Command is not a tool.
- * Command is proof that your intention can be fulfilled.
+ * @class
  */
 export default class Command {
-	/**
-	 * @typedef {Object} CommandConfig
-	 * @property {string} name - Command name
-	 * @property {string} [help=""] - Help text
-	 * @property {Object} [options={}] - Command options
-	 * @property {Function} [run] - Execution function
-	 * @property {Command[]} [children=[]] - Child commands
-	 */
+	/** @type {string} */ name = ""
+	/** @type {string} */ help = ""
+	/** @type {Object} */ options = {}
+	/** @type {Function} */ run = async function* () {}
+	/** @type {Command[]} */ children = []
 
 	/**
-	 * Creates a new command
-	 *
-	 * @param {CommandConfig} config - Command configuration
+	 * @param {Object} config - Command configuration.
+	 * @param {string} [config.name] - Command name.
+	 * @param {string} [config.help] - Help description.
+	 * @param {Object} [config.options] - Options map (`{ flag: [type, default, help] }`).
+	 * @param {Function} [config.run] - Async generator handling execution.
+	 * @param {Command[]} [config.children] - Sub‑commands.
 	 */
 	constructor(config) {
 		this.name = config.name || ""
 		this.help = config.help || ""
 		this.options = config.options || {}
-		this.run = config.run || (() => { })
+		this.run = config.run || (async function* () {})
 		this.children = config.children || []
 	}
 
 	/**
-	 * Adds a subcommand
+	 * Add a sub‑command.
 	 *
-	 * @param {Command} command - Command to add
-	 * @returns {Command} - This instance for chaining
+	 * @param {Command} command - Sub‑command instance.
+	 * @returns {this}
 	 */
 	addSubcommand(command) {
 		this.children.push(command)
@@ -42,9 +47,9 @@ export default class Command {
 	}
 
 	/**
-	 * Finds a subcommand by name
+	 * Find a sub‑command by name.
 	 *
-	 * @param {string} name - Name of command to find
+	 * @param {string} name - Sub‑command name.
 	 * @returns {Command|null}
 	 */
 	findSubcommand(name) {
@@ -52,194 +57,152 @@ export default class Command {
 	}
 
 	/**
-	 * Parses command line arguments
+	 * Parse argv into a {@link CommandMessage}.
 	 *
-	 * @param {string | string[]} argv - Arguments to parse
-	 * @returns {CommandMessage} - Validated message
+	 * @param {string[]|string} argv - Arguments array or string.
+	 * @returns {CommandMessage}
 	 */
 	parse(argv) {
-		const msg = new CommandMessage({
-			name: "",
-			argv: Array.isArray(argv) ? [...argv] : [argv],
-			opts: {}
-		})
-
-		let i = 0
 		const args = Array.isArray(argv) ? argv : [argv]
-		
+		const msg = new CommandMessage({ name: "", argv: [], opts: {} })
+		let i = 0
 		while (i < args.length) {
-			const curr = args[i]
-
-			if (curr.startsWith('--')) {
+			const cur = args[i]
+			if (cur.startsWith("--")) {
 				handleLongOption(msg, args, i)
 				i = updateIndexAfterOption(args, i)
-			}
-			else if (curr.startsWith('-')) {
+			} else if (cur.startsWith("-")) {
 				handleShortOption(msg, args, i)
 				i = updateIndexAfterOption(args, i)
-			}
-			else {
-				if (msg.name === "" && curr) {
-					msg.name = curr
-				} else if (curr) {
-					msg.argv.push(curr)
-				}
+			} else {
+				if (!msg.name) msg.name = cur
+				else msg.argv.push(cur)
 				i++
 			}
 		}
-
-		// Handle subcommands
-		if (msg.argv.length > 0 && msg.argv[0]) {
-			const subcommand = this.findSubcommand(msg.argv[0])
-			if (subcommand) {
-				const subMsg = subcommand.parse(msg.argv.slice(1))
-				subMsg.name = msg.argv[0]
+		if (msg.name === this.name) {
+			msg.argv = [...msg.argv]
+			msg.name = ""
+		}
+		if (msg.argv.length > 0) {
+			const subName = msg.argv[0]
+			const sub = this.findSubcommand(subName)
+			if (sub) {
+				const subMsg = sub.parse(msg.argv.slice(1))
 				msg.add(subMsg)
-				// Update argv to exclude processed subcommand
-				msg.argv = msg.argv.slice(1)
+				msg.name = subName
+				msg.argv = []
 			}
 		}
-
-		// Apply defaults
 		this._applyDefaults(msg)
-
 		return msg
 	}
 
 	/**
-	 * Generates help text for command
+	 * Generate a short help string.
 	 *
-	 * @returns {string} - Help text
+	 * @returns {string}
 	 */
 	generateHelp() {
-		const rows = []
-
-		// Usage
-		let usage = `Usage: ${this.name}`
-
-		// Options
-		const options = Object.entries(this.options)
-		if (options.length > 0) usage += " [options]"
-
-		// Arguments
-		this.children.forEach(child => {
-			usage += ` [${child.name}]`
-		})
-
-		rows.push(usage)
-		rows.push("")
-
-		// Description
-		if (this.help) rows.push(this.help + "\n")
-
-		// Options list
-		if (options.length > 0) {
-			rows.push("Options:")
-			options.forEach(([name, [type, def, desc]]) => {
-				const hasDefault = def !== null && def !== undefined
-				const defaultText = hasDefault
-					? ` (default: ${JSON.stringify(def)})`
-					: ""
-
-				rows.push(`  --${name.padEnd(20)} ${desc}${defaultText}`)
-			})
-			rows.push("")
-		}
-
-		// Subcommands
-		if (this.children.length > 0) {
-			rows.push("Commands:")
-			this.children.forEach(child => {
-				rows.push(`  ${child.name.padEnd(20)} ${child.help}`)
-			})
-			rows.push("")
-		}
-
-		return rows.filter(r => r).join("\n")
+		const parts = []
+		if (this.help) parts.push(this.help)
+		const optFlags = Object.keys(this.options).map(k => `--${k}`).join(" ")
+		parts.push(optFlags ? `Usage: ${this.name} ${optFlags}` : `Usage: ${this.name}`)
+		return parts.join("\n")
 	}
 
 	/**
-	 * Executes command with message
+	 * Execute the command's run generator.
 	 *
-	 * @param {CommandMessage} message - Message to execute
-	 * @returns {AsyncGenerator} - Execution result
+	 * @param {Message} message - Message passed to the runner.
+	 * @yields {any}
+	 * @throws {CommandError}
 	 */
 	async * execute(message) {
 		try {
-			yield* this.run(message)
-		} catch (error) {
-			if (error instanceof CommandError) {
-				throw error
-			}
-			throw new CommandError("Command execution failed", {
-				message: error.message,
-				stack: error.stack
-			})
+			if (typeof this.run === "function") yield* this.run(message)
+		} catch (e) {
+			if (e instanceof CommandError) throw e
+			/** @ts-ignore */
+			throw new CommandError("Command execution failed", { message: e.message, stack: e.stack })
 		}
 	}
 
 	/**
-	 * @private
-	 * Applies default values to message options
+	 * Apply default values from the options definition to the parsed message.
 	 *
-	 * @param {CommandMessage} msg - Message to apply defaults to
+	 * @param {CommandMessage} msg
+	 * @private
 	 */
 	_applyDefaults(msg) {
-		for (const [name, [type, def]] of Object.entries(this.options)) {
-			if (!(name in msg.opts)) {
-				msg.opts[name] = (def !== null && def !== undefined)
-					? def
-					: (type === Boolean ? false : null)
+		for (const [opt, [type, def]] of Object.entries(this.options)) {
+			if (!(opt in msg.opts)) {
+				msg.opts[opt] = def !== undefined ? def : type === Boolean ? false : ""
 			}
 		}
 	}
 }
 
-// Import helper functions locally to avoid circular dependencies
+/* ---------- helpers ---------- */
+
+/**
+ * Process a long option (`--flag` or `--flag=value`).
+ *
+ * @param {CommandMessage} msg
+ * @param {string[]} argv
+ * @param {number} index
+ * @private
+ */
 function handleLongOption(msg, argv, index) {
-	const curr = argv[index]
-	const eqIndex = curr.indexOf('=')
-
-	if (eqIndex > -1) {
-		const key = curr.slice(2, eqIndex)
-		const value = curr.slice(eqIndex + 1)
-		msg.opts[key] = value
+	const cur = argv[index]
+	const eq = cur.indexOf("=")
+	if (eq > -1) {
+		const k = cur.slice(2, eq)
+		const v = cur.slice(eq + 1)
+		msg.opts[k] = v
 	} else {
-		const key = curr.slice(2)
-		if (index + 1 < argv.length && !argv[index + 1].startsWith('-')) {
-			msg.opts[key] = argv[index + 1]
+		const k = cur.slice(2)
+		if (index + 1 < argv.length && !argv[index + 1].startsWith("-")) {
+			msg.opts[k] = argv[index + 1]
 		} else {
-			msg.opts[key] = true
+			msg.opts[k] = true
 		}
 	}
 }
 
+/**
+ * Process a short option (`-f` or combined `-abc`).
+ *
+ * @param {CommandMessage} msg
+ * @param {string[]} argv
+ * @param {number} index
+ * @private
+ */
 function handleShortOption(msg, argv, index) {
-	const curr = argv[index].slice(1)
-
-	if (curr.length > 1) {
-		for (const char of curr) {
-			msg.opts[char] = true
-		}
+	const cur = argv[index].slice(1)
+	if (cur.length > 1) {
+		for (const ch of cur) msg.opts[ch] = true
 	} else {
-		const key = curr
-		if (index + 1 < argv.length && !argv[index + 1].startsWith('-')) {
-			msg.opts[key] = argv[index + 1]
+		const k = cur
+		if (index + 1 < argv.length && !argv[index + 1].startsWith("-")) {
+			msg.opts[k] = argv[index + 1]
 		} else {
-			msg.opts[key] = true
+			msg.opts[k] = true
 		}
 	}
 }
 
+/**
+ * Compute the next index after an option token.
+ *
+ * @param {string[]} argv
+ * @param {number} index
+ * @returns {number}
+ * @private
+ */
 function updateIndexAfterOption(argv, index) {
-	const curr = argv[index]
-	
-	if (curr.includes('=')) {
-		return index + 1
-	}
-	
-	const nextIsValue = index + 1 < argv.length &&
-		!argv[index + 1].startsWith('-')
-
-	return nextIsValue ? index + 2 : index + 1
+	const cur = argv[index]
+	if (cur.includes("=")) return index + 1
+	const hasVal = index + 1 < argv.length && !argv[index + 1].startsWith("-")
+	return hasVal ? index + 2 : index + 1
 }

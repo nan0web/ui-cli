@@ -1,12 +1,15 @@
 /**
- * Waits for the confirmation message (input) from user
- * @param {string | string[] | undefined} conf - Confirmation message or one of messages if array or any if undefined.
- * @returns {Promise<string>}
+ * Pause execution for a given amount of milliseconds.
+ *
+ * @param {number} ms - Delay in milliseconds.
+ * @returns {Promise<true>} Resolves with `true` after the timeout.
+ */
+export function pause(ms: number): Promise<true>;
+/**
+ * Wait for any key press (or a specific sequence).
+ *
+ * @param {string|string[]|undefined} [conf] - Expected key or sequence.
+ * @returns {Promise<string>} The captured key/sequence.
+ * @throws {Error} If stdin is already in raw mode.
  */
 export function next(conf?: string | string[] | undefined): Promise<string>;
-/**
- * Make a pause.
- * @param {number} ms - Amount in miliseconds
- * @returns {Promise<void>}
- */
-export function pause(ms: number): Promise<void>;

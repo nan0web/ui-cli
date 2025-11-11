@@ -1,42 +1,49 @@
+/**
+ * Utility functions for handling pauses and key‑press continuations.
+ *
+ * @module ui/next
+ */
+
 import process from "node:process"
 
 /**
- * Make a pause.
- * @param {number} ms - Amount in miliseconds
- * @returns {Promise<void>}
+ * Pause execution for a given amount of milliseconds.
+ *
+ * @param {number} ms - Delay in milliseconds.
+ * @returns {Promise<true>} Resolves with `true` after the timeout.
  */
-const pause = async (ms) => new Promise((resolve) => setTimeout(resolve, ms))
+export async function pause(ms) {
+	return new Promise(resolve => setTimeout(() => resolve(true), ms))
+}
 
 /**
- * Waits for the confirmation message (input) from user
- * @param {string | string[] | undefined} conf - Confirmation message or one of messages if array or any if undefined.
- * @returns {Promise<string>}
+ * Wait for any key press (or a specific sequence).
+ *
+ * @param {string|string[]|undefined} [conf] - Expected key or sequence.
+ * @returns {Promise<string>} The captured key/sequence.
+ * @throws {Error} If stdin is already in raw mode.
  */
-const next = async (conf = undefined) => {
+export async function next(conf = undefined) {
 	return new Promise((resolve, reject) => {
 		if (process.stdin.isRaw) {
-			reject(new Error('stdin is already in raw mode'))
+			reject(new Error("stdin is already in raw mode"))
 			return
 		}
+		let buffer = ""
 
-		let buffer = ''
-
-		const onData = (chunk) => {
+		const onData = chunk => {
 			const str = chunk.toString()
 			buffer += str
 
-			// Будь-яка клавіша
 			if (conf === undefined) {
 				cleanup()
 				resolve(str)
-			}
-			else if (typeof conf === 'string') {
+			} else if (typeof conf === "string") {
 				if (buffer === conf || buffer.endsWith(conf)) {
 					cleanup()
 					resolve(buffer)
 				}
-			}
-			else if (Array.isArray(conf)) {
+			} else if (Array.isArray(conf)) {
 				for (const seq of conf) {
 					if (buffer === seq || buffer.endsWith(seq)) {
 						cleanup()
@@ -47,24 +54,21 @@ const next = async (conf = undefined) => {
 			}
 		}
 
-		const errorHandler = (err) => {
+		const errorHandler = err => {
 			cleanup()
 			reject(err)
 		}
 
 		const cleanup = () => {
-			process.stdin.off('data', onData)
-			process.stdin.off('error', errorHandler)
+			process.stdin.off("data", onData)
+			process.stdin.off("error", errorHandler)
 			process.stdin.setRawMode(false)
 			process.stdin.resume()
 		}
 
 		process.stdin.setRawMode(true)
 		process.stdin.resume()
-
-		process.stdin.once('error', errorHandler)
-		process.stdin.on('data', onData)
+		process.stdin.once("error", errorHandler)
+		process.stdin.on("data", onData)
 	})
 }
-
-export { next, pause }

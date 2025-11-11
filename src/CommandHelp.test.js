@@ -1,96 +1,245 @@
 import { describe, it } from 'node:test'
 import { strict as assert } from 'node:assert'
+import { Message } from "@nan0web/co"
 import CommandHelp from './CommandHelp.js'
 import { NoLogger } from '@nan0web/log'
+import { NoConsole } from '@nan0web/log'
+import Logger from '@nan0web/log'
 
-// Mock Body class for testing
-class LogInBody {
-	username = ""
-	password = ""
+/** @typedef {import("@nan0web/co").ValidateFn} ValidateFn */
+/** @typedef {import("@nan0web/co").MessageInput} MessageInput */
 
-	constructor() {
-		this.username = ""
-		this.password = ""
-	}
-
-	static username = {
-		help: "Username for login",
-		placeholder: "<user>",
-		alias: "u"
-	}
-
-	static password = {
-		validation: (value) => value.length > 0,
-		alias: "p"
+class Body {
+	/**
+	 * @returns {Map<name: string, boolean | Error[]>}
+	 */
+	validate() {
+		const Class = /** @type {typeof Body} */ (this.constructor)
+		const body = new Class()
+		const result = new Map()
+		for (const [name, value] of Object.entries(body)) {
+			const fn = Class[name]?.validate
+			if ("function" !== typeof fn) continue
+			result.set(name, fn.apply(this, [value]))
+		}
 	}
 }
 
+// Mock Message class for testing
+class AuthMessage extends Message {
+	static name = 'auth'
+	static help = 'Authentication command'
+
+	static Body = class LogInBody extends Body {
+		static username = {
+			help: "Username for login",
+			placeholder: "<user>",
+			alias: "u",
+			/** @type {ValidateFn} */
+			validate: (value) => value.length > 3,
+		}
+		username = ""
+
+		static password = {
+			/** @type {ValidateFn} */
+			validate: (value) => value.length > 0,
+			placeholder: "<password>",
+			alias: "p"
+		}
+		password = ""
+
+		static remember_me = {
+			help: "Remember my session for 1 year",
+		}
+		remember_me = false
+
+		/** @todo add jsdoc through AuthMessageInput typedef */
+		constructor(input = {}) {
+			super()
+			const {
+				username = this.username,
+				password = this.password,
+			} = input
+			this.username = String(username)
+			this.password = String(password)
+		}
+	}
+	/** @type {LogInBody} */
+	body
+
+	/** @param {MessageInput} input */
+	constructor(input = {}) {
+		super(input)
+		this.body = new AuthMessage.Body(input.body ?? {})
+	}
+}
+
+// Message with no body fields
+class EmptyMessage extends Message {
+	static name = 'empty'
+	static help = 'Empty command'
+	static Body = class EmptyBody extends Body { }
+}
+
+// Message with subcommands
+class ChildMessage extends Message {
+	static name = 'child'
+	static help = 'Child command'
+}
+
+class ParentMessage extends Message {
+	static name = 'parent'
+	static help = 'Parent command'
+	static Children = [ChildMessage]
+
+	static Body = class EmptyBody extends Body { }
+}
+
+class MainBody {
+	static config = {
+		help: "Path to config file (optional)",
+	}
+	config = ""
+	static data = {
+		help: "Data directory path or connection string (DSN)",
+		placeholder: "./data"
+	}
+	data = "./data"
+	static public = {
+		help: "Public assets directory",
+		placeholder: "./public"
+	}
+	public = "./public"
+	static dist = {
+		help: "Output directory for SSG",
+		placeholder: "./public"
+	}
+	dist = "./dist"
+	static port = {
+		help: "API server port",
+		placeholder: 8888,
+	}
+	port = 8888
+	static yes = {
+		help: "Non-interactive mode (yes to all prompts)"
+	}
+	yes = false
+	static no = {
+		help: "Non-interactive mode (no to all prompts)"
+	}
+	no = false
+	static help = {
+		help: "Show help"
+	}
+	help = false
+}
+
+/**
+ * @extends Message
+ */
+class Main extends Message {
+	static name = "nan0web"
+	static Body = MainBody
+	/** @type {MainBody} */
+	body
+	/**
+	 * @param {import('@nan0web/co').MessageInput & { body: MainBody }} input
+	 */
+	constructor(input = {}) {
+		super(input)
+		this.body = new MainBody(input.body ?? {})
+	}
+	/**
+	 *
+	 * @param {any} input
+	 * @returns {Main}
+	 */
+	static from(input) {
+		if (input instanceof Main) return input
+		return new Main(input)
+	}
+}
+
+/* -------------------------------------------------------------------------- */
+
+class TTYLogger extends Logger {
+	static get isTTY() { return true }
+	get isTTY() { return true }
+}
+const logger = new TTYLogger()
+
 describe('CommandHelp', () => {
 	it('should create CommandHelp instance with correct properties', () => {
-		const help = new CommandHelp({
-			name: 'auth',
-			help: 'Authentication commands',
-			Body: LogInBody,
-			logger: new NoLogger()
-		})
-
-		assert.equal(help.name, 'auth')
-		assert.equal(help.help, 'Authentication commands')
-		assert.equal(help.Body, LogInBody)
-		assert.ok(help.logger instanceof NoLogger)
-	})
-
-	it('should use default logger when not provided', () => {
-		const help = new CommandHelp({
-			name: 'auth',
-			help: 'Authentication commands',
-			Body: LogInBody
-		})
-
-		assert.ok(help.logger)
+		const help = new CommandHelp(AuthMessage, logger)
+		assert.equal(help.MessageClass.name, 'auth')
+		assert.equal(help.MessageClass.help, 'Authentication command')
+		assert.equal(help.BodyClass, AuthMessage.Body)
 	})
 
 	it('should generate help text correctly', () => {
-		const logger = new NoLogger()
-		const help = new CommandHelp({
-			name: 'auth',
-			help: 'Authentication commands',
-			Body: LogInBody,
-			logger
-		})
+		const help = new CommandHelp(AuthMessage, logger)
 
+		const generated = help.generate()
+		assert.equal(generated, [
+			"\x1B[35mauth\x1B[0m • Authentication command",
+			"",
+			"Usage: auth [-u, --username=<user>] [-p, --password=<password>], [--remember_me]",
+			"",
+			"Options:",
+			"  --username, -u                 string   *  Username for login",
+			"  --password, -p                 string   *  No description",
+			"  --remember_me                  boolean  *  Remember my session for 1 year",
+			"",
+		].join("\n"))
+	})
+
+	it('should generate usage without body fields', () => {
+		const help = new CommandHelp(EmptyMessage, logger)
+		const generated = help.generate()
+		assert.equal(generated, [
+			"\x1B[35mempty\x1B[0m • Empty command",
+			"",
+			"Usage: empty",
+			""
+		].join("\n"))
+	})
+
+	it('should list subcommands when present', () => {
+		const help = new CommandHelp(ParentMessage, logger)
+		const generated = help.generate()
+		assert.equal(generated, [
+			"\x1B[35mparent\x1B[0m • Parent command",
+			"",
+			"Usage: parent",
+			"",
+			"Subcommands:",
+			"  child                 Child command",
+			"",
+		].join("\n"))
+	})
+
+	it("should prints the correct help", () => {
+		const help = new CommandHelp(Main, new NoLogger({ console: new NoConsole() }))
 		help.print()
-
-		// Check that logs were generated
-		const logs = logger.output()
-		assert.ok(logs.length > 0)
-
-		// Check header
-		const headerLog = logs[0]
-		assert.equal(headerLog[0], 'info')
-		assert.ok(headerLog[1].includes('- Authentication commands'))
-		assert.ok(headerLog[1].includes('auth'))
-
-		// Check usage line
-		const usageLog = logs[1]
-		assert.equal(usageLog[0], 'info')
-		assert.ok(usageLog[1].includes('Usage: auth -u, --username=<user> -p, --password=<password>'))
-
-		// Check options section header
-		const optionsHeaderLog = logs[2]
-		assert.equal(optionsHeaderLog[0], 'info')
-		assert.equal(optionsHeaderLog[1], 'Options:')
-
-		// Check option lines
-		const usernameOptionLog = logs[3]
-		const passwordOptionLog = logs[4]
-
-		assert.ok(usernameOptionLog[1].includes('--username, -u'))
-		assert.ok(usernameOptionLog[1].includes('string'))
-		assert.ok(usernameOptionLog[1].includes('Username for login'))
-
-		assert.ok(passwordOptionLog[1].includes('--password, -p'))
-		assert.ok(passwordOptionLog[1].includes('string'))
-		assert.ok(passwordOptionLog[1].includes('Field with validation rules'))
+		assert.deepStrictEqual(help.logger.console.output(), [
+			["info",
+				[
+					"nan0web",
+					"",
+					"Usage: nan0web [--data=./data] [--public=./public] [--dist=./public] [--port=8888] [--config] [--yes] [--no] [--help]",
+					"",
+					"Options:",
+					"  --config                       boolean  *  Path to config file (optional)",
+					"  --data                         string   *  Data directory path or connection string (DSN)",
+					"  --public                       string   *  Public assets directory",
+					"  --dist                         string   *  Output directory for SSG",
+					"  --port                         string   *  API server port",
+					"  --yes                          boolean  *  Non-interactive mode (yes to all prompts)",
+					"  --no                           boolean  *  Non-interactive mode (no to all prompts)",
+					"  --help                         boolean  *  Show help",
+					"",
+				].join("\n")
+			]
+		])
 	})
 })

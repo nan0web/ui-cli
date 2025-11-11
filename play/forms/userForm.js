@@ -27,6 +27,7 @@ export function createUserForm(t) {
 				label: t('Phone number'),
 				type: FormInput.TYPES.TEXT,
 				validator: (value) => {
+					if (!value) return null
 					return value.length >= 10 && value.length <= 15 ? null : t('Invalid phone number')
 				},
 				required: false

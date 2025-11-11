@@ -1,27 +1,45 @@
-import CLIInputAdapter from './InputAdapter.js'
-import { select, next, pause, createInput, ask, Input } from './ui/index.js'
-import { CancelError } from '@nan0web/ui/core'
-import CLI from './CLI.js'
+import CLIInputAdapter from "./InputAdapter.js"
+import { CancelError } from "@nan0web/ui/core"
+import CLI from "./CLI.js"
+import Command from "./Command.js"
+import CommandError from "./CommandError.js"
+import CommandMessage from "./CommandMessage.js"
+import CommandParser from "./CommandParser.js"
+import CommandHelp from "./CommandHelp.js"
+export { str2argv } from "./utils/parse.js"
 
-// Export CLI input adapter
+export {
+	select,
+	next,
+	pause,
+	createInput,
+	ask,
+	Input,
+} from "./ui/index.js"
+
 export {
 	CLI,
 	CLIInputAdapter,
 	CancelError,
-	createInput,
-	ask,
-	Input,
-	select,
-	next,
-	pause,
+
+	/** @deprecated */
+	Command,
+	/** @deprecated */
+	CommandError,
+	/** @deprecated */
+	CommandMessage,
+
+	CommandParser,
+	CommandHelp,
 }
 
-// Export renderers for CLI components
 export const renderers = new Map([
-	['UIProcess', (data) => {
-		// Render process information in CLI
-		return `${data.title || 'Process'}: ${data.status || 'running'}`
-	}],
+	[
+		"UIProcess",
+		data => {
+			return `${data.title || "Process"}: ${data.status || "running"}`
+		},
+	],
 ])
 
 export default CLIInputAdapter

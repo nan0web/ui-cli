@@ -1,6 +1,9 @@
+/* eslint-disable no-unused-vars */
 import { describe, it, before, beforeEach } from "node:test"
 import assert from "node:assert/strict"
 import FS from "@nan0web/db-fs"
+import Message from "@nan0web/co"
+import { UIForm } from "@nan0web/ui"
 import { NoConsole } from "@nan0web/log"
 import {
 	DatasetParser,
@@ -11,14 +14,12 @@ import {
 	CLIInputAdapter as BaseCLIInputAdapter,
 	CancelError,
 	createInput,
-	ask as baseAsk,
 	Input,
+	pause,
+	ask as baseAsk,
 	select as baseSelect,
 	next as baseNext,
-	pause,
 } from "./index.js"
-import { UIForm } from "@nan0web/ui"
-import Message from "@nan0web/co"
 
 async function ask(question) {
 	if ("Full Name *: " === question) return "John Doe"
@@ -190,8 +191,8 @@ function testRender() {
 		}
 
 		const result = await adapter.requestSelect(config)
-		console.info(result.value) // ← Message { body: "en", head: {} }
-		assert.deepStrictEqual(console.output()[0][1], Message.from({ body: "en" }))
+		console.info(result) // ← en
+		assert.deepStrictEqual(console.output()[0][1], "en")
 	})
 
 	/**

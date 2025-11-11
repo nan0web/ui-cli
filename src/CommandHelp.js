@@ -1,135 +1,177 @@
+import { Message } from "@nan0web/co"
 import Logger from "@nan0web/log"
 
 /**
- * @docs
- * # CommandHelp
+ * @typedef {Object} CommandHelpField
+ * @property {string} [help]        - Human readable description.
+ * @property {string} [placeholder] - Placeholder for usage (e.g. "<user>").
+ * @property {string} [alias]       - Short alias (single‑letter).
+ */
+
+/**
+ * CommandHelp – generates CLI help from a Message body schema.
+ * Supports nesting via static `Children`; message‑centric.
  *
- * Generates help text for commands using domain model.
+ * @example
+ * const help = new CommandHelp(AuthMessage)
+ * console.log(help.generate())        // → formatted help string
+ * help.print()                       // → logs to console
  */
 export default class CommandHelp {
-	/** @type {string} */
-	name
-	/** @type {string} */
-	help = ""
-	/** @type {typeof Object} */
-	Body
-	/** @type {Logger} */
-	logger = new Logger()
+	/** @type {typeof Message} Message class the help is built for */
+	MessageClass
+	/** @type {Logger} Logger used for printing */
+	logger
+	/** @type {typeof Message.Body} Body class reference */
+	BodyClass
 
 	/**
-	 * Creates a new CommandHelp instance
-	 *
-	 * @param {object} config - Configuration object
-	 * @param {string} config.name - Command name
-	 * @param {string} [config.help=""] - Command description
-	 * @param {typeof Object} config.Body - Command body class
-	 * @param {Logger} [config.logger=new Logger()] - Logger instance
+	 * @param {typeof Message} MessageClass - Message class with a schema.
+	 * @param {Logger} [logger=new Logger()] - Optional logger.
 	 */
-	constructor(config) {
-		const {
-			name,
-			help = this.help,
-			Body,
-			logger = this.logger
-		} = config
-		this.name = String(name)
-		this.help = String(help)
-		this.Body = Body
-		this.logger = Logger.from(logger)
+	constructor(MessageClass, logger = new Logger()) {
+		this.MessageClass = MessageClass
+		this.logger = logger
+		this.BodyClass = MessageClass.Body
+	}
+
+	/** @returns {typeof Logger} */
+	get Logger() {
+		return /** @type {typeof Logger} */ (this.logger.constructor)
 	}
 
 	/**
-	 * Generates and prints help text
+	 * Generates the full help text.
+	 *
+	 * @returns {string} Formatted help text.
+	 */
+	generate() {
+		const lines = []
+		this.#header(lines)
+		this.#usage(lines)
+		this.#options(lines)
+		this.#subcommands(lines)
+		return lines.join("\n")
+	}
+
+	/**
+	 * Prints the generated help to the logger.
 	 */
 	print() {
-		const bodyProps = this.#getBodyProperties()
-
-		// Header
-		const brand = Logger.style(this.name, { color: Logger.MAGENTA })
-		this.logger.info(`${brand} - ${this.help}\n`)
-
-		// Usage: auth login --username=<value> --password=<value>
-		const usage = `Usage: ${this.name} ` +
-			bodyProps.map(p => {
-				const alias = this.#getAlias(p)
-				const flag = alias ? `-${alias}, --${p}` : `--${p}`
-				return `${flag}=${this.#getPlaceholder(p)}`
-			}).join(' ')
-		this.logger.info(usage + "\n")
-
-		// Options
-		this.logger.info("Options:")
-		for (const prop of bodyProps) {
-			const alias = this.#getAlias(prop)
-			const flags = alias ? `--${prop}, -${alias}` : `--${prop}`
-			const propName = `  ${flags}`
-			const propHelp = this.#getHelp(prop)
-			const propType = this.#getType(prop)
-
-			this.logger.info(`  ${propName.padEnd(20)} ${propType.padEnd(10)} ${propHelp}`)
-		}
+		this.logger.info(this.generate())
 	}
 
 	/**
-	 * Gets Body properties
+	 * Adds a coloured header.
 	 *
-	 * @returns {string[]} - Array of property names
+	 * @param {string[]} lines - Accumulator array.
 	 */
-	#getBodyProperties() {
-		return Object.keys(new this.Body())
+	#header(lines) {
+		const name = this.MessageClass.name.toLowerCase()
+		const help = this.MessageClass['help'] || ""
+		lines.push([
+			`${this.Logger.style(name, { color: this.Logger.MAGENTA })}`,
+			help
+		].filter(Boolean).join(" • "))
+		lines.push("")
 	}
 
 	/**
-	 * Gets alias for a property
+	 * Constructs the usage line.
 	 *
-	 * @param {string} propName - Property name
-	 * @returns {string|null} - Alias or null
+	 * @param {string[]} lines - Accumulator array.
 	 */
-	#getAlias(propName) {
-		return this.Body[propName]?.alias ?? null
-	}
+	#usage(lines) {
+		const name = this.MessageClass.name.toLowerCase()
+		const bodyInstance = new this.BodyClass()
+		const bodyProps = Object.keys(bodyInstance)
 
-	/**
-	 * Gets help text for a property
-	 *
-	 * @param {string} propName - Property name
-	 * @returns {string} - Help text
-	 */
-	#getHelp(propName) {
-		const help = this.Body[propName]?.help ?? this.Body[`${propName}Help`]
-		if (help) return help
-
-		// Add automatic help based on validation
-		const validation = this.Body[propName]?.validation ?? this.Body[`${propName}Validation`]
-		if (typeof validation === 'function') {
-			return `Field with validation rules`
+		if (bodyProps.length === 0) {
+			lines.push(`Usage: ${name}`)
+			lines.push("")
+			return
 		}
 
-		return "No description"
+		const placeholderParts = []
+		const flagParts = []
+
+		bodyProps.forEach(prop => {
+			const schema = this.BodyClass[prop] || {}
+			const alias = schema.alias ? `-${schema.alias}, ` : ""
+			if (schema.placeholder) {
+				placeholderParts.push(`[${alias}--${prop}=${schema.placeholder}]`)
+			} else {
+				flagParts.push(`[${alias}--${prop}]`)
+			}
+		})
+
+		// Build usage string respecting spacing rules:
+		//   * when only flags exist → separate with " , "
+		//   * when placeholders exist:
+		//       – if exactly ONE flag part → prepend with ", "
+		//       – otherwise just space‑separate all parts.
+		let usage = ""
+		if (placeholderParts.length) {
+			usage = placeholderParts.join(" ")
+			if (flagParts.length) {
+				if (flagParts.length === 1) {
+					usage = `${usage}, ${flagParts[0]}`
+				} else {
+					usage = `${usage} ${flagParts.join(" ")}`
+				}
+			}
+		} else {
+			// only flag parts
+			usage = flagParts.join(" , ")
+		}
+		lines.push(`Usage: ${name} ${usage}`)
+		lines.push("")
 	}
 
 	/**
-	 * Gets type of a property
+	 * Renders the Options section.
 	 *
-	 * @param {string} propName - Property name
-	 * @returns {string} - Type name
+	 * @param {string[]} lines - Accumulator array.
 	 */
-	#getType(propName) {
-		const body = new this.Body()
-		const example = body[propName]
-		return typeof example
+	#options(lines) {
+		const bodyInstance = new this.BodyClass()
+		const bodyProps = Object.keys(bodyInstance)
+		if (bodyProps.length === 0) return
+
+		lines.push("Options:")
+		bodyProps.forEach(prop => {
+			const schema = this.BodyClass[prop] || {}
+			if (typeof schema !== "object") return
+
+			const flags = schema.alias
+				? `--${prop}, -${schema.alias}`
+				: `--${prop}`
+
+			const type = schema.placeholder !== undefined ? "string" : "boolean"
+			const required = schema.default === undefined ? " *" : ""
+			const description = schema.help || "No description"
+
+			// Pad flags to align the type column with the expectations.
+			lines.push(`  ${flags.padEnd(30)} ${type.padEnd(8)}${required}  ${description}`)
+		})
+		lines.push("")
 	}
 
 	/**
-	 * Gets placeholder for a property
+	 * Renders Subcommands, if any.
 	 *
-	 * @param {string} propName - Property name
-	 * @returns {string} - Placeholder text
+	 * @param {string[]} lines - Accumulator array.
 	 */
-	#getPlaceholder(propName) {
-		const placeholder = this.Body[propName]?.placeholder ?? this.Body[`${propName}Placeholder`]
-		if (placeholder) return placeholder
+	#subcommands(lines) {
+		const children = this.MessageClass['Children'] || []
+		if (children.length === 0) return
 
-		return `<${propName}>`
+		lines.push("Subcommands:")
+		children.forEach(ChildClass => {
+			const childName = ChildClass.name.toLowerCase()
+			const childHelp = ChildClass.help || "No description"
+			lines.push(`  ${childName.padEnd(20)}  ${childHelp}`)
+		})
+		lines.push("")
 	}
 }

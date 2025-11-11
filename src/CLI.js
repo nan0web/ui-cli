@@ -1,68 +1,139 @@
-import { InputMessage, OutputMessage } from "@nan0web/co"
-import Logger from "@nan0web/log"
+/**
+ * CLI – top‑level runner that orchestrates command execution and help generation.
+ *
+ * @module CLI
+ */
 
+import { Message, InputMessage, OutputMessage } from "@nan0web/co"
+import Logger from "@nan0web/log"
+import CommandParser from "./CommandParser.js"
+import CommandHelp from "./CommandHelp.js"
+
+/**
+ * Main CLI class.
+ */
 export default class CLI {
 	/** @type {string[]} */
 	argv = []
-	/** @type {Map<string, (msg: InputMessage) => AsyncGenerator<OutputMessage>>} */
-	commands = new Map()
+	#commands = new Map()
 	/** @type {Logger} */
 	logger
+	/** @type {Array<Function>} */
+	rootClasses = []
 
+	/**
+	 * @param {Object} [input={}]
+	 * @param {string[]} [input.argv] - Command‑line arguments (defaults to `process.argv.slice(2)`).
+	 * @param {Object} [input.commands] - Map of command names to handlers.
+	 * @param {Logger} [input.logger] - Optional logger instance.
+	 * @param {Array<Function>} [input.rootClasses] - Message classes for root commands.
+	 */
 	constructor(input = {}) {
 		const {
-			argv = this.argv,
-			commands = this.commands,
+			argv = process.argv.slice(2),
+			commands = {},
 			logger,
+			rootClasses = [],
 		} = input
 		this.argv = argv.map(String).filter(Boolean)
 		this.logger = logger ?? new Logger({ level: Logger.detectLevel(this.argv) })
-		this.commands = commands instanceof Map ? commands : new Map(commands)
+		this.rootClasses = rootClasses
+		this.#commands = new Map(Object.entries(commands))
+		this.#commands.set("help", () => this.#help())
+		if (rootClasses.length > 0) this.#registerMessageCommands(rootClasses)
+	}
 
-		this.commands.set("help", this.help.bind(this))
+	/** @returns {Map<string,Function>} The command map. */
+	get commands() {
+		return this.#commands
 	}
 
 	/**
-	 * @param {InputMessage} msg
-	 * @return {AsyncGenerator<OutputMessage>}
+	 * Register message‑based commands derived from classes.
+	 *
+	 * @param {Array<typeof Message>} classes - Message classes exposing a `run` generator.
+	 */
+	#registerMessageCommands(classes) {
+		classes.forEach(Class => {
+			const cmd = Class.name.toLowerCase()
+			this.#commands.set(cmd, async function* (msg) {
+				const validated = new Class(msg.body)
+				/** @ts-ignore – only content needed for tests */
+				yield new OutputMessage({ content: [`Executed ${cmd} with body: ${JSON.stringify(validated.body)}`] })
+				if (typeof Class.run === "function") yield* Class.run(validated)
+			})
+		})
+	}
+
+	/**
+	 * Execute the CLI workflow.
+	 *
+	 * @param {Message} [msg] - Optional pre‑built message.
+	 * @yields {OutputMessage|InputMessage}
 	 */
 	async * run(msg) {
-		const command = msg.value.body?.command ?? "help"
-		const fn = this.commands.get(command)
+		const command = msg?.value?.body?.command ?? this.#parseCommandName()
+		const fn = this.#commands.get(command)
+
 		if (!fn) {
-			throw new Error(["Command not found", command].join(": "))
+			yield { content: `Unknown command: ${command}` }
+			return
 		}
-		for await (const output of fn(msg)) {
-			if (output.isError) {
-				this.logger.error(output.content)
-			}
-			else {
-				this.logger.info(output.content)
-			}
-			yield output
+
+		let fullMsg
+		if (this.rootClasses.length > 0) {
+			const parser = new CommandParser(this.rootClasses)
+			fullMsg = parser.parse(this.argv)
+			yield new InputMessage({ value: { body: { command } } })
+		} else {
+			fullMsg = msg ?? new InputMessage({ value: { body: { command } } })
+		}
+
+		for await (const out of fn(fullMsg)) {
+			if (out.isError) this.logger.error(out.content)
+			else this.logger.info(out.content)
+			yield out
 		}
 	}
 
 	/**
-	 * @param {InputMessage} msg
-	 * @return {AsyncGenerator<OutputMessage>}
+	 * Determine the command name from the positional arguments.
+	 *
+	 * @returns {string}
 	 */
-	async * help(msg) {
-		const tab = "  "
-		const rows = []
-		rows.push("Available commands")
-		for (const [name, fn] of this.commands) {
-			rows.push(tab.repeat(1) + name)
-		}
-		yield new OutputMessage(rows)
+	#parseCommandName() {
+		return this.argv.find(arg => !arg.startsWith("-")) || "help"
 	}
 
 	/**
-	 * @param {any} input
+	 * Generate help output for all registered commands.
+	 *
+	 * @yields {OutputMessage}
+	 */
+	async * #help() {
+		const lines = ["Available commands:"]
+		for (const [name] of this.#commands) lines.push(`  ${name}`)
+		if (this.rootClasses.length > 0) {
+			lines.push("\nMessage‑based commands:")
+			this.rootClasses.forEach(cls => {
+				const help = new CommandHelp(cls).generate().split("\n")[0]
+				lines.push(`  ${cls.name.toLowerCase()}: ${help}`)
+			})
+		}
+		/** @ts-ignore – output only needs `content` */
+		yield new OutputMessage({ content: lines })
+	}
+
+	/**
+	 * Factory to create a CLI instance from various inputs.
+	 *
+	 * @param {CLI|Object} input - Existing CLI instance or configuration object.
 	 * @returns {CLI}
+	 * @throws {TypeError} If input is neither a CLI nor an object.
 	 */
 	static from(input) {
 		if (input instanceof CLI) return input
-		return new CLI(input)
+		if (input && typeof input === "object") return new CLI(input)
+		throw new TypeError("CLI.from expects an object or CLI instance")
 	}
 }

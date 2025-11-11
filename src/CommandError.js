@@ -1,14 +1,19 @@
 /**
- * CommandError – error as path to correct resonance
+ * CommandError – error class representing a failure during command execution.
  *
- * **Philosophy**: Error does not hide. Error opens path to correct resonance.
+ * @module CommandError
+ */
+
+/**
+ * @class
+ * @extends Error
  */
 export default class CommandError extends Error {
 	/**
-	 * Creates a command execution error
+	 * Creates a command execution error.
 	 *
-	 * @param {string} message - Message that opens the path
-	 * @param {Object} [data=null] - Data to help find correct resonance
+	 * @param {string} message - Message that opens the path.
+	 * @param {Object} [data=null] - Data to help find correct resonance.
 	 */
 	constructor(message, data = null) {
 		super(message)
@@ -18,7 +23,9 @@ export default class CommandError extends Error {
 	}
 
 	/**
-	 * @returns {string} Full error context as path for resonance correction
+	 * Render the error as a string, optionally including attached data.
+	 *
+	 * @returns {string}
 	 */
 	toString() {
 		return this.data

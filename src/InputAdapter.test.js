@@ -1,117 +1,82 @@
-import { describe, it } from 'node:test'
-import assert from 'node:assert/strict'
-import { UIForm, FormInput, InputMessage } from '@nan0web/ui'
-import { CancelError } from '@nan0web/ui/core'
-import CLIInputAdapter from './InputAdapter.js'
+import { describe, it, beforeEach } from "node:test"
+import assert from "node:assert/strict"
+import { UIForm, FormInput } from "@nan0web/ui"
+import { CancelError } from "@nan0web/ui/core"
+import CLIInputAdapter from "./InputAdapter.js"
 
-// Awaits for the user input.
-describe('CLIInputAdapter', () => {
-	it('should create instance', () => {
-		const adapter = new CLIInputAdapter()
+describe("CLIInputAdapter", () => {
+	let adapter
+
+	beforeEach(() => {
+		adapter = new CLIInputAdapter()
+		adapter.ask = async (q) => {
+			if (q.includes("Email")) return "test@example.com"
+			if (q.includes("*")) return "John Doe"
+			return ""
+		}
+		adapter.select = async () => ({ index: 0, value: "en" })
+	})
+
+	it("should create instance", () => {
 		assert.ok(adapter instanceof CLIInputAdapter)
 	})
 
-	it('should validate form fields', async () => {
-		const adapter = new CLIInputAdapter()
-
-		// Mock ask for testing
-		adapter.ask = () => Promise.resolve('test@example.com')
-
+	it("should handle form submission", async () => {
 		const form = new UIForm({
-			title: 'Test Form',
-			elementId: 'test-form',
+			title: "Test Form",
+			id: "test-form",
 			fields: [
 				new FormInput({
-					name: 'email',
-					label: 'Email',
-					type: 'email',
-					required: true
-				})
-			]
+					name: "email",
+					label: "Email",
+					required: true,
+				}),
+			],
 		})
-
 		const result = await adapter.requestForm(form, { silent: true })
-		assert.equal(result.form.state.email, 'test@example.com')
+		assert.equal(result.body.action, "form-submit")
+		assert.equal(result.form.state.email, "test@example.com")
 	})
 
-	it('should handle form cancellation', async () => {
-		const adapter = new CLIInputAdapter()
-
-		// Mock ask for cancellation
-		adapter.ask = () => Promise.resolve(InputMessage.ESCAPE)
-
+	it("should handle form cancellation", async () => {
 		const form = new UIForm({
-			title: 'Test Form',
-			elementId: 'test-form',
+			title: "Test Form",
+			id: "test-form",
 			fields: [
 				new FormInput({
-					name: 'name',
-					label: 'Name',
-					required: true
-				})
-			]
+					name: "name",
+					label: "Name",
+					required: true,
+				}),
+			],
 		})
-
+		adapter.ask = async () => ""
 		const result = await adapter.requestForm(form, { silent: true })
+		assert.equal(result.body.action, "form-cancel")
 		assert.equal(result.escaped, true)
 	})
 
-	it('should have CancelError static property', () => {
-		assert.ok(CLIInputAdapter.CancelError)
-		const error = new CLIInputAdapter.CancelError()
-		assert.equal(error.name, "CancelError")
-		assert.equal(error.message, "Operation cancelled by user")
-	})
-
-	it('should implement ask method', async () => {
-		const adapter = new CLIInputAdapter()
-		// Mock internal ask to avoid stdin interaction
-		const originalAsk = adapter.ask
-		adapter.ask = () => Promise.resolve('test answer')
-
-		const answer = await adapter.ask('Test question?')
-		assert.equal(answer, 'test answer')
-
-		// Restore original
-		adapter.ask = originalAsk
-	})
-
-	it('should implement select method', async () => {
-		const adapter = new CLIInputAdapter()
-		// Mock internal select to avoid stdin interaction
-		const originalSelect = adapter.select
-		adapter.select = () => Promise.resolve({ value: 'option1', index: 0 })
-
-		const result = await adapter.select({
-			title: 'Test Select',
-			prompt: 'Choose:',
-			options: ['option1', 'option2']
-		})
-		assert.equal(result.value, 'option1')
-		assert.equal(result.index, 0)
-
-		// Restore original
-		adapter.select = originalSelect
-	})
-
-	it('should handle select cancellation', async () => {
-		const adapter = new CLIInputAdapter()
-
-		// Mock select to throw CancelError
-		const originalSelect = adapter.select
-		adapter.select = () => Promise.reject(new CancelError())
-
+	it("should handle requestSelect", async () => {
 		const config = {
-			title: 'Test Select',
-			prompt: 'Choose:',
-			id: 'test-select',
-			options: ['option1', 'option2']
+			title: "Language",
+			prompt: "Choose:",
+			options: ["en", "uk"],
+			id: "lang-select",
 		}
-
 		const result = await adapter.requestSelect(config)
-		assert.deepStrictEqual(result.value, InputMessage.from({}).value)
+		assert.equal(result, "en")
+	})
 
-		// Restore original
-		adapter.select = originalSelect
+	it("should handle requestSelect cancellation", async () => {
+		adapter.select = () => Promise.reject(new CancelError())
+		const config = { title: "Test", options: ["opt"], id: "test", prompt: "Choose:" }
+		const result = await adapter.requestSelect(config)
+		assert.equal(result, "")
+	})
+
+	it("should handle requestInput", async () => {
+		const config = { prompt: "Enter something: ", id: "name-input" }
+		const result = await adapter.requestInput(config)
+		assert.equal(result, "")
 	})
 })

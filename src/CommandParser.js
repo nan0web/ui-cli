@@ -1,223 +1,210 @@
+/**
+ * CommandParser – parses argv into a hierarchical message tree supporting sub‑commands.
+ *
+ * @module CommandParser
+ */
+
 import { Message } from "@nan0web/co"
+import CommandHelp from "./CommandHelp.js"
+import CommandError from "./CommandError.js"
+import { str2argv } from "./utils/parse.js"
 
 /**
- * Parses CLI arguments into domain messages.
- *
- * Automatically generates flags from message body properties and supports nested commands.
- *
- * @example
- * ```js
- * const parser = new CommandParser(SomeMessage)
- * const message = parser.parse(['--flag', 'value'])
- * ```
+ * @class
  */
 export default class CommandParser {
-	/**
-	 * Creates a command parser for a specific message class.
-	 *
-	 * @param {typeof Message} Message - The root message class to parse commands for
-	 */
-	constructor(Message) {
-		/**
-		 * The root message class
-		 * @type {typeof Message}
-		 */
-		this.Message = Message
+	/** @type {Array<Function>} */
+	rootClasses
 
-		/**
-		 * Command tree built from message hierarchy
-		 * @type {Object}
-		 */
-		this.Commands = this.#buildCommandTree(Message)
+	/**
+	 * @param {Array<Function>} [rootClasses=[]] - Root message classes.
+	 */
+	constructor(rootClasses = []) {
+		this.rootClasses = Array.isArray(rootClasses) ? rootClasses : [rootClasses]
 	}
 
 	/**
-	 * Builds a command tree according to message hierarchy.
+	 * Parse the provided input into a message hierarchy.
 	 *
-	 * @param {typeof Message} Message - Current message class with static.name and static.Children?
-	 * @param {string[]} path - Path to current command
-	 * @returns {Object} Command tree node
+	 * @param {string|string[]} [input=process.argv.slice(2)] - CLI arguments.
+	 * @returns {Message}
+	 * @throws {Error} If no command is supplied or unknown root command.
 	 */
-	#buildCommandTree(Message, path = []) {
-		const config = this.#extractConfig(Message)
-		// @ts-ignore Children might be missing
-		const children = (Message.Children || []).map(C =>
-			this.#buildCommandTree(C, [...path, Message.name])
-		)
+	parse(input = process.argv.slice(2)) {
+		const argv = typeof input === "string" ? str2argv(input) : input
+		if (argv.length === 0) throw new Error("No command provided")
+		let rootName = null
+		let remaining = argv
 
-		return {
-			...config,
-			path,
-			children: Object.fromEntries(children.map(c => [c.name, c]))
-		}
-	}
+		if (!argv[0].startsWith("-")) {
+			rootName = argv[0]
+			remaining = argv.slice(1)
 
-	/**
-	 * Extracts configuration from a domain message.
-	 *
-	 * @param {typeof Message} Message - Message class to extract config from with static.name, static.help, static.Body,
-	 * @returns {Object} Configuration object
-	 */
-	#extractConfig(Message) {
-		return {
-			name: Message.name,
-			// @ts-ignore help might be missing
-			help: Message.help ?? "",
-			Body: Message.Body,
-			MessageClass: Message,
-			/**
-			 * Creates a new message instance.
-			 *
-			 * @param {any} value - Value to initialize message with
-			 * @returns {Message} New message instance
-			 */
-			create: (value) => new Message(value)
-		}
-	}
-
-	/**
-	 * Parses CLI arguments into a domain message.
-	 *
-	 * @param {string[]} argv - CLI arguments to parse
-	 * @returns {Message} Parsed message instance
-	 * @throws {Error} When unknown command is provided
-	 */
-	parse(argv) {
-		let tokens = this.#tokenize(argv)
-		const cmd = this.#findCommand(tokens, this.Commands)
-
-		if (!cmd) {
-			throw new Error(`Unknown command: ${tokens[0] || 'root'}`)
-		}
-
-		const body = this.#parseBody(tokens, cmd.Body)
-		return cmd.create({ body })
-	}
-
-	/**
-	 * Converts CLI arguments into tokens.
-	 *
-	 * Handles short flag expansion (e.g. -abc becomes --a --b --c).
-	 *
-	 * @param {string[]} argv - Raw CLI arguments
-	 * @returns {string[]} Tokenized arguments
-	 */
-	#tokenize(argv) {
-		return argv.flatMap(arg => {
-			if (arg.startsWith('-') && !arg.startsWith('--') && arg.length > 2) {
-				// Convert short flags -abc to --a --b --c
-				return arg.slice(1).split('').map(c => `--${c}`)
-			} else if (arg.startsWith('-') && !arg.startsWith('--') && arg.length === 2) {
-				// Convert short flag -a to --a
-				return [`--${arg.slice(1)}`]
+			let RootClass = this.rootClasses.find(
+				cls => cls.name.toLowerCase() === rootName.toLowerCase(),
+			)
+			if (!RootClass) {
+				if (this.rootClasses.length === 1) RootClass = this.rootClasses[0]
+				else throw new Error(`Unknown root command: ${rootName}`)
 			}
-			return [arg]
-		})
+			const rootMessage = new RootClass({})
+			if (rootName) {
+				if (!rootMessage.head) rootMessage.head = {}
+				rootMessage.head.name = rootName
+			}
+			return this.#processMessageTree(rootMessage, remaining)
+		}
+
+		if (this.rootClasses.length !== 1) throw new Error("Unable to infer root command from options")
+		const RootClass = this.rootClasses[0]
+		const rootMessage = new RootClass({})
+		if (!rootMessage.head) rootMessage.head = {}
+		return this.#processMessageTree(rootMessage, remaining)
 	}
 
 	/**
-	 * Finds the corresponding command in the tree.
+	 * Walk the message tree and attach sub‑commands and leaf arguments.
 	 *
-	 * @param {string[]} tokens - Tokenized CLI arguments
-	 * @param {Object} commands - Current command tree node
-	 * @returns {Object|null} Found command or null
+	 * @param {Message} rootMessage - Root message instance.
+	 * @param {string[]} remainingTokens - Tokens yet to be processed.
+	 * @returns {Message}
 	 */
-	#findCommand(tokens, commands) {
-		if (tokens.length === 0) return commands
+	#processMessageTree(rootMessage, remainingTokens) {
+		let currentMessage = rootMessage
+		let remaining = remainingTokens
 
-		const cmdName = tokens[0].replace(/^-+/, '')
-		if (commands.children?.[cmdName]) {
-			return this.#findCommand(tokens.slice(1), commands.children[cmdName])
+		while (currentMessage.constructor.Children && remaining.length) {
+			const subName = remaining[0]
+			const SubClass = currentMessage.constructor.Children.find(
+				cls => cls.name.toLowerCase() === subName.toLowerCase(),
+			)
+			if (!SubClass) break
+
+			const subMessage = new SubClass({})
+			subMessage.name = subName
+			currentMessage.body.subCommand = subMessage
+			currentMessage = subMessage
+			remaining = remaining.slice(1)
 		}
 
-		// If we've reached here and there are still tokens, it means we couldn't find a matching command
-		if (tokens.length > 0 && tokens[0].startsWith('--') === false) {
-			return null
+		if (remaining.length) {
+			const parsedBody = this.#parseLeafBody(
+				remaining,
+				currentMessage.constructor.Body,
+			)
+			currentMessage.body = { ...currentMessage.body, ...parsedBody }
 		}
 
-		return commands
+		if (
+			rootMessage.body.subCommand &&
+			typeof rootMessage.body.subCommand.assertValid === "function"
+		) {
+			rootMessage.body.subCommand.assertValid()
+		}
+		return rootMessage
 	}
 
 	/**
-	 * Parses message body from CLI tokens.
+	 * Parse leaf‑level arguments into the provided body class.
 	 *
-	 * @param {string[]} tokens - Tokenized CLI arguments
-	 * @param {typeof Object} Body - Message body class
-	 * @returns {Object} Parsed body instance
+	 * @param {string[]} tokens - Remaining CLI tokens.
+	 * @param {Function} BodyClass - Class defining fields and validation.
+	 * @returns {Object} Instance of BodyClass populated with parsed values.
 	 */
-	#parseBody(tokens, Body) {
-		/** @type {any} */
-		const body = new Body()
-		const bodyProps = this.#getBodyProperties(Body)
+	#parseLeafBody(tokens, BodyClass) {
+		const body = new BodyClass()
+		const props = Object.keys(body)
 
 		for (let i = 0; i < tokens.length; i++) {
 			const token = tokens[i]
 
-			if (token.startsWith('--')) {
-				const propName = this.#resolveAlias(token.slice(2), Body) || token.slice(2)
-				if (bodyProps.has(propName)) {
-					// Check if next token is not a new flag
-					if (i + 1 < tokens.length && !tokens[i + 1].startsWith('-')) {
-						body[propName] = this.#convertType(propName, tokens[++i], Body)
-					} else {
-						body[propName] = true
+			if (token.startsWith("--")) {
+				let key = token.slice(2)
+				/** @type {boolean | string} */
+				let value = true
+				const eqIdx = key.indexOf("=")
+				if (eqIdx > -1) {
+					value = key.slice(eqIdx + 1)
+					key = key.slice(0, eqIdx)
+				} else if (i + 1 < tokens.length && !tokens[i + 1].startsWith("-")) {
+					value = tokens[++i]
+				}
+				const realKey = this.#resolveAlias(key, BodyClass) || key
+				if (props.includes(realKey)) body[realKey] = this.#convertType(body[realKey], value)
+			} else if (token.startsWith("-") && token.length > 1) {
+				const short = token.slice(1)
+				if (short.length > 1) {
+					short.split("").forEach(ch => {
+						const realKey = this.#resolveAlias(ch, BodyClass)
+						if (realKey && props.includes(realKey)) body[realKey] = true
+					})
+				} else {
+					const realKey = this.#resolveAlias(short, BodyClass) || short
+					if (props.includes(realKey)) {
+						/** @type {boolean | string} */
+						let value = true
+						if (i + 1 < tokens.length && !tokens[i + 1].startsWith("-")) {
+							value = tokens[++i]
+						}
+						body[realKey] = this.#convertType(body[realKey], value)
 					}
 				}
+			} else {
+				const first = props[0]
+				if (first) body[first] = token
 			}
 		}
+
+		props.forEach(prop => {
+			const schema = BodyClass[prop]
+			if (schema?.default !== undefined && body[prop] === undefined) {
+				body[prop] = schema.default
+			}
+			const err = schema?.validate?.(body[prop], body)
+			if (err !== undefined && err !== null && err !== true) {
+				throw new CommandError(`Invalid ${prop}: ${err}`, { [prop]: err })
+			}
+		})
 
 		return body
 	}
 
 	/**
-	 * Resolves alias to property name.
+	 * Resolve an alias to its full property name.
 	 *
-	 * @param {string} alias - Alias to resolve
-	 * @param {typeof Object} Body - Message body class
-	 * @returns {string|null} Resolved property name or null
+	 * @param {string} alias
+	 * @param {Function} BodyClass
+	 * @returns {string|null}
 	 */
-	#resolveAlias(alias, Body) {
-		const staticProps = Object.getOwnPropertyNames(Body)
-		for (const prop of staticProps) {
-			if (Body[prop] && Body[prop].alias === alias) {
-				return prop
-			}
+	#resolveAlias(alias, BodyClass) {
+		for (const [prop, schema] of Object.entries(BodyClass)) {
+			if (schema?.alias === alias) return prop
 		}
 		return null
 	}
 
 	/**
-	 * Gets body properties for validation.
+	 * Convert a raw CLI string to the appropriate JavaScript type.
 	 *
-	 * @param {typeof Object} Body - Message body class
-	 * @returns {Set<string>} Set of body property names
+	 * @param {*} defaultVal - The default value used for type inference.
+	 * @param {*} value - Raw parsed value.
+	 * @returns {*}
 	 */
-	#getBodyProperties(Body) {
-		/** @type {any} */
-		const props = new Body()
-		return new Set(Object.keys(props))
+	#convertType(defaultVal, value) {
+		const type = typeof defaultVal
+		if (type === "boolean")
+			return Boolean(value !== "false" && value !== false && value !== "")
+		if (type === "number") return Number(value) || 0
+		return String(value)
 	}
 
 	/**
-	 * Converts a value to the required type based on body property.
+	 * Generate help text for a given message class.
 	 *
-	 * @param {string} propName - Property name
-	 * @param {string} value - Raw value
-	 * @param {typeof Object} Body - Message body class
-	 * @returns {any} Converted value
+	 * @param {typeof Message} MessageClass
+	 * @returns {string}
 	 */
-	#convertType(propName, value, Body) {
-		/** @type {any} */
-		const example = new Body()
-		const propType = typeof example[propName]
-
-		switch (propType) {
-			case 'boolean':
-				return value.toLowerCase() !== 'false'
-			case 'number':
-				return Number(value)
-			default:
-				return String(value)
-		}
+	generateHelp(MessageClass) {
+		return new CommandHelp(MessageClass).generate()
 	}
 }

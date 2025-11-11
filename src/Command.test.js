@@ -37,8 +37,8 @@ describe('Command', () => {
 			children: [subcommand]
 		})
 
-		const message = command.parse(['sub', '--unknown'])
-		assert.equal(message.subCommandMessage?.name, 'sub')
+		const message = command.parse(['test', 'sub'])
+		assert.equal(message.name, 'sub')
 	})
 
 	it('should generate proper help text', () => {
@@ -69,5 +69,80 @@ describe('Command', () => {
 		}
 
 		assert.deepEqual(results, ['result'])
+	})
+})
+
+describe('Command.findSubcommand', () => {
+	it('should find existing subcommand', () => {
+		const subcommand = new Command({ name: 'sub' })
+		const command = new Command({
+			name: 'test',
+			children: [subcommand]
+		})
+
+		const found = command.findSubcommand('sub')
+		assert.equal(found, subcommand)
+	})
+
+	it('should return null for non-existing subcommand', () => {
+		const command = new Command({ name: 'test' })
+
+		const found = command.findSubcommand('nonexistent')
+		assert.equal(found, null)
+	})
+})
+
+describe('Command._applyDefaults', () => {
+	it('should apply default values to message', () => {
+		const command = new Command({
+			name: 'test',
+			options: {
+				value: [String, 'default', 'A test value'],
+				flag: [Boolean, true, 'A flag']
+			}
+		})
+
+		const message = new CommandMessage({
+			name: 'test',
+			opts: {}
+		})
+
+		command._applyDefaults(message)
+		assert.equal(message.opts.value, 'default')
+		assert.equal(message.opts.flag, true)
+	})
+
+	it('should not override existing values', () => {
+		const command = new Command({
+			name: 'test',
+			options: {
+				value: [String, 'default', 'A test value']
+			}
+		})
+
+		const message = new CommandMessage({
+			name: 'test',
+			opts: { value: 'custom' }
+		})
+
+		command._applyDefaults(message)
+		assert.equal(message.opts.value, 'custom')
+	})
+
+	it('should apply boolean defaults correctly', () => {
+		const command = new Command({
+			name: 'test',
+			options: {
+				flag: [Boolean, false, 'A flag']
+			}
+		})
+
+		const message = new CommandMessage({
+			name: 'test',
+			opts: {}
+		})
+
+		command._applyDefaults(message)
+		assert.equal(message.opts.flag, false)
 	})
 })

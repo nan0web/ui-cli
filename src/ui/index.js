@@ -1,4 +1,4 @@
-export { CancelError } from '@nan0web/ui/core'
-export { Input, ask, createInput } from "./input.js"
-export { select } from "./select.js"
+export { Input } from "./input.js"
+export { createInput, ask } from "./input.js"
+export { select, default as baseSelect } from "./select.js"
 export { next, pause } from "./next.js"

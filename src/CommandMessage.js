@@ -1,304 +1,181 @@
 /**
- * CommandMessage – message as proof of interaction
+ * CommandMessage – generalized CLI message representation.
  *
- * **Philosophy**: Command message is not an intermediate result.
- * It is proof that interaction occurred.
+ * @module CommandMessage
  */
-export default class CommandMessage {
+
+import { Message } from "@nan0web/co"
+import { str2argv } from "./utils/parse.js"
+import CommandError from "./CommandError.js"
+
+/**
+ * @class
+ * @extends Message
+ */
+export default class CommandMessage extends Message {
 	#name = ""
 	#argv = []
 	#opts = {}
 	#children = []
 
 	/**
-	 * @typedef {Object} CommandMessageInput
-	 * @property {string} [name] - Command name
-	 * @property {string[]} [argv] - Command arguments
-	 * @property {Object} [opts] - Command options
-	 * @property {CommandMessage[]} [children] - Child messages
-	 */
-
-	/**
-	 * Creates a new command message
-	 *
-	 * @param {CommandMessageInput} input - Input data for message
+	 * @param {Object} [input={}]
+	 * @param {string} [input.name] - Command name.
+	 * @param {string[]} [input.argv] - Positional arguments.
+	 * @param {Object} [input.opts] - Options map.
+	 * @param {Array<CommandMessage>} [input.children] - Nested messages.
+	 * @param {Object} [input.body] - Message body payload.
 	 */
 	constructor(input = {}) {
-		this.name = input.name || this.#name
-		this.argv = input.argv || this.#argv
-		this.opts = input.opts || this.#opts
-		this.children = input.children || this.#children
+		super(input)
+		/** @type {any} */
+		const data = typeof input === "object" && !Array.isArray(input) ? input : {}
+		const {
+			name = "",
+			argv = [],
+			opts = {},
+			children = [],
+			body = {},
+		} = data
+
+		const fullBody = { ...body, ...opts }
+		this.body = fullBody
+
+		this.#name = String(name)
+		this.#argv = argv.map(String)
+		this.#opts = opts
+		this.#children = children.map(c => CommandMessage.from(c))
+
+		if (typeof input === "string" || Array.isArray(input)) {
+			const parsed = CommandMessage.parse(input)
+			this.#name = parsed.name
+			this.#argv = parsed.argv
+			this.#opts = parsed.opts
+			this.body = { ...this.body, ...parsed.opts }
+		}
 	}
 
-	/**
-	 * Gets command name
-	 * @returns {string}
-	 */
+	/** @returns {string} */
 	get name() { return this.#name }
+	/** @param {string} v */
+	set name(v) { this.#name = String(v) }
 
-	/**
-	 * Sets command name
-	 * @param {string} value - New name
-	 */
-	set name(value) { this.#name = String(value || "") }
-
-	/**
-	 * Gets command arguments including name
-	 * @returns {string[]}
-	 */
-	get args() { return [this.name, ...this.#argv].filter(Boolean) }
-
-	/**
-	 * Gets command arguments
-	 * @returns {string[]}
-	 */
+	/** @returns {string[]} */
 	get argv() { return this.#argv }
+	/** @param {string[]} v */
+	set argv(v) { this.#argv = v.map(String) }
 
-	/**
-	 * Sets command arguments
-	 * @param {string[]} value - Arguments array
-	 */
-	set argv(value) { this.#argv = Array.isArray(value) ? value.map(String) : [] }
-
-	/**
-	 * Gets command options
-	 * @returns {Object}
-	 */
+	/** @returns {Object} */
 	get opts() { return this.#opts }
+	/** @param {Object} v */
+	set opts(v) { this.#opts = v }
 
-	/**
-	 * Sets command options
-	 * @param {Object} value - Options object
-	 */
-	set opts(value) { this.#opts = value || {} }
-
-	/**
-	 * Gets child messages
-	 * @returns {CommandMessage[]}
-	 */
+	/** @returns {Array<CommandMessage>} */
 	get children() { return this.#children }
 
-	/**
-	 * Sets child messages
-	 * @param {CommandMessage[]} value - Child messages array
-	 */
-	set children(value) {
-		this.#children = Array.isArray(value)
-			? value.map(c => CommandMessage.from(c))
-			: []
-	}
+	/** @returns {Array<string>} Full command line (name + args). */
+	get args() { return [this.name, ...this.argv].filter(Boolean) }
 
-	/**
-	 * Gets first subcommand name
-	 * @returns {string}
-	 */
+	/** @returns {string} Sub‑command name of the first child, or empty string. */
 	get subCommand() { return this.children[0]?.name || "" }
 
-	/**
-	 * Gets first subcommand message
-	 * @returns {CommandMessage|null}
-	 */
+	/** @returns {CommandMessage|null} First child message, or null. */
 	get subCommandMessage() { return this.children[0] || null }
 
 	/**
-	 * Adds a child message (implements hierarchy resonance)
+	 * Append a child {@link CommandMessage}.
 	 *
-	 * @param {CommandMessage} msg - Message to add
+	 * @param {CommandMessage|Object} msg
 	 */
-	add(msg) {
-		this.#children.push(CommandMessage.from(msg))
-	}
+	add(msg) { this.#children.push(CommandMessage.from(msg)) }
 
 	/**
-	 * Creates instance from input data
-	 *
-	 * @param {any} input - Input data to create message from
-	 * @returns {CommandMessage}
-	 */
-	static from(input) {
-		if (input instanceof CommandMessage) return input
-		return new CommandMessage(input)
-	}
-
-	/**
-	 * Parses command line arguments
-	 *
-	 * @param {string | string[]} argv - Arguments to parse
-	 * @returns {CommandMessage}
-	 */
-	static parse(argv) {
-		if (typeof argv === "string") {
-			return CommandMessage.parse(argStringToArray(argv))
-		}
-
-		const msg = new CommandMessage({
-			name: "",
-			argv: [],
-			opts: {}
-		})
-
-		let i = 0
-		while (i < argv.length) {
-			const curr = argv[i]
-
-			if (curr.startsWith('--')) {
-				handleLongOption(msg, argv, i)
-				i = updateIndexAfterOption(argv, i)
-			}
-			else if (curr.startsWith('-')) {
-				handleShortOption(msg, argv, i)
-				i = updateIndexAfterOption(argv, i)
-			}
-			else {
-				if (msg.name === "" && curr) {
-					msg.name = curr
-				} else if (curr) {
-					msg.argv.push(curr)
-				}
-				i++
-			}
-		}
-
-		return msg
-	}
-
-	/**
-	 * Converts message to string (mirror of actual input)
+	 * Convert the message back to a command‑line string.
 	 *
 	 * @returns {string}
 	 */
 	toString() {
-		const optsStr = formatOptions(this.opts)
-		const argsStr = this.argv.map(arg =>
-			String(arg).includes(' ') ? `"${arg}"` : arg
-		).join(' ')
-
-		return `${this.name} ${argsStr} ${optsStr}`.trim()
+		const optsStr = Object.entries(this.opts)
+			.map(([k, v]) => (v === true ? `--${k}` : `--${k} ${String(v)}`))
+			.join(" ")
+		const argsStr = this.argv.join(" ")
+		return [this.name, argsStr, optsStr].filter(Boolean).join(" ")
 	}
-}
 
-/**
- * Converts argument string to array
- *
- * @param {string} str - String to convert
- * @returns {string[]} - Argument array
- */
-export function argStringToArray(str) {
-	const args = []
-	let current = ""
-	let inQuotes = false
-
-	for (let i = 0; i < str.length; i++) {
-		const char = str[i]
-
-		if (char === '"') {
-			inQuotes = !inQuotes
-			continue
+	/**
+	 * Parse raw CLI input into a {@link CommandMessage}.
+	 *
+	 * @param {string|string[]} argv - Input string or token array.
+	 * @param {Function} [BodyClass] - Optional class to instantiate the body.
+	 * @returns {CommandMessage}
+	 * @throws {CommandError} If no input is supplied.
+	 */
+	static parse(argv, BodyClass) {
+		if (typeof argv === "string") argv = str2argv(argv)
+		if (argv.length === 0) throw new CommandError("No input provided")
+		const result = { name: "", argv: [], opts: {} }
+		let i = 0
+		if (!argv[0].startsWith("-")) {
+			result.name = argv[0]
+			i = 1
 		}
-
-		if (char === ' ' && !inQuotes) {
-			if (current) {
-				args.push(current)
-				current = ""
+		while (i < argv.length) {
+			const cur = argv[i]
+			if (cur.startsWith("--")) {
+				const eq = cur.indexOf("=")
+				if (eq > -1) {
+					const k = cur.slice(2, eq)
+					const v = cur.slice(eq + 1)
+					result.opts[k] = v
+				} else {
+					const k = cur.slice(2)
+					if (i + 1 < argv.length && !argv[i + 1].startsWith("-")) {
+						result.opts[k] = argv[++i]
+					} else {
+						result.opts[k] = true
+					}
+				}
+			} else if (cur.startsWith("-") && cur.length > 1) {
+				const shorts = cur.slice(1)
+				if (shorts.length > 1) {
+					shorts.split("").forEach(s => (result.opts[s] = true))
+				} else {
+					const k = shorts
+					if (i + 1 < argv.length && !argv[i + 1].startsWith("-")) {
+						result.opts[k] = argv[++i]
+					} else {
+						result.opts[k] = true
+					}
+				}
+			} else {
+				/** @ts-ignore */
+				result.argv.push(cur)
 			}
-			continue
+			i++
 		}
-
-		current += char
+		const msg = new CommandMessage(result)
+		if (BodyClass) {
+			const body = new BodyClass(result.opts)
+			msg.body = body
+			/** @ts-ignore */
+			const errors = body.getErrors?.() || {}
+			if (Object.keys(errors).length) throw new CommandError("Validation failed", { errors })
+		}
+		return msg
 	}
 
-	if (current) args.push(current)
-	return args
-}
-
-/**
- * Handles long option parsing (--option=value or --option value)
- *
- * @param {CommandMessage} msg - Message to update
- * @param {string[]} argv - Arguments array
- * @param {number} index - Current index
- */
-export function handleLongOption(msg, argv, index) {
-	const curr = argv[index]
-	const eqIndex = curr.indexOf('=')
-
-	if (eqIndex > -1) {
-		const key = curr.slice(2, eqIndex)
-		const value = curr.slice(eqIndex + 1)
-		msg.opts[key] = value
-	} else {
-		const key = curr.slice(2)
-		if (index + 1 < argv.length && !argv[index + 1].startsWith('-')) {
-			msg.opts[key] = argv[index + 1]
-		} else {
-			msg.opts[key] = true
+	/**
+	 * Convert a raw input into a {@link CommandMessage} instance.
+	 *
+	 * @param {CommandMessage|Message|Object|string|Array<string>} input
+	 * @returns {CommandMessage}
+	 */
+	static from(input) {
+		if (input instanceof CommandMessage) return input
+		if (input instanceof Message) {
+			/** @ts-ignore */
+			return new CommandMessage({ body: input.body, name: input.name || "" })
 		}
+		return new CommandMessage(input)
 	}
-}
-
-/**
- * Handles short option parsing (-o value or -abc)
- *
- * @param {CommandMessage} msg - Message to update
- * @param {string[]} argv - Arguments array
- * @param {number} index - Current index
- */
-export function handleShortOption(msg, argv, index) {
-	const curr = argv[index].slice(1)
-
-	if (curr.length > 1) {
-		// Handle combined short options like -abc
-		for (const char of curr) {
-			msg.opts[char] = true
-		}
-	} else {
-		// Handle single short option like -t
-		const key = curr
-		if (index + 1 < argv.length && !argv[index + 1].startsWith('-')) {
-			msg.opts[key] = argv[index + 1]
-		} else {
-			msg.opts[key] = true
-		}
-	}
-}
-
-/**
- * Updates index after parsing an option
- *
- * @param {string[]} argv - Arguments array
- * @param {number} index - Current index
- * @returns {number} - Updated index
- */
-export function updateIndexAfterOption(argv, index) {
-	const curr = argv[index]
-	
-	// If current argument contains '=', we consumed it in place
-	if (curr.includes('=')) {
-		return index + 1
-	}
-	
-	// Check if the next argument is a value (not another option)
-	const nextIsValue = index + 1 < argv.length &&
-		!argv[index + 1].startsWith('-')
-
-	// If next argument is a value, consume both current and next
-	return nextIsValue ? index + 2 : index + 1
-}
-
-/**
- * Formats options object to string
- *
- * @param {Object} opts - Options to format
- * @returns {string} - Formatted options string
- */
-export function formatOptions(opts) {
-	return Object.entries(opts)
-		.map(([key, value]) => {
-			if (value === true) return `--${key}`
-			if (typeof value === "string" && value.includes(' ')) {
-				return `--${key}="${value}"`
-			}
-			return `--${key} ${value}`
-		})
-		.join(' ')
 }

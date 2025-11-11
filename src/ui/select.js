@@ -1,20 +1,25 @@
-import createInput from "./input.js"
-import { CancelError } from '@nan0web/ui/core'
+/**
+ * Select module – renders a numbered list of options and returns the chosen value.
+ *
+ * @module ui/select
+ */
+
+import { CancelError } from "@nan0web/ui/core"
+import createInput, { ask as baseAsk } from "./input.js"
 
 /**
- * Generic selection prompt for CLI.
- * Automatically creates its own input handler.
+ * Configuration object for {@link select}.
  *
- * @param {Object} config
- * @param {string} config.title - Title shown before the list (e.g. "Select currency:")
- * @param {string} config.prompt - Main prompt text (e.g. "Choose (1-3): ")
- * @param {string} [config.invalidPrompt] - Retry message when input is invalid
- * @param {Array<string> | Map<string, string> | Array<{ label: string, value: string }>} config.options - List of displayable options
- * @param {Object} config.console - Logger (console.info, console.error, etc.)
- * @param {Function} [config.ask] - Input handler
+ * @typedef {Object} SelectConfig
+ * @property {string} title – Title displayed above the options list.
+ * @property {string} prompt – Prompt displayed for the answer.
+ * @property {Array|Map} options – Collection of selectable items.
+ * @property {Object} console – Console‑like object with an `info` method.
+ * @property {string[]} [stops=[]] Words that trigger cancellation.
+ * @property {import("./input.js").InputFn} [ask] Custom ask function (defaults to {@link createInput}).
+ * @property {string} [invalidPrompt="Invalid choice, try again: "] Message shown on invalid input.
  *
- * @returns {Promise<{ index: number, value: string | null }>} Selected option
- * @throws {CancelError} if the user cancels
+ * @returns {Promise<{index:number,value:any}>} Resolves with the selected index and its value.
  */
 export async function select({
 	title,
@@ -22,36 +27,41 @@ export async function select({
 	invalidPrompt = "Invalid choice, try again: ",
 	options,
 	console,
-	ask = createInput(["0"]),
+	stops = [],
+	ask: initAsk,
 }) {
+	const ask = initAsk ?? createInput(stops)
+	// Normalise Map → Array of {label,value}
 	if (options instanceof Map) {
 		options = Array.from(options.entries()).map(([value, label]) => ({ label, value }))
 	}
 	if (!Array.isArray(options) || options.length === 0) {
 		throw new Error("Options array is required and must not be empty")
 	}
-
-	/** @type {Array<{ label: string, value: string }>} */
-	const list = options.map(el => "string" === typeof el ? ({ label: el, value: el }) : el)
+	const list = options.map(el =>
+		typeof el === "string" ? { label: el, value: el } : el,
+	)
 
 	console.info(title)
-	list.forEach(({ label }, i) => {
-		console.info(` ${i + 1}) ${label}`)
-	})
+	list.forEach(({ label }, i) => console.info(` ${i + 1}) ${label}`))
 
-	const input = await ask(prompt, (input) => {
-		const idx = Number(input.value) - 1
-		return idx < 0 || idx >= list.length
-	}, invalidPrompt)
+	let currentPrompt = prompt
 
-	if (input.cancelled) {
-		throw new CancelError()
-	}
+	while (true) {
+		const answer = await ask(currentPrompt)
 
-	const index = Number(input.value) - 1
-	return {
-		index,
-		value: list[index].value,
+		if (answer.cancelled) throw new CancelError()
+
+		const idx = Number(answer.value) - 1
+
+		if (isNaN(idx) || idx < 0 || idx >= list.length) {
+			if (invalidPrompt) {
+				currentPrompt = invalidPrompt
+				continue
+			}
+			throw new Error("Incorrect value provided")
+		}
+		return { index: idx, value: list[idx].value }
 	}
 }
 

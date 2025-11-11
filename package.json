@@ -13,7 +13,7 @@
 		"test:docs": "node --test --test-timeout=3333 src/README.md.js",
 		"test:release": "node --test \"releases/**/*.test.js\"",
 		"test:status": "nan0test status --hide-name --debug",
-		"playground": "node playground/main.js",
+		"play": "node play/main.js",
 		"precommit": "npm test",
 		"prepush": "npm test",
 		"prepare": "husky",

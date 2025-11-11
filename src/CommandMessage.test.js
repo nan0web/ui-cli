@@ -1,98 +1,80 @@
 import { describe, it } from 'node:test'
 import { strict as assert } from 'node:assert'
-import CommandMessage, {
-	argStringToArray,
-	handleLongOption,
-	handleShortOption,
-	updateIndexAfterOption,
-	formatOptions
-} from './CommandMessage.js'
+import CommandMessage from './CommandMessage.js'
+import CommandError from './CommandError.js'
 
 describe('CommandMessage', () => {
-	it('should parse string arguments correctly', () => {
-		const message = CommandMessage.parse('--flag --option value arg1 arg2')
-		assert.equal(message.name, 'arg1')
-		assert.equal(message.opts.flag, true)
-		assert.equal(message.opts.option, 'value')
-		assert.deepEqual(message.argv, ['arg2'])
+	it('should create with defaults', () => {
+		const msg = new CommandMessage()
+		assert.equal(msg.name, '')
+		assert.deepEqual(msg.argv, [])
+		assert.deepEqual(msg.opts, {})
+		assert.deepEqual(msg.children, [])
 	})
 
-	it('should parse array arguments correctly', () => {
-		const message = CommandMessage.parse(['--flag', '--option', 'value', 'arg1'])
-		assert.equal(message.opts.flag, true)
-		assert.equal(message.opts.option, 'value')
-		assert.deepEqual(message.argv, [])
-	})
-
-	it('should handle quoted arguments', () => {
-		const args = argStringToArray('"hello world" --test="quoted value"')
-		assert.deepEqual(args, ['hello world', '--test=quoted value'])
-	})
-
-	it('should convert to string correctly', () => {
-		const message = new CommandMessage({
+	it('should set properties from input', () => {
+		const msg = new CommandMessage({
 			name: 'test',
-			argv: ['arg1', 'arg with spaces'],
-			opts: { flag: true, option: 'value' }
+			argv: ['arg1'],
+			opts: { flag: true },
+			children: [new CommandMessage({ name: 'sub' })]
 		})
-
-		const str = message.toString()
-		assert.ok(str.includes('test'))
-		assert.ok(str.includes('arg1'))
-		assert.ok(str.includes('"arg with spaces"'))
-		assert.ok(str.includes('--flag'))
-		assert.ok(str.includes('--option value'))
-	})
-
-	it('should handle long options with equals', () => {
-		const msg = new CommandMessage()
-		handleLongOption(msg, ['--test=value'], 0)
-		assert.equal(msg.opts.test, 'value')
-	})
-
-	it('should handle long options with separate value', () => {
-		const msg = new CommandMessage()
-		handleLongOption(msg, ['--test', 'value'], 0)
-		assert.equal(msg.opts.test, 'value')
-	})
-
-	it('should handle boolean long options', () => {
-		const msg = new CommandMessage()
-		handleLongOption(msg, ['--flag'], 0)
+		assert.equal(msg.name, 'test')
+		assert.deepEqual(msg.argv, ['arg1'])
 		assert.equal(msg.opts.flag, true)
+		assert.equal(msg.children[0].name, 'sub')
 	})
 
-	it('should handle short options', () => {
+	it('should compute args correctly', () => {
+		const msg = new CommandMessage({ name: 'cmd', argv: ['arg'] })
+		assert.deepEqual(msg.args, ['cmd', 'arg'])
+	})
+
+	it('should get subCommand and subCommandMessage', () => {
+		const sub = new CommandMessage({ name: 'sub' })
+		const msg = new CommandMessage({ children: [sub] })
+		assert.equal(msg.subCommand, 'sub')
+		assert.equal(msg.subCommandMessage, sub)
+	})
+
+	it('should add child message', () => {
 		const msg = new CommandMessage()
-		handleShortOption(msg, ['-t', 'value'], 0)
-		assert.equal(msg.opts.t, 'value')
+		const child = new CommandMessage({ name: 'child' })
+		msg.add(child)
+		assert.deepEqual(msg.children, [child])
 	})
 
-	it('should handle combined short options', () => {
-		const msg = new CommandMessage()
-		handleShortOption(msg, ['-abc'], 0)
-		assert.equal(msg.opts.a, true)
-		assert.equal(msg.opts.b, true)
-		assert.equal(msg.opts.c, true)
+	it('should parse string input', () => {
+		const msg = CommandMessage.parse('test --flag --opt value arg')
+		assert.equal(msg.name, 'test')
+		assert.deepEqual(msg.argv, ['arg'])
+		assert.equal(msg.opts.flag, true)
+		assert.equal(msg.opts.opt, 'value')
 	})
 
-	it('should update index correctly for option with value', () => {
-		let index = updateIndexAfterOption(['--test', 'value'], 0)
-		assert.equal(index, 2)
-
-		index = updateIndexAfterOption(['--test=value'], 0)
-		assert.equal(index, 1)
-
-		index = updateIndexAfterOption(['--flag'], 0)
-		assert.equal(index, 1)
+	it('should parse array input', () => {
+		const msg = CommandMessage.parse(['test', '--flag', '--opt', 'value', 'arg'])
+		assert.equal(msg.name, 'test')
+		assert.deepEqual(msg.argv, ['arg'])
+		assert.equal(msg.opts.flag, true)
+		assert.equal(msg.opts.opt, 'value')
 	})
 
-	it('should format options correctly', () => {
-		const opts = { flag: true, option: 'value', quoted: 'hello world' }
-		const formatted = formatOptions(opts)
-		
-		assert.ok(formatted.includes('--flag'))
-		assert.ok(formatted.includes('--option value'))
-		assert.ok(formatted.includes('--quoted="hello world"'))
+	it('should throw on empty input', () => {
+		assert.throws(() => CommandMessage.parse([]), CommandError)
+		assert.throws(() => CommandMessage.parse(''), CommandError)
+	})
+
+	it('should toString reconstruct input', () => {
+		const msg = CommandMessage.parse(['test', '--flag', '--opt', 'value'])
+		assert.equal(msg.toString(), 'test --flag --opt value')
+	})
+
+	it('should from create from various inputs', () => {
+		const msg1 = CommandMessage.from({ name: 'fromObj' })
+		assert.equal(msg1.name, 'fromObj')
+
+		const msg2 = CommandMessage.from(new CommandMessage({ name: 'existing' }))
+		assert.equal(msg2.name, 'existing')
 	})
 })
