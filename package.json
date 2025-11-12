@@ -1,6 +1,6 @@
 {
 	"name": "@nan0web/ui-cli",
-	"version": "1.0.0",
+	"version": "1.0.1",
 	"description": "NaN•Web UI CLI. Command line interface for One application logic (algorithm) and many UI.",
 	"main": "src/index.js",
 	"types": "types/index.d.ts",
