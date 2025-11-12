@@ -76,9 +76,7 @@ const form = UIForm.from({
 	state: {},
 	validate: () => ({ isValid: true, errors: {} }),
 })
-
 const result = await adapter.requestForm(form, { silent: true })
-
 console.info(result.form.state) // ← { name: "John Doe", email: "John.Doe@example.com" }
 ```
 
@@ -95,7 +93,6 @@ const config = {
 		["uk", "Ukrainian"],
 	]),
 }
-
 const result = await adapter.requestSelect(config)
 console.info(result) // ← en
 ```
@@ -112,7 +109,6 @@ const input = new Input({ value: "test", stops: ["quit"] })
 console.info(String(input)) // ← test
 console.info(input.value) // ← test
 console.info(input.cancelled) // ← false
-
 input.value = "quit"
 console.info(input.cancelled) // ← true
 ```
@@ -123,7 +119,6 @@ Prompts the user with a question and returns a promise with the answer.
 How to ask a question with ask()?
 ```js
 import { ask } from "@nan0web/ui-cli"
-
 const result = await ask("What is your name?")
 console.info(result)
 ```
@@ -150,7 +145,6 @@ const config = {
 	options: ["Option A", "Option B", "Option C"],
 	console: console,
 }
-
 const result = await select(config)
 console.info(result.value)
 ```
@@ -161,7 +155,6 @@ Waits for a keypress to continue the process.
 How to pause and wait for keypress with next()?
 ```js
 import { next } from '@nan0web/ui-cli'
-
 const result = await next()
 console.info(typeof result === "string")
 ```

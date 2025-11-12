@@ -14,13 +14,13 @@ import { str2argv } from "./utils/parse.js"
  */
 export default class CommandParser {
 	/** @type {Array<Function>} */
-	rootClasses
+	Messages
 
 	/**
-	 * @param {Array<Function>} [rootClasses=[]] - Root message classes.
+	 * @param {Array<Function>} [Messages=[]] - Root message classes.
 	 */
-	constructor(rootClasses = []) {
-		this.rootClasses = Array.isArray(rootClasses) ? rootClasses : [rootClasses]
+	constructor(Messages = []) {
+		this.Messages = Array.isArray(Messages) ? Messages : [Messages]
 	}
 
 	/**
@@ -40,13 +40,14 @@ export default class CommandParser {
 			rootName = argv[0]
 			remaining = argv.slice(1)
 
-			let RootClass = this.rootClasses.find(
+			let RootClass = this.Messages.find(
 				cls => cls.name.toLowerCase() === rootName.toLowerCase(),
 			)
 			if (!RootClass) {
-				if (this.rootClasses.length === 1) RootClass = this.rootClasses[0]
+				if (this.Messages.length === 1) RootClass = this.Messages[0]
 				else throw new Error(`Unknown root command: ${rootName}`)
 			}
+			// @ts-ignore – `RootClass` may not be a concrete `Message` subclass from TS view
 			const rootMessage = new RootClass({})
 			if (rootName) {
 				if (!rootMessage.head) rootMessage.head = {}
@@ -55,8 +56,10 @@ export default class CommandParser {
 			return this.#processMessageTree(rootMessage, remaining)
 		}
 
-		if (this.rootClasses.length !== 1) throw new Error("Unable to infer root command from options")
-		const RootClass = this.rootClasses[0]
+		if (this.Messages.length !== 1) throw new Error("Unable to infer root command from options")
+		// @ts-ignore – see comment above
+		const RootClass = this.Messages[0]
+		// @ts-ignore
 		const rootMessage = new RootClass({})
 		if (!rootMessage.head) rootMessage.head = {}
 		return this.#processMessageTree(rootMessage, remaining)
@@ -73,13 +76,16 @@ export default class CommandParser {
 		let currentMessage = rootMessage
 		let remaining = remainingTokens
 
+		// @ts-ignore – `Children` is a static property on concrete message classes
 		while (currentMessage.constructor.Children && remaining.length) {
 			const subName = remaining[0]
+			// @ts-ignore
 			const SubClass = currentMessage.constructor.Children.find(
 				cls => cls.name.toLowerCase() === subName.toLowerCase(),
 			)
 			if (!SubClass) break
 
+			// @ts-ignore
 			const subMessage = new SubClass({})
 			subMessage.name = subName
 			currentMessage.body.subCommand = subMessage
@@ -90,6 +96,7 @@ export default class CommandParser {
 		if (remaining.length) {
 			const parsedBody = this.#parseLeafBody(
 				remaining,
+				// @ts-ignore – `Body` may be undefined on some classes
 				currentMessage.constructor.Body,
 			)
 			currentMessage.body = { ...currentMessage.body, ...parsedBody }
@@ -108,7 +115,7 @@ export default class CommandParser {
 	 * Parse leaf‑level arguments into the provided body class.
 	 *
 	 * @param {string[]} tokens - Remaining CLI tokens.
-	 * @param {Function} BodyClass - Class defining fields and validation.
+	 * @param {typeof Message} BodyClass - Class defining fields and validation.
 	 * @returns {Object} Instance of BodyClass populated with parsed values.
 	 */
 	#parseLeafBody(tokens, BodyClass) {

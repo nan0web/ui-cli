@@ -3,11 +3,11 @@
  */
 export default class CommandParser {
     /**
-     * @param {Array<Function>} [rootClasses=[]] - Root message classes.
+     * @param {Array<Function>} [Messages=[]] - Root message classes.
      */
-    constructor(rootClasses?: Function[] | undefined);
+    constructor(Messages?: Function[] | undefined);
     /** @type {Array<Function>} */
-    rootClasses: Array<Function>;
+    Messages: Array<Function>;
     /**
      * Parse the provided input into a message hierarchy.
      *

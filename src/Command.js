@@ -4,6 +4,7 @@
  * @module Command
  */
 
+import { Message } from "@nan0web/co"
 import CommandMessage from "./CommandMessage.js"
 import CommandError from "./CommandError.js"
 
@@ -11,6 +12,7 @@ import CommandError from "./CommandError.js"
  * Represents a command definition.
  *
  * @class
+ * @deprecated Use CLI instead
  */
 export default class Command {
 	/** @type {string} */ name = ""

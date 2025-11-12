@@ -41,11 +41,15 @@ export default class CLIInputAdapter extends BaseInputAdapter {
 			const answer = await this.ask(prompt)
 
 			if (["", "esc"].includes(answer)) {
+				// @ts-ignore – `UIForm` may not expose `id` in its TS definition
+				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 				return {
+					// @ts-ignore
 					body: { action: "form-cancel", escaped: true, form: {}, id: form.id },
 					form: {},
 					escaped: true,
 					action: "form-cancel",
+					// @ts-ignore
 					id: form.id,
 				}
 			}
@@ -84,11 +88,15 @@ export default class CLIInputAdapter extends BaseInputAdapter {
 			return await this.requestForm(form, options)
 		}
 
+		// @ts-ignore – `UIForm` may not expose `id`
+		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 		return {
+			// @ts-ignore
 			body: { action: "form-submit", escaped: false, form: finalForm, id: form.id },
 			form: finalForm,
 			escaped: false,
 			action: "form-submit",
+			// @ts-ignore
 			id: form.id,
 		}
 	}

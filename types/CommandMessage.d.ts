@@ -7,11 +7,11 @@ export default class CommandMessage extends Message {
      * Parse raw CLI input into a {@link CommandMessage}.
      *
      * @param {string|string[]} argv - Input string or token array.
-     * @param {Function} [BodyClass] - Optional class to instantiate the body.
+     * @param {typeof Object} [BodyClass] - Optional class to instantiate the body.
      * @returns {CommandMessage}
      * @throws {CommandError} If no input is supplied.
      */
-    static parse(argv: string | string[], BodyClass?: Function | undefined): CommandMessage;
+    static parse(argv: string | string[], BodyClass?: ObjectConstructor | undefined): CommandMessage;
     /**
      * Convert a raw input into a {@link CommandMessage} instance.
      *

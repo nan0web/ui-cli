@@ -19,28 +19,28 @@ export default class CLI {
 	/** @type {Logger} */
 	logger
 	/** @type {Array<Function>} */
-	rootClasses = []
+	Messages = []
 
 	/**
 	 * @param {Object} [input={}]
 	 * @param {string[]} [input.argv] - Command‑line arguments (defaults to `process.argv.slice(2)`).
 	 * @param {Object} [input.commands] - Map of command names to handlers.
 	 * @param {Logger} [input.logger] - Optional logger instance.
-	 * @param {Array<Function>} [input.rootClasses] - Message classes for root commands.
+	 * @param {Array<Function>} [input.Messages] - Message classes for root commands.
 	 */
 	constructor(input = {}) {
 		const {
 			argv = process.argv.slice(2),
 			commands = {},
 			logger,
-			rootClasses = [],
+			Messages = [],
 		} = input
 		this.argv = argv.map(String).filter(Boolean)
 		this.logger = logger ?? new Logger({ level: Logger.detectLevel(this.argv) })
-		this.rootClasses = rootClasses
+		this.Messages = Messages
 		this.#commands = new Map(Object.entries(commands))
 		this.#commands.set("help", () => this.#help())
-		if (rootClasses.length > 0) this.#registerMessageCommands(rootClasses)
+		if (Messages.length > 0) this.#registerMessageCommands(Messages)
 	}
 
 	/** @returns {Map<string,Function>} The command map. */
@@ -51,10 +51,10 @@ export default class CLI {
 	/**
 	 * Register message‑based commands derived from classes.
 	 *
-	 * @param {Array<typeof Message>} classes - Message classes exposing a `run` generator.
+	 * @param {any} cmdClasses - Array of Message classes exposing a `run` generator.
 	 */
-	#registerMessageCommands(classes) {
-		classes.forEach(Class => {
+	#registerMessageCommands(cmdClasses) {
+		cmdClasses.forEach(Class => {
 			const cmd = Class.name.toLowerCase()
 			this.#commands.set(cmd, async function* (msg) {
 				const validated = new Class(msg.body)
@@ -72,6 +72,7 @@ export default class CLI {
 	 * @yields {OutputMessage|InputMessage}
 	 */
 	async * run(msg) {
+		// @ts-ignore – `Message` may carry a `value` wrapper in some contexts
 		const command = msg?.value?.body?.command ?? this.#parseCommandName()
 		const fn = this.#commands.get(command)
 
@@ -81,8 +82,8 @@ export default class CLI {
 		}
 
 		let fullMsg
-		if (this.rootClasses.length > 0) {
-			const parser = new CommandParser(this.rootClasses)
+		if (this.Messages.length > 0) {
+			const parser = new CommandParser(this.Messages)
 			fullMsg = parser.parse(this.argv)
 			yield new InputMessage({ value: { body: { command } } })
 		} else {
@@ -113,11 +114,12 @@ export default class CLI {
 	async * #help() {
 		const lines = ["Available commands:"]
 		for (const [name] of this.#commands) lines.push(`  ${name}`)
-		if (this.rootClasses.length > 0) {
+		if (this.Messages.length > 0) {
 			lines.push("\nMessage‑based commands:")
-			this.rootClasses.forEach(cls => {
-				const help = new CommandHelp(cls).generate().split("\n")[0]
-				lines.push(`  ${cls.name.toLowerCase()}: ${help}`)
+			this.Messages.forEach(Class => {
+				// @ts-ignore – `CommandHelp` expects a class extending `Message`; casting to any silences TS
+				const help = new CommandHelp(Class).generate().split("\n")[0]
+				lines.push(`  ${Class.name.toLowerCase()}: ${help}`)
 			})
 		}
 		/** @ts-ignore – output only needs `content` */

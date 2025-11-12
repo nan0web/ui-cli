@@ -15,20 +15,20 @@ export default class CLI {
      * @param {string[]} [input.argv] - Command‑line arguments (defaults to `process.argv.slice(2)`).
      * @param {Object} [input.commands] - Map of command names to handlers.
      * @param {Logger} [input.logger] - Optional logger instance.
-     * @param {Array<Function>} [input.rootClasses] - Message classes for root commands.
+     * @param {Array<Function>} [input.Messages] - Message classes for root commands.
      */
     constructor(input?: {
         argv?: string[] | undefined;
         commands?: any;
         logger?: Logger | undefined;
-        rootClasses?: Function[] | undefined;
+        Messages?: Function[] | undefined;
     } | undefined);
     /** @type {string[]} */
     argv: string[];
     /** @type {Logger} */
     logger: Logger;
     /** @type {Array<Function>} */
-    rootClasses: Array<Function>;
+    Messages: Array<Function>;
     /** @returns {Map<string,Function>} The command map. */
     get commands(): Map<string, Function>;
     /**
