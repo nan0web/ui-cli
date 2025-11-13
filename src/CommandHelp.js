@@ -2,10 +2,14 @@ import { Message } from "@nan0web/co"
 import Logger from "@nan0web/log"
 
 /**
- * @typedef {Object} CommandHelpField
- * @property {string} [help]        - Human readable description.
- * @property {string} [placeholder] - Placeholder for usage (e.g. "<user>").
- * @property {string} [alias]       - Short alias (single‑letter).
+ * @typedef {Object} CommandHelpField MessageBodySchema
+ * @property {string}  [help]         - Human readable description.
+ * @property {string}  [placeholder]  - Placeholder for usage (e.g. "<user>").
+ * @property {string}  [alias]        - Short alias (single‑letter).
+ * @property {any}     [defaultValue] - Default value.
+ * @property {any}     [type]         - Data type.
+ * @property {boolean} [required]     - Is field required or not.
+ * @property {RegExp}  [pattern]      - Regular expression pattern for validation.
  */
 
 /**
@@ -96,10 +100,12 @@ export default class CommandHelp {
 		const flagParts = []
 
 		bodyProps.forEach(prop => {
+			/** @type {CommandHelpField} */
 			const schema = this.BodyClass[prop] || {}
 			const alias = schema.alias ? `-${schema.alias}, ` : ""
-			if (schema.placeholder) {
-				placeholderParts.push(`[${alias}--${prop}=${schema.placeholder}]`)
+			const placeholder = schema.placeholder || schema.defaultValue
+			if (placeholder) {
+				placeholderParts.push(`[${alias}--${prop}=${placeholder}]`)
 			} else {
 				flagParts.push(`[${alias}--${prop}]`)
 			}
@@ -140,6 +146,7 @@ export default class CommandHelp {
 
 		lines.push("Options:")
 		bodyProps.forEach(prop => {
+			/** @type {CommandHelpField} */
 			const schema = this.BodyClass[prop] || {}
 			if (typeof schema !== "object") return
 
@@ -147,14 +154,34 @@ export default class CommandHelp {
 				? `--${prop}, -${schema.alias}`
 				: `--${prop}`
 
-			const type = schema.placeholder !== undefined ? "string" : "boolean"
-			const required = schema.default === undefined ? " *" : ""
+			const type = undefined !== schema.type ? String(schema.type)
+				: undefined !== schema.defaultValue ? typeof schema.defaultValue
+				: undefined !== schema.placeholder ? typeof schema.placeholder
+				: "any"
+			const required = schema.required || schema.pattern || schema.defaultValue === undefined ? " *" : "  "
 			const description = schema.help || "No description"
 
 			// Pad flags to align the type column with the expectations.
-			lines.push(`  ${flags.padEnd(30)} ${type.padEnd(8)}${required}  ${description}`)
+			lines.push(`  ${flags.padEnd(30)} ${type.padEnd(9)}${required} ${description}`)
 		})
 		lines.push("")
+	}
+
+	/**
+	 * @param {object} body
+	 * @returns {Map<string, any>} A map of errors, empty map if no errors.
+	 */
+	validate(body) {
+		const Class = /** @type {typeof this.BodyClass} */ (body.constructor)
+		const result = new Map()
+		for (const [name, schema] of Object.entries(Class)) {
+			const fn = schema?.validate
+			if ("function" !== typeof fn) continue
+			const ok = fn.apply(body, [body[name]])
+			if (true === ok) continue
+			result.set(name, ok)
+		}
+		return result
 	}
 
 	/**

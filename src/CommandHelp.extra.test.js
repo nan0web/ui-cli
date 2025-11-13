@@ -41,21 +41,21 @@ describe('CommandHelp – extended scenarios', () => {
 			'git',
 			'Git command',
 			{
-				init:    { alias: 'i', help: 'Create an empty repository' },
-				verbose: { alias: 'v', help: 'Show detailed output' },
+				init:    { alias: 'i', help: 'Create an empty repository', defaultValue: false },
+				verbose: { alias: 'v', help: 'Show detailed output', defaultValue: false },
 			}
 		)
 
 		const help = new CommandHelp(TestMsg)
 		const generated = help.generate()
 		assert.equal(generated, [
-			`git • Git command`,
+			`\x1B[35mgit\x1B[0m • Git command`,
 			'',
 			'Usage: git [-i, --init] , [-v, --verbose]',
 			'',
 			'Options:',
-			'  --init, -i                     boolean  *  Create an empty repository',
-			'  --verbose, -v                  boolean  *  Show detailed output',
+			'  --init, -i                     boolean     Create an empty repository',
+			'  --verbose, -v                  boolean     Show detailed output',
 			'',
 		].join('\n'))
 	})
@@ -67,19 +67,19 @@ describe('CommandHelp – extended scenarios', () => {
 		const ParentMsg = createMockMessage(
 			'project',
 			'Project command',
-			{ force: { help: 'Force operation' } },
+			{ force: { help: 'Force operation', defaultValue: false } },
 			[ChildA, ChildB]
 		)
 
 		const help = new CommandHelp(ParentMsg)
 		const generated = help.generate()
 		assert.equal(generated, [
-			`project • Project command`,
+			`\x1B[35mproject\x1B[0m • Project command`,
 			'',
 			'Usage: project [--force]',
 			'',
 			'Options:',
-			'  --force                        boolean  *  Force operation',
+			'  --force                        boolean     Force operation',
 			'',
 			'Subcommands:',
 			'  add                   Add sub‑command',
@@ -92,6 +92,6 @@ describe('CommandHelp – extended scenarios', () => {
 		const Msg = createMockMessage('list', 'List commands', {})
 		const help = new CommandHelp(Msg)
 		const generated = help.generate()
-		assert.ok(generated.startsWith('list • List commands'), 'Help text should not add extra “s”')
+		assert.ok(generated.startsWith('\x1b[35mlist\x1b[0m • List commands'), 'Help text should not add extra “s”')
 	})
 })

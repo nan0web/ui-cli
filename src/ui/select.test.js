@@ -1,7 +1,7 @@
 import { describe, it } from "node:test"
 import assert from "node:assert/strict"
 import { select } from "./select.js"
-import { CancelError } from "@nan0web/ui/core"
+import { CancelError } from "@nan0web/ui"
 
 describe("Select utility", () => {
 	const mockConsole = { info: () => {} }

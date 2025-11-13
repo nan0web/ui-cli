@@ -17,6 +17,8 @@ export {
 	Input,
 } from "./ui/index.js"
 
+/** @typedef {import("./CommandHelp.js").CommandHelpField} CommandHelpField */
+
 export {
 	CLI,
 	CLIInputAdapter,

@@ -2,6 +2,7 @@
  * Represents a command definition.
  *
  * @class
+ * @deprecated Use CLI instead
  */
 export default class Command {
     /**
