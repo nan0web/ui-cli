@@ -404,7 +404,7 @@ function testRender() {
 		assert.ok(String(pkg.scripts?.playground))
 		const response = await runSpawn("git", ["remote", "get-url", "origin"], { timeout: 2_000 })
 		if (response.code === 0) {
-			assert.ok(response.text.trim().endsWith(":nan0web/ui-cli.git"))
+			assert.ok(response.text.trim().endsWith("nan0web/ui-cli.git"))
 		} else {
 			// git command may fail if not in a repo or no remote, skip assertion
 			console.warn("Git command skipped due to non-zero exit code or timeout.")
