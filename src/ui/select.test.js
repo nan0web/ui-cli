@@ -2,9 +2,11 @@ import { describe, it } from "node:test"
 import assert from "node:assert/strict"
 import { select } from "./select.js"
 import { CancelError } from "@nan0web/ui"
+import { createPredefinedInput } from "./input.js"
+import { NoConsole } from "@nan0web/log"
 
 describe("Select utility", () => {
-	const mockConsole = { info: () => {} }
+	const mockConsole = { info: () => { } }
 
 	it("throws on empty options", async () => {
 		await assert.rejects(
@@ -15,17 +17,22 @@ describe("Select utility", () => {
 
 	it("cancels via CancelError", async () => {
 		const mockAsk = () => Promise.reject(new CancelError())
-		await assert.rejects(() => select({
-			title: "Lang",
-			prompt: "Choose:",
-			options: ["en", "uk"],
-			console: mockConsole,
-			ask: mockAsk,
-		}), CancelError)
+		await assert.rejects(
+			() =>
+				select({
+					title: "Lang",
+					prompt: "Choose:",
+					options: ["en", "uk"],
+					console: mockConsole,
+					ask: mockAsk,
+				}),
+			CancelError,
+		)
 	})
 
 	it("handles Map options", async () => {
-		const mockAsk = () => ({ value: "1", cancelled: false })
+		// mockAsk returns a resolved object matching the expected shape
+		const mockAsk = () => Promise.resolve({ value: "1", cancelled: false })
 		const result = await select({
 			title: "Lang",
 			prompt: "Choose:",
@@ -37,19 +44,22 @@ describe("Select utility", () => {
 	})
 
 	it("loops on invalid input", async () => {
-		let call = 0
-		const mockAsk = () => {
-			call++
-			return call === 1 ? { value: "99", cancelled: false } : { value: "1", cancelled: false }
-		}
-		await select({
+		const console = new NoConsole()
+		const result = await select({
 			title: "Lang",
-			prompt: "Choose:",
+			prompt: "Choose: ",
 			options: ["en", "uk"],
-			console: mockConsole,
-			ask: mockAsk,
-			invalidPrompt: "Invalid, try again:",
+			console,
+			ask: createPredefinedInput(["99", "1"], console, ["0"]),
+			invalidPrompt: "Invalid, try again: ",
 		})
-		assert.equal(call, 2)
+		assert.equal(result.value, "en")
+		assert.deepStrictEqual(console.output("info").map(a => a[1]), [
+			"Lang",
+			" 1) en",
+			" 2) uk",
+			"Choose: 99\n",
+			"Invalid, try again: 1\n"
+		])
 	})
 })

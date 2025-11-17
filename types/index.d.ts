@@ -1,6 +1,7 @@
 export { str2argv } from "./utils/parse.js";
 export const renderers: Map<string, (data: any) => string>;
 export default CLIInputAdapter;
+export type CommandHelpField = import("./CommandHelp.js").CommandHelpField;
 import CLI from "./CLI.js";
 import CLIInputAdapter from "./InputAdapter.js";
 import { CancelError } from "@nan0web/ui/core";

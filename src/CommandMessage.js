@@ -10,6 +10,7 @@ import CommandError from "./CommandError.js"
 
 /**
  * @class
+ * @deprecated use Message or CLiMessage instead
  * @extends Message
  */
 export default class CommandMessage extends Message {

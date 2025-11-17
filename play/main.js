@@ -1,151 +1,119 @@
 #!/usr/bin/env node
 
-import Logger from '@nan0web/log'
-import { CLIInputAdapter } from '../src/index.js'
-import { createUserForm } from './forms/userForm.js'
-import { createAgeForm } from './forms/ageForm.js'
-import { createAddressForm } from './forms/addressForm.js'
-import { createProfileForm } from './forms/profileForm.js'
-import createT, { localesMap } from "./vocabs/index.js"
-import CLIMessage from '../src/CLIMessage.js'
+import process from "node:process"
+import Logger from "@nan0web/log"
+import { runBasicDemo } from "./basic-demo.js"
+import SelectDemo, { SelectBody, runSelectDemo } from "./select-demo.js"
+import { runUiCliDemo } from "./ui-cli-demo.js"
+import { runFormDemo } from "./form-demo.js"
+import CLIInputAdapter from "../src/InputAdapter.js"
 
-console = new Logger()
+/**
+ * UI‑CLI playground – runs a series of demo scripts.
+ *
+ * Use env PLAY_DEMO_SEQUENCE to automate choices, e.g.
+ * PLAY_DEMO_SEQUENCE=1,4 node play/main.js
+ *
+ * The same {@link CLIInputAdapter} instance is used for all prompts;
+ * it consumes predefined answers in order.
+ */
+const console = new Logger({ level: "info" })
+console.clear()
+console.info(Logger.style(Logger.LOGO, { color: Logger.MAGENTA }))
 
-const adapter = new CLIInputAdapter()
+const commands = [
+	// BasicDemo,
+	SelectDemo,
+	// CLiDemo,
+	// ExitDemo,
+]
 
-console.info(Logger.style(Logger.LOGO, { color: "magenta" }))
-console.warn('=== @nan0web/ui CLI Playground ===\n')
+// Shared adapter – reads PLAY_DEMO_SEQUENCE internally.
+const inputAdapter = new CLIInputAdapter()
 
-// Language selection
-const langResult = await adapter.requestSelect({
-	title: "Language selection",
-	prompt: "Choose language (1-2): ",
-	options: localesMap,
-	elementId: "language-select"
-})
+/**
+ * Prompt user to choose a demo.
+ *
+ * @returns {Promise<string>} Selected demo value.
+ * @throws {Error} If the user cancels the selection (error message contains "cancel").
+ */
+async function chooseDemo() {
+	const demos = [
+		{ name: "Basic Logging Demo",     value: "basic" },
+		{ name: "Select Prompt Demo",     value: "select" },
+		{ name: "Simple UI‑CLI Demo",     value: "ui-demo" },
+		{ name: "Form Input Demo",        value: "form" },  // New form demo
+		{ name: "← Exit",                 value: "exit" },
+	]
 
-if (langResult.action === 'select-cancel') {
-	console.warn('Language selection cancelled')
-	process.exit(0)
-}
+	// Pass the real logger as `console` so the menu is printed.
+	const choice = await inputAdapter.requestSelect({
+		title: "Select UI‑CLI demo to run:",
+		prompt: "[demo]: ",
+		options: demos.map(d => d.name),
+		console,               // <-- ensure the menu is displayed
+	})
 
-const selectedLang = langResult.value.body
-const t = createT(selectedLang)
+	// Convert the selected name to its internal value or throw a cancel error.
+	const found = demos.find(d => d.name === choice)
 
-console.success(`${t('Language selection')}: ${t(selectedLang)}`)
-console.info()
-
-// User registration form
-const userForm = createUserForm(t)
-const userResult = await adapter.requestForm(userForm, { silent: false })
-
-if (userResult.action === 'form-submit') {
-	console.success(t('Welcome to our platform!'))
-	console.info('User data:', userResult.data)
-	console.info()
-} else {
-	console.warn('User registration cancelled')
-}
-
-// Age confirmation form
-const ageForm = createAgeForm(t)
-const ageResult = await adapter.requestForm(ageForm, { silent: false })
-
-if (ageResult.action === 'form-submit') {
-	console.success(`Confirmed age: ${ageResult.data.age}`)
-} else {
-	console.warn('Age confirmation cancelled')
-}
-
-// Address information form
-const addressForm = createAddressForm(t)
-const addressResult = await adapter.requestForm(addressForm, { silent: false })
-
-if (addressResult.action === 'form-submit') {
-	console.success('Address information collected')
-	console.info('Address data:', addressResult.data)
-	console.info()
-} else {
-	console.warn('Address form cancelled')
-}
-
-// Profile update form
-const profileForm = createProfileForm(t)
-const profileResult = await adapter.requestForm(profileForm, { silent: false })
-
-if (profileResult.action === 'form-submit') {
-	console.success('Profile updated')
-	console.info('Profile data:', profileResult.data)
-	console.info()
-} else {
-	console.warn('Profile update cancelled')
-}
-
-// CLIMessage example usage
-console.info('\n=== CLIMessage Example ===')
-const cliMessageSchemas = [{
-	name: 'config',
-	help: 'Configuration commands',
-	Children: [{
-		name: 'set',
-		help: 'Set configuration value',
-		Schema: class {
-			static key = ""
-			static keyHelp = "Configuration key to set"
-
-			static value = ""
-			static valueHelp = "Value to set"
-		}
-	}, {
-		name: 'get',
-		help: 'Get configuration value',
-		Schema: class {
-			static key = ""
-			static keyHelp = "Configuration key to get"
-		}
-	}]
-}]
-
-const cliMessage = new CLIMessage(cliMessageSchemas)
-const parsedMessage = cliMessage.parse(['config', 'set', '--key', 'language', '--value', 'en'])
-console.info('Parsed CLI message:', parsedMessage)
-
-// Command example usage
-console.info('\n=== Command Example ===')
-import Command from '../src/Command.js'
-
-const configSetCommand = new Command({
-	name: 'set',
-	help: 'Set configuration value',
-	options: {
-		key: [String, '', 'Configuration key to set'],
-		value: [String, '', 'Value to set']
-	},
-	run: async function* (message) {
-		yield `Setting ${message.opts.key} to ${message.opts.value}`
+	if (!found) {
+		// Throw an error that the outer catch recognises as a cancellation.
+		throw new Error("cancel")
 	}
-})
 
-const commandMessage = configSetCommand.parse(['--key', 'theme', '--value', 'dark'])
-console.info('Command message:', commandMessage)
-console.info('Help text:\n', configSetCommand.generateHelp())
-
-for await (const result of configSetCommand.execute(commandMessage)) {
-	console.info('Command execution result:', result)
+	return found.value
 }
 
-// CommandMessage example usage
-console.info('\n=== CommandMessage Example ===')
-import CommandMessage from '../src/CommandMessage.js'
+/**
+ * Visual separation after each demo.
+ */
+async function showMenu() {
+	console.info("\n" + "=".repeat(50))
+	console.info("Demo completed. Returning to menu...")
+	console.info("=".repeat(50) + "\n")
+}
 
-const simpleMessage = CommandMessage.parse(['user', 'create', '--name', 'John', '--email', 'john@example.com'])
-console.info('Simple command message:', simpleMessage.toString())
-console.info('Arguments:', simpleMessage.argv)
-console.info('Options:', simpleMessage.opts)
+/**
+ * Main loop.
+ */
+async function main() {
+	while (true) {
+		try {
+			const demo = await chooseDemo()
 
-const complexMessage = new CommandMessage({
-	name: 'app',
-	argv: ['start', '--port', '3000'],
-	opts: { debug: true, config: '/path/to/config' }
+			switch (demo) {
+				case "basic":
+					await runBasicDemo(console)
+					break
+				case "select":
+					await runSelectDemo(console, inputAdapter)
+					break
+				case "ui-demo":
+					await runUiCliDemo(console)
+					break
+				case "form":
+					await runFormDemo(console, inputAdapter)  // New form demo
+					break
+				case "exit":
+					console.success("Thanks for exploring UI‑CLI demos! 🚀")
+					process.exit(0)
+			}
+			await showMenu()
+		} catch (error) {
+			if (error.message?.includes("cancel")) {
+				// Use `info` (stdout) without a leading newline to match test expectations.
+				console.info("Demo cancelled. Returning to menu...")
+				await showMenu()
+				continue
+			}
+			console.error(error)
+			process.exit(1)
+		}
+	}
+}
+
+main().catch(err => {
+	console.error(err)
+	process.exit(1)
 })
-console.info('Complex command message:', complexMessage.toString())

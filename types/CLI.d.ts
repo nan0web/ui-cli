@@ -22,7 +22,7 @@ export default class CLI {
         commands?: any;
         logger?: Logger | undefined;
         Messages?: Function[] | undefined;
-    } | undefined);
+    });
     /** @type {string[]} */
     argv: string[];
     /** @type {Logger} */
@@ -37,7 +37,7 @@ export default class CLI {
      * @param {Message} [msg] - Optional pre‑built message.
      * @yields {OutputMessage|InputMessage}
      */
-    run(msg?: Message | undefined): AsyncGenerator<any, void, unknown>;
+    run(msg?: Message): AsyncGenerator<any, void, unknown>;
     #private;
 }
 import Logger from "@nan0web/log";

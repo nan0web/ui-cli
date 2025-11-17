@@ -1,24 +1,59 @@
+/** @typedef {import("./select.js").ConsoleLike} ConsoleLike */
+/** @typedef {(input: Input) => Promise<boolean>} LoopFn */
+/** @typedef {(input: Input) => string} NextQuestionFn */
 /**
- * Prompt a question and return the trimmed answer.
+ * Input function.
+ * ---
+ * Must be used only as a type — typedef does not work with full arguments description for functions.
+ * ---
+ * @param {string} question - Prompt displayed to the user.
+ * @param {boolean | LoopFn} [loop=false] - Loop‑control flag, validator or boolean that forces a single answer.
+ * @param {string | NextQuestionFn} [nextQuestion] - When `false` the prompt ends after one answer.
+ *                                            When a `function` is supplied it receives the current {@link Input}
+ *                                            and must return a new question string for the next iteration.
  *
- * @param {string} question - Text displayed as a prompt.
- * @returns {Promise<string>} User answer without surrounding whitespace.
+ * @returns {Promise<Input>} Resolves with an {@link Input} instance that contains the final answer,
+ *                           the raw value and cancellation state.
+ *
+ * @throws {Error} May propagate errors from the underlying readline interface.
  */
-export function ask(question: string): Promise<string>;
+export function InputFn(question: string, loop?: boolean | LoopFn, nextQuestion?: string | NextQuestionFn): Promise<Input>;
+/**
+ * Low‑level prompt that returns a trimmed string.
+ *
+ * @param {Object} input
+ * @param {string} input.question - Text displayed as a prompt.
+ * @param {string} [input.predef] - Optional predefined answer (useful for testing).
+ * @param {ConsoleLike} [input.console] - Optional console to show predefined value
+ * @param {import("node:readline").Interface} [input.rl] - Readline interface instnace
+ * @returns {Promise<string>} The answer without surrounding whitespace.
+ *
+ * When `predef` is supplied the function mimics the usual readline output
+ * (`question + answer + newline`) and returns the trimmed value.
+ */
+export function _askRaw(input: {
+    question: string;
+    predef?: string | undefined;
+    console?: import("./select.js").ConsoleLike | undefined;
+    rl?: import("readline").Interface | undefined;
+}): Promise<string>;
 /**
  * Factory that creates a reusable async input handler.
  *
  * @param {string[]} [stops=[]] Words that trigger cancellation.
+ * @param {string|undefined} [predef] Optional predefined answer for testing.
+ * @param {ConsoleLike} [console] Optional console instance.
  * @returns {InputFn} Async function that resolves to an {@link Input}.
  */
-export function createInput(stops?: string[] | undefined): InputFn;
+export function createInput(stops?: string[], predef?: string | undefined, console?: ConsoleLike): typeof InputFn;
 /**
- * @typedef {Function} InputFn
- * @param {string} question - Prompt displayed to the user.
- * @param {Function|boolean} [loop=false] - Loop control or validator.
- * @param {Function|false} [nextQuestion=false] - Function to compute the next prompt.
- * @returns {Promise<Input>} Resolves with an {@link Input} instance containing the answer.
+ * @param {string[]} predefined
+ * @param {ConsoleLike} console
+ * @param {string[]} [stops=[]]
+ * @returns {import("./select.js").InputFn}
+ * @throws {CancelError}
  */
+export function createPredefinedInput(predefined: string[], console: ConsoleLike, stops?: string[]): import("./select.js").InputFn;
 /**
  * Represents a line of user input.
  *
@@ -40,7 +75,7 @@ export class Input {
         value?: string | undefined;
         cancelled?: boolean | undefined;
         stops?: string | string[] | undefined;
-    } | undefined);
+    });
     /** @type {string} */
     value: string;
     /** @type {string[]} */
@@ -55,5 +90,16 @@ export class Input {
     toString(): string;
     #private;
 }
+/**
+ * High‑level input helper `ask`.
+ *
+ * This constant inherits the full {@link InputFn} signature **and** the
+ * detailed JSDoc description for each argument, as defined in {@link InputFn}.
+ *
+ * @type {InputFn}
+ */
+export const ask: typeof InputFn;
 export default createInput;
-export type InputFn = Function;
+export type ConsoleLike = import("./select.js").ConsoleLike;
+export type LoopFn = (input: Input) => Promise<boolean>;
+export type NextQuestionFn = (input: Input) => string;

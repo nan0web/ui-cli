@@ -172,16 +172,8 @@ export default class CommandHelp {
 	 * @returns {Map<string, any>} A map of errors, empty map if no errors.
 	 */
 	validate(body) {
-		const Class = /** @type {typeof this.BodyClass} */ (body.constructor)
-		const result = new Map()
-		for (const [name, schema] of Object.entries(Class)) {
-			const fn = schema?.validate
-			if ("function" !== typeof fn) continue
-			const ok = fn.apply(body, [body[name]])
-			if (true === ok) continue
-			result.set(name, ok)
-		}
-		return result
+		const msg = new this.MessageClass({ body })
+		return msg.validate()
 	}
 
 	/**
