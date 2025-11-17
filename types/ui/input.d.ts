@@ -1,3 +1,4 @@
+/// <reference types="node" resolution-mode="require"/>
 /** @typedef {import("./select.js").ConsoleLike} ConsoleLike */
 /** @typedef {(input: Input) => Promise<boolean>} LoopFn */
 /** @typedef {(input: Input) => string} NextQuestionFn */
@@ -17,7 +18,7 @@
  *
  * @throws {Error} May propagate errors from the underlying readline interface.
  */
-export function InputFn(question: string, loop?: boolean | LoopFn, nextQuestion?: string | NextQuestionFn): Promise<Input>;
+export function InputFn(question: string, loop?: boolean | LoopFn | undefined, nextQuestion?: string | NextQuestionFn | undefined): Promise<Input>;
 /**
  * Low‑level prompt that returns a trimmed string.
  *
@@ -45,7 +46,7 @@ export function _askRaw(input: {
  * @param {ConsoleLike} [console] Optional console instance.
  * @returns {InputFn} Async function that resolves to an {@link Input}.
  */
-export function createInput(stops?: string[], predef?: string | undefined, console?: ConsoleLike): typeof InputFn;
+export function createInput(stops?: string[] | undefined, predef?: string | undefined, console?: import("./select.js").ConsoleLike | undefined): typeof InputFn;
 /**
  * @param {string[]} predefined
  * @param {ConsoleLike} console
@@ -53,7 +54,7 @@ export function createInput(stops?: string[], predef?: string | undefined, conso
  * @returns {import("./select.js").InputFn}
  * @throws {CancelError}
  */
-export function createPredefinedInput(predefined: string[], console: ConsoleLike, stops?: string[]): import("./select.js").InputFn;
+export function createPredefinedInput(predefined: string[], console: ConsoleLike, stops?: string[] | undefined): import("./select.js").InputFn;
 /**
  * Represents a line of user input.
  *
@@ -75,7 +76,7 @@ export class Input {
         value?: string | undefined;
         cancelled?: boolean | undefined;
         stops?: string | string[] | undefined;
-    });
+    } | undefined);
     /** @type {string} */
     value: string;
     /** @type {string[]} */

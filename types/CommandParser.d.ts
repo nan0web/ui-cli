@@ -5,7 +5,7 @@ export default class CommandParser {
     /**
      * @param {Array<Function>} [Messages=[]] - Root message classes.
      */
-    constructor(Messages?: Array<Function>);
+    constructor(Messages?: Function[] | undefined);
     /** @type {Array<Function>} */
     Messages: Array<Function>;
     /**
@@ -15,7 +15,7 @@ export default class CommandParser {
      * @returns {Message}
      * @throws {Error} If no command is supplied or unknown root command.
      */
-    parse(input?: string | string[]): Message;
+    parse(input?: string | string[] | undefined): Message;
     /**
      * Generate help text for a given message class.
      *

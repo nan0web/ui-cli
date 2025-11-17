@@ -32,7 +32,7 @@ export function select({ title, prompt, invalidPrompt, options, console, stops, 
     invalidPrompt?: string | undefined;
     options: any;
     console: any;
-    stops?: never[] | undefined;
+    stops?: any[] | undefined;
     ask: any;
 }): Promise<{
     index: number;
@@ -49,7 +49,7 @@ export type ConsoleLike = {
     error: (...args: any[]) => void;
 };
 /**
- * Configuration object for {@link select}.
+ * Configuration object for {@link select }.
  */
 export type SelectConfig = {
     /**
@@ -73,7 +73,7 @@ export type SelectConfig = {
      */
     stops?: string[] | undefined;
     /**
-     * Custom ask function (defaults to {@link createInput}).
+     * Custom ask function (defaults to {@link createInput }).
      */
     ask?: typeof import("./input.js").InputFn | undefined;
     /**

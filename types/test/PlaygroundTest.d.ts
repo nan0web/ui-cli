@@ -23,8 +23,8 @@ export default class PlaygroundTest {
      * @param {{ includeDebugger?: boolean }} [config={}] Configuration options.
      */
     constructor(env: NodeJS.ProcessEnv, config?: {
-        includeDebugger?: boolean;
-    });
+        includeDebugger?: boolean | undefined;
+    } | undefined);
     env: NodeJS.ProcessEnv;
     /** @type {boolean} Include debugger lines in output (default: false). */
     includeDebugger: boolean;
@@ -53,7 +53,7 @@ export default class PlaygroundTest {
      *
      * @param {string[]} [args=["play/main.js"]] Arguments passed to the node process.
      */
-    run(args?: string[]): Promise<{
+    run(args?: string[] | undefined): Promise<{
         stdout: string;
         stderr: string;
         exitCode: any;
@@ -74,7 +74,7 @@ export type PlaygroundTestConfig = {
      * Configuration options.
      */
     config?: {
-        includeDebugger?: boolean;
+        includeDebugger?: boolean | undefined;
     } | undefined;
 };
 import { EventContext } from "@nan0web/event";

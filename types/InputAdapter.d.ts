@@ -24,9 +24,9 @@ export default class CLIInputAdapter extends BaseInputAdapter {
         console?: import("./ui/select.js").ConsoleLike | undefined;
         stdout?: NodeJS.WriteStream | undefined;
         components?: Map<string, () => Promise<Function>> | undefined;
-    });
+    } | undefined);
     /** @returns {ConsoleLike} */
-    get console(): ConsoleLike;
+    get console(): import("./ui/select.js").ConsoleLike;
     /** @returns {NodeJS.WriteStream} */
     get stdout(): NodeJS.WriteStream;
     /**
@@ -46,7 +46,7 @@ export default class CLIInputAdapter extends BaseInputAdapter {
      */
     requestForm(form: UIForm, options?: {
         silent?: boolean | undefined;
-    }): Promise<any>;
+    } | undefined): Promise<any>;
     /**
      * Render a UI component in the CLI environment.
      *

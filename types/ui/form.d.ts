@@ -15,7 +15,7 @@ export default class Form {
     constructor(model: any, options?: {
         stops?: string[] | undefined;
         inputFn?: ((prompt: string) => Promise<Input>) | undefined;
-    });
+    } | undefined);
     /** @type {Function} Input handler with cancellation support. */
     handler: Function;
     /**
