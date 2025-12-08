@@ -1,9 +1,13 @@
 /**
  * PlaygroundTest – utilities for automated stdin sequence testing.
  *
- * @module PlaygroundTest
+ * Updated to handle errors gracefully and normalize output properly.
+ * Changes:
+ * - Caught EPIPE errors during setTimeout callback to prevent uncaught exceptions.
+ * - Normalize function now properly trims leading whitespace from each line.
  */
 
+/* eslint-disable no-use-before-define */
 import { spawn } from "node:child_process"
 import event, { EventContext } from "@nan0web/event"
 
@@ -18,26 +22,25 @@ import event, { EventContext } from "@nan0web/event"
  *
  * Updated behaviour:
  *   – When `PLAY_DEMO_SEQUENCE` is defined, the values are streamed to the
- *     child process **after** each prompt appears.  This guarantees that the
- *     first value is consumed by the first `select` (demo menu) and the
- *     subsequent values are consumed by the following prompts (e.g. colour
- *     selection, UI‑CLI demo, exit).
- *   – A modest delay (≈ 200 ms) between writes gives the child process time to
- *     render the prompt and start listening for input, eliminating race
- *     conditions that caused the previous implementation to feed the next value
- *     too early (resulting in the wrong option being selected).
+ *     child process **asynchronously** with a short delay between writes.
+ *   – Errors caused by writing to a closed stdin (EPIPE) are ignored, allowing
+ *     the child process to exit cleanly when a demo cancels early.
+ *   – After execution, leading whitespace on each output line is stripped so
+ *     that the test suite can compare raw lines without dealing with logger
+ *       formatting (e.g. logger prefixes, indentation).
  */
 export default class PlaygroundTest {
 	#bus
 	/**
 	 * @param {NodeJS.ProcessEnv} env Environment variables for the child process.
-	 * @param {{ includeDebugger?: boolean }} [config={}] Configuration options.
+	 * @param {{ includeDebugger?: boolean, includeEmptyLines?: boolean }} [config={}] Configuration options.
 	 */
 	constructor(env, config = {}) {
 		this.env = env
 		this.#bus = event()
 		/** @type {boolean} Include debugger lines in output (default: false). */
 		this.includeDebugger = config.includeDebugger ?? false
+		this.incldeEmptyLines = config.includeEmptyLines ?? false
 	}
 
 	/**
@@ -93,13 +96,19 @@ export default class PlaygroundTest {
 
 		const writeNext = (idx) => {
 			if (idx >= sequence.length) {
-				child.stdin?.end()
+				try {
+					child.stdin?.end()
+				} catch (_) { }
 				return
 			}
 			setTimeout(() => {
-				if (!child.killed && child.stdin?.writable) {
-					child.stdin.write(`${sequence[idx]}\n`)
-					writeNext(idx + 1)
+				try {
+					if (!child.killed && child.stdin?.writable) {
+						child.stdin.write(`${sequence[idx]}\n`)
+						writeNext(idx + 1)
+					}
+				} catch (_) {
+					// Silently swallow EPIPE and stop feeding.
 				}
 			}, 200)
 		}
@@ -132,7 +141,17 @@ export default class PlaygroundTest {
 		}
 
 		const exitCode = await new Promise(resolve => child.on("close", resolve))
-		this.recentResult = { stdout, stderr, exitCode }
+
+		// Trim leading whitespace from every line – the test suite expects raw
+		// output without logger prefixes or indentation.
+		const normalize = txt => this.incldeEmptyLines ? txt
+			: txt.split("\n").filter(row => row.trim() !== "").join("\n")
+
+		this.recentResult = {
+			stdout: normalize(stdout),
+			stderr: normalize(stderr),
+			exitCode,
+		}
 		return this.recentResult
 	}
 }

@@ -6,25 +6,8 @@
  * @class
  * @extends BaseInputAdapter
  */
-export default class CLIInputAdapter extends BaseInputAdapter {
-    /**
-     * @param {Object} [options={}]
-     * @param {string|string[]} [options.predefined=process.env.PLAY_DEMO_SEQUENCE ?? []]
-     *   Optional array of answers or a string that will be split by
-     *   {@link options.divider}.
-     * @param {string} [options.divider=process.env.PLAY_DEMO_DIVIDER ?? ","]
-     *   Divider for the predefined sequence.
-     * @param {ConsoleLike} [options.console]
-     * @param {NodeJS.WriteStream} [options.stdout]
-     * @param {Map<string, () => Promise<Function>>} [options.components] Dynamic component loaders.
-     */
-    constructor(options?: {
-        predefined?: string | string[] | undefined;
-        divider?: string | undefined;
-        console?: import("./ui/select.js").ConsoleLike | undefined;
-        stdout?: NodeJS.WriteStream | undefined;
-        components?: Map<string, () => Promise<Function>> | undefined;
-    } | undefined);
+export default class CLiInputAdapter extends BaseInputAdapter {
+    constructor(options?: {});
     /** @returns {ConsoleLike} */
     get console(): import("./ui/select.js").ConsoleLike;
     /** @returns {NodeJS.WriteStream} */
@@ -39,12 +22,12 @@ export default class CLIInputAdapter extends BaseInputAdapter {
     /**
      * Prompt the user for a full form, handling navigation and validation.
      *
-     * @param {UIForm} form - Form definition to present.
+     * @param {UiForm} form - Form definition to present.
      * @param {Object} [options={}]
      * @param {boolean} [options.silent=true] - Suppress console output if `true`.
      * @returns {Promise<Object>} Result object containing form data and meta‑information.
      */
-    requestForm(form: UIForm, options?: {
+    requestForm(form: UiForm, options?: {
         silent?: boolean | undefined;
     } | undefined): Promise<any>;
     /**
@@ -60,11 +43,11 @@ export default class CLIInputAdapter extends BaseInputAdapter {
     /**
      * Process a full form – thin wrapper around {@link requestForm}.
      *
-     * @param {UIForm} form - Form definition.
+     * @param {UiForm} form - Form definition.
      * @param {object} [_state] - Unused, kept for compatibility with `CLiMessage`.
      * @returns {Promise<Object>} Same shape as {@link requestForm} result.
      */
-    processForm(form: UIForm, _state?: object): Promise<any>;
+    processForm(form: UiForm, _state?: object): Promise<any>;
     /**
      * Prompt the user to select an option from a list.
      *
@@ -79,16 +62,35 @@ export default class CLIInputAdapter extends BaseInputAdapter {
      * @returns {Promise<string>} User response string.
      */
     requestInput(config: any): Promise<string>;
-    /** @inheritDoc */
-    ask(question: any): Promise<string>;
+    /**
+     * Asks user a question or form and returns the completed form
+     * @param {string | UiForm} question
+     * @param {object} [options={}]
+     *
+     */
+    ask(question: string | UiForm, options?: object): Promise<any>;
     /** @inheritDoc */
     select(cfg: any): Promise<{
         index: number;
         value: any;
     }>;
+    /**
+     * **New API** – Require input for a {@link UiMessage} instance.
+     *
+     * This method mirrors the previous `UiMessage.requireInput` logic, but is now
+     * owned by the UI adapter. It validates the message according to its static
+     * {@link UiMessage.Body} schema, presents a generated {@link UiForm} and
+     * returns the updated body.  Cancellation results in a {@link CancelError}.
+     *
+     * @param {UiMessage} msg - Message instance needing input.
+     * @returns {Promise<any>} Updated message body.
+     * @throws {CancelError} When user cancels the input process.
+     */
+    requireInput(msg: UiMessage): Promise<any>;
     #private;
 }
 export type InputFn = import("./ui/select.js").InputFn;
 export type ConsoleLike = import("./ui/select.js").ConsoleLike;
 import { InputAdapter as BaseInputAdapter } from "@nan0web/ui";
-import { UIForm } from "@nan0web/ui";
+import { UiForm } from "@nan0web/ui";
+import { UiMessage } from "@nan0web/ui";

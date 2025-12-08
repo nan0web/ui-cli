@@ -9,8 +9,6 @@
  * @property {(...args: any[]) => void} error
  */
 /**
- * Configuration object for {@link select}.
- *
  * @typedef {Object} SelectConfig
  * @property {string} title – Title displayed above the options list.
  * @property {string} prompt – Prompt displayed for the answer.
@@ -19,22 +17,18 @@
  * @property {string[]} [stops=[]] Words that trigger cancellation.
  * @property {InputFn} [ask] Custom ask function (defaults to {@link createInput}).
  * @property {string} [invalidPrompt="Invalid choice, try again: "] Message shown on invalid input.
+ */
+/**
+ * Configuration object for {@link select}.
  *
+ * @param {SelectConfig} input
  * @returns {Promise<{index:number,value:any}>} Resolves with the selected index and its value.
  *
  * @throws {CancelError} When the user cancels the operation.
  * @throws {Error} When options are missing or an incorrect value is supplied and no
  *   `invalidPrompt` is defined.
  */
-export function select({ title, prompt, invalidPrompt, options, console, stops, ask: initAsk, }: {
-    title: any;
-    prompt: any;
-    invalidPrompt?: string | undefined;
-    options: any;
-    console: any;
-    stops?: any[] | undefined;
-    ask: any;
-}): Promise<{
+export function select(input: SelectConfig): Promise<{
     index: number;
     value: any;
 }>;
@@ -48,9 +42,6 @@ export type ConsoleLike = {
     warn: (...args: any[]) => void;
     error: (...args: any[]) => void;
 };
-/**
- * Configuration object for {@link select }.
- */
 export type SelectConfig = {
     /**
      * – Title displayed above the options list.

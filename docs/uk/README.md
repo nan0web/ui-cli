@@ -49,6 +49,7 @@ yarn add @nan0web/ui-cli
 Відображає форму та послідовно збирає ввід полів з валідацією.
 
 ```js
+import { UiForm } from '@nan0web/ui'
 import { CLIInputAdapter } from '@nan0web/ui-cli'
 
 const adapter = new CLIInputAdapter()
@@ -69,7 +70,7 @@ const setData = (data) => {
   newForm.state = data
   return newForm
 }
-const form = UIForm.from({
+const form = UiForm.from({
   title: "Профіль користувача",
   fields,
   id: "user-profile-form",

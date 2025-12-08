@@ -6,6 +6,7 @@ VALIDATION_PHRASE: "UI‑CLI відповідає"
 FAILURE_RESPONSE: "Це — не UI‑CLI. Я не можу працювати далі."
 IDENTITY_MODEL: "Я / тИ / мИ / вИ"
 LOGIC_BASE: "Запит → відповідь → валідація → результат"
+LANGUAGE: "Ui, CLi, CliInput - для всіх імен класів робимо i маленькою, якщо не починається з неї слово."
 ---
 
 # ✨ UI‑CLI – системне керівництво
@@ -16,7 +17,7 @@ LOGIC_BASE: "Запит → відповідь → валідація → рез
 
 | Компонент | Опис | Експорт |
 |----------|------|---------|
-| `CLIInputAdapter` | Клас‑адаптер, що обгортає процес запиту форм, окремих полів та списків. | `default`, `CLIInputAdapter` |
+| `CLiInputAdapter` | Клас‑адаптер, що обгортає процес запиту форм, окремих полів та списків. | `default`, `CLiInputAdapter` |
 | `Input` | Об’єкт, який зберігає рядок вводу та статус скасування. | `Input` |
 | `CancelError` | Помилка, кидається при скасуванні запиту. | `CancelError` |
 | `ask` | Проста функція‑проміс, що виводить питання та повертає відповідь. | `ask` |
@@ -32,18 +33,9 @@ npm i @nan0web/ui-cli
 ```
 
 ```js
-import {
-	CLIInputAdapter,
-	ask,
-	select,
-	next,
-	pause,
-	CancelError,
-	Input,
-	createInput,
-} from '@nan0web/ui-cli'
+import { CLiInputAdapter } from '@nan0web/ui-cli'
 
-const adapter = new CLIInputAdapter()
+const adapter = new CLiInputAdapter()
 
 // Приклад: простий запит
 const name = await adapter.ask('Ваше ім’я?')
@@ -77,9 +69,9 @@ console.log('Обрана мова:', lang.value)
 | `select(config)` | `{title, prompt, options, console, ask?}` | `Promise<{index, value}>` | Виводить нумерований список, повертає вибір. |
 | `next(conf?)` | `string|array` – послідовність клавіш | `Promise<string>` | Чекає на натискання клавіші (або набору). |
 | `pause(ms)` | `number` – мілісекунди | `Promise<void>` | Затримка виконання. |
-| `CLIInputAdapter.requestForm(form, {silent})` | `UIForm` + опції | `Promise<FormMessage>` | Показує форму, проходить по полях, валідує, повертає результат або `escaped:true`. |
-| `CLIInputAdapter.requestSelect(config)` | `config` (аналог `select`) | `Promise<InputMessage>` | Викликає `select`, обгортає результат у `InputMessage`. |
-| `CLIInputAdapter.requestInput(config)` | `{prompt, id, label, name}` | `Promise<InputMessage>` | Простий рядковий запит. |
+| `CLiInputAdapter.requestForm(form, {silent})` | `UIForm` + опції | `Promise<FormMessage>` | Показує форму, проходить по полях, валідує, повертає результат або `cancelled:true`. |
+| `CLiInputAdapter.requestSelect(config)` | `config` (аналог `select`) | `Promise<InputMessage>` | Викликає `select`, обгортає результат у `InputMessage`. |
+| `CLiInputAdapter.requestInput(config)` | `{prompt, id, label, name}` | `Promise<InputMessage>` | Простий рядковий запит. |
 
 ## 📝 Рекомендації для розробників
 

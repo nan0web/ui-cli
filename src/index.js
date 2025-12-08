@@ -1,5 +1,7 @@
-import CLIInputAdapter from "./InputAdapter.js"
 import { CancelError } from "@nan0web/ui/core"
+
+import CLiInputAdapter from "./InputAdapter.js"
+import OutputAdapter from "./OutputAdapter.js"
 import CLI from "./CLI.js"
 import Command from "./Command.js"
 import CommandError from "./CommandError.js"
@@ -21,8 +23,9 @@ export {
 
 export {
 	CLI,
-	CLIInputAdapter,
+	CLiInputAdapter,
 	CancelError,
+	OutputAdapter,
 
 	/** @deprecated */
 	Command,
@@ -35,6 +38,9 @@ export {
 	CommandHelp,
 }
 
+/* New public API */
+export { generateForm } from "./ui/form.js"
+
 export const renderers = new Map([
 	[
 		"UIProcess",
@@ -44,4 +50,4 @@ export const renderers = new Map([
 	],
 ])
 
-export default CLIInputAdapter
+export default CLiInputAdapter

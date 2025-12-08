@@ -7,6 +7,7 @@ import SelectDemo, { SelectBody, runSelectDemo } from "./select-demo.js"
 import { runUiCliDemo } from "./ui-cli-demo.js"
 import { runFormDemo } from "./form-demo.js"
 import CLIInputAdapter from "../src/InputAdapter.js"
+import { runUiMessageDemo } from "./ui-message-demo.js" // new demo import
 
 /**
  * UI‑CLI playground – runs a series of demo scripts.
@@ -28,7 +29,9 @@ const commands = [
 	// ExitDemo,
 ]
 
-// Shared adapter – reads PLAY_DEMO_SEQUENCE internally.
+/**
+ * Shared adapter – reads PLAY_DEMO_SEQUENCE internally.
+ */
 const inputAdapter = new CLIInputAdapter()
 
 /**
@@ -42,7 +45,8 @@ async function chooseDemo() {
 		{ name: "Basic Logging Demo",     value: "basic" },
 		{ name: "Select Prompt Demo",     value: "select" },
 		{ name: "Simple UI‑CLI Demo",     value: "ui-demo" },
-		{ name: "Form Input Demo",        value: "form" },  // New form demo
+		{ name: "Form Input Demo",        value: "form" },
+		{ name: "UiMessage Demo",         value: "ui-message" }, // new entry
 		{ name: "← Exit",                 value: "exit" },
 	]
 
@@ -93,7 +97,10 @@ async function main() {
 					await runUiCliDemo(console)
 					break
 				case "form":
-					await runFormDemo(console, inputAdapter)  // New form demo
+					await runFormDemo(console, inputAdapter)
+					break
+				case "ui-message": // new case
+					await runUiMessageDemo(console, inputAdapter)
 					break
 				case "exit":
 					console.success("Thanks for exploring UI‑CLI demos! 🚀")

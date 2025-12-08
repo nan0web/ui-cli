@@ -20,8 +20,6 @@ import createInput from "./input.js"
  */
 
 /**
- * Configuration object for {@link select}.
- *
  * @typedef {Object} SelectConfig
  * @property {string} title – Title displayed above the options list.
  * @property {string} prompt – Prompt displayed for the answer.
@@ -30,22 +28,29 @@ import createInput from "./input.js"
  * @property {string[]} [stops=[]] Words that trigger cancellation.
  * @property {InputFn} [ask] Custom ask function (defaults to {@link createInput}).
  * @property {string} [invalidPrompt="Invalid choice, try again: "] Message shown on invalid input.
+ */
+
+/**
+ * Configuration object for {@link select}.
  *
+ * @param {SelectConfig} input
  * @returns {Promise<{index:number,value:any}>} Resolves with the selected index and its value.
  *
  * @throws {CancelError} When the user cancels the operation.
  * @throws {Error} When options are missing or an incorrect value is supplied and no
  *   `invalidPrompt` is defined.
  */
-export async function select({
-	title,
-	prompt,
-	invalidPrompt = "Invalid choice, try again: ",
-	options,
-	console,
-	stops = [],
-	ask: initAsk,
-}) {
+export async function select(input) {
+	const {
+		title,
+		prompt,
+		invalidPrompt = "Invalid choice, try again: ",
+		options: initOptins,
+		console,
+		stops = [],
+		ask: initAsk,
+	} = input
+	let options = initOptins
 	/** @type {InputFn} */
 	const ask = initAsk ?? createInput(stops)
 

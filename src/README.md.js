@@ -2,8 +2,7 @@
 import { describe, it, before, beforeEach } from "node:test"
 import assert from "node:assert/strict"
 import FS from "@nan0web/db-fs"
-import Message from "@nan0web/co"
-import { UIForm } from "@nan0web/ui"
+import { UiForm } from "@nan0web/ui"
 import { NoConsole } from "@nan0web/log"
 import {
 	DatasetParser,
@@ -11,7 +10,7 @@ import {
 	runSpawn,
 } from "@nan0web/test"
 import {
-	CLIInputAdapter as BaseCLIInputAdapter,
+	CLiInputAdapter as BaseCLiInputAdapter,
 	CancelError,
 	createInput,
 	Input,
@@ -39,7 +38,7 @@ async function next() {
 	return Promise.resolve(" ")
 }
 
-class CLIInputAdapter extends BaseCLIInputAdapter {
+class CLiInputAdapter extends BaseCLiInputAdapter {
 	async ask(question) {
 		return await ask(question)
 	}
@@ -89,7 +88,7 @@ function testRender() {
 	 *
 	 * Core classes:
 	 *
-	 * - `CLIInputAdapter` — handles form, input, and select requests in CLI.
+	 * - `CLiInputAdapter` — handles form, input, and select requests in CLI.
 	 * - `Input` — wraps user input with value and cancellation status.
 	 * - `CancelError` — thrown when a user cancels an operation.
 	 *
@@ -133,7 +132,7 @@ function testRender() {
 	 * @docs
 	 * ## Usage
 	 *
-	 * ### CLIInputAdapter
+	 * ### CLiInputAdapter
 	 *
 	 * The adapter provides methods to handle form, input, and select requests.
 	 *
@@ -141,9 +140,9 @@ function testRender() {
 	 *
 	 * Displays a form and collects user input field-by-field with validation.
 	 */
-	it("How to request form input via CLIInputAdapter?", async () => {
-		//import { CLIInputAdapter } from '@nan0web/ui-cli'
-		const adapter = new CLIInputAdapter()
+	it("How to request form input via CLiInputAdapter?", async () => {
+		//import { CLiInputAdapter } from '@nan0web/ui-cli'
+		const adapter = new CLiInputAdapter()
 		const fields = [
 			{ name: "name", label: "Full Name", required: true },
 			{ name: "email", label: "Email", type: "email", required: true },
@@ -159,7 +158,7 @@ function testRender() {
 			newForm.state = data
 			return newForm
 		}
-		const form = UIForm.from({
+		const form = UiForm.from({
 			title: "User Profile",
 			fields,
 			id: "user-profile-form",
@@ -177,9 +176,9 @@ function testRender() {
 	/**
 	 * @docs
 	 */
-	it("How to request select input via CLIInputAdapter?", async () => {
-		//import { CLIInputAdapter } from '@nan0web/ui-cli'
-		const adapter = new CLIInputAdapter()
+	it("How to request select input via CLiInputAdapter?", async () => {
+		//import { CLiInputAdapter } from '@nan0web/ui-cli'
+		const adapter = new CLiInputAdapter()
 		const config = {
 			title: "Choose Language:",
 			prompt: "Language (1-2): ",
@@ -313,7 +312,7 @@ function testRender() {
 	 * @docs
 	 * ## API
 	 *
-	 * ### CLIInputAdapter
+	 * ### CLiInputAdapter
 	 *
 	 * * **Methods**
 	 *   * `requestForm(form, options)` — (async) handles form request
@@ -368,7 +367,7 @@ function testRender() {
 	 * Extends `Error`, thrown when an input is cancelled.
 	 */
 	it("All exported classes and functions should pass basic tests", () => {
-		assert.ok(CLIInputAdapter)
+		assert.ok(CLiInputAdapter)
 		assert.ok(CancelError)
 		assert.ok(createInput)
 		assert.ok(baseAsk)

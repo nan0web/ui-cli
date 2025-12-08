@@ -8,26 +8,26 @@
  *
  * Updated behaviour:
  *   – When `PLAY_DEMO_SEQUENCE` is defined, the values are streamed to the
- *     child process **after** each prompt appears.  This guarantees that the
- *     first value is consumed by the first `select` (demo menu) and the
- *     subsequent values are consumed by the following prompts (e.g. colour
- *     selection, UI‑CLI demo, exit).
- *   – A modest delay (≈ 200 ms) between writes gives the child process time to
- *     render the prompt and start listening for input, eliminating race
- *     conditions that caused the previous implementation to feed the next value
- *     too early (resulting in the wrong option being selected).
+ *     child process **asynchronously** with a short delay between writes.
+ *   – Errors caused by writing to a closed stdin (EPIPE) are ignored, allowing
+ *     the child process to exit cleanly when a demo cancels early.
+ *   – After execution, leading whitespace on each output line is stripped so
+ *     that the test suite can compare raw lines without dealing with logger
+ *       formatting (e.g. logger prefixes, indentation).
  */
 export default class PlaygroundTest {
     /**
      * @param {NodeJS.ProcessEnv} env Environment variables for the child process.
-     * @param {{ includeDebugger?: boolean }} [config={}] Configuration options.
+     * @param {{ includeDebugger?: boolean, includeEmptyLines?: boolean }} [config={}] Configuration options.
      */
     constructor(env: NodeJS.ProcessEnv, config?: {
         includeDebugger?: boolean | undefined;
+        includeEmptyLines?: boolean | undefined;
     } | undefined);
     env: NodeJS.ProcessEnv;
     /** @type {boolean} Include debugger lines in output (default: false). */
     includeDebugger: boolean;
+    incldeEmptyLines: boolean;
     /**
      * Subscribe to an event.
      */
@@ -54,13 +54,13 @@ export default class PlaygroundTest {
      * @param {string[]} [args=["play/main.js"]] Arguments passed to the node process.
      */
     run(args?: string[] | undefined): Promise<{
-        stdout: string;
-        stderr: string;
+        stdout: any;
+        stderr: any;
         exitCode: any;
     }>;
     recentResult: {
-        stdout: string;
-        stderr: string;
+        stdout: any;
+        stderr: any;
         exitCode: any;
     } | undefined;
     #private;

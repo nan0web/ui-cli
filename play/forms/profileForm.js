@@ -1,12 +1,12 @@
-import { UIForm, FormInput } from '@nan0web/ui'
+import { UiForm, FormInput } from '@nan0web/ui'
 
 /**
  * Creates a profile update form
  * @param {Function} t - Translation function
- * @returns {UIForm} Profile update form
+ * @returns {UiForm} Profile update form
  */
 export function createProfileForm(t) {
-	return new UIForm({
+	return new UiForm({
 		title: t('Profile update form'),
 		id: 'profile-update',
 		state: {},

@@ -1,6 +1,6 @@
 import { describe, it } from "node:test"
 import assert from "node:assert/strict"
-import { InputMessage, OutputMessage } from "@nan0web/co"
+import Message, { InputMessage, OutputMessage } from "@nan0web/co"
 import CLI from "./CLI.js"
 
 class EchoCLI extends CLI {
@@ -9,7 +9,9 @@ class EchoCLI extends CLI {
 		this.commands.set("echo", this.echo.bind(this))
 	}
 	async * echo(msg) {
-		yield new OutputMessage({ content: [`Echo: ${msg.value.body.text}`] })
+		// `msg` is an InputMessage; the actual text is inside `msg.value.body.text`
+		const text = msg?.value?.body?.text ?? typeof msg
+		yield new OutputMessage({ content: [`Echo: ${text}`] })
 	}
 }
 
@@ -44,11 +46,21 @@ describe("CLI", () => {
 			yield new OutputMessage({ content: ["Test command output"] })
 		})
 
-		const msg = new InputMessage({ value: { body: { command: "help" } } })
+		const msg = new Message({ body: { command: "help" } })
 		const results = []
 		for await (const out of cli.run(msg)) results.push(out)
 
+		// The help command should produce **one** OutputMessage whose body
+		// contains the three expected parts.
 		assert.equal(results.length, 1)
+
+		const expectedBody = [
+			["No commands defined for the CLi"],
+			{ command: "help", msg: undefined },
+			["Available commands:", "  help", "  test"],
+		]
+		assert.deepStrictEqual(results[0].body, expectedBody)
+
 		const content = results[0].content
 		assert.ok(Array.isArray(content))
 		const full = content.join("\n")
@@ -71,14 +83,16 @@ describe("CLI", () => {
 
 	it("handles unknown command", async () => {
 		const cli = new CLI()
-		const msg = new InputMessage({
-			value: { body: { command: "unknown" } },
+		const msg = new Message({
+			body: { command: "unknown" },
 		})
 		const results = []
 		for await (const out of cli.run(msg)) results.push(out)
 
-		assert.equal(results.length, 1)
-		assert.equal(results[0].content, "Unknown command: unknown")
+		assert.deepStrictEqual(results.map(el => el.body), [
+			["Unknown command: unknown"],
+			["Available commands: help"],
+		])
 	})
 
 	it("creates CLI instance from object", () => {

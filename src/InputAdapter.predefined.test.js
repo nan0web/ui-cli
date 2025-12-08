@@ -1,15 +1,15 @@
 import { describe, it, beforeEach, afterEach } from "node:test"
 import assert from "node:assert/strict"
-import { UIForm, FormInput } from "@nan0web/ui"
-import CLIInputAdapter from "./InputAdapter.js"
+import { UiForm, FormInput } from "@nan0web/ui"
+import CLiInputAdapter from "./InputAdapter.js"
 
 /**
  * Focused tests for the predefined‑answer handling of
- * {@link CLIInputAdapter}.  They verify that the internal cursor
+ * {@link CLiInputAdapter}.  They verify that the internal cursor
  * advances correctly across `requestSelect`, `requestInput` and
  * `requestForm`.
  */
-describe("CLIInputAdapter – predefined answers (isolated)", () => {
+describe("CLiInputAdapter – predefined answers (isolated)", () => {
 	let originalEnv
 
 	beforeEach(() => {
@@ -22,7 +22,7 @@ describe("CLIInputAdapter – predefined answers (isolated)", () => {
 
 	it("requestSelect uses the first predefined answer", async () => {
 		process.env.PLAY_DEMO_SEQUENCE = "2" // selects "Green"
-		const adapter = new CLIInputAdapter()
+		const adapter = new CLiInputAdapter()
 		const result = await adapter.requestSelect({
 			title: "Pick a colour",
 			prompt: "[db]: ",
@@ -34,7 +34,7 @@ describe("CLIInputAdapter – predefined answers (isolated)", () => {
 
 	it("requestSelect consumes answers sequentially", async () => {
 		process.env.PLAY_DEMO_SEQUENCE = "2,3"
-		const adapter = new CLIInputAdapter()
+		const adapter = new CLiInputAdapter()
 		const first = await adapter.requestSelect({
 			title: "First colour",
 			prompt: "[db]: ",
@@ -51,7 +51,7 @@ describe("CLIInputAdapter – predefined answers (isolated)", () => {
 
 	it("requestInput uses the next predefined answer", async () => {
 		process.env.PLAY_DEMO_SEQUENCE = "John Doe"
-		const adapter = new CLIInputAdapter()
+		const adapter = new CLiInputAdapter()
 		const result = await adapter.requestInput({
 			prompt: "What is your name? ",
 		})
@@ -60,8 +60,8 @@ describe("CLIInputAdapter – predefined answers (isolated)", () => {
 
 	it("requestForm consumes predefined answers in order", async () => {
 		process.env.PLAY_DEMO_SEQUENCE = "Alice,30"
-		const adapter = new CLIInputAdapter()
-		const form = new UIForm({
+		const adapter = new CLiInputAdapter()
+		const form = new UiForm({
 			title: "Test Form",
 			id: "test-form",
 			fields: [

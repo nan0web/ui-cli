@@ -1,15 +1,15 @@
 /**
- * Main CLI class.
+ * Main CLi class.
  */
-export default class CLI {
+export default class CLi {
     /**
-     * Factory to create a CLI instance from various inputs.
+     * Factory to create a CLi instance from various inputs.
      *
-     * @param {CLI|Object} input - Existing CLI instance or configuration object.
-     * @returns {CLI}
-     * @throws {TypeError} If input is neither a CLI nor an object.
+     * @param {CLi|Object} input - Existing CLi instance or configuration object.
+     * @returns {CLi}
+     * @throws {TypeError} If input is neither a CLi nor an object.
      */
-    static from(input: CLI | any): CLI;
+    static from(input: CLi | any): CLi;
     /**
      * @param {Object} [input={}]
      * @param {string[]} [input.argv] - Command‑line arguments (defaults to `process.argv.slice(2)`).
@@ -32,13 +32,14 @@ export default class CLI {
     /** @returns {Map<string,Function>} The command map. */
     get commands(): Map<string, Function>;
     /**
-     * Execute the CLI workflow.
+     * Execute the CLi workflow.
      *
      * @param {Message} [msg] - Optional pre‑built message.
-     * @yields {OutputMessage|InputMessage}
+     * @returns {AsyncGenerator<OutputMessage>}
      */
-    run(msg?: Message | undefined): AsyncGenerator<any, void, unknown>;
+    run(msg?: Message | undefined): AsyncGenerator<OutputMessage>;
     #private;
 }
 import Logger from "@nan0web/log";
 import { Message } from "@nan0web/co";
+import { OutputMessage } from "@nan0web/co";

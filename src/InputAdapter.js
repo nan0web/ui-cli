@@ -1,16 +1,19 @@
 /**
- * CLIInputAdapter – bridges UI‑CLI utilities with generic UI core.
+ * CLiInputAdapter – bridges UI‑CLI utilities with generic UI core.
  *
  * @module InputAdapter
  */
 
 import {
-	UIForm,
+	UiForm,
 	InputAdapter as BaseInputAdapter,
+	UiMessage,
 } from "@nan0web/ui"
+import { CancelError } from "@nan0web/ui/core"
+
 import { ask as baseAsk, createInput, createPredefinedInput, Input } from "./ui/input.js"
 import { select as baseSelect } from "./ui/select.js"
-import { CancelError } from "@nan0web/ui/core"
+import { generateForm } from "./ui/form.js"
 
 /** @typedef {import("./ui/select.js").InputFn} InputFn */
 /** @typedef {import("./ui/select.js").ConsoleLike} ConsoleLike */
@@ -21,7 +24,7 @@ import { CancelError } from "@nan0web/ui/core"
  * @class
  * @extends BaseInputAdapter
  */
-export default class CLIInputAdapter extends BaseInputAdapter {
+export default class CLiInputAdapter extends BaseInputAdapter {
 	/** @type {string[]} Queue of predefined answers. */
 	#answers = []
 	/** @type {number} Current position in the answers queue. */
@@ -32,17 +35,6 @@ export default class CLIInputAdapter extends BaseInputAdapter {
 	/** @type {Map<string, () => Promise<Function>>} */
 	#components = new Map()
 
-	/**
-	 * @param {Object} [options={}]
-	 * @param {string|string[]} [options.predefined=process.env.PLAY_DEMO_SEQUENCE ?? []]
-	 *   Optional array of answers or a string that will be split by
-	 *   {@link options.divider}.
-	 * @param {string} [options.divider=process.env.PLAY_DEMO_DIVIDER ?? ","]
-	 *   Divider for the predefined sequence.
-	 * @param {ConsoleLike} [options.console]
-	 * @param {NodeJS.WriteStream} [options.stdout]
-	 * @param {Map<string, () => Promise<Function>>} [options.components] Dynamic component loaders.
-	 */
 	constructor(options = {}) {
 		super()
 		const {
@@ -123,7 +115,7 @@ export default class CLIInputAdapter extends BaseInputAdapter {
 	/**
 	 * Prompt the user for a full form, handling navigation and validation.
 	 *
-	 * @param {UIForm} form - Form definition to present.
+	 * @param {UiForm} form - Form definition to present.
 	 * @param {Object} [options={}]
 	 * @param {boolean} [options.silent=true] - Suppress console output if `true`.
 	 * @returns {Promise<Object>} Result object containing form data and meta‑information.
@@ -139,16 +131,50 @@ export default class CLIInputAdapter extends BaseInputAdapter {
 			const field = form.fields[idx]
 			const prompt = `${field.label || field.name}${field.required ? " *" : ""}: `
 
-			const predefined = this.#nextAnswer()
-			const rawAnswer = predefined !== null ? predefined : (await this.ask(prompt))
+			// ---- Handle select fields (options) ----------------------------------------
+			if (Array.isArray(field.options ?? 0) && field.options.length) {
+				const options = /** @type {any[]} */ (field.options)
+
+				const predefined = this.#nextAnswer()
+				const selConfig = {
+					title: field.label,
+					prompt: "Choose (number): ",
+					options: options.map(opt =>
+						typeof opt === "string"
+							? { label: opt, value: opt }
+							: opt
+					),
+					console: { info: this.console.info.bind(this.console) },
+				}
+
+				let selResult
+				if (predefined !== null) {
+					selConfig.ask = createPredefinedInput([predefined], this.console)
+					selResult = await this.select(selConfig)
+				} else {
+					selConfig.ask = this.createHandler(["cancel", "quit", "exit"])
+					selResult = await this.select(selConfig)
+				}
+
+				const chosen = selResult?.value
+				if (!options.includes(chosen)) {
+					this.console.error("\nEnumeration must have one value")
+					continue
+				}
+				formData[field.name] = String(chosen)
+				idx++
+				continue
+			}
+			// ---------------------------------------------------------------------------
+
+			const rawAnswer = await this.ask(prompt)
 			const answerStr = this.#normalise(rawAnswer)
 
 			if (["", "esc"].includes(answerStr)) {
-				// Form cancelled – return a minimal result.
 				return {
-					body: { action: "form-cancel", escaped: true, form: {} },
+					body: { action: "form-cancel", cancelled: true, form: {} },
 					form: {},
-					escaped: true,
+					cancelled: true,
 					action: "form-cancel",
 				}
 			}
@@ -181,15 +207,15 @@ export default class CLIInputAdapter extends BaseInputAdapter {
 		}
 
 		const finalForm = form.setData(formData)
-		const { isValid, errors } = finalForm.validate()
-		if (!isValid) {
+		const errors = finalForm.validate()
+		if (errors.size) {
 			this.console.warn("\n" + Object.values(errors).join("\n"))
 			return await this.requestForm(form, options)
 		}
 		return {
-			body: { action: "form-submit", escaped: false, form: finalForm },
+			body: { action: "form-submit", cancelled: false, form: finalForm },
 			form: finalForm,
-			escaped: false,
+			cancelled: false,
 			action: "form-submit",
 		}
 	}
@@ -214,7 +240,7 @@ export default class CLIInputAdapter extends BaseInputAdapter {
 				}
 			} catch (/** @type {any} */ err) {
 				this.console.error(`Failed to render component "${component}": ${err.message}`)
-				this.console.debug(err.stack)
+				this.console.debug?.(err.stack)
 			}
 		}
 		if (props && typeof props === "object") {
@@ -229,12 +255,11 @@ export default class CLIInputAdapter extends BaseInputAdapter {
 	/**
 	 * Process a full form – thin wrapper around {@link requestForm}.
 	 *
-	 * @param {UIForm} form - Form definition.
+	 * @param {UiForm} form - Form definition.
 	 * @param {object} [_state] - Unused, kept for compatibility with `CLiMessage`.
 	 * @returns {Promise<Object>} Same shape as {@link requestForm} result.
 	 */
 	async processForm(form, _state) {
-		// For CLI we ignore the provided state – the form already carries its own state.
 		return this.requestForm(form)
 	}
 
@@ -247,7 +272,7 @@ export default class CLIInputAdapter extends BaseInputAdapter {
 	async requestSelect(config) {
 		try {
 			const predefined = this.#nextAnswer()
-			if (!config.console) config.console = { info: () => {} }
+			if (!config.console) config.console = { info: () => { } }
 
 			if (predefined !== null) {
 				config.yes = true
@@ -279,8 +304,16 @@ export default class CLIInputAdapter extends BaseInputAdapter {
 		return this.#normalise(answer)
 	}
 
-	/** @inheritDoc */
-	async ask(question) {
+	/**
+	 * Asks user a question or form and returns the completed form
+	 * @param {string | UiForm} question
+	 * @param {object} [options={}]
+	 *
+	 */
+	async ask(question, options = {}) {
+		if (question instanceof UiForm) {
+			return await this.requestForm(question, options)
+		}
 		const predefined = this.#nextAnswer()
 		if (predefined !== null) {
 			this.stdout.write(`${question}${predefined}\n`)
@@ -293,5 +326,50 @@ export default class CLIInputAdapter extends BaseInputAdapter {
 	/** @inheritDoc */
 	async select(cfg) {
 		return baseSelect(cfg)
+	}
+
+	/**
+	 * **New API** – Require input for a {@link UiMessage} instance.
+	 *
+	 * This method mirrors the previous `UiMessage.requireInput` logic, but is now
+	 * owned by the UI adapter. It validates the message according to its static
+	 * {@link UiMessage.Body} schema, presents a generated {@link UiForm} and
+	 * returns the updated body.  Cancellation results in a {@link CancelError}.
+	 *
+	 * @param {UiMessage} msg - Message instance needing input.
+	 * @returns {Promise<any>} Updated message body.
+	 * @throws {CancelError} When user cancels the input process.
+	 */
+	async requireInput(msg) {
+		if (!msg) {
+			throw new Error("Message instance is required")
+		}
+		if (!(msg instanceof UiMessage)) {
+			throw new TypeError("Message must be an instance UiMessage")
+		}
+		/** @type {Map<string,string>} */
+		let errors = msg.validate()
+		while (errors.size > 0) {
+			const form = generateForm(
+				/** @type {any} */(msg.constructor).Body,
+				{ initialState: msg.body }
+			)
+
+			const formResult = await this.processForm(form, msg.body)
+			if (formResult.cancelled) {
+				throw new CancelError("User cancelled form")
+			}
+
+			const updatedBody = { ...msg.body, ...formResult.form.state }
+			const updatedErrors = msg.validate(updatedBody)
+
+			if (updatedErrors.size > 0) {
+				errors = updatedErrors
+				continue
+			}
+			msg.body = updatedBody
+			break
+		}
+		return /** @type {any} */ (msg.body)
 	}
 }

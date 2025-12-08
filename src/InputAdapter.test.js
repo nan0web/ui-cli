@@ -1,16 +1,16 @@
 import { describe, it, beforeEach } from "node:test"
 import assert from "node:assert/strict"
-import { UIForm, FormInput } from "@nan0web/ui"
+import { UiForm, FormInput } from "@nan0web/ui"
 import { CancelError } from "@nan0web/ui/core"
 import { Input } from "./ui/input.js"
-import CLIInputAdapter from "./InputAdapter.js"
+import CLiInputAdapter from "./InputAdapter.js"
 import { NoConsole } from "@nan0web/log"
 
-describe("CLIInputAdapter", () => {
+describe("CLiInputAdapter", () => {
 	let adapter, mockAsk, mockSelect
 
 	beforeEach(() => {
-		adapter = new CLIInputAdapter()
+		adapter = new CLiInputAdapter()
 		mockAsk = (q) => {
 			if (q.includes("Email")) return new Input({ value: "test@example.com" })
 			if (q.includes("*")) return new Input({ value: "John Doe" })
@@ -22,11 +22,11 @@ describe("CLIInputAdapter", () => {
 	})
 
 	it("should create instance", () => {
-		assert.ok(adapter instanceof CLIInputAdapter)
+		assert.ok(adapter instanceof CLiInputAdapter)
 	})
 
 	it("should handle form submission", async () => {
-		const form = new UIForm({
+		const form = new UiForm({
 			title: "Test Form",
 			id: "test-form",
 			fields: [
@@ -47,7 +47,7 @@ describe("CLIInputAdapter", () => {
 	})
 
 	it("should handle form cancellation", async () => {
-		const form = new UIForm({
+		const form = new UiForm({
 			title: "Test Form",
 			id: "test-form",
 			fields: [
@@ -65,7 +65,7 @@ describe("CLIInputAdapter", () => {
 		adapter.ask = async () => new Input({ value: "" })
 		const result = await adapter.requestForm(form, { silent: true })
 		assert.equal(result.body.action, "form-cancel")
-		assert.equal(result.escaped, true)
+		assert.equal(result.cancelled, true)
 	})
 
 	it("should handle requestSelect", async () => {
@@ -93,7 +93,7 @@ describe("CLIInputAdapter", () => {
 	})
 
 	it("should render simple component fallback", async () => {
-		const adapter = new CLIInputAdapter({ console: new NoConsole() })
+		const adapter = new CLiInputAdapter({ console: new NoConsole() })
 		await adapter.render("Simple", { variant: "info", content: "Hello" })
 		// Fallback logs "[info] Hello"
 		assert.equal(adapter.console.output()[0][1], "[info] Hello")
@@ -103,7 +103,7 @@ describe("CLIInputAdapter", () => {
 		const components = new Map([
 			["Alert", async () => (await import("./components/Alert.js")).default]
 		])
-		const adapter = new CLIInputAdapter({ components, console: new NoConsole() })
+		const adapter = new CLiInputAdapter({ components, console: new NoConsole() })
 		await adapter.render("Alert", { variant: "info", content: "Test alert" })
 		// Calls console.info("Test alert")
 		await adapter.render("Alert", { variant: "error", content: "Incorrect information" })

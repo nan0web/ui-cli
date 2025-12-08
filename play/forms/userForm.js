@@ -1,12 +1,12 @@
-import { UIForm, FormInput } from '@nan0web/ui'
+import { UiForm, FormInput } from '@nan0web/ui'
 
 /**
  * Creates a user registration form
  * @param {Function} t - Translation function
- * @returns {UIForm} User registration form
+ * @returns {UiForm} User registration form
  */
 export function createUserForm(t) {
-	return new UIForm({
+	return new UiForm({
 		title: t('User Registration Form'),
 		id: 'user-registration',
 		state: {},

@@ -7,10 +7,65 @@
 import { CancelError } from "@nan0web/ui/core"
 import { createInput, Input } from "./input.js"
 import { select } from "./select.js"
+import { UiForm, FormInput } from "@nan0web/ui"
+
+/**
+ * Generates a UiForm instance from a Body class static schema.
+ *
+ * @param {Function} BodyClass Class containing static field definitions.
+ * @param {Object} [options={}] Options.
+ * @param {Object} [options.initialState={}] Initial values for the form fields.
+ * @param {Function} [options.t] Optional translation function.
+ * @returns {UiForm} UiForm populated with fields derived from the schema.
+ *
+ * The function inspects static properties of `BodyClass` (e.g., `static username = { … }`)
+ * and maps each to a {@link FormInput}. The generated {@link UiForm} title defaults
+ * to `BodyClass.name` unless overridden via the schema.
+ */
+export function generateForm(BodyClass, options = {}) {
+	const { initialState = {}, t } = options
+	const fields = []
+
+	for (const [name, schema] of Object.entries(BodyClass)) {
+		if (typeof schema !== "object" || schema === null) continue
+
+		const translate = (value) => (typeof t === "function" ? t(value) : value)
+
+		fields.push(
+			new FormInput({
+				name,
+				label: translate(schema.help || name),
+				type: schema.type || "text",
+				required: Boolean(schema.required),
+				placeholder: translate(schema.placeholder || schema.defaultValue || ""),
+				options: schema.options
+					? schema.options.map((opt) =>
+						typeof opt === "string"
+							? opt
+							: opt.label
+								? { label: opt.label, value: opt.value }
+								: opt,
+					)
+					: [],
+				validation: schema.validate
+					? (value) => {
+						const res = schema.validate(value)
+						return res === true ? true : typeof res === "string" ? res : `Invalid ${name}`
+					}
+					: () => true,
+			}),
+		)
+	}
+
+	return new UiForm({
+		title: t ? t(BodyClass.name) : BodyClass.name,
+		fields,
+		state: { ...initialState },
+	})
+}
 
 /**
  * CLI-specific form handler that introspects a model class for static field schemas.
- * Prompts for input field-by-field (or selection), validates, and updates the model instance.
  *
  * @class
  */
@@ -48,18 +103,17 @@ export default class Form {
 		const Class = this.#model.constructor
 		const fields = []
 		for (const [name, schema] of Object.entries(Class)) {
-			if (typeof schema !== "object" || schema === null || typeof name !== "string") continue
+			if (typeof schema !== "object" || schema === null) continue
 			const isRequired = schema.required === true || schema.defaultValue === undefined
 			const placeholder = schema.placeholder || schema.defaultValue || ""
 			const options = schema.options || []
 			const validation = schema.validate
 				? (value) => {
-						const res = schema.validate(value)
-						// Support bool (true/ok, falsy/error), RegExp match (array/null), or string error
-						if (res === true || (res && typeof res !== "string")) return true
-						if (typeof res === "string") return res
-						return `Invalid ${name}` // default error for falsy/non-string
-				  }
+					const res = schema.validate(value)
+					if (res === true) return true
+					if (typeof res === "string") return res
+					return `Invalid ${name}`
+				}
 				: () => true
 			fields.push({
 				name,
@@ -72,6 +126,22 @@ export default class Form {
 			})
 		}
 		return fields
+	}
+
+	/**
+	 * Creates a {@link Form} instance directly from a Body schema.
+	 *
+	 * @param {typeof Object} BodyClass Class with static schema definitions.
+	 * @param {Object} [initialModel={}] Optional initial model data.
+	 * @param {Object} [options={}] Same options as the constructor.
+	 * @returns {Form} New Form instance.
+	 *
+	 * @example
+	 *   const form = Form.createFromBodySchema(UserBody, { username: "bob" })
+	 */
+	static createFromBodySchema(BodyClass, initialModel = {}, options = {}) {
+		const model = new BodyClass(initialModel)
+		return new Form(model, options)
 	}
 
 	/**
@@ -110,11 +180,12 @@ export default class Form {
 			const prompt = `${field.label}${field.required ? " *" : ""} [${currentValue}]: `
 			try {
 				if (field.options.length > 0) {
-					// Handle selection fields
 					const selConfig = {
 						title: field.label,
 						prompt: "Choose (number): ",
-						options: field.options.map(opt => (typeof opt === "string" ? opt : opt.label ? { label: opt.label, value: opt.value } : opt)),
+						options: field.options.map((opt) =>
+							typeof opt === "string" ? opt : opt.label ? { label: opt.label, value: opt.value } : opt,
+						),
 						console: { info: console.info.bind(console) },
 						ask: this.handler,
 					}
@@ -128,13 +199,11 @@ export default class Form {
 					this.#model[field.name] = this.convertValue(field, val)
 					idx++
 				} else {
-					// Handle text/number/etc. input
 					const inputObj = await this.input(prompt)
 					if (inputObj.cancelled) {
 						return { cancelled: true }
 					}
 					let answer = inputObj.value.trim()
-					// Skip empty for non-required
 					if (answer === "" && !field.required) {
 						this.#model[field.name] = ""
 						idx++

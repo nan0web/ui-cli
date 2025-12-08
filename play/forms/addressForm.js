@@ -1,12 +1,12 @@
-import { UIForm, FormInput } from '@nan0web/ui'
+import { UiForm, FormInput } from '@nan0web/ui'
 
 /**
  * Creates an address information form
  * @param {Function} t - Translation function
- * @returns {UIForm} Address form
+ * @returns {UiForm} Address form
  */
 export function createAddressForm(t) {
-	return new UIForm({
+	return new UiForm({
 		title: t('Address information'),
 		id: 'address-form',
 		state: {},

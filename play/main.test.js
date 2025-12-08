@@ -6,6 +6,7 @@
 
 import { describe, it } from "node:test"
 import assert from "node:assert"
+import Logger from "@nan0web/log"
 import { PlaygroundTest } from "../src/test/index.js"
 
 const selectDemo = [
@@ -14,8 +15,11 @@ const selectDemo = [
 	' 2) Select Prompt Demo',
 	' 3) Simple UI‑CLI Demo',
 	' 4) Form Input Demo',
-	' 5) ← Exit',
+	' 5) UiMessage Demo',           // new entry
+	' 6) ← Exit',
 ]
+
+const logo = Logger.style(Logger.LOGO, { color: Logger.MAGENTA }).split("\n")
 
 /**
  * Executes the main playground script with a given environment.
@@ -37,24 +41,18 @@ async function runPlayground(env) {
  * @param {string} stdout
  * @returns {string[]}
  */
-function cleanLines(stdout) {
-	const lines = stdout.split("\n")
-	// Remove the first line that is usually empty after console.clear()
-	const trimmed = lines.slice(1)
-	// Filter out lines that contain ANSI escape codes (e.g., the prompt)
-	const cleaned = trimmed.filter(l => !/\x1b/.test(l))
-	return cleaned.filter(line => line.trim() !== "") // Remove empty lines
-}
+const cleanLines = stdout => stdout.split("\n").filter(line => line.trim() !== "")
 
 describe("playground demo flow", () => {
-	it("runs basic demo then exits (sequence 1,5)", async () => {
-		const { stdout, stderr, exitCode } = await runPlayground({ PLAY_DEMO_SEQUENCE: "1,5" })
+	it("runs basic demo then exits (sequence 1,6)", async () => {
+		const { stdout, stderr, exitCode } = await runPlayground({ PLAY_DEMO_SEQUENCE: "1,6" })
 
+		assert.deepStrictEqual(stderr.split("\n"), [""], "No stderr output expected")
 		assert.strictEqual(exitCode, 0, `Process exited with ${exitCode}`)
-		assert.equal(stderr, "", "No stderr expected")
 
 		const lines = cleanLines(stdout)
 		assert.deepStrictEqual(lines, [
+			...logo,
 			...selectDemo,
 			"[demo]: 1",
 			"Basic UI‑CLI Demo",
@@ -64,19 +62,20 @@ describe("playground demo flow", () => {
 			"Demo completed. Returning to menu...",
 			"==================================================",
 			...selectDemo,
-			"[demo]: 5",
+			"[demo]: 6",
 			"Thanks for exploring UI‑CLI demos! 🚀"
 		])
 	})
 
-	it("runs select demo then exits (sequence 2,3,5)", async () => {
-		const { stdout, stderr, exitCode } = await runPlayground({ PLAY_DEMO_SEQUENCE: "2,3,5" })
+	it("runs select demo then exits (sequence 2,3,6)", async () => {
+		const { stdout, stderr, exitCode } = await runPlayground({ PLAY_DEMO_SEQUENCE: "2,3,6" })
 
+		assert.deepStrictEqual(stderr.split("\n"), [""], "No stderr output expected")
 		assert.strictEqual(exitCode, 0, `Process exited with ${exitCode}`)
-		assert.equal(stderr, "", "No stderr expected")
 
 		const lines = cleanLines(stdout)
 		assert.deepStrictEqual(lines, [
+			...logo,
 			...selectDemo,
 			"[demo]: 2",
 			"Select Prompt Demo",
@@ -90,19 +89,20 @@ describe("playground demo flow", () => {
 			"Demo completed. Returning to menu...",
 			"==================================================",
 			...selectDemo,
-			"[demo]: 5",
+			"[demo]: 6",
 			"Thanks for exploring UI‑CLI demos! 🚀"
 		])
 	})
 
-	it("runs UI‑CLI demo then exits (sequence 3,5)", async () => {
-		const { stdout, stderr, exitCode } = await runPlayground({ PLAY_DEMO_SEQUENCE: "3,5" })
+	it("runs UI‑CLI demo then exits (sequence 3,6)", async () => {
+		const { stdout, stderr, exitCode } = await runPlayground({ PLAY_DEMO_SEQUENCE: "3,6" })
 
+		assert.deepStrictEqual(stderr.split("\n"), [""], "No stderr output expected")
 		assert.strictEqual(exitCode, 0, `Process exited with ${exitCode}`)
-		assert.equal(stderr, "", "No stderr expected")
 
 		const lines = cleanLines(stdout)
 		assert.deepStrictEqual(lines, [
+			...logo,
 			...selectDemo,
 			'[demo]: 3',
 			"Simple UI‑CLI Demo",
@@ -112,22 +112,23 @@ describe("playground demo flow", () => {
 			"Demo completed. Returning to menu...",
 			"==================================================",
 			...selectDemo,
-			"[demo]: 5",
+			"[demo]: 6",
 			"Thanks for exploring UI‑CLI demos! 🚀"
 		])
 	})
 
-	it("runs form demo with predefined answers then exits (sequence 4,validuser,25,2,1,5)", async () => {
+	it("runs form demo with predefined answers then exits (sequence 4,validuser,25,2,1,6)", async () => {
 		const { stdout, stderr, exitCode } = await runPlayground({
-			PLAY_DEMO_SEQUENCE: "4,validuser,25,2,1,5",
+			PLAY_DEMO_SEQUENCE: "4,validuser,25,2,1,6",
 			USER_USERNAME: "initial"
 		})
 
+		assert.deepStrictEqual(stderr.split("\n"), [""], "No stderr output expected")
 		assert.strictEqual(exitCode, 0, `Process exited with ${exitCode}`)
-		assert.equal(stderr, "", "No stderr expected")
 
 		const lines = cleanLines(stdout)
 		assert.deepStrictEqual(lines, [
+			...logo,
 			...selectDemo,
 			"[demo]: 4",
 			"Form Demo – Using Custom Form Class",
@@ -153,7 +154,39 @@ describe("playground demo flow", () => {
 			"Demo completed. Returning to menu...",
 			"==================================================",
 			...selectDemo,
+			"[demo]: 6",
+			"Thanks for exploring UI‑CLI demos! 🚀"
+		])
+	})
+
+	it("runs ui‑message demo with predefined answers then exits (sequence 5,alice,30,2,6)", async () => {
+		const { stdout, stderr, exitCode } = await runPlayground({
+			PLAY_DEMO_SEQUENCE: "5,alice,30,2,6"
+		})
+
+		assert.deepStrictEqual(stderr.split("\n"), [""], "No stderr output expected")
+		assert.strictEqual(exitCode, 0, `Process exited with ${exitCode}`)
+
+		const lines = cleanLines(stdout)
+		assert.deepStrictEqual(lines, [
+			...logo,
+			...selectDemo,
 			"[demo]: 5",
+			"UiMessage Demo – Schema‑driven Form",
+			"User name *: alice",
+			"User age *: 30",
+			"Favorite colour",
+			" 1) Red",
+			" 2) Green",
+			" 3) Blue",
+			"Choose (number): 2",
+			"Form completed!",
+			`Result → {"username":"alice","age":30,"color":"Green"}`,
+			"==================================================",
+			"Demo completed. Returning to menu...",
+			"==================================================",
+			...selectDemo,
+			"[demo]: 6",
 			"Thanks for exploring UI‑CLI demos! 🚀"
 		])
 	})
@@ -161,14 +194,15 @@ describe("playground demo flow", () => {
 
 describe("playground cancel handling", () => {
 	it("cancels the first selection and then exits", async () => {
-		const { stdout, stderr, exitCode } = await runPlayground({ PLAY_DEMO_SEQUENCE: "cancel,5" })
+		const { stdout, stderr, exitCode } = await runPlayground({ PLAY_DEMO_SEQUENCE: "cancel,6" })
 
+		assert.deepStrictEqual(stderr.split("\n"), [""], "No stderr expected")
 		assert.strictEqual(exitCode, 0, `Process should exit with code 0, got ${exitCode}`)
-		assert.equal(stderr, "", "No stderr output expected")
 
 		const lines = cleanLines(stdout)
 
 		assert.deepStrictEqual(lines, [
+			...logo,
 			...selectDemo,
 			"[demo]: cancel",
 			"Demo cancelled. Returning to menu...",
@@ -176,21 +210,22 @@ describe("playground cancel handling", () => {
 			"Demo completed. Returning to menu...",
 			"==================================================",
 			...selectDemo,
-			"[demo]: 5",
+			"[demo]: 6",
 			"Thanks for exploring UI‑CLI demos! 🚀"
 		])
 	})
 
-	it("cancels form demo and returns to menu (sequence 4,cancel,5)", async () => {
+	it("cancels form demo and returns to menu (sequence 4,cancel,6)", async () => {
 		const { stdout, stderr, exitCode } = await runPlayground({
-			PLAY_DEMO_SEQUENCE: "4,cancel,5"  // Select form, cancel input, then exit
+			PLAY_DEMO_SEQUENCE: "4,cancel,6",
 		})
 
+		assert.deepStrictEqual(stderr.split("\n"), [""], "No stderr expected")
 		assert.strictEqual(exitCode, 0, `Process should exit with code 0, got ${exitCode}`)
-		assert.equal(stderr, "", "No stderr expected")
 
 		const lines = cleanLines(stdout)
 		assert.deepStrictEqual(lines, [
+			...logo,
 			...selectDemo,
 			"[demo]: 4",
 			"Form Demo – Using Custom Form Class",
@@ -201,7 +236,7 @@ describe("playground cancel handling", () => {
 			"Demo completed. Returning to menu...",
 			"==================================================",
 			...selectDemo,
-			"[demo]: 5",
+			"[demo]: 6",
 			"Thanks for exploring UI‑CLI demos! 🚀"
 		])
 	})

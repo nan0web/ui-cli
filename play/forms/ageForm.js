@@ -1,12 +1,12 @@
-import { UIForm, FormInput } from '@nan0web/ui'
+import { UiForm, FormInput } from '@nan0web/ui'
 
 /**
  * Creates an age confirmation form
  * @param {Function} t - Translation function
- * @returns {UIForm} Age confirmation form
+ * @returns {UiForm} Age confirmation form
  */
 export function createAgeForm(t) {
-	return new UIForm({
+	return new UiForm({
 		title: t('Age confirmation form'),
 		id: 'age-confirmation',
 		state: {},

@@ -14,7 +14,7 @@ It uses an adapter pattern to seamlessly integrate with application data models.
 
 Core classes:
 
-- `CLIInputAdapter` — handles form, input, and select requests in CLI.
+- `CLiInputAdapter` — handles form, input, and select requests in CLI.
 - `Input` — wraps user input with value and cancellation status.
 - `CancelError` — thrown when a user cancels an operation.
 
@@ -40,7 +40,7 @@ yarn add @nan0web/ui-cli
 
 ## Usage
 
-### CLIInputAdapter
+### CLiInputAdapter
 
 The adapter provides methods to handle form, input, and select requests.
 
@@ -48,10 +48,10 @@ The adapter provides methods to handle form, input, and select requests.
 
 Displays a form and collects user input field-by-field with validation.
 
-How to request form input via CLIInputAdapter?
+How to request form input via CLiInputAdapter?
 ```js
-import { CLIInputAdapter } from '@nan0web/ui-cli'
-const adapter = new CLIInputAdapter()
+import { CLiInputAdapter } from '@nan0web/ui-cli'
+const adapter = new CLiInputAdapter()
 const fields = [
 	{ name: "name", label: "Full Name", required: true },
 	{ name: "email", label: "Email", type: "email", required: true },
@@ -67,7 +67,7 @@ const setData = (data) => {
 	newForm.state = data
 	return newForm
 }
-const form = UIForm.from({
+const form = UiForm.from({
 	title: "User Profile",
 	fields,
 	id: "user-profile-form",
@@ -80,10 +80,10 @@ const result = await adapter.requestForm(form, { silent: true })
 console.info(result.form.state) // ← { name: "John Doe", email: "John.Doe@example.com" }
 ```
 
-How to request select input via CLIInputAdapter?
+How to request select input via CLiInputAdapter?
 ```js
-import { CLIInputAdapter } from '@nan0web/ui-cli'
-const adapter = new CLIInputAdapter()
+import { CLiInputAdapter } from '@nan0web/ui-cli'
+const adapter = new CLiInputAdapter()
 const config = {
 	title: "Choose Language:",
 	prompt: "Language (1-2): ",
@@ -184,7 +184,7 @@ console.error(error.message) // ← Operation cancelled by user
 ```
 ## API
 
-### CLIInputAdapter
+### CLiInputAdapter
 
 * **Methods**
   * `requestForm(form, options)` — (async) handles form request
