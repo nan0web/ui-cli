@@ -60,6 +60,7 @@ export default class CLi {
 				/** @ts-ignore – only `content` needed for tests */
 				yield new OutputMessage({ content: [`Executed ${cmd} with body: ${JSON.stringify(validated.body)}`] })
 				if (typeof Class.run === "function") yield* Class.run(validated)
+				if (typeof validated.run === "function") yield* validated.run(msg)
 			})
 		})
 	}
