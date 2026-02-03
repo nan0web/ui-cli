@@ -104,19 +104,20 @@ Performs a searchable selection. Supports static options or async fetch function
 
 ```javascript
 const adapter = new CLiInputAdapter()
-const model = await adapter.requestAutocomplete({
+const result = await adapter.requestAutocomplete({
   message: 'Choose AI model:',
   options: async (query) => [
     { title: 'GPT-4', value: 'gpt-4' },
     { title: 'Claude 3', value: 'claude3' }
   ].filter(m => m.title.toLowerCase().includes(query.toLowerCase()))
 })
+const model = result.value
 ```
 
 How to request autocomplete via CLiInputAdapter?
 ```js
 const adapter = new CLiInputAdapter()
-const model = await adapter.requestAutocomplete({
+const result = await adapter.requestAutocomplete({
 	message: 'Choose model',
 	options: [
 		{ title: 'GPT-4', value: 'gpt-4' },
@@ -129,11 +130,12 @@ const model = await adapter.requestAutocomplete({
 Requests multiple selection from a list.
 
 ```javascript
-const fruits = await adapter.requestMultiselect({
+const result = await adapter.requestMultiselect({
   message: 'Select fruits:',
   options: ['Apple', 'Banana', 'Orange'],
   initial: ['Apple']
 })
+const fruits = result.value
 ```
 
 How to request multiselect via CLiInputAdapter?
@@ -149,11 +151,12 @@ const result = await adapter.requestMultiselect({
 Requests input with a specific format mask.
 
 ```javascript
-const phone = await adapter.requestMask({
+const result = await adapter.requestMask({
   message: 'Enter phone:',
   mask: '(###) ###-####',
   placeholder: '(000) 000-0000'
 })
+const phone = result.value
 ```
 
 How to request masked input via CLiInputAdapter?
@@ -189,16 +192,17 @@ const result = await adapter.requestTable({
 Simple single-field request. Supports `password` type for secure masking.
 
 ```javascript
-const password = await adapter.requestInput({
+const result = await adapter.requestInput({
   message: 'Enter API Key:',
   type: 'password'
 })
+const password = result.value
 ```
 
 How to request password via CLiInputAdapter?
 ```js
 const adapter = new CLiInputAdapter()
-const pass = await adapter.requestInput({
+const result = await adapter.requestInput({
 	message: 'Enter Secret:',
 	type: 'password'
 })
@@ -263,7 +267,7 @@ How to pose a confirmation question with confirm()?
 ```js
 import { confirm } from '@nan0web/ui-cli'
 const result = await confirm('Do you want to proceed?')
-console.info(result) // ← true
+console.info(result.value) // ← true
 ```
 #### `select(config)`
 
@@ -352,13 +356,13 @@ console.error(error.message) // ← Operation cancelled by user
 * **Parameters**
   * `config.title` (string) – selection title
   * `config.options` (array | Map) – options to choose from
-* **Returns** Promise<{ index, value }>
+* **Returns** Promise<{ index, value, cancelled }>
 
 ### confirm(message)
 
 * **Parameters**
   * `message` (string) – confirmation question
-* **Returns** Promise<boolean>
+* **Returns** Promise<{ value, cancelled }>
 
 ### next([conf])
 

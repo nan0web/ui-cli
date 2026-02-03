@@ -39,8 +39,8 @@ async function next() {
 }
 
 async function confirm(message) {
-	if ('Do you want to proceed?' === message) return true
-	return false
+	if ('Do you want to proceed?' === message) return { value: true, cancelled: false }
+	return { value: false, cancelled: false }
 }
 
 async function text(config) {
@@ -59,20 +59,21 @@ class CLiInputAdapter extends BaseCLiInputAdapter {
 		return await confirm(message)
 	}
 	async requestInput(config) {
-		return await ask(config.prompt ?? config.message)
+		const val = await ask(config.prompt ?? config.message)
+		return { value: val, cancelled: false }
 	}
 	async requestAutocomplete(config) {
-		if (config.message === 'Choose model') return 'gpt-4'
-		return null
+		if (config.message === 'Choose model') return { value: 'gpt-4', cancelled: false }
+		return { value: null, cancelled: false }
 	}
 	async requestTable(config) {
 		return { value: config.data, cancelled: false }
 	}
 	async requestMultiselect(config) {
-		return ['Option A']
+		return { value: ['Option A'], cancelled: false }
 	}
 	async requestMask(config) {
-		return '123-456'
+		return { value: '123-456', cancelled: false }
 	}
 }
 
@@ -237,7 +238,7 @@ function testRender() {
 		}
 
 		const result = await adapter.requestSelect(config)
-		console.info(result) // ← en
+		console.info(result.value) // ← en
 		assert.deepStrictEqual(console.output()[0][1], 'en')
 	})
 
@@ -249,25 +250,26 @@ function testRender() {
 	 *
 	 * ```javascript
 	 * const adapter = new CLiInputAdapter()
-	 * const model = await adapter.requestAutocomplete({
+	 * const result = await adapter.requestAutocomplete({
 	 *   message: 'Choose AI model:',
 	 *   options: async (query) => [
 	 *     { title: 'GPT-4', value: 'gpt-4' },
 	 *     { title: 'Claude 3', value: 'claude3' }
 	 *   ].filter(m => m.title.toLowerCase().includes(query.toLowerCase()))
 	 * })
+	 * const model = result.value
 	 * ```
 	 */
 	it('How to request autocomplete via CLiInputAdapter?', { timeout: 2000 }, async () => {
 		const adapter = new CLiInputAdapter()
-		const model = await adapter.requestAutocomplete({
+		const result = await adapter.requestAutocomplete({
 			message: 'Choose model',
 			options: [
 				{ title: 'GPT-4', value: 'gpt-4' },
 				{ title: 'Claude 3', value: 'claude3' }
 			]
 		})
-		assert.equal(model, 'gpt-4')
+		assert.equal(result.value, 'gpt-4')
 	})
 
 	/**
@@ -277,11 +279,12 @@ function testRender() {
 	 * Requests multiple selection from a list.
 	 *
 	 * ```javascript
-	 * const fruits = await adapter.requestMultiselect({
+	 * const result = await adapter.requestMultiselect({
 	 *   message: 'Select fruits:',
 	 *   options: ['Apple', 'Banana', 'Orange'],
 	 *   initial: ['Apple']
 	 * })
+	 * const fruits = result.value
 	 * ```
 	 */
 	it('How to request multiselect via CLiInputAdapter?', { timeout: 2000 }, async () => {
@@ -290,7 +293,7 @@ function testRender() {
 			message: 'Select items',
 			options: ['Option A', 'Option B']
 		})
-		assert.deepStrictEqual(result, ['Option A'])
+		assert.deepStrictEqual(result.value, ['Option A'])
 	})
 
 	/**
@@ -300,11 +303,12 @@ function testRender() {
 	 * Requests input with a specific format mask.
 	 *
 	 * ```javascript
-	 * const phone = await adapter.requestMask({
+	 * const result = await adapter.requestMask({
 	 *   message: 'Enter phone:',
 	 *   mask: '(###) ###-####',
 	 *   placeholder: '(000) 000-0000'
 	 * })
+	 * const phone = result.value
 	 * ```
 	 */
 	it('How to request masked input via CLiInputAdapter?', { timeout: 2000 }, async () => {
@@ -313,7 +317,7 @@ function testRender() {
 			message: 'Phone',
 			mask: '###-###'
 		})
-		assert.equal(result, '123-456')
+		assert.equal(result.value, '123-456')
 	})
 
 	/**
@@ -346,19 +350,20 @@ function testRender() {
 	 * Simple single-field request. Supports `password` type for secure masking.
 	 *
 	 * ```javascript
-	 * const password = await adapter.requestInput({
+	 * const result = await adapter.requestInput({
 	 *   message: 'Enter API Key:',
 	 *   type: 'password'
 	 * })
+	 * const password = result.value
 	 * ```
 	 */
 	it('How to request password via CLiInputAdapter?', { timeout: 2000 }, async () => {
 		const adapter = new CLiInputAdapter()
-		const pass = await adapter.requestInput({
+		const result = await adapter.requestInput({
 			message: 'Enter Secret:',
 			type: 'password'
 		})
-		assert.equal(pass, 'secret-key')
+		assert.equal(result.value, 'secret-key')
 	})
 
 	/**
@@ -439,7 +444,7 @@ function testRender() {
 	it('How to pose a confirmation question with confirm()?', async () => {
 		//import { confirm } from '@nan0web/ui-cli'
 		const result = await confirm('Do you want to proceed?')
-		console.info(result) // ← true
+		console.info(result.value) // ← true
 		assert.equal(console.output()[0][1], true)
 	})
 
@@ -546,13 +551,13 @@ function testRender() {
 	 * * **Parameters**
 	 *   * `config.title` (string) – selection title
 	 *   * `config.options` (array | Map) – options to choose from
-	 * * **Returns** Promise<{ index, value }>
+	 * * **Returns** Promise<{ index, value, cancelled }>
 	 *
 	 * ### confirm(message)
 	 *
 	 * * **Parameters**
 	 *   * `message` (string) – confirmation question
-	 * * **Returns** Promise<boolean>
+	 * * **Returns** Promise<{ value, cancelled }>
 	 *
 	 * ### next([conf])
 	 *

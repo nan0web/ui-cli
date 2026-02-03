@@ -32,6 +32,8 @@ function highlight(text, query) {
  * @param {boolean} [input.interactive=true] - Whether to allow filtering.
  * @param {boolean} [input.instant=false] - Whether to use instant search (char-by-char).
  * @param {(val:string)=>string} [input.t] - Translation function.
+ * @param {Logger} [input.logger] - Logger instance.
+ * @param {Function} [input.prompt] - Prompt function.
  * @returns {Promise<{value:any, cancelled:boolean}>} Selected row (if interactive) or last state.
  */
 export async function table(input) {
@@ -44,7 +46,7 @@ export async function table(input) {
         t = (k) => k,
     } = input
 
-    const logger = new Logger()
+    const logger = input.logger || new Logger()
 
     if (!interactive) {
         if (title) logger.info(title)
@@ -137,8 +139,9 @@ export async function table(input) {
         if (title) logger.info(`${title} (Filter: "${query || 'none'}")`)
         logger.table(displayData, displayColumns)
 
-        const res = await text({
-            message: t('Type to filter (or "::exit" to finish / "::clear" to reset):'),
+        const promptFn = input.prompt || text
+        const res = await promptFn({
+            message: t('table.filter_prompt'),
             initial: query
         })
 

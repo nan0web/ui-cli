@@ -30,9 +30,9 @@ export async function runLongListDemo(console, adapter, t) {
         console: { info: console.info.bind(console) }
     })
 
-    if (result === undefined) {
+    if (!result || result.cancelled) {
         console.warn(t('No selection made.'))
     } else {
-        console.success(`${t('Selected item ID:')} ${result}`)
+        console.success(`${t('Selected item ID:')} ${result.value}`)
     }
 }

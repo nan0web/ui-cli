@@ -45,7 +45,7 @@ export async function select(input) {
 		if (typeof el === 'string') {
 			return { title: el, value: el }
 		}
-		return { title: el.label, value: el.value }
+		return { title: el.label || el.title, value: el.value }
 	})
 
 	const response = await prompts({
@@ -63,7 +63,7 @@ export async function select(input) {
 
 	const index = choices.findIndex(c => c.value === response.value)
 
-	return { index, value: response.value, cancelled: false }
+	return { index, value: response.value, cancelled: response.value === undefined }
 }
 
 /**

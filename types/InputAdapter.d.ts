@@ -74,63 +74,90 @@ export default class CLiInputAdapter extends BaseInputAdapter {
      * Prompt the user to select an option from a list.
      *
      * @param {Object} config - Configuration object.
-     * @returns {Promise<string|undefined>} Selected value (or undefined on cancel).
+     * @returns {Promise<{value: string|undefined, cancelled: boolean}>} Selected value (or undefined on cancel).
      */
-    requestSelect(config: any): Promise<string | undefined>;
+    requestSelect(config: any): Promise<{
+        value: string | undefined;
+        cancelled: boolean;
+    }>;
     /**
      * Prompt for a single string input.
      *
      * @param {Object} config - Prompt configuration.
-     * @returns {Promise<string|undefined>} User response string or undefined on cancel.
+     * @returns {Promise<{value: string|undefined, cancelled: boolean}>} User response string or undefined on cancel.
      */
-    requestInput(config: any): Promise<string | undefined>;
+    requestInput(config: any): Promise<{
+        value: string | undefined;
+        cancelled: boolean;
+    }>;
     /**
      * Prompt the user for an autocomplete selection.
      *
      * @param {Object} config - Configuration object.
-     * @returns {Promise<any>} Selected value.
+     * @returns {Promise<{value: any, cancelled: boolean}>} Selected value.
      */
-    requestAutocomplete(config: any): Promise<any>;
+    requestAutocomplete(config: any): Promise<{
+        value: any;
+        cancelled: boolean;
+    }>;
     /**
      * Requests confirmation (yes/no).
      *
      * @param {Object} config - Confirmation configuration.
-     * @returns {Promise<boolean>} User confirmation.
+     * @returns {Promise<{value: boolean, cancelled: boolean}>} User confirmation.
      */
-    requestConfirm(config: any): Promise<boolean>;
+    requestConfirm(config: any): Promise<{
+        value: boolean;
+        cancelled: boolean;
+    }>;
     /**
      * Display an interactive table.
      *
      * @param {Object} config - Table configuration.
-     * @returns {Promise<any>}
+     * @returns {Promise<{value: any, cancelled: boolean}>}
      */
-    requestTable(config: any): Promise<any>;
+    requestTable(config: any): Promise<{
+        value: any;
+        cancelled: boolean;
+    }>;
     /**
      * Requests multiple selection.
      *
      * @param {Object} config - Multiselect configuration.
-     * @returns {Promise<any[]>} Selected values.
+     * @returns {Promise<{value: any[], cancelled: boolean}>} Selected values.
      */
-    requestMultiselect(config: any): Promise<any[]>;
+    requestMultiselect(config: any): Promise<{
+        value: any[];
+        cancelled: boolean;
+    }>;
     /**
      * Requests masked input.
      *
      * @param {Object} config - Mask configuration.
-     * @returns {Promise<string>} Masked value.
+     * @returns {Promise<{value: string, cancelled: boolean}>} Masked value.
      */
-    requestMask(config: any): Promise<string>;
+    requestMask(config: any): Promise<{
+        value: string;
+        cancelled: boolean;
+    }>;
     /**
      * Request a toggle switch.
      * @param {Object} config
-     * @returns {Promise<boolean>}
+     * @returns {Promise<{value: boolean, cancelled: boolean}>}
      */
-    requestToggle(config: any): Promise<boolean>;
+    requestToggle(config: any): Promise<{
+        value: boolean;
+        cancelled: boolean;
+    }>;
     /**
      * Request a numeric slider.
      * @param {Object} config
-     * @returns {Promise<number>}
+     * @returns {Promise<{value: number, cancelled: boolean}>}
      */
-    requestSlider(config: any): Promise<number>;
+    requestSlider(config: any): Promise<{
+        value: number;
+        cancelled: boolean;
+    }>;
     /**
      * Create a progress bar.
      * @param {Object} options
@@ -146,15 +173,21 @@ export default class CLiInputAdapter extends BaseInputAdapter {
     /**
      * Request a selection from a tree view.
      * @param {Object} config
-     * @returns {Promise<any>} Selected node(s).
+     * @returns {Promise<{value: any, cancelled: boolean}>} Selected node(s).
      */
-    requestTree(config: any): Promise<any>;
+    requestTree(config: any): Promise<{
+        value: any;
+        cancelled: boolean;
+    }>;
     /**
      * Request a date or time from the user.
      * @param {Object} config
-     * @returns {Promise<Date|undefined>}
+     * @returns {Promise<{value: Date|undefined, cancelled: boolean}>}
      */
-    requestDateTime(config: any): Promise<Date | undefined>;
+    requestDateTime(config: any): Promise<{
+        value: Date | undefined;
+        cancelled: boolean;
+    }>;
     /**
      * Asks user a question or form and returns the completed form
      * @param {string | UiForm} question

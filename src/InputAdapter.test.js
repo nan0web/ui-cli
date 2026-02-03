@@ -67,20 +67,23 @@ describe('CLiInputAdapter', () => {
 			]),
 		}
 		const result = await adapter.requestSelect(config)
-		assert.equal(result, 'uk')
+		assert.equal(result.value, 'uk')
+		assert.equal(result.cancelled, false)
 	})
 
 	it('should handle requestSelect cancellation', { timeout: 2000 }, async () => {
 		prompts.inject([undefined])
 		const config = { title: 'Test', options: ['opt'], id: 'test', prompt: 'Choose:' }
 		const result = await adapter.requestSelect(config)
-		assert.equal(result, undefined)
+		assert.equal(result.value, undefined)
+		assert.equal(result.cancelled, true)
 	})
 
 	it('should handle requestInput', { timeout: 2000 }, async () => {
 		prompts.inject(['some value'])
 		const result = await adapter.requestInput({ prompt: 'Input:', id: 'test' })
-		assert.equal(result, 'some value')
+		assert.equal(result.value, 'some value')
+		assert.equal(result.cancelled, false)
 	})
 
 	it('should render simple component fallback', { timeout: 2000 }, async () => {

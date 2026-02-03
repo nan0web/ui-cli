@@ -24,18 +24,14 @@ Select demo to run:
 ✔  8
 Tree View Demo
 Scenario 1: Select a File (Static Tree)
-Select a file:package.json
+Select a file: package.json
 You selected: package.json
 Scenario 2: Select a Directory (Async/Lazy)
-Select a directory:src
+Select a directory: src
 You selected: src
 Scenario 3: Multi-Select Files
-Select files to delete:play
-Selected 1 items: play
-Press any key to continue...
-==================================================
-Demo completed. Returning to menu...
-==================================================
+Select files to delete: play
+Error occurred. Returning to menu...
 Select demo to run:
  1) Basic Logging
  2) Select Prompt
@@ -56,5 +52,7 @@ Select demo to run:
  17) Spinner
  18) Date & Time
   ↓ (1 more)
-✔  19
+✔  a
 Thanks for exploring UI‑CLI demos! 🚀
+--- STDERR ---
+TypeError: selected?.map is not a function

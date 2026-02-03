@@ -77,13 +77,15 @@ async function chooseDemo() {
 	]
 
 	// Pass the real logger as `console` so the menu is printed.
-	const choice = await inputAdapter.requestSelect({
+	const result = await inputAdapter.requestSelect({
 		title: t('Select UI‑CLI demo to run:'),
 
 		options: demos.map((d) => d.name),
 		limit: Math.max(5, (process.stdout.rows || 24) - 6),
 		console, // <-- ensure the menu is displayed
 	})
+
+	const choice = result.value
 
 	// Convert the selected name to its internal value or handle cancel.
 	if (!choice) return 'exit' // Escape or Ctrl+C in menu = exit
@@ -117,11 +119,12 @@ async function main() {
 
 	// If we are not in automated test mode, we might want to ask for language
 	if (!process.env.PLAY_DEMO_SEQUENCE) {
-		const langChoice = await inputAdapter.requestSelect({
+		const result = await inputAdapter.requestSelect({
 			title: 'Choose language / Виберіть мову:',
 			options: Array.from(localesMap.values()),
 			limit: Math.max(5, (process.stdout.rows || 24) - 6)
 		})
+		const langChoice = result.value
 		if (langChoice) {
 			for (const [code, name] of localesMap.entries()) {
 				if (name === langChoice) {
@@ -159,12 +162,14 @@ async function main() {
 				{ name: `← ${t('Exit')}`, value: 'exit' },
 			]
 
-			const selection = await inputAdapter.requestSelect({
+			const result = await inputAdapter.requestSelect({
 				title: t('Select demo to run:'),
 				options: demos.map((d) => d.name),
 				limit: Math.max(5, (process.stdout.rows || 24) - 6),
 				console, // ensure menu is visible in snapshots
 			})
+
+			const selection = result.value
 
 
 			const demoItem = demos.find((d) => d.name === selection)

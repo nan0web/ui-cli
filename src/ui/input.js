@@ -72,7 +72,7 @@ export async function text(config) {
 		}
 	})
 
-	return { value: response.value, cancelled: false }
+	return { value: response.value, cancelled: response.value === undefined }
 }
 
 

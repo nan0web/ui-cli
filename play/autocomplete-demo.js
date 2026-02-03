@@ -35,9 +35,9 @@ export async function runAutocompleteDemo(console, adapter, t) {
         limit: 5 // Show only 5 items at a time
     })
 
-    if (result === undefined) {
+    if (!result || result.cancelled) {
         console.warn(t('Selection cancelled.'))
     } else {
-        console.success(`${t('You selected:')} ${result}`)
+        console.success(`${t('You selected:')} ${result.value}`)
     }
 }

@@ -97,7 +97,7 @@ const SCENARIOS = [
     },
     {
         name: 'toggle',
-        seq: '14,19'
+        seq: '14,y,19'
     },
     {
         name: 'slider',

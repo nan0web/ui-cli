@@ -75,7 +75,7 @@ export async function runSelectDemo(console, adapter, t) {
 	console.success(t('Select Prompt Demo'))
 
 	// Pass the real logger as `console` so the colour menu appears.
-	const value = await adapter.requestSelect({
+	const result = await adapter.requestSelect({
 		title: t('Pick a colour'),
 
 		options: [
@@ -86,7 +86,9 @@ export async function runSelectDemo(console, adapter, t) {
 		console, // <-- keep output consistent with manual run
 	})
 
-	if (value === undefined) {
+	const value = result?.value
+
+	if (result.cancelled) {
 		console.warn(t('Selection cancelled.'))
 		return
 	}

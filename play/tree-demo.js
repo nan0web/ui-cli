@@ -62,12 +62,13 @@ export async function runTreeDemo(console, adapter, t) {
     // Demo 1: File Selection (Static Tree)
     // We use the real tree fully loaded.
     console.info('\n' + t('Scenario 1: Select a File (Static Tree)'))
-    const fileNode = await adapter.requestTree({
+    const fileResult = await adapter.requestTree({
         message: t('Select a file:'),
         tree: realTree,
         mode: 'file'
     })
-    console.info(`${t('You selected:')} ${fileNode?.name}`)
+    const fileNode = fileResult.value
+    console.info(`${t('You selected:')} ${fileNode?.name || fileNode}`)
     if (fileNode?.path) {
         console.info(`${t('Full path:')} ${fileNode.path}`)
     }
@@ -97,23 +98,25 @@ export async function runTreeDemo(console, adapter, t) {
     }
 
     // For prompt, we pass loader instead of tree
-    const dirNode = await adapter.requestTree({
+    const dirResult = await adapter.requestTree({
         message: t('Select a directory:'),
         loader: asyncLoader,
         mode: 'dir'
     })
-    console.info(`${t('You selected:')} ${dirNode?.name}`)
+    const dirNode = dirResult.value
+    console.info(`${t('You selected:')} ${dirNode?.name || dirNode}`)
     if (dirNode?.path) {
         console.info(`${t('Full path:')} ${dirNode.path}`)
     }
 
     // Demo 3: Multi-Select
     console.info('\n' + t('Scenario 3: Multi-Select Files'))
-    const selected = await adapter.requestTree({
+    const selectedResult = await adapter.requestTree({
         message: t('Select files to delete:'),
         tree: realTree, // Use full tree for speed
         mode: 'multi'
     })
+    const selected = selectedResult.value
     console.info(`${t('Selected')} ${selected?.length} ${t('items')}: ${selected?.map(n => n.name).join(', ')}`)
 
     await adapter.pause(t('Press any key to continue...'))

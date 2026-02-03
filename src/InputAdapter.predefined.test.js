@@ -29,7 +29,8 @@ describe('CLiInputAdapter – predefined answers (isolated)', () => {
 			options: ['Red', 'Green', 'Blue'],
 			// no console – silent output is fine for the isolated test
 		})
-		assert.equal(result, 'Green')
+		assert.equal(result.value, 'Green')
+		assert.equal(result.cancelled, false)
 	})
 
 	it('requestSelect consumes answers sequentially', async () => {
@@ -45,8 +46,10 @@ describe('CLiInputAdapter – predefined answers (isolated)', () => {
 			prompt: '[db]: ',
 			options: ['Red', 'Green', 'Blue'],
 		})
-		assert.equal(first, 'Green')
-		assert.equal(second, 'Blue')
+		assert.equal(first.value, 'Green')
+		assert.equal(second.value, 'Blue')
+		assert.equal(first.cancelled, false)
+		assert.equal(second.cancelled, false)
 	})
 
 	it('requestInput uses the next predefined answer', async () => {
@@ -55,7 +58,8 @@ describe('CLiInputAdapter – predefined answers (isolated)', () => {
 		const result = await adapter.requestInput({
 			prompt: 'What is your name? ',
 		})
-		assert.equal(result, 'John Doe')
+		assert.equal(result.value, 'John Doe')
+		assert.equal(result.cancelled, false)
 	})
 
 	it('requestForm consumes predefined answers in order', async () => {

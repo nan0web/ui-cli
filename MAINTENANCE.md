@@ -26,6 +26,17 @@ This document serves as a reference for maintaining the UI-CLI package, ensuring
    - Example: `LANG=uk PLAY_DEMO_SEQUENCE='4,user,15' node play/main.js`
    - Check against "Raw English" leaks (e.g., ensure no `[demo]:` prefixes or untranslated prompts appearing in Ukrainian mode).
 
+## Unified Return Contract
+
+All `request*` methods in `CLiInputAdapter` and standalone UI utilities (like `select`, `confirm`, `input`, `tree`, etc.) MUST follow the unified return contract:
+
+- **Success**: Return an object `{ value: any, cancelled: false }`.
+- **Cancel**: Return an object `{ value: undefined, cancelled: true }`.
+- **Standalone Utilities**: Standalone UI utilities MUST throw `CancelError` on user cancellation (e.g., Esc or Ctrl+C). 
+- **Adapter Handling**: `CLiInputAdapter` MUST catch these `CancelError` exceptions and normalize them into `{ value: undefined, cancelled: true }`.
+
+This ensures consistent behavior across interactive menu loops and automated test sequences.
+
 ## Common Pitfalls
 
 - **Hardcoded Prefixes**: Avoid hardcoding `[demo]:` or similar prefixes in `options.prompt`. Let the `prompts` library handle styling or use a configurable prefix.

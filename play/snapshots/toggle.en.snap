@@ -22,8 +22,29 @@ Select demo to run:
  18) Date & Time
   ↓ (1 more)
 ✔  14
-Subscribe to newsletter19
+✔ Subscribe to newsletter y
 ==================================================
 Demo completed. Returning to menu...
 ==================================================
+Select demo to run:
+ 1) Basic Logging
+ 2) Select Prompt
+ 3) Simple Demo
+ 4) Form Input
+ 5) UiMessage
+ 6) View Components
+ 7) Nav Components
+ 8) Tree View
+ 9) Table Filtering
+ 10) Instant Table
+ 11) Autocomplete
+ 12) Long List
+ 13) Advanced Form
+ 14) Toggle
+ 15) Slider
+ 16) ProgressBar
+ 17) Spinner
+ 18) Date & Time
+  ↓ (1 more)
+✔  19
 Thanks for exploring UI‑CLI demos! 🚀

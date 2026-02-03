@@ -271,6 +271,7 @@ export async function tree(config) {
                 resolve(Array.from(state.checked))
             } else {
                 const node = state.flat[state.cursor]
+                if (!node) return // Nothing to submit
                 // Validation
                 if (mode === 'file' && node.type !== 'file') {
                     // If Enter on dir in 'file' mode -> toggle expand
