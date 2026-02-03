@@ -121,6 +121,7 @@ export default {
 	Payment: 'Payment',
 	Review: 'Review',
 	BADGES: 'BADGES',
+	'Error': 'Error',
 	TOASTS: 'TOASTS',
 	ALERTS: 'ALERTS',
 	Info: 'Info',

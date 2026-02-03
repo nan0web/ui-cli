@@ -20,17 +20,17 @@ Select demo to run:
  16) ProgressBar
  17) Spinner
  18) Date & Time
- 19) ← Exit
-18
+  ↓ (1 more)
+ 18
 DateTime Picker Demo
 Scenario 1: Select a Date
-Pick a date:2026-01-01
+Pick a date: 2026-01-01
 You selected: 2026-01-01
 Scenario 2: Select Time (HH:mm)
-Pick a time:10:20
+Pick a time: 10:20
 You selected time: 10:20
 Scenario 3: Full Date & Time
-Pick full date and time:2026-01-21 16:20
+Pick full date and time: 2026-01-21 16:20
 You selected: 2026-01-21 14:20
 Press any key to continue...
 ==================================================
@@ -55,6 +55,6 @@ Select demo to run:
  16) ProgressBar
  17) Spinner
  18) Date & Time
- 19) ← Exit
-19
+  ↓ (1 more)
+ 19
 Thanks for exploring UI‑CLI demos! 🚀

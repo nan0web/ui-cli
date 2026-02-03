@@ -20,16 +20,16 @@ Select demo to run:
  16) ProgressBar
  17) Spinner
  18) Date & Time
- 19) ← Exit
-15
+  ↓ (1 more)
+ 15
 Slider Demo
-Select Volume (0-100)10
+Select Volume (0-100) 10
 Selected: 10
-Select Speed (0-1000)120
+Select Speed (0-1000) 120
 Selected: 120
-Select Reward (0-1M)555000
+Select Reward (0-1M) 555000
 Selected: 555000
-Select Disk Size (TB)700
+Select Disk Size (TB) 700
 Selected: 700
 ==================================================
 Demo completed. Returning to menu...
@@ -53,6 +53,6 @@ Select demo to run:
  16) ProgressBar
  17) Spinner
  18) Date & Time
- 19) ← Exit
-19
+  ↓ (1 more)
+ 19
 Thanks for exploring UI‑CLI demos! 🚀

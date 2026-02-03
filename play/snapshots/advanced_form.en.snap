@@ -20,15 +20,15 @@ Select demo to run:
  16) ProgressBar
  17) Spinner
  18) Date & Time
- 19) ← Exit
-13
+  ↓ (1 more)
+ 13
 Advanced Form Demo
 Testing password masking and boolean fields.
-Login *: adv_user
+Login *:  adv_user
 Password *: ****
-Phone1234567890
-Remember me?y
-Select your rolesAdmin
+Phone 1234567890
+Remember me? y
+Select your roles Admin
 Form submitted!
 Form data (password is hidden here):
 {"username":"adv_user","password":"********","phone":"1234567890","rememberMe":true,"roles":["Admin"]}
@@ -54,6 +54,6 @@ Select demo to run:
  16) ProgressBar
  17) Spinner
  18) Date & Time
- 19) ← Exit
-19
+  ↓ (1 more)
+ 19
 Thanks for exploring UI‑CLI demos! 🚀

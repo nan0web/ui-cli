@@ -10,26 +10,28 @@ import { CancelError } from '@nan0web/ui/core'
  * Custom SliderPrompt that adds visual bar and Shift+Up/Down jumps.
  */
 class SliderPrompt extends NumberPrompt {
+	/** @param {any} opts */
 	constructor(opts) {
 		super(opts)
 		this.jump = opts.jump || 10
+		this.shift = false
 	}
 
 	up() {
 		const self = /** @type {any} */ (this)
-		self.value = Math.min(self.max, self.value + (self.keypress?.shift ? self.jump : self.increment))
-		self.render()
+		self.value = Math.min(self.max, self.value + (this.shift ? this.jump : self.increment))
+		this.render()
 	}
 
 	down() {
 		const self = /** @type {any} */ (this)
-		self.value = Math.max(self.min, self.value - (self.keypress?.shift ? self.jump : self.increment))
-		self.render()
+		self.value = Math.max(self.min, self.value - (this.shift ? this.jump : self.increment))
+		this.render()
 	}
 
 	/** @param {any} key */
 	_(key, keypress) {
-		const self = /** @type {any} */ (this)
+		this.shift = !!keypress?.shift
 		if (key === '+' || key === '=') {
 			this.up()
 			return
@@ -43,6 +45,7 @@ class SliderPrompt extends NumberPrompt {
 
 	render() {
 		const self = /** @type {any} */ (this)
+		if (self.closed) return
 		const width = 20
 		const range = self.max - self.min || 1
 		const percent = Math.max(0, Math.min(1, (self.value - self.min) / range))
@@ -50,7 +53,10 @@ class SliderPrompt extends NumberPrompt {
 		const bar = '━'.repeat(filled) + '─'.repeat(width - filled)
 		const label = self.msg
 		const val = self.value
-		self.out.write(`\r${label} [${bar}] ${val}  `)
+
+		// Properly handle prompts lifecycle
+		self.out.write('\x1B[2K\x1B[G') // Clear line and move to start
+		self.out.write(`${label} [${bar}] ${val}`)
 	}
 }
 

@@ -20,14 +20,14 @@ Select demo to run:
  16) ProgressBar
  17) Spinner
  18) Date & Time
- 19) ← Exit
-2
+  ↓ (1 more)
+ 2
 Select Prompt Demo
 Pick a colour
  1) Red
  2) Green
  3) Blue
-3
+ 3
 ✓ You selected: Blue
 ==================================================
 Demo completed. Returning to menu...
@@ -51,6 +51,6 @@ Select demo to run:
  16) ProgressBar
  17) Spinner
  18) Date & Time
- 19) ← Exit
-19
+  ↓ (1 more)
+ 19
 Thanks for exploring UI‑CLI demos! 🚀

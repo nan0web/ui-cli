@@ -248,6 +248,7 @@ export default {
 	Payment: 'Оплата',
 	Review: 'Перевірка',
 	BADGES: 'БЕЙДЖІ (BADGES)',
+	'Error': 'Помилка',
 	TOASTS: 'ПОВІДОМЛЕННЯ (TOASTS)',
 	ALERTS: 'СПОВІЩЕННЯ (ALERTS)',
 	Info: 'Інфо',

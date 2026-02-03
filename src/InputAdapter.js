@@ -494,7 +494,7 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 						config.console.info(` ${i + 1}) ${c.label}`)
 					})
 					if (choices.length > limit) {
-						config.console.info(` ... (${choices.length - limit} ${this.#t('more')})`)
+						config.console.info(`  ↓ (${choices.length - limit} ${this.#t('more')})`)
 					}
 					const p = config.prompt ?? ''
 					config.console.info(`${p} ${predefined}`)

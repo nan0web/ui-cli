@@ -20,8 +20,8 @@ Select demo to run:
  16) ProgressBar
  17) Spinner
  18) Date & Time
- 19) ← Exit
-4
+  ↓ (1 more)
+ 4
 Form Demo – Using Custom Form Class
 Filling user form... (uses predefined sequence if set)
 Unique user name []: snap_user
@@ -55,6 +55,6 @@ Select demo to run:
  16) ProgressBar
  17) Spinner
  18) Date & Time
- 19) ← Exit
-19
+  ↓ (1 more)
+ 19
 Thanks for exploring UI‑CLI demos! 🚀
