@@ -270,7 +270,7 @@ function testRender() {
 			]
 		})
 		console.info(result.value) // ← gpt-4
-		assert.equal(result.value, 'gpt-4')
+		assert.equal(console.output()[0][1], 'gpt-4')
 	})
 
 	/**
@@ -295,7 +295,7 @@ function testRender() {
 			options: ['Option A', 'Option B']
 		})
 		console.info(result.value) // ← ['Option A']
-		assert.deepStrictEqual(result.value, ['Option A'])
+		assert.deepStrictEqual(console.output()[0][1], ['Option A'])
 	})
 
 	/**
@@ -320,7 +320,7 @@ function testRender() {
 			mask: '###-###'
 		})
 		console.info(result.value) // ← 123-456
-		assert.equal(result.value, '123-456')
+		assert.equal(console.output()[0][1], '123-456')
 	})
 
 	/**
@@ -345,7 +345,7 @@ function testRender() {
 			interactive: false // non-interactive for test
 		})
 		console.info(result.value) // ← [{ id: 1, name: 'Alice' }]
-		assert.deepEqual(result.value, [{ id: 1, name: 'Alice' }])
+		assert.deepEqual(console.output()[0][1], [{ id: 1, name: 'Alice' }])
 	})
 
 	/**
@@ -369,7 +369,7 @@ function testRender() {
 			type: 'password'
 		})
 		console.info(result.value) // ← secret-key
-		assert.equal(result.value, 'secret-key')
+		assert.equal(console.output()[0][1], 'secret-key')
 	})
 
 	/**
