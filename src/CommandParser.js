@@ -4,10 +4,10 @@
  * @module CommandParser
  */
 
-import { Message } from "@nan0web/co"
-import CommandHelp from "./CommandHelp.js"
-import CommandError from "./CommandError.js"
-import { str2argv } from "./utils/parse.js"
+import { Message } from '@nan0web/co'
+import CommandHelp from './CommandHelp.js'
+import CommandError from './CommandError.js'
+import { str2argv } from './utils/parse.js'
 
 /**
  * @class
@@ -31,18 +31,16 @@ export default class CommandParser {
 	 * @throws {Error} If no command is supplied or unknown root command.
 	 */
 	parse(input = process.argv.slice(2)) {
-		const argv = typeof input === "string" ? str2argv(input) : input
-		if (argv.length === 0) throw new Error("No command provided")
+		const argv = typeof input === 'string' ? str2argv(input) : input
+		if (argv.length === 0) throw new Error('No command provided')
 		let rootName = null
 		let remaining = argv
 
-		if (!argv[0].startsWith("-")) {
+		if (!argv[0].startsWith('-')) {
 			rootName = argv[0]
 			remaining = argv.slice(1)
 
-			let RootClass = this.Messages.find(
-				cls => cls.name.toLowerCase() === rootName.toLowerCase(),
-			)
+			let RootClass = this.Messages.find((cls) => cls.name.toLowerCase() === rootName.toLowerCase())
 			if (!RootClass) {
 				if (this.Messages.length === 1) RootClass = this.Messages[0]
 				else throw new Error(`Unknown root command: ${rootName}`)
@@ -56,7 +54,7 @@ export default class CommandParser {
 			return this.#processMessageTree(rootMessage, remaining)
 		}
 
-		if (this.Messages.length !== 1) throw new Error("Unable to infer root command from options")
+		if (this.Messages.length !== 1) throw new Error('Unable to infer root command from options')
 		// @ts-ignore – see comment above
 		const RootClass = this.Messages[0]
 		// @ts-ignore
@@ -81,7 +79,7 @@ export default class CommandParser {
 			const subName = remaining[0]
 			// @ts-ignore
 			const SubClass = currentMessage.constructor.Children.find(
-				cls => cls.name.toLowerCase() === subName.toLowerCase(),
+				(cls) => cls.name.toLowerCase() === subName.toLowerCase(),
 			)
 			if (!SubClass) break
 
@@ -104,7 +102,7 @@ export default class CommandParser {
 
 		if (
 			rootMessage.body.subCommand &&
-			typeof rootMessage.body.subCommand.assertValid === "function"
+			typeof rootMessage.body.subCommand.assertValid === 'function'
 		) {
 			rootMessage.body.subCommand.assertValid()
 		}
@@ -125,23 +123,23 @@ export default class CommandParser {
 		for (let i = 0; i < tokens.length; i++) {
 			const token = tokens[i]
 
-			if (token.startsWith("--")) {
+			if (token.startsWith('--')) {
 				let key = token.slice(2)
 				/** @type {boolean | string} */
 				let value = true
-				const eqIdx = key.indexOf("=")
+				const eqIdx = key.indexOf('=')
 				if (eqIdx > -1) {
 					value = key.slice(eqIdx + 1)
 					key = key.slice(0, eqIdx)
-				} else if (i + 1 < tokens.length && !tokens[i + 1].startsWith("-")) {
+				} else if (i + 1 < tokens.length && !tokens[i + 1].startsWith('-')) {
 					value = tokens[++i]
 				}
 				const realKey = this.#resolveAlias(key, BodyClass) || key
 				if (props.includes(realKey)) body[realKey] = this.#convertType(body[realKey], value)
-			} else if (token.startsWith("-") && token.length > 1) {
+			} else if (token.startsWith('-') && token.length > 1) {
 				const short = token.slice(1)
 				if (short.length > 1) {
-					short.split("").forEach(ch => {
+					short.split('').forEach((ch) => {
 						const realKey = this.#resolveAlias(ch, BodyClass)
 						if (realKey && props.includes(realKey)) body[realKey] = true
 					})
@@ -150,10 +148,15 @@ export default class CommandParser {
 					if (props.includes(realKey)) {
 						/** @type {boolean | string} */
 						let value = true
-						if (i + 1 < tokens.length && !tokens[i + 1].startsWith("-")) {
+						if (i + 1 < tokens.length && !tokens[i + 1].startsWith('-')) {
 							value = tokens[++i]
 						}
-						body[realKey] = this.#convertType(body[realKey], value)
+						const type = typeof body[realKey]
+						if ('object' === type && Array.isArray(body[realKey])) {
+							body[realKey].push(this.#convertType(body[realKey], value))
+						} else {
+							body[realKey] = this.#convertType(body[realKey], value)
+						}
 					}
 				}
 			} else {
@@ -162,7 +165,7 @@ export default class CommandParser {
 			}
 		}
 
-		props.forEach(prop => {
+		props.forEach((prop) => {
 			const schema = BodyClass[prop]
 			if (schema?.default !== undefined && body[prop] === undefined) {
 				body[prop] = schema.default
@@ -199,9 +202,8 @@ export default class CommandParser {
 	 */
 	#convertType(defaultVal, value) {
 		const type = typeof defaultVal
-		if (type === "boolean")
-			return Boolean(value !== "false" && value !== false && value !== "")
-		if (type === "number") return Number(value) || 0
+		if (type === 'boolean') return Boolean(value !== 'false' && value !== false && value !== '')
+		if (type === 'number') return Number(value) || 0
 		return String(value)
 	}
 

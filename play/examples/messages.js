@@ -7,8 +7,8 @@
  * @module play/examples/messages
  */
 
-import { ServeBody } from "./serveBody.js"
-import { DumpBody } from "./dumpBody.js"
+import { ServeBody } from './serveBody.js'
+import { DumpBody } from './dumpBody.js'
 
 /**
  * Build a human‑readable message for the **serve** command.
@@ -41,7 +41,7 @@ export function dumpMessage(opts) {
 /** @type {MainMessage} */
 export const MainMessage = {
 	children: [
-		{ command: "serve", message: serveMessage(ServeBody) },
-		{ command: "dump",  message: dumpMessage(DumpBody) },
+		{ command: 'serve', message: serveMessage(ServeBody) },
+		{ command: 'dump', message: dumpMessage(DumpBody) },
 	],
 }

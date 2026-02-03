@@ -4,97 +4,66 @@
  * @module ui/select
  */
 
-import { CancelError } from "@nan0web/ui/core"
-import createInput from "./input.js"
-
-/** @typedef {import("./input.js").Input} Input */
-/** @typedef {import("./input.js").InputFn} InputFn */
-
-/**
- * @typedef {Object} ConsoleLike
- * @property {(...args: any[]) => void} debug
- * @property {(...args: any[]) => void} log
- * @property {(...args: any[]) => void} info
- * @property {(...args: any[]) => void} warn
- * @property {(...args: any[]) => void} error
- */
-
-/**
- * @typedef {Object} SelectConfig
- * @property {string} title – Title displayed above the options list.
- * @property {string} prompt – Prompt displayed for the answer.
- * @property {Array|Map} options – Collection of selectable items.
- * @property {ConsoleLike} console – Console‑like object with an `info` method.
- * @property {string[]} [stops=[]] Words that trigger cancellation.
- * @property {InputFn} [ask] Custom ask function (defaults to {@link createInput}).
- * @property {string} [invalidPrompt="Invalid choice, try again: "] Message shown on invalid input.
- */
+import prompts from 'prompts'
+import { CancelError } from '@nan0web/ui/core'
 
 /**
  * Configuration object for {@link select}.
  *
- * @param {SelectConfig} input
- * @returns {Promise<{index:number,value:any}>} Resolves with the selected index and its value.
+ * @param {Object} input
+ * @param {string} input.title - Title displayed above the options list.
+ * @param {string} [input.prompt] - Prompt displayed for the answer.
+ * @param {Array|Map} input.options - Collection of selectable items.
+ * @param {Object} [input.console] - Deprecated. Ignored in new implementation.
+ * @param {string[]} [input.stops=[]] - Deprecated. Ignored in new implementation.
+ * @param {any} [input.ask] - Deprecated. Ignored in new implementation.
+ * @param {string} [input.invalidPrompt] - Deprecated. Ignored in new implementation.
+ * @param {number} [input.limit=10] - Max visible items.
+ * @returns {Promise<{index:number,value:any,cancelled:boolean}>} Resolves with the selected index and its value.
  *
  * @throws {CancelError} When the user cancels the operation.
- * @throws {Error} When options are missing or an incorrect value is supplied and no
- *   `invalidPrompt` is defined.
  */
 export async function select(input) {
 	const {
 		title,
 		prompt,
-		invalidPrompt = "Invalid choice, try again: ",
 		options: initOptins,
-		console,
-		stops = [],
-		ask: initAsk,
+		limit = 10,
 	} = input
+
 	let options = initOptins
-	/** @type {InputFn} */
-	const ask = initAsk ?? createInput(stops)
 
 	// Normalise Map → Array of {label,value}
 	if (options instanceof Map) {
-		options = Array.from(options.entries()).map(
-			([value, label]) => ({ label, value }))
+		options = Array.from(options.entries()).map(([value, label]) => ({ label, value }))
 	}
 	if (!Array.isArray(options) || options.length === 0) {
-		throw new Error("Options array is required and must not be empty")
+		throw new Error('Options array is required and must not be empty')
 	}
-	const list = options.map(el =>
-		typeof el === "string" ? { label: el, value: el } : el,
-	)
+	// Prepare options for prompts
+	const choices = options.map((el) => {
+		if (typeof el === 'string') {
+			return { title: el, value: el }
+		}
+		return { title: el.label, value: el.value }
+	})
 
-	console.info(title)
-	list.forEach(({ label }, i) => console.info(` ${i + 1}) ${label}`))
-
-	/**
-	 * Validation function passed to `ask` as the *loop* argument.
-	 * @type {import("./input.js").LoopFn}
-	 */
-	const validator = async (input) => {
-		if (input.cancelled) {
+	const response = await prompts({
+		type: 'select',
+		name: 'value',
+		message: title ? title : prompt,
+		choices: choices,
+		hint: prompt && title ? prompt : undefined,
+		limit
+	}, {
+		onCancel: () => {
 			throw new CancelError()
 		}
-		const idx = Number(input.value) - 1
-		if (isNaN(idx) || idx < 0 || idx >= list.length) {
-			if (invalidPrompt) {
-				return true // repeat asking
-			}
-			throw new Error("Incorrect value provided")
-		}
-		// valid selection – store index for later return
-		// we reuse `idx` after ask resolves
-		return false // stop looping
-	}
+	})
 
-	// Ask with validator loop; when validator returns false we have a valid answer.
-	const answer = await ask(prompt, validator, invalidPrompt)
+	const index = choices.findIndex(c => c.value === response.value)
 
-	// After validator passes, compute the final index once more (safe)
-	const finalIdx = Number(answer.value) - 1
-	return { index: finalIdx, value: list[finalIdx].value }
+	return { index, value: response.value, cancelled: false }
 }
 
 /**

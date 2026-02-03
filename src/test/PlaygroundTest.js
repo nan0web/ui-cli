@@ -8,13 +8,13 @@
  */
 
 /* eslint-disable no-use-before-define */
-import { spawn } from "node:child_process"
-import event, { EventContext } from "@nan0web/event"
+import { spawn } from 'node:child_process'
+import event, { EventContext } from '@nan0web/event'
 
 /**
  * @typedef {object} PlaygroundTestConfig
  * @property {NodeJS.ProcessEnv} env Environment variables for the child process.
- * @property {{ includeDebugger?: boolean }} [config={}] Configuration options.
+ * @property {{ includeDebugger?: boolean, includeEmptyLines?: boolean, feedStdin?: boolean }} [config={}] Configuration options.
  */
 
 /**
@@ -33,7 +33,7 @@ export default class PlaygroundTest {
 	#bus
 	/**
 	 * @param {NodeJS.ProcessEnv} env Environment variables for the child process.
-	 * @param {{ includeDebugger?: boolean, includeEmptyLines?: boolean }} [config={}] Configuration options.
+	 * @param {{ includeDebugger?: boolean, includeEmptyLines?: boolean, feedStdin?: boolean }} [config={}] Configuration options.
 	 */
 	constructor(env, config = {}) {
 		this.env = env
@@ -41,6 +41,7 @@ export default class PlaygroundTest {
 		/** @type {boolean} Include debugger lines in output (default: false). */
 		this.includeDebugger = config.includeDebugger ?? false
 		this.incldeEmptyLines = config.includeEmptyLines ?? false
+		this.feedStdin = config.feedStdin ?? true
 	}
 
 	/**
@@ -66,18 +67,18 @@ export default class PlaygroundTest {
 	 */
 	filterDebugger(str) {
 		if (this.includeDebugger) return str
-		const words = ["debugger", "https://nodejs.org/en/docs/inspector"]
+		const words = ['debugger', 'https://nodejs.org/en/docs/inspector']
 		return str
-			.split("\n")
-			.filter(s => !words.some(w => s.toLowerCase().includes(w)))
-			.join("\n")
+			.split('\n')
+			.filter((s) => !words.some((w) => s.toLowerCase().includes(w)))
+			.join('\n')
 	}
 	/**
 	 * Slice lines from stdout or stderr.
 	 */
 	slice(target, start, end) {
-		const txt = (this.recentResult?.[target] ?? "")
-		return txt.split("\n").slice(start, end)
+		const txt = this.recentResult?.[target] ?? ''
+		return txt.split('\n').slice(start, end)
 	}
 	/**
 	 * Write the answer sequence to the child process **asynchronously**,
@@ -89,10 +90,13 @@ export default class PlaygroundTest {
 		const raw = this.env.PLAY_DEMO_SEQUENCE
 		if (!raw) return
 
-		const sequence = raw.split(",").map(s => s.trim()).filter(Boolean)
+		const sequence = raw
+			.split(',')
+			.map((s) => s.trim())
+			.filter(Boolean)
 		if (sequence.length === 0) return
 
-		if (child.stdin) child.stdin.setDefaultEncoding("utf-8")
+		if (child.stdin) child.stdin.setDefaultEncoding('utf-8')
 
 		const writeNext = (idx) => {
 			if (idx >= sequence.length) {
@@ -119,33 +123,40 @@ export default class PlaygroundTest {
 	 *
 	 * @param {string[]} [args=["play/main.js"]] Arguments passed to the node process.
 	 */
-	async run(args = ["play/main.js"]) {
-		const child = spawn("node", args, {
+	async run(args = ['play/main.js']) {
+		const child = spawn('node', args, {
 			env: this.env,
-			stdio: ["pipe", "pipe", "pipe"],
+			stdio: ['pipe', 'pipe', 'pipe'],
 		})
 
-		this.#feedSequence(child)
-
-		let stdout = ""
-		for await (const chunk of child.stdout) {
-			stdout += chunk.toString()
-			this.emit("stdout", { chunk })
+		if (this.feedStdin) {
+			this.#feedSequence(child)
 		}
 
-		let stderr = ""
+		let stdout = ''
+		for await (const chunk of child.stdout) {
+			stdout += chunk.toString()
+			this.emit('stdout', { chunk })
+		}
+
+		let stderr = ''
 		for await (const chunk of child.stderr) {
 			const clean = this.filterDebugger(chunk.toString())
 			stderr += clean
-			this.emit("stderr", { chunk, clean })
+			this.emit('stderr', { chunk, clean })
 		}
 
-		const exitCode = await new Promise(resolve => child.on("close", resolve))
+		const exitCode = await new Promise((resolve) => child.on('close', resolve))
 
 		// Trim leading whitespace from every line – the test suite expects raw
 		// output without logger prefixes or indentation.
-		const normalize = txt => this.incldeEmptyLines ? txt
-			: txt.split("\n").filter(row => row.trim() !== "").join("\n")
+		const normalize = (txt) =>
+			this.incldeEmptyLines
+				? txt
+				: txt
+					.split('\n')
+					.filter((row) => row.trim() !== '')
+					.join('\n')
 
 		this.recentResult = {
 			stdout: normalize(stdout),

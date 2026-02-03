@@ -4,9 +4,9 @@
  * @module Command
  */
 
-import { Message } from "@nan0web/co"
-import CommandMessage from "./CommandMessage.js"
-import CommandError from "./CommandError.js"
+import { Message } from '@nan0web/co'
+import CommandMessage from './CommandMessage.js'
+import CommandError from './CommandError.js'
 
 /**
  * Represents a command definition.
@@ -15,8 +15,8 @@ import CommandError from "./CommandError.js"
  * @deprecated Use CLI instead
  */
 export default class Command {
-	/** @type {string} */ name = ""
-	/** @type {string} */ help = ""
+	/** @type {string} */ name = ''
+	/** @type {string} */ help = ''
 	/** @type {Object} */ options = {}
 	/** @type {Function} */ run = async function* () {}
 	/** @type {Command[]} */ children = []
@@ -30,10 +30,10 @@ export default class Command {
 	 * @param {Command[]} [config.children] - Sub‑commands.
 	 */
 	constructor(config) {
-		this.name = config.name || ""
-		this.help = config.help || ""
+		this.name = config.name || ''
+		this.help = config.help || ''
 		this.options = config.options || {}
-		this.run = config.run || (async function* () {})
+		this.run = config.run || async function* () {}
 		this.children = config.children || []
 	}
 
@@ -55,7 +55,7 @@ export default class Command {
 	 * @returns {Command|null}
 	 */
 	findSubcommand(name) {
-		return this.children.find(c => c.name === name) || null
+		return this.children.find((c) => c.name === name) || null
 	}
 
 	/**
@@ -66,14 +66,14 @@ export default class Command {
 	 */
 	parse(argv) {
 		const args = Array.isArray(argv) ? argv : [argv]
-		const msg = new CommandMessage({ name: "", argv: [], opts: {} })
+		const msg = new CommandMessage({ name: '', argv: [], opts: {} })
 		let i = 0
 		while (i < args.length) {
 			const cur = args[i]
-			if (cur.startsWith("--")) {
+			if (cur.startsWith('--')) {
 				handleLongOption(msg, args, i)
 				i = updateIndexAfterOption(args, i)
-			} else if (cur.startsWith("-")) {
+			} else if (cur.startsWith('-')) {
 				handleShortOption(msg, args, i)
 				i = updateIndexAfterOption(args, i)
 			} else {
@@ -84,7 +84,7 @@ export default class Command {
 		}
 		if (msg.name === this.name) {
 			msg.argv = [...msg.argv]
-			msg.name = ""
+			msg.name = ''
 		}
 		if (msg.argv.length > 0) {
 			const subName = msg.argv[0]
@@ -108,9 +108,11 @@ export default class Command {
 	generateHelp() {
 		const parts = []
 		if (this.help) parts.push(this.help)
-		const optFlags = Object.keys(this.options).map(k => `--${k}`).join(" ")
+		const optFlags = Object.keys(this.options)
+			.map((k) => `--${k}`)
+			.join(' ')
 		parts.push(optFlags ? `Usage: ${this.name} ${optFlags}` : `Usage: ${this.name}`)
-		return parts.join("\n")
+		return parts.join('\n')
 	}
 
 	/**
@@ -120,13 +122,13 @@ export default class Command {
 	 * @yields {any}
 	 * @throws {CommandError}
 	 */
-	async * execute(message) {
+	async *execute(message) {
 		try {
-			if (typeof this.run === "function") yield* this.run(message)
+			if (typeof this.run === 'function') yield* this.run(message)
 		} catch (e) {
 			if (e instanceof CommandError) throw e
 			/** @ts-ignore */
-			throw new CommandError("Command execution failed", { message: e.message, stack: e.stack })
+			throw new CommandError('Command execution failed', { message: e.message, stack: e.stack })
 		}
 	}
 
@@ -139,7 +141,7 @@ export default class Command {
 	_applyDefaults(msg) {
 		for (const [opt, [type, def]] of Object.entries(this.options)) {
 			if (!(opt in msg.opts)) {
-				msg.opts[opt] = def !== undefined ? def : type === Boolean ? false : ""
+				msg.opts[opt] = def !== undefined ? def : type === Boolean ? false : ''
 			}
 		}
 	}
@@ -157,14 +159,14 @@ export default class Command {
  */
 function handleLongOption(msg, argv, index) {
 	const cur = argv[index]
-	const eq = cur.indexOf("=")
+	const eq = cur.indexOf('=')
 	if (eq > -1) {
 		const k = cur.slice(2, eq)
 		const v = cur.slice(eq + 1)
 		msg.opts[k] = v
 	} else {
 		const k = cur.slice(2)
-		if (index + 1 < argv.length && !argv[index + 1].startsWith("-")) {
+		if (index + 1 < argv.length && !argv[index + 1].startsWith('-')) {
 			msg.opts[k] = argv[index + 1]
 		} else {
 			msg.opts[k] = true
@@ -186,7 +188,7 @@ function handleShortOption(msg, argv, index) {
 		for (const ch of cur) msg.opts[ch] = true
 	} else {
 		const k = cur
-		if (index + 1 < argv.length && !argv[index + 1].startsWith("-")) {
+		if (index + 1 < argv.length && !argv[index + 1].startsWith('-')) {
 			msg.opts[k] = argv[index + 1]
 		} else {
 			msg.opts[k] = true
@@ -204,7 +206,7 @@ function handleShortOption(msg, argv, index) {
  */
 function updateIndexAfterOption(argv, index) {
 	const cur = argv[index]
-	if (cur.includes("=")) return index + 1
-	const hasVal = index + 1 < argv.length && !argv[index + 1].startsWith("-")
+	if (cur.includes('=')) return index + 1
+	const hasVal = index + 1 < argv.length && !argv[index + 1].startsWith('-')
 	return hasVal ? index + 2 : index + 1
 }

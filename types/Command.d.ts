@@ -68,5 +68,5 @@ export default class Command {
      */
     private _applyDefaults;
 }
-import CommandMessage from "./CommandMessage.js";
-import { Message } from "@nan0web/co";
+import CommandMessage from './CommandMessage.js';
+import { Message } from '@nan0web/co';

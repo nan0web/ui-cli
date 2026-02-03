@@ -38,24 +38,31 @@ export default class Form {
      * @param {Object} [options={}] - Options.
      * @param {string[]} [options.stops=["quit", "cancel", "exit"]] - Stop words.
      * @param {(prompt: string) => Promise<Input>} [options.inputFn] - Custom input function.
+     * @param {(config: object) => Promise<{index:number, value:any}>} [options.selectFn] - Custom select function.
      * @throws {TypeError} If model is not an object with a constructor.
      */
     constructor(model: any, options?: {
         stops?: string[] | undefined;
         inputFn?: ((prompt: string) => Promise<Input>) | undefined;
+        selectFn?: ((config: object) => Promise<{
+            index: number;
+            value: any;
+        }>) | undefined;
     } | undefined);
     /** @type {Function} Input handler with cancellation support. */
     handler: Function;
-    /**
-     * Prompts for selection using the provided configuration.
-     *
-     * @param {Object} config - Selection configuration.
-     * @returns {Promise<{index:number, value:any}>} Selected option.
-     */
-    select(config: any): Promise<{
+    options: {
+        stops?: string[] | undefined;
+        inputFn?: ((prompt: string) => Promise<Input>) | undefined;
+        selectFn?: ((config: object) => Promise<{
+            index: number;
+            value: any;
+        }>) | undefined;
+    };
+    select: typeof select | ((config: object) => Promise<{
         index: number;
         value: any;
-    }>;
+    }>);
     /**
      * Prompts for input using the internal handler.
      *
@@ -86,5 +93,6 @@ export default class Form {
     get body(): any;
     #private;
 }
-import { UiForm } from "@nan0web/ui";
-import { Input } from "./input.js";
+import { UiForm } from '@nan0web/ui';
+import { Input } from './input.js';
+import { select } from './select.js';

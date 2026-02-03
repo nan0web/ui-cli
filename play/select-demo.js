@@ -4,30 +4,28 @@
  * @module play/select-demo
  */
 
-import Logger from "@nan0web/log"
-import { Message } from "@nan0web/co"
-import CLIInputAdapter from "../src/InputAdapter.js"
-import { OutputMessage } from "@nan0web/ui"
+import Logger from '@nan0web/log'
+import { Message } from '@nan0web/co'
+import CLIInputAdapter from '../src/InputAdapter.js'
+import { OutputMessage } from '@nan0web/ui'
 
 export class SelectBody {
 	color
 	static color = {
-		help: "Pick a colour",
-		options: ["Red", "Green", "Blue"],
-		defaultValue: "",
+		help: 'Pick a colour',
+		options: ['Red', 'Green', 'Blue'],
+		defaultValue: '',
 	}
 	/** @param {Partial<SelectBody>} input */
 	constructor(input = {}) {
-		const {
-			color = ""
-		} = input
+		const { color = '' } = input
 		this.color = String(color)
 	}
 }
 
 export class SelectDemo extends Message {
-	static name = "select"
-	static help = "Select Prompt Demo"
+	static name = 'select'
+	static help = 'Select Prompt Demo'
 	static Body = SelectBody
 	/** @type {SelectBody} */
 	body
@@ -36,7 +34,9 @@ export class SelectDemo extends Message {
 		this.body = new SelectBody(input.body ?? {})
 	}
 	/** @returns {typeof SelectBody} */
-	get Body() { return /** @type {typeof SelectDemo} */ (this.constructor).Body }
+	get Body() {
+		return /** @type {typeof SelectDemo} */ (this.constructor).Body
+	}
 	/**
 	 * @param {any} input
 	 * @returns {SelectDemo}
@@ -57,7 +57,7 @@ export default class SelectDemoCLi extends SelectDemo {
 	 * @param {{ console: import("../src/ui/select").ConsoleLike, adapter: CLIInputAdapter }} context
 	 * @returns {AsyncGenerator<OutputMessage>}
 	 */
-	async * run() {
+	async *run() {
 		await this.requireInput()
 		yield new OutputMessage(`✓ You selected: ${value}`)
 	}
@@ -71,14 +71,14 @@ export default class SelectDemoCLi extends SelectDemo {
  */
 export async function runSelectDemo(console, adapter) {
 	console.clear()
-	console.success("Select Prompt Demo")
+	console.success('Select Prompt Demo')
 
 	// Pass the real logger as `console` so the colour menu appears.
 	const value = await adapter.requestSelect({
-		title: "Pick a colour",
-		prompt: "[demo]: ",
-		options: ["Red", "Green", "Blue"],
-		console,               // <-- keep output consistent with manual run
+		title: 'Pick a colour',
+		prompt: '[demo]: ',
+		options: ['Red', 'Green', 'Blue'],
+		console, // <-- keep output consistent with manual run
 	})
 
 	console.info(`✓ You selected: ${value}`)

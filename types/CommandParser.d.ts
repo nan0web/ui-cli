@@ -25,4 +25,4 @@ export default class CommandParser {
     generateHelp(MessageClass: typeof Message): string;
     #private;
 }
-import { Message } from "@nan0web/co";
+import { Message } from '@nan0web/co';

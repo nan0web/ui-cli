@@ -14,24 +14,24 @@ export function createAddressForm(t) {
 			new FormInput({
 				name: 'street',
 				label: t('Street'),
-				required: true
+				required: true,
 			}),
 			new FormInput({
 				name: 'city',
 				label: t('City'),
-				required: true
+				required: true,
 			}),
 			new FormInput({
 				name: 'postalCode',
 				label: t('Postal code'),
 				type: FormInput.TYPES.TEXT,
-				required: false
+				required: false,
 			}),
 			new FormInput({
 				name: 'country',
 				label: t('Country'),
-				required: true
-			})
-		]
+				required: true,
+			}),
+		],
 	})
 }

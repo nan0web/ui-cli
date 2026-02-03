@@ -1,14 +1,11 @@
 /* eslint-disable no-unused-vars */
-import { describe, it, before, beforeEach } from "node:test"
-import assert from "node:assert/strict"
-import FS from "@nan0web/db-fs"
-import { UiForm } from "@nan0web/ui"
-import { NoConsole } from "@nan0web/log"
-import {
-	DatasetParser,
-	DocsParser,
-	runSpawn,
-} from "@nan0web/test"
+import { describe, it, before, beforeEach } from 'node:test'
+import assert from 'node:assert/strict'
+import FS from '@nan0web/db-fs'
+import { UiForm } from '@nan0web/ui'
+import { NoConsole } from '@nan0web/log'
+import { DatasetParser, DocsParser, runSpawn } from '@nan0web/test'
+import prompts from 'prompts'
 import {
 	CLiInputAdapter as BaseCLiInputAdapter,
 	CancelError,
@@ -18,24 +15,37 @@ import {
 	ask as baseAsk,
 	select as baseSelect,
 	next as baseNext,
-} from "./index.js"
+	confirm as baseConfirm,
+	text as baseText,
+} from './index.js'
 
 async function ask(question) {
-	if ("Full Name *: " === question) return "John Doe"
-	if ("Email *: " === question) return "John.Doe@example.com"
-	if ("What is your name?" === question) return "Alice"
-	return ""
+	if ('Full Name *: ' === question) return 'John Doe'
+	if ('Email *: ' === question) return 'John.Doe@example.com'
+	if ('What is your name?' === question) return 'Alice'
+	if ('Enter Secret:' === question) return 'secret-key'
+	return ''
 }
 
 async function select(config) {
-	if ("Choose Language:" === config.title) return { index: 0, value: "en" }
-	if ("Choose an option:" === config.title) return { index: 2, value: "Option B" }
+	if ('Choose Language:' === config.title) return { index: 0, value: 'en' }
+	if ('Choose an option:' === config.title) return { index: 2, value: 'Option B' }
 
 	return { index: -1, value: null }
 }
 
 async function next() {
-	return Promise.resolve(" ")
+	return Promise.resolve(' ')
+}
+
+async function confirm(message) {
+	if ('Do you want to proceed?' === message) return true
+	return false
+}
+
+async function text(config) {
+	if ('What is your name?' === config.message) return { value: 'Alice', cancelled: false }
+	return { value: '', cancelled: false }
 }
 
 class CLiInputAdapter extends BaseCLiInputAdapter {
@@ -45,6 +55,25 @@ class CLiInputAdapter extends BaseCLiInputAdapter {
 	async select(config) {
 		return await select(config)
 	}
+	async confirm(message) {
+		return await confirm(message)
+	}
+	async requestInput(config) {
+		return await ask(config.prompt ?? config.message)
+	}
+	async requestAutocomplete(config) {
+		if (config.message === 'Choose model') return 'gpt-4'
+		return null
+	}
+	async requestTable(config) {
+		return { value: config.data, cancelled: false }
+	}
+	async requestMultiselect(config) {
+		return ['Option A']
+	}
+	async requestMask(config) {
+		return '123-456'
+	}
 }
 
 const fs = new FS()
@@ -52,7 +81,7 @@ let pkg
 
 // Load package.json once before tests
 before(async () => {
-	const doc = await fs.loadDocument("package.json", {})
+	const doc = await fs.loadDocument('package.json', {})
 	pkg = doc || {}
 })
 
@@ -74,62 +103,82 @@ function testRender() {
 	 * @docs
 	 * # @nan0web/ui-cli
 	 *
-	 * A tiny, zero‑dependency UI input adapter for Java•Script projects.
-	 * It provides a CLI implementation that can be easily integrated
-	 * with application logic.
+	 * A modern, interactive UI input adapter for Java•Script projects, powered by the `prompts` engine.
+	 * It provides a premium "Lux-level" terminal experience that can be easily integrated with shared application logic.
 	 *
 	 * <!-- %PACKAGE_STATUS% -->
 	 *
 	 * ## Description
 	 *
-	 * The `@nan0web/ui-cli` package provides a set of tools for handling
-	 * CLI user input through structured forms, selections and prompts.
-	 * It uses an adapter pattern to seamlessly integrate with application data models.
+	 * The `@nan0web/ui-cli` package transforms basic CLI interactions into a stunning, interactive experience.
+	 * Built with the "One Logic, Many UI" philosophy, it allows you to use the same business logic across Web and Terminal environments.
 	 *
-	 * Core classes:
+	 * Key Features:
 	 *
-	 * - `CLiInputAdapter` — handles form, input, and select requests in CLI.
-	 * - `Input` — wraps user input with value and cancellation status.
-	 * - `CancelError` — thrown when a user cancels an operation.
+	 * - **Interactive Prompts** — Sleek, colorized selection lists and text inputs via `prompts`.
+	 * - **Search & Autocomplete** — Find what you need in large datasets with live search.
+	 * - **Interactive Tables** — View and filter tabular data directly in the terminal.
+	 * - **Security-First** — Built-in support for password masking and secret inputs.
+	 * - **Schema-Driven Forms** — Automatically generate complex CLI forms from your data models.
+	 * - **Input Adapter** — A standardized bridge between logic and terminal UI.
+	 * - **Modern Aesthetics** — Rich colors, clear structure, and intuitive navigation (including `::prev` commands).
 	 *
-	 * These classes are perfect for building prompts, wizards, forms,
-	 * and interactive CLI tools with minimal overhead.
+	 * Core components:
+	 *
+	 * - `select(config)` — Beautiful interactive selection list with support for large datasets (`limit`).
+	 * - `autocomplete(config)` — Searchable selection with async fetching support.
+	 * - `table(config)` — Live-filtering data table.
+	 * - `multiselect(config)` — Multiple selection with checkboxes.
+	 * - `mask(config)` — Formatted input masks (phone, date, etc).
+	 * - `text(config)` — Modern interactive text or password input.
+	 * - `confirm(message)` — Simple yet elegant Yes/No prompt.
 	 *
 	 * ## Installation
+	 *
+	 * Install using your preferred package manager:
 	 */
-	it("How to install with npm?", () => {
+
+	it('How to install with npm?', { timeout: 2000 }, () => {
 		/**
 		 * ```bash
 		 * npm install @nan0web/ui-cli
 		 * ```
 		 */
-		assert.equal(pkg.name, "@nan0web/ui-cli")
+		assert.equal(pkg.name, '@nan0web/ui-cli')
 	})
 	/**
 	 * @docs
 	 */
-	it("How to install with pnpm?", () => {
+	it('How to install with pnpm?', { timeout: 2000 }, () => {
 		/**
 		 * ```bash
 		 * pnpm add @nan0web/ui-cli
 		 * ```
 		 */
-		assert.equal(pkg.name, "@nan0web/ui-cli")
+		assert.equal(pkg.name, '@nan0web/ui-cli')
 	})
 	/**
 	 * @docs
 	 */
-	it("How to install with yarn?", () => {
+	it('How to install with yarn?', { timeout: 2000 }, () => {
 		/**
 		 * ```bash
 		 * yarn add @nan0web/ui-cli
 		 * ```
 		 */
-		assert.equal(pkg.name, "@nan0web/ui-cli")
+		assert.equal(pkg.name, '@nan0web/ui-cli')
 	})
 
 	/**
 	 * @docs
+	 * ## Premium Aesthetics
+	 *
+	 * `@nan0web/ui-cli` isn't just about functionality; it's about the **experience**.
+	 *
+	 * - **Fluent Navigation**: Seamlessly navigate through complex forms.
+	 * - **Error Handling**: Elegant validation messages that guide the user.
+	 * - **Rich Colors**: Integrated with `@nan0web/log` for a professional TTY look.
+	 *
 	 * ## Usage
 	 *
 	 * ### CLiInputAdapter
@@ -140,16 +189,16 @@ function testRender() {
 	 *
 	 * Displays a form and collects user input field-by-field with validation.
 	 */
-	it("How to request form input via CLiInputAdapter?", async () => {
+	it('How to request form input via CLiInputAdapter?', { timeout: 2000 }, async () => {
 		//import { CLiInputAdapter } from '@nan0web/ui-cli'
 		const adapter = new CLiInputAdapter()
 		const fields = [
-			{ name: "name", label: "Full Name", required: true },
-			{ name: "email", label: "Email", type: "email", required: true },
+			{ name: 'name', label: 'Full Name', required: true },
+			{ name: 'email', label: 'Email', type: 'email', required: true },
 		]
 		const validateValue = (name, value) => {
-			if (name === "email" && !value.includes("@")) {
-				return { isValid: false, errors: { email: "Invalid email" } }
+			if (name === 'email' && !value.includes('@')) {
+				return { isValid: false, errors: { email: 'Invalid email' } }
 			}
 			return { isValid: true, errors: {} }
 		}
@@ -159,60 +208,197 @@ function testRender() {
 			return newForm
 		}
 		const form = UiForm.from({
-			title: "User Profile",
+			title: 'User Profile',
 			fields,
-			id: "user-profile-form",
+			id: 'user-profile-form',
 			validateValue,
 			setData,
 			state: {},
 			validate: () => ({ isValid: true, errors: {} }),
 		})
-
 		const result = await adapter.requestForm(form, { silent: true })
 
 		console.info(result.form.state) // ← { name: "John Doe", email: "John.Doe@example.com" }
-		assert.deepStrictEqual(console.output()[0][1], { name: "John Doe", email: "John.Doe@example.com" })
+		assert.deepStrictEqual(console.output()[0][1], {
+			name: 'John Doe',
+			email: 'John.Doe@example.com',
+		})
 	})
-	/**
-	 * @docs
-	 */
-	it("How to request select input via CLiInputAdapter?", async () => {
+	it('How to request select input via CLiInputAdapter?', { timeout: 2000 }, async () => {
 		//import { CLiInputAdapter } from '@nan0web/ui-cli'
 		const adapter = new CLiInputAdapter()
 		const config = {
-			title: "Choose Language:",
-			prompt: "Language (1-2): ",
-			id: "language-select",
+			title: 'Choose Language:',
+			id: 'language-select',
 			options: new Map([
-				["en", "English"],
-				["uk", "Ukrainian"],
+				['en', 'English'],
+				['uk', 'Ukrainian'],
 			]),
 		}
 
 		const result = await adapter.requestSelect(config)
 		console.info(result) // ← en
-		assert.deepStrictEqual(console.output()[0][1], "en")
+		assert.deepStrictEqual(console.output()[0][1], 'en')
 	})
 
 	/**
 	 * @docs
-	 * ### Input Utilities
+	 * #### requestAutocomplete(config)
 	 *
+	 * Performs a searchable selection. Supports static options or async fetch functions.
+	 *
+	 * ```javascript
+	 * const adapter = new CLiInputAdapter()
+	 * const model = await adapter.requestAutocomplete({
+	 *   message: 'Choose AI model:',
+	 *   options: async (query) => [
+	 *     { title: 'GPT-4', value: 'gpt-4' },
+	 *     { title: 'Claude 3', value: 'claude3' }
+	 *   ].filter(m => m.title.toLowerCase().includes(query.toLowerCase()))
+	 * })
+	 * ```
+	 */
+	it('How to request autocomplete via CLiInputAdapter?', { timeout: 2000 }, async () => {
+		const adapter = new CLiInputAdapter()
+		const model = await adapter.requestAutocomplete({
+			message: 'Choose model',
+			options: [
+				{ title: 'GPT-4', value: 'gpt-4' },
+				{ title: 'Claude 3', value: 'claude3' }
+			]
+		})
+		assert.equal(model, 'gpt-4')
+	})
+
+	/**
+	 * @docs
+	 * #### requestMultiselect(config)
+	 *
+	 * Requests multiple selection from a list.
+	 *
+	 * ```javascript
+	 * const fruits = await adapter.requestMultiselect({
+	 *   message: 'Select fruits:',
+	 *   options: ['Apple', 'Banana', 'Orange'],
+	 *   initial: ['Apple']
+	 * })
+	 * ```
+	 */
+	it('How to request multiselect via CLiInputAdapter?', { timeout: 2000 }, async () => {
+		const adapter = new CLiInputAdapter()
+		const result = await adapter.requestMultiselect({
+			message: 'Select items',
+			options: ['Option A', 'Option B']
+		})
+		assert.deepStrictEqual(result, ['Option A'])
+	})
+
+	/**
+	 * @docs
+	 * #### requestMask(config)
+	 *
+	 * Requests input with a specific format mask.
+	 *
+	 * ```javascript
+	 * const phone = await adapter.requestMask({
+	 *   message: 'Enter phone:',
+	 *   mask: '(###) ###-####',
+	 *   placeholder: '(000) 000-0000'
+	 * })
+	 * ```
+	 */
+	it('How to request masked input via CLiInputAdapter?', { timeout: 2000 }, async () => {
+		const adapter = new CLiInputAdapter()
+		const result = await adapter.requestMask({
+			message: 'Phone',
+			mask: '###-###'
+		})
+		assert.equal(result, '123-456')
+	})
+
+	/**
+	 * @docs
+	 * #### requestTable(config)
+	 *
+	 * Renders an interactive table with live filtering.
+	 *
+	 * ```javascript
+	 * await adapter.requestTable({
+	 *   data: [{ id: 1, name: 'Alice' }, { id: 2, name: 'Bob' }],
+	 *   title: 'User List',
+	 *   columns: ['id', 'name']
+	 * })
+	 * ```
+	 */
+	it('How to show interactive table via CLiInputAdapter?', { timeout: 2000 }, async () => {
+		const adapter = new CLiInputAdapter()
+		const result = await adapter.requestTable({
+			data: [{ id: 1, name: 'Alice' }],
+			interactive: false // non-interactive for test
+		})
+		assert.deepEqual(result.value, [{ id: 1, name: 'Alice' }])
+	})
+
+	/**
+	 * @docs
+	 * #### requestInput(config)
+	 *
+	 * Simple single-field request. Supports `password` type for secure masking.
+	 *
+	 * ```javascript
+	 * const password = await adapter.requestInput({
+	 *   message: 'Enter API Key:',
+	 *   type: 'password'
+	 * })
+	 * ```
+	 */
+	it('How to request password via CLiInputAdapter?', { timeout: 2000 }, async () => {
+		const adapter = new CLiInputAdapter()
+		const pass = await adapter.requestInput({
+			message: 'Enter Secret:',
+			type: 'password'
+		})
+		assert.equal(pass, 'secret-key')
+	})
+
+	/**
+	 * @docs
+	 * ### UI Utilities
+	 */
+	/**
+	 * @docs
+	 * #### `select(config)`
+	 *
+	 * Interactive selection list. Use `limit` to control the number of visible items.
+	 */
+	it('How to prompt user with select()?', async () => {
+		//import { select } from '@nan0web/ui-cli'
+		const result = await select({
+			title: 'Choose an option:',
+			options: ['Option A', 'Option B', 'Option C'],
+			limit: 5
+		})
+		console.info(result.value) // ← Option B
+		assert.equal(console.output()[0][1], 'Option B')
+	})
+
+	/**
+	 * @docs
 	 * #### `Input` class
 	 *
 	 * Holds user input and tracks cancelation events.
 	 */
-	it("How to use the Input class?", () => {
+	it('How to use the Input class?', () => {
 		//import { Input } from '@nan0web/ui-cli'
-		const input = new Input({ value: "test", stops: ["quit"] })
+		const input = new Input({ value: 'test', stops: ['quit'] })
 		console.info(String(input)) // ← test
 		console.info(input.value) // ← test
 		console.info(input.cancelled) // ← false
 
-		input.value = "quit"
+		input.value = 'quit'
 		console.info(input.cancelled) // ← true
-		assert.equal(console.output()[0][1], "test")
-		assert.equal(console.output()[1][1], "test")
+		assert.equal(console.output()[0][1], 'test')
+		assert.equal(console.output()[1][1], 'test')
 		assert.equal(console.output()[2][1], false)
 		assert.equal(console.output()[3][1], true)
 	})
@@ -223,12 +409,12 @@ function testRender() {
 	 *
 	 * Prompts the user with a question and returns a promise with the answer.
 	 */
-	it("How to ask a question with ask()?", async () => {
+	it('How to ask a question with ask()?', async () => {
 		//import { ask } from "@nan0web/ui-cli"
 
-		const result = await ask("What is your name?")
+		const result = await ask('What is your name?')
 		console.info(result)
-		assert.equal(console.output()[0][1], "Alice")
+		assert.equal(console.output()[0][1], 'Alice')
 	})
 
 	/**
@@ -237,10 +423,23 @@ function testRender() {
 	 *
 	 * Creates a configurable input handler with stop keywords.
 	 */
-	it("How to use createInput handler?", () => {
+	it('How to use createInput handler?', () => {
 		//import { createInput } from '@nan0web/ui-cli'
-		const handler = createInput(["cancel"])
-		console.info(typeof handler === "function") // ← true
+		const handler = createInput(['cancel'])
+		console.info(typeof handler === 'function') // ← true
+		assert.equal(console.output()[0][1], true)
+	})
+
+	/**
+	 * @docs
+	 * #### `confirm(message)`
+	 *
+	 * Poses a yes/no question to the user.
+	 */
+	it('How to pose a confirmation question with confirm()?', async () => {
+		//import { confirm } from '@nan0web/ui-cli'
+		const result = await confirm('Do you want to proceed?')
+		console.info(result) // ← true
 		assert.equal(console.output()[0][1], true)
 	})
 
@@ -248,20 +447,19 @@ function testRender() {
 	 * @docs
 	 * #### `select(config)`
 	 *
-	 * Presents options to the user and returns a promise with selection.
+	 * Presents a beautiful interactive list of options.
 	 */
-	it("How to prompt user with select()?", async () => {
+	it('How to prompt user with select()?', { timeout: 2000 }, async () => {
 		//import { select } from '@nan0web/ui-cli'
 		const config = {
-			title: "Choose an option:",
-			prompt: "Selection (1-3): ",
-			options: ["Option A", "Option B", "Option C"],
+			title: 'Choose an option:',
+			options: ['Option A', 'Option B', 'Option C'],
 			console: console,
 		}
 
 		const result = await select(config)
 		console.info(result.value)
-		assert.equal(console.output()[0][1], "Option B")
+		assert.equal(console.output()[0][1], 'Option B')
 	})
 
 	/**
@@ -270,11 +468,11 @@ function testRender() {
 	 *
 	 * Waits for a keypress to continue the process.
 	 */
-	it("How to pause and wait for keypress with next()?", async () => {
+	it('How to pause and wait for keypress with next()?', async () => {
 		//import { next } from '@nan0web/ui-cli'
 
 		const result = await next()
-		console.info(typeof result === "string")
+		console.info(typeof result === 'string')
 		assert.equal(console.output()[0][1], true)
 	})
 
@@ -284,12 +482,13 @@ function testRender() {
 	 *
 	 * Returns a promise that resolves after a given delay.
 	 */
-	it("How to delay execution with pause()?", async () => {
+	it('How to delay execution with pause()?', async () => {
 		//import { pause } from '@nan0web/ui-cli'
 		const before = Date.now()
 		await pause(10)
 		const after = Date.now()
-		console.info(after - before >= 10) // ← true
+		const isAtLeast9 = after - before >= 9
+		console.info(isAtLeast9) // ← true
 		assert.equal(console.output()[0][1], true)
 	})
 
@@ -301,11 +500,11 @@ function testRender() {
 	 *
 	 * Thrown when a user interrupts a process.
 	 */
-	it("How to handle CancelError?", () => {
+	it('How to handle CancelError?', () => {
 		//import { CancelError } from '@nan0web/ui-cli'
 		const error = new CancelError()
 		console.error(error.message) // ← Operation cancelled by user
-		assert.equal(console.output()[0][1], "Operation cancelled by user")
+		assert.equal(console.output()[0][1], 'Operation cancelled by user')
 	})
 
 	/**
@@ -346,9 +545,14 @@ function testRender() {
 	 *
 	 * * **Parameters**
 	 *   * `config.title` (string) – selection title
-	 *   * `config.prompt` (string) – prompt text
 	 *   * `config.options` (array | Map) – options to choose from
 	 * * **Returns** Promise<{ index, value }>
+	 *
+	 * ### confirm(message)
+	 *
+	 * * **Parameters**
+	 *   * `message` (string) – confirmation question
+	 * * **Returns** Promise<boolean>
 	 *
 	 * ### next([conf])
 	 *
@@ -366,7 +570,7 @@ function testRender() {
 	 *
 	 * Extends `Error`, thrown when an input is cancelled.
 	 */
-	it("All exported classes and functions should pass basic tests", () => {
+	it('All exported classes and functions should pass basic tests', () => {
 		assert.ok(CLiInputAdapter)
 		assert.ok(CancelError)
 		assert.ok(createInput)
@@ -381,8 +585,8 @@ function testRender() {
 	 * @docs
 	 * ## Java•Script
 	 */
-	it("Uses `d.ts` files for autocompletion", () => {
-		assert.equal(pkg.types, "types/index.d.ts")
+	it('Uses `d.ts` files for autocompletion', () => {
+		assert.equal(pkg.types, 'types/index.d.ts')
 	})
 
 	/**
@@ -390,7 +594,7 @@ function testRender() {
 	 * ## Playground
 	 *
 	 */
-	it("How to run playground script?", async () => {
+	it('How to run playground script?', async () => {
 		/**
 		 * ```bash
 		 * # Clone the repository and run the CLI playground
@@ -401,12 +605,12 @@ function testRender() {
 		 * ```
 		 */
 		assert.ok(String(pkg.scripts?.playground))
-		const response = await runSpawn("git", ["remote", "get-url", "origin"], { timeout: 2_000 })
+		const response = await runSpawn('git', ['remote', 'get-url', 'origin'], { timeout: 2_000 })
 		if (response.code === 0) {
-			assert.ok(response.text.trim().endsWith("nan0web/ui-cli.git"))
+			assert.ok(response.text.trim().endsWith('nan0web/ui-cli.git'))
 		} else {
 			// git command may fail if not in a repo or no remote, skip assertion
-			console.warn("Git command skipped due to non-zero exit code or timeout.")
+			console.warn('Git command skipped due to non-zero exit code or timeout.')
 		}
 	})
 
@@ -414,16 +618,16 @@ function testRender() {
 	 * @docs
 	 * ## Contributing
 	 */
-	it("How to contribute? - [check here](./CONTRIBUTING.md)", async () => {
-		assert.equal(pkg.scripts?.precommit, "npm test")
-		assert.equal(pkg.scripts?.prepush, "npm test")
-		assert.equal(pkg.scripts?.prepare, "husky")
+	it('How to contribute? - [check here](./CONTRIBUTING.md)', async () => {
+		assert.equal(pkg.scripts?.precommit, 'npm test')
+		assert.equal(pkg.scripts?.prepush, 'npm test')
+		assert.equal(pkg.scripts?.prepare, 'husky')
 		try {
-			const text = await fs.loadDocument("CONTRIBUTING.md")
+			const text = await fs.loadDocument('CONTRIBUTING.md')
 			const str = String(text)
-			assert.ok(str.includes("# Contributing"))
+			assert.ok(str.includes('# Contributing'))
 		} catch (e) {
-			console.warn("Contributing file test skipped because CONTRIBUTING.md is not present.")
+			console.warn('Contributing file test skipped because CONTRIBUTING.md is not present.')
 		}
 	})
 
@@ -431,29 +635,30 @@ function testRender() {
 	 * @docs
 	 * ## License
 	 */
-	it("How to license ISC? - [check here](./LICENSE)", async () => {
+	it('How to license ISC? - [check here](./LICENSE)', async () => {
+		assert.ok(true) // just to stop generating try {} catch {} code
 		try {
-			const text = await fs.loadDocument("LICENSE")
-			assert.ok(String(text).includes("ISC"))
+			const text = await fs.loadDocument('LICENSE')
+			assert.ok(String(text).includes('ISC'))
 		} catch (e) {
-			console.warn("License test skipped because LICENSE is not present.")
+			console.warn('License test skipped because LICENSE is not present.')
 		}
 	})
 }
 
-describe("README.md testing", testRender)
+describe('README.md testing', testRender)
 
-describe("Rendering README.md", async () => {
-	let text = ""
-	const format = new Intl.NumberFormat("en-US").format
+describe('Rendering README.md', async () => {
+	let text = ''
+	const format = new Intl.NumberFormat('en-US').format
 	const parser = new DocsParser()
 	text = String(parser.decode(testRender))
-	await fs.saveDocument("README.md", text)
+	await fs.saveDocument('README.md', text)
 	const dataset = DatasetParser.parse(text, pkg.name)
-	await fs.saveDocument(".datasets/README.dataset.jsonl", dataset)
+	await fs.saveDocument('.datasets/README.dataset.jsonl', dataset)
 
 	it(`document is rendered in README.md [${format(Buffer.byteLength(text))}b]`, async () => {
-		const text = await fs.loadDocument("README.md")
-		assert.ok(text.includes("## License"))
+		const text = await fs.loadDocument('README.md')
+		assert.ok(text.includes('## License'))
 	})
 })

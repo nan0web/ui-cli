@@ -8,7 +8,7 @@ describe('Command', () => {
 		const command = new Command({
 			name: 'test',
 			help: 'Test command',
-			options: { value: [String, 'default', 'A test value'] }
+			options: { value: [String, 'default', 'A test value'] },
 		})
 
 		assert.equal(command.name, 'test')
@@ -19,7 +19,7 @@ describe('Command', () => {
 	it('should parse arguments correctly', () => {
 		const command = new Command({
 			name: 'test',
-			options: { flag: [Boolean, false, 'A flag'] }
+			options: { flag: [Boolean, false, 'A flag'] },
 		})
 
 		const message = command.parse(['--flag'])
@@ -29,12 +29,12 @@ describe('Command', () => {
 	it('should handle subcommands', () => {
 		const subcommand = new Command({
 			name: 'sub',
-			help: 'Subcommand'
+			help: 'Subcommand',
 		})
 
 		const command = new Command({
 			name: 'test',
-			children: [subcommand]
+			children: [subcommand],
 		})
 
 		const message = command.parse(['test', 'sub'])
@@ -45,7 +45,7 @@ describe('Command', () => {
 		const command = new Command({
 			name: 'test',
 			help: 'Test command',
-			options: { value: [String, 'default', 'A test value'] }
+			options: { value: [String, 'default', 'A test value'] },
 		})
 
 		const help = command.generateHelp()
@@ -59,7 +59,7 @@ describe('Command', () => {
 			name: 'test',
 			run: async function* () {
 				yield 'result'
-			}
+			},
 		})
 
 		const message = new CommandMessage({ name: 'test' })
@@ -77,7 +77,7 @@ describe('Command.findSubcommand', () => {
 		const subcommand = new Command({ name: 'sub' })
 		const command = new Command({
 			name: 'test',
-			children: [subcommand]
+			children: [subcommand],
 		})
 
 		const found = command.findSubcommand('sub')
@@ -98,13 +98,13 @@ describe('Command._applyDefaults', () => {
 			name: 'test',
 			options: {
 				value: [String, 'default', 'A test value'],
-				flag: [Boolean, true, 'A flag']
-			}
+				flag: [Boolean, true, 'A flag'],
+			},
 		})
 
 		const message = new CommandMessage({
 			name: 'test',
-			opts: {}
+			opts: {},
 		})
 
 		command._applyDefaults(message)
@@ -116,13 +116,13 @@ describe('Command._applyDefaults', () => {
 		const command = new Command({
 			name: 'test',
 			options: {
-				value: [String, 'default', 'A test value']
-			}
+				value: [String, 'default', 'A test value'],
+			},
 		})
 
 		const message = new CommandMessage({
 			name: 'test',
-			opts: { value: 'custom' }
+			opts: { value: 'custom' },
 		})
 
 		command._applyDefaults(message)
@@ -133,13 +133,13 @@ describe('Command._applyDefaults', () => {
 		const command = new Command({
 			name: 'test',
 			options: {
-				flag: [Boolean, false, 'A flag']
-			}
+				flag: [Boolean, false, 'A flag'],
+			},
 		})
 
 		const message = new CommandMessage({
 			name: 'test',
-			opts: {}
+			opts: {},
 		})
 
 		command._applyDefaults(message)

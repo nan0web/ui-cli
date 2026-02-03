@@ -5,4 +5,4 @@
  */
 export default class CLiMessage extends UiMessage {
 }
-import { UiMessage } from "@nan0web/ui";
+import { UiMessage } from '@nan0web/ui';

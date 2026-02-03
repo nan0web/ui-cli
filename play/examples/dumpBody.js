@@ -1,4 +1,4 @@
-import { GlobalBody } from "./globalBody.js"
+import { GlobalBody } from './globalBody.js'
 
 /**
  * Options for the `dump` command.
@@ -12,5 +12,5 @@ import { GlobalBody } from "./globalBody.js"
 /** @type {DumpBody} */
 export const DumpBody = {
 	...GlobalBody,
-	dist: "./dist",
+	dist: './dist',
 }

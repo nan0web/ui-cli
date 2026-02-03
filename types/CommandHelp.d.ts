@@ -81,5 +81,5 @@ export type CommandHelpField = {
      */
     pattern?: RegExp | undefined;
 };
-import { Message } from "@nan0web/co";
-import Logger from "@nan0web/log";
+import { Message } from '@nan0web/co';
+import Logger from '@nan0web/log';

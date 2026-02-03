@@ -1,5 +1,5 @@
-import { Message } from "@nan0web/co"
-import Logger from "@nan0web/log"
+import { Message } from '@nan0web/co'
+import Logger from '@nan0web/log'
 
 /**
  * @typedef {Object} CommandHelpField MessageBodySchema
@@ -55,7 +55,7 @@ export default class CommandHelp {
 		this.#usage(lines)
 		this.#options(lines)
 		this.#subcommands(lines)
-		return lines.join("\n")
+		return lines.join('\n')
 	}
 
 	/**
@@ -72,12 +72,13 @@ export default class CommandHelp {
 	 */
 	#header(lines) {
 		const name = this.MessageClass.name.toLowerCase()
-		const help = this.MessageClass['help'] || ""
-		lines.push([
-			`${this.Logger.style(name, { color: this.Logger.MAGENTA })}`,
-			help
-		].filter(Boolean).join(" • "))
-		lines.push("")
+		const help = this.MessageClass['help'] || ''
+		lines.push(
+			[`${this.Logger.style(name, { color: this.Logger.MAGENTA })}`, help]
+				.filter(Boolean)
+				.join(' • '),
+		)
+		lines.push('')
 	}
 
 	/**
@@ -92,17 +93,17 @@ export default class CommandHelp {
 
 		if (bodyProps.length === 0) {
 			lines.push(`Usage: ${name}`)
-			lines.push("")
+			lines.push('')
 			return
 		}
 
 		const placeholderParts = []
 		const flagParts = []
 
-		bodyProps.forEach(prop => {
+		bodyProps.forEach((prop) => {
 			/** @type {CommandHelpField} */
 			const schema = this.BodyClass[prop] || {}
-			const alias = schema.alias ? `-${schema.alias}, ` : ""
+			const alias = schema.alias ? `-${schema.alias}, ` : ''
 			const placeholder = schema.placeholder || schema.defaultValue
 			if (placeholder) {
 				placeholderParts.push(`[${alias}--${prop}=${placeholder}]`)
@@ -116,22 +117,22 @@ export default class CommandHelp {
 		//   * when placeholders exist:
 		//       – if exactly ONE flag part → prepend with ", "
 		//       – otherwise just space‑separate all parts.
-		let usage = ""
+		let usage = ''
 		if (placeholderParts.length) {
-			usage = placeholderParts.join(" ")
+			usage = placeholderParts.join(' ')
 			if (flagParts.length) {
 				if (flagParts.length === 1) {
 					usage = `${usage}, ${flagParts[0]}`
 				} else {
-					usage = `${usage} ${flagParts.join(" ")}`
+					usage = `${usage} ${flagParts.join(' ')}`
 				}
 			}
 		} else {
 			// only flag parts
-			usage = flagParts.join(" , ")
+			usage = flagParts.join(' , ')
 		}
 		lines.push(`Usage: ${name} ${usage}`)
-		lines.push("")
+		lines.push('')
 	}
 
 	/**
@@ -144,27 +145,30 @@ export default class CommandHelp {
 		const bodyProps = Object.keys(bodyInstance)
 		if (bodyProps.length === 0) return
 
-		lines.push("Options:")
-		bodyProps.forEach(prop => {
+		lines.push('Options:')
+		bodyProps.forEach((prop) => {
 			/** @type {CommandHelpField} */
 			const schema = this.BodyClass[prop] || {}
-			if (typeof schema !== "object") return
+			if (typeof schema !== 'object') return
 
-			const flags = schema.alias
-				? `--${prop}, -${schema.alias}`
-				: `--${prop}`
+			const flags = schema.alias ? `--${prop}, -${schema.alias}` : `--${prop}`
 
-			const type = undefined !== schema.type ? String(schema.type)
-				: undefined !== schema.defaultValue ? typeof schema.defaultValue
-				: undefined !== schema.placeholder ? typeof schema.placeholder
-				: "any"
-			const required = schema.required || schema.pattern || schema.defaultValue === undefined ? " *" : "  "
-			const description = schema.help || "No description"
+			const type =
+				undefined !== schema.type
+					? String(schema.type)
+					: undefined !== schema.defaultValue
+						? typeof schema.defaultValue
+						: undefined !== schema.placeholder
+							? typeof schema.placeholder
+							: 'any'
+			const required =
+				schema.required || schema.pattern || schema.defaultValue === undefined ? ' *' : '  '
+			const description = schema.help || 'No description'
 
 			// Pad flags to align the type column with the expectations.
 			lines.push(`  ${flags.padEnd(30)} ${type.padEnd(9)}${required} ${description}`)
 		})
-		lines.push("")
+		lines.push('')
 	}
 
 	/**
@@ -185,12 +189,12 @@ export default class CommandHelp {
 		const children = this.MessageClass['Children'] || []
 		if (children.length === 0) return
 
-		lines.push("Subcommands:")
-		children.forEach(ChildClass => {
+		lines.push('Subcommands:')
+		children.forEach((ChildClass) => {
 			const childName = ChildClass.name.toLowerCase()
-			const childHelp = ChildClass.help || "No description"
+			const childHelp = ChildClass.help || 'No description'
 			lines.push(`  ${childName.padEnd(20)}  ${childHelp}`)
 		})
-		lines.push("")
+		lines.push('')
 	}
 }

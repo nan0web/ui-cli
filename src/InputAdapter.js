@@ -4,19 +4,29 @@
  * @module InputAdapter
  */
 
-import {
-	UiForm,
-	InputAdapter as BaseInputAdapter,
-	UiMessage,
-} from "@nan0web/ui"
-import { CancelError } from "@nan0web/ui/core"
+import { UiForm, InputAdapter as BaseInputAdapter, UiMessage } from '@nan0web/ui'
+import { CancelError } from '@nan0web/ui/core'
+import prompts from 'prompts'
 
-import { ask as baseAsk, createInput, createPredefinedInput, Input } from "./ui/input.js"
-import { select as baseSelect } from "./ui/select.js"
-import { generateForm } from "./ui/form.js"
+import { ask as baseAsk, text as baseText, beep, createInput, createPredefinedInput, Input } from './ui/input.js'
+import { select as baseSelect } from './ui/select.js'
+import { confirm as baseConfirm } from './ui/confirm.js'
+import { autocomplete as baseAutocomplete } from './ui/autocomplete.js'
+import { table as baseTable } from './ui/table.js'
+import { multiselect as baseMultiselect } from './ui/multiselect.js'
+import { mask as baseMask } from './ui/mask.js'
+import { generateForm } from './ui/form.js'
 
-/** @typedef {import("./ui/select.js").InputFn} InputFn */
-/** @typedef {import("./ui/select.js").ConsoleLike} ConsoleLike */
+const DEFAULT_MAX_RETRIES = 100
+
+/**
+ * @typedef {Object} ConsoleLike
+ * @property {(...args: any[]) => void} debug
+ * @property {(...args: any[]) => void} log
+ * @property {(...args: any[]) => void} info
+ * @property {(...args: any[]) => void} warn
+ * @property {(...args: any[]) => void} error
+ */
 
 /**
  * Extends the generic {@link BaseInputAdapter} with CLI‑specific behaviour.
@@ -32,29 +42,33 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 	/** @type {ConsoleLike} */
 	#console
 	#stdout
-	/** @type {Map<string, () => Promise<Function>>} */
+	/** @type {Map<string, () => Promise<any>>} */
 	#components = new Map()
+	/** @type {number} */
+	#maxRetries
 
 	constructor(options = {}) {
 		super()
 		const {
 			predefined = process.env.PLAY_DEMO_SEQUENCE ?? [],
-			divider = process.env.PLAY_DEMO_DIVIDER ?? ",",
+			divider = process.env.PLAY_DEMO_DIVIDER ?? ',',
 			console: initialConsole = console,
 			stdout = process.stdout,
 			components = new Map(),
+			maxRetries = process.env.UI_CLI_MAX_RETRIES ?? DEFAULT_MAX_RETRIES,
 		} = options
 
 		this.#console = initialConsole
 		this.#stdout = stdout
 		this.#components = components
+		this.#maxRetries = Number(maxRetries)
 
 		if (Array.isArray(predefined)) {
-			this.#answers = predefined.map(v => String(v))
-		} else if (typeof predefined === "string") {
+			this.#answers = predefined.map((v) => String(v))
+		} else if (typeof predefined === 'string') {
 			this.#answers = predefined
 				.split(divider)
-				.map(v => v.trim())
+				.map((v) => v.trim())
 				.filter(Boolean)
 		} else {
 			this.#answers = []
@@ -62,9 +76,13 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 	}
 
 	/** @returns {ConsoleLike} */
-	get console() { return this.#console }
+	get console() {
+		return this.#console
+	}
 	/** @returns {NodeJS.WriteStream} */
-	get stdout() { return this.#stdout }
+	get stdout() {
+		return this.#stdout
+	}
 
 	#nextAnswer() {
 		if (this.#cursor < this.#answers.length) {
@@ -83,17 +101,17 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 	 * @returns {string} Plain string value.
 	 */
 	#normalise(val) {
-		if (val && typeof val === "object" && "value" in val) {
+		if (val && typeof val === 'object' && 'value' in val) {
 			return String(val.value)
 		}
-		return String(val ?? "")
+		return String(val ?? '')
 	}
 
 	/**
 	 * Create a handler with stop words that supports predefined answers.
 	 *
 	 * @param {string[]} stops - Stop words for cancellation.
-	 * @returns {InputFn}
+	 * @returns {Function}
 	 */
 	createHandler(stops = []) {
 		const self = this
@@ -103,12 +121,50 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 				this.stdout.write(`${question}${predefined}\n`)
 				const input = new Input({ value: predefined, stops })
 				if (input.cancelled) {
-					throw new CancelError("Cancelled via stop word")
+					throw new CancelError('Cancelled via stop word')
 				}
 				return input
 			}
 			const interactive = createInput(stops)
 			return interactive(question, loop, nextQuestion)
+		}
+	}
+
+	/**
+	 * Create a select handler that supports predefined answers.
+	 * @returns {Function}
+	 */
+	createSelectHandler() {
+		const self = this
+		return async (config) => {
+			const predefined = self.#nextAnswer()
+			if (predefined !== null) {
+				// Normalize options to find value
+				let choices = []
+				const options = config.options || []
+				if (options instanceof Map) {
+					choices = Array.from(options.entries()).map(([value, label]) => ({ label, value }))
+				} else if (Array.isArray(options)) {
+					choices = options.map((el) => (typeof el === 'string' ? { label: el, value: el } : el))
+				}
+
+				const idx = Number(predefined) - 1
+				let valToInject = predefined
+				if (!isNaN(idx) && idx >= 0 && idx < choices.length) {
+					valToInject = choices[idx].value
+				}
+
+				if (config.console) {
+					if (config.title) config.console.info(config.title)
+					choices.forEach((c, i) => {
+						config.console.info(` ${i + 1}) ${c.label}`)
+					})
+					const p = config.prompt ?? ''
+					config.console.info(`${p}${predefined}`)
+				}
+				prompts.inject([valToInject])
+			}
+			return self.select(config)
 		}
 	}
 
@@ -126,97 +182,173 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 
 		let formData = { ...form.state }
 		let idx = 0
+		let retries = 0
 
 		while (idx < form.fields.length) {
-			const field = form.fields[idx]
-			const prompt = `${field.label || field.name}${field.required ? " *" : ""}: `
+			const field = /** @type {any} */ (form.fields[idx])
+			if (retries > this.#maxRetries) {
+				return {
+					body: { action: 'form-cancel', cancelled: true, error: 'Infinite loop detected' },
+					cancelled: true,
+					action: 'form-cancel',
+				}
+			}
+			const promptMsg = `${field.label || field.name}${field.required ? ' *' : ''}: `
 
 			// ---- Handle select fields (options) ----------------------------------------
-			if (Array.isArray(field.options ?? 0) && field.options.length) {
+			if (field.type === 'select' || (Array.isArray(field.options ?? 0) && field.options.length && field.type !== 'multiselect' && field.type !== 'autocomplete')) {
 				const options = /** @type {any[]} */ (field.options)
 
-				const predefined = this.#nextAnswer()
 				const selConfig = {
 					title: field.label,
-					prompt: "Choose (number): ",
-					options: options.map(opt =>
-						typeof opt === "string"
-							? { label: opt, value: opt }
-							: opt
+					prompt: 'Choose (number): ',
+					options: options.map((opt) =>
+						typeof opt === 'string' ? { label: opt, value: opt } : opt,
 					),
 					console: { info: this.console.info.bind(this.console) },
 				}
+				const chosen = await this.requestSelect(selConfig)
 
-				let selResult
-				if (predefined !== null) {
-					selConfig.ask = createPredefinedInput([predefined], this.console)
-					selResult = await this.select(selConfig)
-				} else {
-					selConfig.ask = this.createHandler(["cancel", "quit", "exit"])
-					selResult = await this.select(selConfig)
+				if (chosen === undefined) {
+					return {
+						body: { action: 'form-cancel', cancelled: true },
+						cancelled: true,
+						action: 'form-cancel',
+					}
 				}
 
-				const chosen = selResult?.value
-				if (!options.includes(chosen)) {
-					this.console.error("\nEnumeration must have one value")
+				const values = options.map(o => typeof o === 'string' ? o : o.value)
+				if (!values.includes(chosen)) {
+					this.console.error('\nEnumeration must have one value')
+					retries++
 					continue
 				}
 				formData[field.name] = String(chosen)
 				idx++
+				retries = 0
 				continue
 			}
-			// ---------------------------------------------------------------------------
+			// ---- Handle confirm / toggle fields --------------------------------------
+			if (field.type === 'confirm' || field.type === 'toggle') {
+				const resValue = await this.requestConfirm({ message: field.label || field.name })
+				if (resValue === undefined) {
+					return {
+						body: { action: 'form-cancel', cancelled: true },
+						cancelled: true,
+						action: 'form-cancel',
+					}
+				}
+				formData[field.name] = resValue
+				idx++
+				continue
+			}
 
-			const rawAnswer = await this.ask(prompt)
-			const answerStr = this.#normalise(rawAnswer)
+			// ---- Handle multiselect fields -------------------------------------------
+			if (field.type === 'multiselect') {
+				const resValue = await this.requestMultiselect({
+					message: field.label || field.name,
+					options: Array.isArray(field.options) ? field.options : [],
+					initial: [],
+				})
+				if (resValue === undefined) {
+					return {
+						body: { action: 'form-cancel', cancelled: true },
+						cancelled: true,
+						action: 'form-cancel',
+					}
+				}
+				formData[field.name] = resValue
+				idx++
+				continue
+			}
 
-			if (["", "esc"].includes(answerStr)) {
+			// ---- Handle mask fields --------------------------------------------------
+			if (field.type === 'mask') {
+				const resValue = await this.requestMask({
+					message: field.label || field.name,
+					mask: field.mask || '',
+					placeholder: field.placeholder || '',
+				})
+				if (resValue === undefined) {
+					return {
+						body: { action: 'form-cancel', cancelled: true },
+						cancelled: true,
+						action: 'form-cancel',
+					}
+				}
+				formData[field.name] = resValue
+				idx++
+				continue
+			}
+
+			// ---- Handle text / password / number fields ------------------------------
+
+			const resValue = await this.requestInput({
+				prompt: promptMsg,
+				initial: field.placeholder,
+				type: field.type === 'password' || field.type === 'secret' ? 'password' : 'text',
+				validation: (val) => {
+					if (!field.validation) return true
+					const result = field.validation(val)
+					if (result !== true) beep()
+					return result
+				},
+			})
+
+			if (resValue === undefined) {
 				return {
-					body: { action: "form-cancel", cancelled: true, form: {} },
-					form: {},
+					body: { action: 'form-cancel', cancelled: true },
 					cancelled: true,
-					action: "form-cancel",
+					action: 'form-cancel',
 				}
 			}
 
-			const trimmed = answerStr.trim()
-			if (trimmed === "::prev" || trimmed === "::back") {
+			const trimmed = String(resValue || '').trim()
+
+			if (trimmed === '::prev' || trimmed === '::back') {
 				idx = Math.max(0, idx - 1)
+				retries = 0
 				continue
 			}
-			if (trimmed === "::next" || trimmed === "::skip") {
+			if (trimmed === '::next' || trimmed === '::skip') {
 				idx++
+				retries = 0
 				continue
 			}
-			if (trimmed === "" && !field.required) {
+			if (trimmed === '' && !field.required) {
 				idx++
+				retries = 0
 				continue
 			}
-			if (field.required && trimmed === "") {
-				this.console.info("\nField is required.")
+			if (field.required && trimmed === '') {
+				this.console.info('\nField is required.')
+				retries++
 				continue
 			}
+
 			const schema = field.constructor
 			const { isValid, errors } = form.validateValue(field.name, trimmed, schema)
 			if (!isValid) {
-				this.console.warn("\n" + Object.values(errors).join("\n"))
+				this.console.warn('\n' + Object.values(errors).join('\n'))
+				retries++
 				continue
 			}
 			formData[field.name] = trimmed
 			idx++
+			retries = 0
 		}
 
 		const finalForm = form.setData(formData)
 		const errors = finalForm.validate()
 		if (errors.size) {
-			this.console.warn("\n" + Object.values(errors).join("\n"))
+			this.console.warn('\n' + Object.values(errors).join('\n'))
 			return await this.requestForm(form, options)
 		}
 		return {
-			body: { action: "form-submit", cancelled: false, form: finalForm },
+			body: { action: 'form-submit', cancelled: false, form: finalForm },
 			form: finalForm,
 			cancelled: false,
-			action: "form-submit",
+			action: 'form-submit',
 		}
 	}
 
@@ -233,8 +365,11 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 		const compLoader = this.#components.get(component)
 		if (compLoader) {
 			try {
-				const compFn = await compLoader()
-				if (typeof compFn === "function") {
+				let compFn = await compLoader()
+				if (compFn && typeof compFn === 'object' && compFn.default) {
+					compFn = compFn.default
+				}
+				if (typeof compFn === 'function') {
 					compFn.call(this, props)
 					return
 				}
@@ -243,9 +378,9 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 				this.console.debug?.(err.stack)
 			}
 		}
-		if (props && typeof props === "object") {
+		if (props && typeof props === 'object') {
 			const { variant, content } = props
-			const prefix = variant ? `[${variant}]` : ""
+			const prefix = variant ? `[${variant}]` : ''
 			this.console.info(`${prefix} ${String(content)}`)
 		} else {
 			this.console.info(String(component))
@@ -267,7 +402,7 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 	 * Prompt the user to select an option from a list.
 	 *
 	 * @param {Object} config - Configuration object.
-	 * @returns {Promise<string>} Selected value (or empty string on cancel).
+	 * @returns {Promise<string|undefined>} Selected value (or undefined on cancel).
 	 */
 	async requestSelect(config) {
 		try {
@@ -276,12 +411,42 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 
 			if (predefined !== null) {
 				config.yes = true
-				config.ask = createPredefinedInput([predefined], config.console)
+				// Map 1-based index to option value if possible, to support legacy tests
+				const options = config.options || []
+				// Normalize options locally to find the value
+				let choices = []
+				if (options instanceof Map) {
+					choices = Array.from(options.entries()).map(([value, label]) => ({ label, value }))
+				} else if (Array.isArray(options)) {
+					choices = options.map((el) => (typeof el === 'string' ? { label: el, value: el } : el))
+				}
+
+				// Try to parse predefined as index
+				const idx = Number(predefined) - 1
+				let valToInject = predefined
+				if (!isNaN(idx) && idx >= 0 && idx < choices.length) {
+					// It's a valid index, use the value from that index because prompts expects value
+					valToInject = choices[idx].value
+				}
+
+				if (config.console) {
+					// Legacy behavior: Echo title and options because prompts.inject skips rendering
+					if (config.title) config.console.info(config.title)
+					choices.forEach((c, i) => {
+						config.console.info(` ${i + 1}) ${c.label}`)
+					})
+
+					// Legacy behavior: echo the input selection (e.g. "3")
+					const p = config.prompt ?? ''
+					config.console.info(`${p}${predefined}`)
+				}
+
+				prompts.inject([valToInject])
 			}
 			const result = await this.select(config)
 			return result.value
 		} catch (e) {
-			if (e instanceof CancelError) return ""
+			if (e instanceof CancelError) return undefined
 			throw e
 		}
 	}
@@ -290,18 +455,111 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 	 * Prompt for a single string input.
 	 *
 	 * @param {Object} config - Prompt configuration.
-	 * @returns {Promise<string>} User response string.
+	 * @returns {Promise<string|undefined>} User response string or undefined on cancel.
 	 */
 	async requestInput(config) {
 		const predefined = this.#nextAnswer()
-		if (predefined !== null) return predefined
-
-		if (config.yes === true && config.value !== undefined) {
+		const prompt = config.prompt ?? config.message ?? `${config.label ?? config.name ?? 'Input'}: `
+		if (predefined !== null) {
+			if (config.type !== 'password' && config.type !== 'secret') {
+				this.console.info(`${prompt}${predefined}`)
+			} else {
+				this.console.info(`${prompt}${'*'.repeat(predefined.length)}`)
+			}
+			prompts.inject([predefined])
+		} else if (config.yes === true && config.value !== undefined) {
 			return config.value
 		}
-		const prompt = config.prompt ?? `${config.label ?? config.name}: `
-		const answer = await this.ask(prompt)
-		return this.#normalise(answer)
+
+		const res = await baseText({
+			message: prompt,
+			initial: config.initial ?? config.placeholder,
+			type: config.type === 'password' || config.type === 'secret' ? 'password' : 'text',
+			validate: config.validate || config.validation,
+		})
+		return res.value
+	}
+
+	/**
+	 * Prompt the user for an autocomplete selection.
+	 *
+	 * @param {Object} config - Configuration object.
+	 * @returns {Promise<any>} Selected value.
+	 */
+	async requestAutocomplete(config) {
+		const predefined = this.#nextAnswer()
+		const prompt = config.message || config.title || 'Search: '
+		if (predefined !== null) {
+			this.console.info(`${prompt}${predefined}`)
+			prompts.inject([predefined])
+		}
+		const result = await baseAutocomplete(config)
+		return result.value
+	}
+
+	/**
+	 * Requests confirmation (yes/no).
+	 *
+	 * @param {Object} config - Confirmation configuration.
+	 * @returns {Promise<boolean>} User confirmation.
+	 */
+	async requestConfirm(config) {
+		const predefined = this.#nextAnswer()
+		const prompt = config.message || 'Confirm: '
+		if (predefined !== null) {
+			this.console.info(`${prompt}${predefined}`)
+			let valToInject = null
+			if (['y', 'yes', 'true', '1'].includes(predefined.toLowerCase())) valToInject = true
+			if (['n', 'no', 'false', '0'].includes(predefined.toLowerCase())) valToInject = false
+			prompts.inject([valToInject])
+		}
+		const res = await baseConfirm(config)
+		return res.value
+	}
+
+	/**
+	 * Display an interactive table.
+	 *
+	 * @param {Object} config - Table configuration.
+	 * @returns {Promise<any>}
+	 */
+	async requestTable(config) {
+		return baseTable(config)
+	}
+
+	/**
+	 * Requests multiple selection.
+	 *
+	 * @param {Object} config - Multiselect configuration.
+	 * @returns {Promise<any[]>} Selected values.
+	 */
+	async requestMultiselect(config) {
+		const predefined = this.#nextAnswer()
+		const prompt = config.message || 'Select: '
+		if (predefined !== null) {
+			this.console.info(`${prompt}${predefined}`)
+			const vals = predefined.split(',').map((v) => v.trim())
+			prompts.inject([vals])
+		}
+		const res = await baseMultiselect(config)
+		return res.value
+	}
+
+	/**
+	 * Requests masked input.
+	 *
+	 * @param {Object} config - Mask configuration.
+	 * @returns {Promise<string>} Masked value.
+	 */
+	async requestMask(config) {
+		const predefined = this.#nextAnswer()
+		const prompt = config.message || 'Input: '
+		if (predefined !== null) {
+			this.console.info(`${prompt}${predefined}`)
+			prompts.inject([predefined])
+		}
+		const res = await baseMask(config)
+		return res.value
 	}
 
 	/**
@@ -317,7 +575,7 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 		const predefined = this.#nextAnswer()
 		if (predefined !== null) {
 			this.stdout.write(`${question}${predefined}\n`)
-			return predefined
+			prompts.inject([predefined])
 		}
 		const input = await baseAsk(question)
 		return input.value
@@ -342,22 +600,21 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 	 */
 	async requireInput(msg) {
 		if (!msg) {
-			throw new Error("Message instance is required")
+			throw new Error('Message instance is required')
 		}
 		if (!(msg instanceof UiMessage)) {
-			throw new TypeError("Message must be an instance UiMessage")
+			throw new TypeError('Message must be an instance UiMessage')
 		}
 		/** @type {Map<string,string>} */
 		let errors = msg.validate()
 		while (errors.size > 0) {
-			const form = generateForm(
-				/** @type {any} */(msg.constructor).Body,
-				{ initialState: msg.body }
-			)
+			const form = generateForm(/** @type {any} */(msg.constructor).Body, {
+				initialState: msg.body,
+			})
 
 			const formResult = await this.processForm(form, msg.body)
 			if (formResult.cancelled) {
-				throw new CancelError("User cancelled form")
+				throw new CancelError('User cancelled form')
 			}
 
 			const updatedBody = { ...msg.body, ...formResult.form.state }

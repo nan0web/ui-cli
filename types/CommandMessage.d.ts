@@ -63,4 +63,4 @@ export default class CommandMessage extends Message {
     add(msg: CommandMessage | any): void;
     #private;
 }
-import { Message } from "@nan0web/co";
+import { Message } from '@nan0web/co';

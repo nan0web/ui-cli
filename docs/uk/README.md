@@ -3,9 +3,9 @@
 Маленький, беззалежний UI‑адаптер вводу для JavaScript‑проєктів.  
 Надає CLI‑реалізацію, яку легко інтегрувати у логіку застосунку.
 
-|[Статус](https://github.com/nan0web/monorepo/blob/main/system.md#написання-сценаріїв)|Документація|Тестове покриття|Фічі|Версія npm|
-|---|---|---|---|---|
-|🟢 `96.1%`|🧪 [English 🏴󠁧󠁢󠁥󠁮󠁧󠁿](https://github.com/nan0web/ui-cli/blob/main/README.md)<br />[Українською 🇺🇦](https://github.com/nan0web/ui-cli/blob/main/docs/uk/README.md)|🟡 `77.9%`|✅ d.ts 📜 system.md 🕹️ playground|—|
+| [Статус](https://github.com/nan0web/monorepo/blob/main/system.md#написання-сценаріїв) | Документація                                                                                                                                                | Тестове покриття | Фічі                               | Версія npm |
+| ------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------- | ---------------------------------- | ---------- |
+| 🟢 `96.1%`                                                                            | 🧪 [English 🏴󠁧󠁢󠁥󠁮󠁧󠁿](https://github.com/nan0web/ui-cli/blob/main/README.md)<br />[Українською 🇺🇦](https://github.com/nan0web/ui-cli/blob/main/docs/uk/README.md) | 🟡 `77.9%`       | ✅ d.ts 📜 system.md 🕹️ playground | —          |
 
 ## Опис
 
@@ -15,8 +15,8 @@
 
 ### Основні класи
 
-- **`CLIInputAdapter`** — обробляє запити форм, вводу та вибору в CLI.  
-- **`Input`** — обгортає введене користувачем значення та статус скасування.  
+- **`CLIInputAdapter`** — обробляє запити форм, вводу та вибору в CLI.
+- **`Input`** — обгортає введене користувачем значення та статус скасування.
 - **`CancelError`** — викидається, коли користувач скасовує операцію.
 
 Ці класи ідеальні для створення підказок, майстрів, форм та інтерактивних інструментів CLI з мінімальними накладними витратами.
@@ -24,16 +24,19 @@
 ## Встановлення
 
 ### Через npm
+
 ```bash
 npm install @nan0web/ui-cli
 ```
 
 ### Через pnpm
+
 ```bash
 pnpm add @nan0web/ui-cli
 ```
 
 ### Через yarn
+
 ```bash
 yarn add @nan0web/ui-cli
 ```
@@ -55,13 +58,13 @@ import { CLIInputAdapter } from '@nan0web/ui-cli'
 const adapter = new CLIInputAdapter()
 
 const fields = [
-  { name: "name", label: "Повне ім’я", required: true },
-  { name: "email", label: "Email", type: "email", required: true },
+  { name: 'name', label: 'Повне ім’я', required: true },
+  { name: 'email', label: 'Email', type: 'email', required: true },
 ]
 
 const validateValue = (name, value) => {
-  if (name === "email" && !value.includes("@")) {
-    return { isValid: false, errors: { email: "Некоректний email" } }
+  if (name === 'email' && !value.includes('@')) {
+    return { isValid: false, errors: { email: 'Некоректний email' } }
   }
   return { isValid: true, errors: {} }
 }
@@ -71,9 +74,9 @@ const setData = (data) => {
   return newForm
 }
 const form = UiForm.from({
-  title: "Профіль користувача",
+  title: 'Профіль користувача',
   fields,
-  id: "user-profile-form",
+  id: 'user-profile-form',
   validateValue,
   setData,
   state: {},
@@ -94,12 +97,12 @@ import { CLIInputAdapter } from '@nan0web/ui-cli'
 
 const adapter = new CLIInputAdapter()
 const config = {
-  title: "Виберіть мову:",
-  prompt: "Мова (1‑2): ",
-  id: "language-select",
+  title: 'Виберіть мову:',
+  prompt: 'Мова (1‑2): ',
+  id: 'language-select',
   options: new Map([
-    ["en", "English"],
-    ["uk", "Ukrainian"],
+    ['en', 'English'],
+    ['uk', 'Ukrainian'],
   ]),
 }
 
@@ -116,13 +119,13 @@ console.info(result.value) // ← Message { body: "en", head: {} }
 ```js
 import { Input } from '@nan0web/ui-cli'
 
-const input = new Input({ value: "test", stops: ["quit"] })
-console.info(String(input))      // ← test
-console.info(input.value)        // ← test
-console.info(input.cancelled)    // ← false
+const input = new Input({ value: 'test', stops: ['quit'] })
+console.info(String(input)) // ← test
+console.info(input.value) // ← test
+console.info(input.cancelled) // ← false
 
-input.value = "quit"
-console.info(input.cancelled)    // ← true
+input.value = 'quit'
+console.info(input.cancelled) // ← true
 ```
 
 #### `ask(question)`
@@ -130,9 +133,9 @@ console.info(input.cancelled)    // ← true
 Виводить питання та повертає відповідь у вигляді промісу.
 
 ```js
-import { ask } from "@nan0web/ui-cli"
+import { ask } from '@nan0web/ui-cli'
 
-const result = await ask("Яке ваше ім’я?")
+const result = await ask('Яке ваше ім’я?')
 console.info(result)
 ```
 
@@ -143,8 +146,8 @@ console.info(result)
 ```js
 import { createInput } from '@nan0web/ui-cli'
 
-const handler = createInput(["cancel"])
-console.info(typeof handler === "function") // ← true
+const handler = createInput(['cancel'])
+console.info(typeof handler === 'function') // ← true
 ```
 
 #### `select(config)`
@@ -155,9 +158,9 @@ console.info(typeof handler === "function") // ← true
 import { select } from '@nan0web/ui-cli'
 
 const config = {
-  title: "Оберіть варіант:",
-  prompt: "Вибір (1‑3): ",
-  options: ["Варіант A", "Варіант B", "Варіант C"],
+  title: 'Оберіть варіант:',
+  prompt: 'Вибір (1‑3): ',
+  options: ['Варіант A', 'Варіант B', 'Варіант C'],
   console: console,
 }
 
@@ -173,7 +176,7 @@ console.info(result.value)
 import { next } from '@nan0web/ui-cli'
 
 const result = await next()
-console.info(typeof result === "string")
+console.info(typeof result === 'string')
 ```
 
 #### `pause(ms)`

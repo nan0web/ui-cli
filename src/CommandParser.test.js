@@ -5,7 +5,7 @@ import CommandParser from './CommandParser.js'
 
 class TestBody {
 	/** @type {string} */
-	name = ""
+	name = ''
 	/** @type {number} */
 	age = 0
 	/** @type {boolean} */
@@ -15,11 +15,7 @@ class TestBody {
 	 * @param {Partial<TestBody>} [input={}]
 	 */
 	constructor(input = {}) {
-		const {
-			name = this.name,
-			age = this.age,
-			active = this.active,
-		} = input
+		const { name = this.name, age = this.age, active = this.active } = input
 		this.name = String(name)
 		this.age = Number(age)
 		this.active = Boolean(active)
@@ -28,18 +24,18 @@ class TestBody {
 
 class NestedBody {
 	/** @type {string} */
-	attr = ""
+	attr = ''
 
 	static active = {
-		alias: "a",
-		default: false
+		alias: 'a',
+		default: false,
 	}
 	/** @type {boolean} */
 	active = false
 
 	static online = {
-		alias: "o",
-		default: false
+		alias: 'o',
+		default: false,
 	}
 	/** @type {boolean} */
 	online = false
@@ -47,11 +43,7 @@ class NestedBody {
 	 * @param {Partial<NestedBody>} [input={}]
 	 */
 	constructor(input = {}) {
-		const {
-			attr = this.attr,
-			active = this.active,
-			online = this.online,
-		} = input
+		const { attr = this.attr, active = this.active, online = this.online } = input
 		this.attr = String(attr)
 		this.active = Boolean(active)
 		this.online = Boolean(online)
@@ -106,31 +98,31 @@ class TestMessage extends Message {
 
 class MainBody {
 	static config = {
-		help: "Path to config file (optional)",
+		help: 'Path to config file (optional)',
 	}
-	config = ""
+	config = ''
 	static data = {
-		help: "Data directory path or connection string",
+		help: 'Data directory path or connection string',
 	}
-	data = "./data"
+	data = './data'
 	static public = {
-		help: "Public assets directory"
+		help: 'Public assets directory',
 	}
-	public = "./public"
+	public = './public'
 	static dist = {
-		help: "Output directory for SSG",
+		help: 'Output directory for SSG',
 	}
-	dist = "./dist"
+	dist = './dist'
 	static port = {
-		help: "API server port",
+		help: 'API server port',
 	}
 	port = 8888
 	static yes = {
-		help: "Non-interactive mode (yes to all prompts)"
+		help: 'Non-interactive mode (yes to all prompts)',
 	}
 	yes = false
 	static no = {
-		help: ""
+		help: '',
 	}
 	no = false
 }
@@ -244,33 +236,39 @@ describe('CommandParser', () => {
 		assert.strictEqual(result.body.subCommand.body.online, true)
 	})
 
-	it("should parse options only properly with only one command and = for option", () => {
+	it('should parse options only properly with only one command and = for option', () => {
 		const parser = new CommandParser([Main])
 		/** @type {Main} */
-		const result = parser.parse("--data=private")
-		assert.deepEqual({ ...result.body }, {
-			config: "",
-			data: "private",
-			dist: "./dist",
-			no: false,
-			port: 8888,
-			public: "./public",
-			yes: false,
-		})
+		const result = parser.parse('--data=private')
+		assert.deepEqual(
+			{ ...result.body },
+			{
+				config: '',
+				data: 'private',
+				dist: './dist',
+				no: false,
+				port: 8888,
+				public: './public',
+				yes: false,
+			},
+		)
 	})
 
-	it("should parse options only properly with only one command with space for option", () => {
+	it('should parse options only properly with only one command with space for option', () => {
 		const parser = new CommandParser([Main])
 		/** @type {Main} */
-		const result = parser.parse("--data private")
-		assert.deepEqual({ ...result.body }, {
-			config: "",
-			data: "private",
-			dist: "./dist",
-			no: false,
-			port: 8888,
-			public: "./public",
-			yes: false,
-		})
+		const result = parser.parse('--data private')
+		assert.deepEqual(
+			{ ...result.body },
+			{
+				config: '',
+				data: 'private',
+				dist: './dist',
+				no: false,
+				port: 8888,
+				public: './public',
+				yes: false,
+			},
+		)
 	})
 })

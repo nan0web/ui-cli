@@ -10,12 +10,9 @@
  * @throws {Error} If variant maps to undefined console method.
  */
 export default function (input = {}) {
-	const {
-		variant = "info",
-		content = "",
-	} = input
-	const fn = variant === "success" ? "info" : variant
-	if (typeof this.console[fn] !== "function") {
+	const { variant = 'info', content = '' } = input
+	const fn = variant === 'success' ? 'info' : variant
+	if (typeof this.console[fn] !== 'function') {
 		throw new Error(`Undefined variant: ${variant}`)
 	}
 	this.console[fn](content)

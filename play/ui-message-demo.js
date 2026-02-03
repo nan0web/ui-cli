@@ -4,31 +4,31 @@
  * @module play/ui-message-demo
  */
 
-import Logger from "@nan0web/log"
-import { UiMessage } from "@nan0web/ui"
+import Logger from '@nan0web/log'
+import { UiMessage } from '@nan0web/ui'
 
 /**
  * Body schema used by the demo message.
  */
 class DemoBody {
 	static username = {
-		help: "User name",
+		help: 'User name',
 		required: true,
-		validate: (v) => /^\w+$/.test(v) ? true : "Alphanumeric only",
+		validate: (v) => (/^\w+$/.test(v) ? true : 'Alphanumeric only'),
 	}
 	static age = {
-		help: "User age",
-		type: "number",
+		help: 'User age',
+		type: 'number',
 		required: true,
-		validate: (v) => Number(v) >= 18 ? true : "Must be 18+",
+		validate: (v) => (Number(v) >= 18 ? true : 'Must be 18+'),
 	}
 	static color = {
-		help: "Favorite colour",
-		options: ["Red", "Green", "Blue"],
-		defaultValue: "Red",
+		help: 'Favorite colour',
+		options: ['Red', 'Green', 'Blue'],
+		defaultValue: 'Red',
 	}
 	constructor(input = {}) {
-		const { username = "", age = 0, color = DemoBody.color.defaultValue } = input
+		const { username = '', age = 0, color = DemoBody.color.defaultValue } = input
 		this.username = String(username)
 		this.age = Number(age)
 		this.color = String(color)
@@ -44,9 +44,7 @@ class DemoMessage extends UiMessage {
 	body
 	constructor(input = {}) {
 		super(input)
-		const {
-			body = new DemoBody()
-		} = input
+		const { body = new DemoBody() } = input
 		this.body = new DemoBody(body)
 	}
 }
@@ -59,20 +57,22 @@ class DemoMessage extends UiMessage {
  */
 export async function runUiMessageDemo(console, adapter) {
 	console.clear()
-	console.success("UiMessage Demo – Schema‑driven Form")
+	console.success('UiMessage Demo – Schema‑driven Form')
 
 	const msg = new DemoMessage({ body: {} })
 
 	const result = await adapter.requireInput(msg)
 
 	if (result.cancelled) {
-		console.info("Form cancelled by user.")
+		console.info('Form cancelled by user.')
 		return
 	}
 
-	console.success("Form completed!")
-	console.info(`Result → ${JSON.stringify({
-		...result,
-		age: Number(result.age)
-	})}`)
+	console.success('Form completed!')
+	console.info(
+		`Result → ${JSON.stringify({
+			...result,
+			age: Number(result.age),
+		})}`,
+	)
 }

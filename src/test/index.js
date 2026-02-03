@@ -1,7 +1,5 @@
-import PlaygroundTest from "./PlaygroundTest.js"
+import PlaygroundTest from './PlaygroundTest.js'
 
-export {
-	PlaygroundTest,
-}
+export { PlaygroundTest }
 
 export default PlaygroundTest

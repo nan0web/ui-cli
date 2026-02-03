@@ -4,32 +4,15 @@
  * @module ui/input
  */
 
-import { createInterface } from "node:readline"
-import { stdin, stdout } from "node:process"
-import { CancelError } from "@nan0web/ui"
-
-/** @typedef {import("./select.js").ConsoleLike} ConsoleLike */
-/** @typedef {(input: Input) => Promise<boolean>} LoopFn */
-/** @typedef {(input: Input) => string} NextQuestionFn */
+import prompts from 'prompts'
+import { CancelError } from '@nan0web/ui/core'
+import process from 'node:process'
 
 /**
- * Input function.
- * ---
- * Must be used only as a type — typedef does not work with full arguments description for functions.
- * ---
- * @param {string} question - Prompt displayed to the user.
- * @param {boolean | LoopFn} [loop=false] - Loop‑control flag, validator or boolean that forces a single answer.
- * @param {string | NextQuestionFn} [nextQuestion] - When `false` the prompt ends after one answer.
- *                                            When a `function` is supplied it receives the current {@link Input}
- *                                            and must return a new question string for the next iteration.
- *
- * @returns {Promise<Input>} Resolves with an {@link Input} instance that contains the final answer,
- *                           the raw value and cancellation state.
- *
- * @throws {Error} May propagate errors from the underlying readline interface.
+ * Triggers a system beep (ASCII Bell).
  */
-export async function InputFn(question, loop = false, nextQuestion = undefined) {
-	return new Input()
+export function beep() {
+	process.stdout.write('\u0007')
 }
 
 /**
@@ -42,180 +25,116 @@ export async function InputFn(question, loop = false, nextQuestion = undefined) 
  */
 export class Input {
 	/** @type {string} */
-	value = ""
+	value = ''
 	/** @type {string[]} */
 	stops = []
 	#cancelled = false
 
-	/**
-	 * Create a new {@link Input} instance.
-	 *
-	 * @param {Object} [input={}] - Optional initial values.
-	 * @param {string} [input.value] - Initial answer string.
-	 * @param {boolean} [input.cancelled] - Initial cancel flag.
-	 * @param {string|string[]} [input.stops] - Words that trigger cancellation.
-	 */
 	constructor(input = {}) {
-		const {
-			value = this.value,
-			cancelled = this.#cancelled,
-			stops = [],
-		} = input
-
+		const { value = this.value, cancelled = this.#cancelled, stops = [] } = input
 		this.value = String(value)
-
-		const normalizedStops = Array.isArray(stops) ? stops : [stops].filter(Boolean)
-		this.stops = normalizedStops.map(String)
-
+		this.stops = stops
 		this.#cancelled = Boolean(cancelled)
 	}
 
-	/**
-	 * Returns whether the input has been cancelled either explicitly or via a stop word.
-	 *
-	 * @returns {boolean}
-	 */
 	get cancelled() {
 		return this.#cancelled || this.stops.includes(this.value)
 	}
 
-	/** @returns {string} The raw answer value. */
 	toString() {
 		return this.value
 	}
 }
 
 /**
- * Low‑level prompt that returns a trimmed string.
+ * Modern text input with validation and default value.
  *
- * @param {Object} input
- * @param {string} input.question - Text displayed as a prompt.
- * @param {string} [input.predef] - Optional predefined answer (useful for testing).
- * @param {ConsoleLike} [input.console] - Optional console to show predefined value
- * @param {import("node:readline").Interface} [input.rl] - Readline interface instnace
- * @returns {Promise<string>} The answer without surrounding whitespace.
- *
- * When `predef` is supplied the function mimics the usual readline output
- * (`question + answer + newline`) and returns the trimmed value.
+ * @param {Object} config
+ * @param {string} config.message - Prompt question
+ * @param {string} [config.initial] - Default value
+ * @param {string} [config.type] - Prompt type (text, password, etc)
+ * @param {(value:string)=>boolean|string|Promise<boolean|string>} [config.validate] - Validator
+ * @returns {Promise<{value:string, cancelled:boolean}>}
  */
-export async function _askRaw(input) {
-	const {
-		question,
-		predef = undefined,
-		console,
-		rl: initialRL,
-	} = input
-	// Fast‑path for predefined answers – mimic readline output.
-	if (typeof predef === "string") {
-		if (console) {
-			console.info(`${question}${predef}\n`)
-		} else {
-			process.stdout.write(`${question}${predef}\n`)
+export async function text(config) {
+	const { message, initial, validate, type = 'text' } = config
+	const response = await prompts({
+		type: type,
+		name: 'value',
+		message,
+		initial,
+		validate
+	}, {
+		onCancel: () => {
+			throw new CancelError()
 		}
-		return predef.trim()
-	}
-
-	return new Promise(resolve => {
-		const rl = initialRL ?? createInterface({ input: stdin, output: stdout, terminal: true })
-		rl.question(question, answer => {
-			rl.close()
-			resolve(answer.trim())
-		})
 	})
+
+	return { value: response.value, cancelled: false }
 }
+
 
 /**
  * Factory that creates a reusable async input handler.
+ * Adapter for legacy ask() signature.
  *
  * @param {string[]} [stops=[]] Words that trigger cancellation.
  * @param {string|undefined} [predef] Optional predefined answer for testing.
- * @param {ConsoleLike} [console] Optional console instance.
- * @returns {InputFn} Async function that resolves to an {@link Input}.
+ * @param {Object} [console] Optional console instance.
+ * @param {(input: Input) => Promise<boolean>|boolean} [loop] Optional loop validator.
+ * @returns {Function} Async function that resolves to an {@link Input}.
  */
-export function createInput(stops = [], predef = undefined, console = undefined) {
-	const input = new Input({ stops })
-
-	/**
-	 * Internal handler used by the factory.
-	 *
-	 * @param {string} question - Prompt displayed to the user.
-	 * @param {boolean | LoopFn} [loop=false] - Loop‑control flag or validator.
-	 * @param {string | NextQuestionFn} [nextQuestion=false] - Next prompt generator or its value.
-	 * @returns {Promise<Input>}
-	 */
-	async function fn(question, loop = false, nextQuestion = undefined) {
-		let currentQuestion = question
-		while (true) {
-			input.value = await _askRaw({ question: currentQuestion, predef, console })
-
-			if (false === loop || input.cancelled) return input
-			if (true === loop && input.value) return input
-			if (typeof loop === "function") {
-				const cont = await loop(input)
-				if (!cont) return input
-			}
-			if (typeof nextQuestion === "string") currentQuestion = nextQuestion
-			if (typeof nextQuestion === "function") currentQuestion = nextQuestion(input)
+export function createInput(stops = [], predef = undefined, console = undefined, loop = undefined) {
+	return async function ask(question, loopVal = loop, nextQuestion = undefined) {
+		const currentLoop = typeof loopVal === 'function' ? loopVal : loop
+		if (predef !== undefined) {
+			prompts.inject([predef])
 		}
+
+		// Map options to prompts config
+		let validationFn = undefined
+
+		if (typeof currentLoop === 'function') {
+			validationFn = async (val) => {
+				if (stops.includes(val)) return true
+				// Loop returns true to CONTINUE (invalid), false to STOP (valid).
+				// prompts returns true for VALID, string/false for INVALID.
+				const inputObj = new Input({ value: val, stops })
+				if (inputObj.cancelled) return true
+
+				const shouldContinue = await currentLoop(inputObj)
+				return shouldContinue ? 'Invalid input' : true
+			}
+		}
+
+		const result = await text({
+			message: question,
+			validate: validationFn
+		})
+
+		return new Input({ value: result.value, stops })
 	}
-	return fn
 }
 
 /**
  * High‑level input helper `ask`.
- *
- * This constant inherits the full {@link InputFn} signature **and** the
- * detailed JSDoc description for each argument, as defined in {@link InputFn}.
- *
- * @type {InputFn}
+ * Use this for simple string prompts.
  */
 export const ask = createInput()
 
 /**
- * @param {string[]} predefined
- * @param {ConsoleLike} console
- * @param {string[]} [stops=[]]
- * @returns {import("./select.js").InputFn}
- * @throws {CancelError}
+ * Mock helper for predefined inputs (Testing).
  */
 export function createPredefinedInput(predefined, console, stops = []) {
 	const strPredefined = predefined.map(String)
-	const input = new Input({ stops })
 	let index = 0
-	return async function predefinedHandler(question, loop = false, nextQuestion = undefined) {
-		let currentQuestion = question
-		while (true) {
-			if (index >= strPredefined.length) {
-				throw new CancelError("No more predefined answers")
-			}
-			const predef = strPredefined[index++]
-			if (console) {
-				console.info(`${currentQuestion}${predef}\n`)
-			} else {
-				process.stdout.write(`${currentQuestion}${predef}\n`)
-			}
-			input.value = predef.trim()
-			if (input.cancelled) {
-				return input
-			}
-			if (false === loop) {
-				return input
-			}
-			if (true === loop && input.value) {
-				return input
-			}
-			if (typeof loop === "function") {
-				const cont = await loop(input)
-				if (!cont) {
-					return input
-				}
-			}
-			if (typeof nextQuestion === "string") {
-				currentQuestion = nextQuestion
-			} else if (typeof nextQuestion === "function") {
-				currentQuestion = nextQuestion(input)
-			}
+	return async function (question) {
+		if (index >= strPredefined.length) {
+			throw new CancelError('No more predefined answers')
 		}
+		const val = strPredefined[index++]
+		if (console) console.info(`${question}${val}`)
+		return new Input({ value: val, stops })
 	}
 }
 

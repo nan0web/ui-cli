@@ -19,8 +19,8 @@ export function createAgeForm(t) {
 					const num = Number(value)
 					return num >= 18 ? null : t('You must be at least 18 years old')
 				},
-				required: true
-			})
-		]
+				required: true,
+			}),
+		],
 	})
 }

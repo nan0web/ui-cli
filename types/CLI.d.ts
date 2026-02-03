@@ -40,6 +40,6 @@ export default class CLi {
     run(msg?: Message | undefined): AsyncGenerator<OutputMessage>;
     #private;
 }
-import Logger from "@nan0web/log";
-import { Message } from "@nan0web/co";
-import { OutputMessage } from "@nan0web/co";
+import Logger from '@nan0web/log';
+import { Message } from '@nan0web/co';
+import { OutputMessage } from '@nan0web/co';

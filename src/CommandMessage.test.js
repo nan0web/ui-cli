@@ -17,7 +17,7 @@ describe('CommandMessage', () => {
 			name: 'test',
 			argv: ['arg1'],
 			opts: { flag: true },
-			children: [new CommandMessage({ name: 'sub' })]
+			children: [new CommandMessage({ name: 'sub' })],
 		})
 		assert.equal(msg.name, 'test')
 		assert.deepEqual(msg.argv, ['arg1'])

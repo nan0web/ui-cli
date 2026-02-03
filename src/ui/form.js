@@ -4,10 +4,11 @@
  * @module ui/form
  */
 
-import { CancelError } from "@nan0web/ui/core"
-import { createInput, Input } from "./input.js"
-import { select } from "./select.js"
-import { UiForm, FormInput } from "@nan0web/ui"
+import { CancelError } from '@nan0web/ui/core'
+import { createInput, Input } from './input.js'
+import { select } from './select.js'
+import { autocomplete } from './autocomplete.js'
+import { UiForm, FormInput } from '@nan0web/ui'
 
 /**
  * Generates a UiForm instance from a Body class static schema.
@@ -27,20 +28,20 @@ export function generateForm(BodyClass, options = {}) {
 	const fields = []
 
 	for (const [name, schema] of Object.entries(BodyClass)) {
-		if (typeof schema !== "object" || schema === null) continue
+		if (typeof schema !== 'object' || schema === null) continue
 
-		const translate = (value) => (typeof t === "function" ? t(value) : value)
+		const translate = (value) => (typeof t === 'function' ? t(value) : value)
 
 		fields.push(
 			new FormInput({
 				name,
 				label: translate(schema.help || name),
-				type: schema.type || "text",
+				type: schema.type || 'text',
 				required: Boolean(schema.required),
-				placeholder: translate(schema.placeholder || schema.defaultValue || ""),
+				placeholder: translate(schema.placeholder || schema.defaultValue || ''),
 				options: schema.options
 					? schema.options.map((opt) =>
-						typeof opt === "string"
+						typeof opt === 'string'
 							? opt
 							: opt.label
 								? { label: opt.label, value: opt.value }
@@ -50,7 +51,7 @@ export function generateForm(BodyClass, options = {}) {
 				validation: schema.validate
 					? (value) => {
 						const res = schema.validate(value)
-						return res === true ? true : typeof res === "string" ? res : `Invalid ${name}`
+						return res === true ? true : typeof res === 'string' ? res : `Invalid ${name}`
 					}
 					: () => true,
 			}),
@@ -82,15 +83,18 @@ export default class Form {
 	 * @param {Object} [options={}] - Options.
 	 * @param {string[]} [options.stops=["quit", "cancel", "exit"]] - Stop words.
 	 * @param {(prompt: string) => Promise<Input>} [options.inputFn] - Custom input function.
+	 * @param {(config: object) => Promise<{index:number, value:any}>} [options.selectFn] - Custom select function.
 	 * @throws {TypeError} If model is not an object with a constructor.
 	 */
 	constructor(model, options = {}) {
-		if (!model || typeof model !== "object" || !model.constructor) {
-			throw new TypeError("Form requires a model instance with a constructor")
+		if (!model || typeof model !== 'object' || !model.constructor) {
+			throw new TypeError('Form requires a model instance with a constructor')
 		}
 		this.#model = model
-		const { stops = ["quit", "cancel", "exit"], inputFn } = options
+		this.options = options
+		const { stops = ['quit', 'cancel', 'exit'], inputFn, selectFn } = options
 		this.handler = inputFn || createInput(stops)
+		this.select = selectFn || select
 		this.#fields = this.#generateFields()
 	}
 
@@ -103,22 +107,22 @@ export default class Form {
 		const Class = this.#model.constructor
 		const fields = []
 		for (const [name, schema] of Object.entries(Class)) {
-			if (typeof schema !== "object" || schema === null) continue
+			if (typeof schema !== 'object' || schema === null) continue
 			const isRequired = schema.required === true || schema.defaultValue === undefined
-			const placeholder = schema.placeholder || schema.defaultValue || ""
+			const placeholder = schema.placeholder || schema.defaultValue || ''
 			const options = schema.options || []
 			const validation = schema.validate
 				? (value) => {
 					const res = schema.validate(value)
 					if (res === true) return true
-					if (typeof res === "string") return res
+					if (typeof res === 'string') return res
 					return `Invalid ${name}`
 				}
 				: () => true
 			fields.push({
 				name,
 				label: schema.help || name,
-				type: schema.type || "text",
+				type: schema.type || 'text',
 				required: isRequired,
 				placeholder,
 				options,
@@ -144,15 +148,7 @@ export default class Form {
 		return new Form(model, options)
 	}
 
-	/**
-	 * Prompts for selection using the provided configuration.
-	 *
-	 * @param {Object} config - Selection configuration.
-	 * @returns {Promise<{index:number, value:any}>} Selected option.
-	 */
-	async select(config) {
-		return select(config)
-	}
+
 
 	/**
 	 * Prompts for input using the internal handler.
@@ -177,20 +173,26 @@ export default class Form {
 		while (idx < this.#fields.length) {
 			const field = this.#fields[idx]
 			const currentValue = this.#model[field.name] ?? field.placeholder
-			const prompt = `${field.label}${field.required ? " *" : ""} [${currentValue}]: `
+			const prompt = `${field.label}${field.required ? ' *' : ''} [${currentValue}]: `
 			try {
-				if (field.options.length > 0) {
+				if (field.options.length > 0 || field.type === 'autocomplete') {
 					const selConfig = {
 						title: field.label,
-						prompt: "Choose (number): ",
-						options: field.options.map((opt) =>
-							typeof opt === "string" ? opt : opt.label ? { label: opt.label, value: opt.value } : opt,
-						),
-						console: { info: console.info.bind(console) },
+						message: field.help || field.label,
+						prompt: 'Choose (number): ',
+						options: field.options,
+						console: (/** @type {any} */(this.options)).console || { info: (msg) => process.stdout.write(msg + '\n') },
 						ask: this.handler,
 					}
-					const selResult = await this.select(selConfig)
-					const val = selResult.value
+					let val
+					if (field.type === 'autocomplete') {
+						const autoResult = await autocomplete(selConfig)
+						val = autoResult.value
+					} else {
+						const selResult = await this.select(selConfig)
+						val = selResult.value
+					}
+
 					const validRes = field.validation(val)
 					if (validRes !== true) {
 						console.error(`\n${validRes}`)
@@ -204,8 +206,8 @@ export default class Form {
 						return { cancelled: true }
 					}
 					let answer = inputObj.value.trim()
-					if (answer === "" && !field.required) {
-						this.#model[field.name] = ""
+					if (answer === '' && !field.required) {
+						this.#model[field.name] = ''
 						idx++
 						continue
 					}
@@ -236,12 +238,12 @@ export default class Form {
 	 */
 	convertValue(field, value) {
 		const schema = this.#model.constructor[field.name]
-		const type = schema?.type || typeof (schema?.defaultValue ?? "string")
+		const type = schema?.type || typeof (schema?.defaultValue ?? 'string')
 		switch (type) {
-			case "number":
+			case 'number':
 				return Number(value) || 0
-			case "boolean":
-				return value.toLowerCase() === "true"
+			case 'boolean':
+				return value.toLowerCase() === 'true'
 			default:
 				return String(value)
 		}

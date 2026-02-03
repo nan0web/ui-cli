@@ -1,4 +1,4 @@
-import { GlobalBody } from "./globalBody.js"
+import { GlobalBody } from './globalBody.js'
 
 /**
  * Options for the `serve` command.
@@ -14,7 +14,8 @@ import { GlobalBody } from "./globalBody.js"
 export const ServeBody = {
 	...GlobalBody,
 	port: 3033,
-	ssl: process.env.SSL_NAN0WEB_CERT && process.env.SSL_NAN0WEB_KEY
-		? `${process.env.SSL_NAN0WEB_CERT},${process.env.SSL_NAN0WEB_KEY}`
-		: undefined,
+	ssl:
+		process.env.SSL_NAN0WEB_CERT && process.env.SSL_NAN0WEB_KEY
+			? `${process.env.SSL_NAN0WEB_CERT},${process.env.SSL_NAN0WEB_KEY}`
+			: undefined,
 }

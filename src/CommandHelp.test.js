@@ -1,6 +1,6 @@
 import { describe, it } from 'node:test'
 import { strict as assert } from 'node:assert'
-import { Message } from "@nan0web/co"
+import { Message } from '@nan0web/co'
 import CommandHelp from './CommandHelp.js'
 import { Logger } from '@nan0web/log'
 import { NoConsole } from '@nan0web/log'
@@ -8,8 +8,7 @@ import { NoConsole } from '@nan0web/log'
 /** @typedef {import("@nan0web/co").ValidateFn} ValidateFn */
 /** @typedef {import("@nan0web/co").MessageInput} MessageInput */
 
-class Body {
-}
+class Body { }
 
 // Mock Message class for testing
 class AuthMessage extends Message {
@@ -18,41 +17,38 @@ class AuthMessage extends Message {
 
 	static Body = class LogInBody extends Body {
 		static username = {
-			help: "Username for login",
-			placeholder: "<user>",
-			alias: "u",
+			help: 'Username for login',
+			placeholder: '<user>',
+			alias: 'u',
 			/** @type {ValidateFn} */
 			validate: (value) => {
 				if (value.length > 3) return true
-				return "Username must be at least 3 characters"
+				return 'Username must be at least 3 characters'
 			},
 		}
-		username = ""
+		username = ''
 
 		static password = {
-			alias: "p",
-			placeholder: "<password>",
+			alias: 'p',
+			placeholder: '<password>',
 			/** @type {ValidateFn} */
 			validate: (value) => {
 				if (value.length > 0) return true
-				return "Password is required"
+				return 'Password is required'
 			},
 		}
-		password = ""
+		password = ''
 
 		static remember_me = {
-			help: "Remember my session for 1 year",
-			defaultValue: false
+			help: 'Remember my session for 1 year',
+			defaultValue: false,
 		}
 		remember_me = false
 
 		/** @todo add jsdoc through AuthMessageInput typedef */
 		constructor(input = {}) {
 			super()
-			const {
-				username = this.username,
-				password = this.password,
-			} = input
+			const { username = this.username, password = this.password } = input
 			this.username = String(username)
 			this.password = String(password)
 		}
@@ -90,49 +86,49 @@ class ParentMessage extends Message {
 
 class MainBody {
 	static config = {
-		help: "Path to config file (optional)",
-		defaultValue: "",
+		help: 'Path to config file (optional)',
+		defaultValue: '',
 	}
-	config = ""
+	config = ''
 
 	static data = {
-		help: "Data directory path or connection string (DSN)",
-		defaultValue: "./data",
+		help: 'Data directory path or connection string (DSN)',
+		defaultValue: './data',
 	}
-	data = "./data"
+	data = './data'
 
 	static public = {
-		help: "Public assets directory",
-		defaultValue: "./public"
+		help: 'Public assets directory',
+		defaultValue: './public',
 	}
-	public = "./public"
+	public = './public'
 
 	static dist = {
-		help: "Output directory for SSG",
-		defaultValue: "./public"
+		help: 'Output directory for SSG',
+		defaultValue: './public',
 	}
-	dist = "./dist"
+	dist = './dist'
 
 	static port = {
-		help: "API server port",
+		help: 'API server port',
 		defaultValue: 8888,
 	}
 	port = 8888
 
 	static yes = {
-		help: "Non-interactive mode (yes to all prompts)",
+		help: 'Non-interactive mode (yes to all prompts)',
 		defaultValue: false,
 	}
 	yes = false
 
 	static no = {
-		help: "Non-interactive mode (no to all prompts)",
+		help: 'Non-interactive mode (no to all prompts)',
 		defaultValue: false,
 	}
 	no = false
 
 	static help = {
-		help: "Show help",
+		help: 'Show help',
 		defaultValue: false,
 	}
 	help = false
@@ -142,7 +138,7 @@ class MainBody {
  * @extends Message
  */
 class Main extends Message {
-	static name = "nan0web"
+	static name = 'nan0web'
 	static Body = MainBody
 	/** @type {MainBody} */
 	body
@@ -167,8 +163,35 @@ class Main extends Message {
 /* -------------------------------------------------------------------------- */
 
 class TTYLogger extends Logger {
-	static get isTTY() { return true }
-	get isTTY() { return true }
+	static get isTTY() {
+		return true
+	}
+	get isTTY() {
+		return true
+	}
+	/**
+	 * Patched static style to use 'this' instead of 'Logger'
+	 * for correct RESET/Color references in subclasses.
+	 */
+	static style(value, styleOptions = {}) {
+		const { bgColor = '', color = '', stripped = false } = styleOptions
+		if (stripped) return String(value)
+		const rows = String(value).split('\n')
+		const styledValue = []
+
+		rows.forEach((row) => {
+			if (this.isTTY) {
+				if (color) styledValue.push(this[color.toUpperCase()] || color)
+				if (bgColor) styledValue.push(this[`BG_${bgColor.toUpperCase()}`] || bgColor)
+			}
+			styledValue.push(row)
+			if (this.isTTY) {
+				styledValue.push(this.RESET)
+			}
+			styledValue.push('\n')
+		})
+		return styledValue.join('').slice(0, -1)
+	}
 }
 const logger = new TTYLogger()
 
@@ -184,68 +207,73 @@ describe('CommandHelp', () => {
 		const help = new CommandHelp(AuthMessage, logger)
 
 		const generated = help.generate()
-		assert.equal(generated, [
-			"\x1B[35mauth\x1B[0m • Authentication command",
-			"",
-			"Usage: auth [-u, --username=<user>] [-p, --password=<password>], [--remember_me]",
-			"",
-			"Options:",
-			"  --username, -u                 string    * Username for login",
-			"  --password, -p                 string    * No description",
-			"  --remember_me                  boolean     Remember my session for 1 year",
-			"",
-		].join("\n"))
+		assert.equal(
+			generated,
+			[
+				'\x1B[35mauth\x1B[0m • Authentication command',
+				'',
+				'Usage: auth [-u, --username=<user>] [-p, --password=<password>], [--remember_me]',
+				'',
+				'Options:',
+				'  --username, -u                 string    * Username for login',
+				'  --password, -p                 string    * No description',
+				'  --remember_me                  boolean     Remember my session for 1 year',
+				'',
+			].join('\n'),
+		)
 	})
 
 	it('should generate usage without body fields', () => {
 		const help = new CommandHelp(EmptyMessage, logger)
 		const generated = help.generate()
-		assert.equal(generated, [
-			"\x1B[35mempty\x1B[0m • Empty command",
-			"",
-			"Usage: empty",
-			""
-		].join("\n"))
+		assert.equal(
+			generated,
+			['\x1B[35mempty\x1B[0m • Empty command', '', 'Usage: empty', ''].join('\n'),
+		)
 	})
 
 	it('should list subcommands when present', () => {
 		const help = new CommandHelp(ParentMessage, logger)
 		const generated = help.generate()
-		assert.equal(generated, [
-			"\x1B[35mparent\x1B[0m • Parent command",
-			"",
-			"Usage: parent",
-			"",
-			"Subcommands:",
-			"  child                 Child command",
-			"",
-		].join("\n"))
+		assert.equal(
+			generated,
+			[
+				'\x1B[35mparent\x1B[0m • Parent command',
+				'',
+				'Usage: parent',
+				'',
+				'Subcommands:',
+				'  child                 Child command',
+				'',
+			].join('\n'),
+		)
 	})
 
-	it("should prints the correct help", () => {
-		const logger = new Logger({ console: new NoConsole() })
+	it('should prints the correct help', () => {
+		const logger = new TTYLogger({ console: new NoConsole() })
 		const help = new CommandHelp(Main, logger)
 		help.print()
 		// the weird console.console must be fixed in next major release.
 		assert.deepStrictEqual(help.logger.console.console.output(), [
-			["info",
+			[
+				'info',
 				[
-					"\x1B[35mnan0web\x1B[0m",
-					"",
-					"Usage: nan0web [--data=./data] [--public=./public] [--dist=./public] [--port=8888] [--config] [--yes] [--no] [--help]",
-					"",
-					"Options:",
-					"  --config                       string      Path to config file (optional)",
-					"  --data                         string      Data directory path or connection string (DSN)",
-					"  --public                       string      Public assets directory",
-					"  --dist                         string      Output directory for SSG",
-					"  --port                         number      API server port",
-					"  --yes                          boolean     Non-interactive mode (yes to all prompts)",
-					"  --no                           boolean     Non-interactive mode (no to all prompts)",
-					"  --help                         boolean     Show help",
-					"",
-				].join("\n")
-			]
+					'\x1B[35mnan0web\x1B[0m',
+					'',
+					'Usage: nan0web [--data=./data] [--public=./public] [--dist=./public] [--port=8888] [--config] [--yes] [--no] [--help]',
+					'',
+					'Options:',
+					'  --config                       string      Path to config file (optional)',
+					'  --data                         string      Data directory path or connection string (DSN)',
+					'  --public                       string      Public assets directory',
+					'  --dist                         string      Output directory for SSG',
+					'  --port                         number      API server port',
+					'  --yes                          boolean     Non-interactive mode (yes to all prompts)',
+					'  --no                           boolean     Non-interactive mode (no to all prompts)',
+					'  --help                         boolean     Show help',
+					'',
+				].join('\n'),
+			],
 		])
 	})
 
@@ -258,7 +286,11 @@ describe('CommandHelp', () => {
 	it('should validate AuthMessage.Body fields correctly (invalid username)', () => {
 		const msg = new AuthMessage({ body: { username: 'ab', password: 'pwd' } })
 		const result = msg.validate()
-		assert.equal(result.get('username'), "Username must be at least 3 characters", 'username should be invalid (too short)')
+		assert.equal(
+			result.get('username'),
+			'Username must be at least 3 characters',
+			'username should be invalid (too short)',
+		)
 		assert.equal(result.get('password'), undefined, 'password should be valid')
 	})
 

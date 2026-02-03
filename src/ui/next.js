@@ -4,7 +4,7 @@
  * @module ui/next
  */
 
-import process from "node:process"
+import process from 'node:process'
 
 /**
  * Pause execution for a given amount of milliseconds.
@@ -13,7 +13,7 @@ import process from "node:process"
  * @returns {Promise<true>} Resolves with `true` after the timeout.
  */
 export async function pause(ms) {
-	return new Promise(resolve => setTimeout(() => resolve(true), ms))
+	return new Promise((resolve) => setTimeout(() => resolve(true), ms))
 }
 
 /**
@@ -26,19 +26,19 @@ export async function pause(ms) {
 export async function next(conf = undefined) {
 	return new Promise((resolve, reject) => {
 		if (process.stdin.isRaw) {
-			reject(new Error("stdin is already in raw mode"))
+			reject(new Error('stdin is already in raw mode'))
 			return
 		}
-		let buffer = ""
+		let buffer = ''
 
-		const onData = chunk => {
+		const onData = (chunk) => {
 			const str = chunk.toString()
 			buffer += str
 
 			if (conf === undefined) {
 				cleanup()
 				resolve(str)
-			} else if (typeof conf === "string") {
+			} else if (typeof conf === 'string') {
 				if (buffer === conf || buffer.endsWith(conf)) {
 					cleanup()
 					resolve(buffer)
@@ -54,21 +54,21 @@ export async function next(conf = undefined) {
 			}
 		}
 
-		const errorHandler = err => {
+		const errorHandler = (err) => {
 			cleanup()
 			reject(err)
 		}
 
 		const cleanup = () => {
-			process.stdin.off("data", onData)
-			process.stdin.off("error", errorHandler)
+			process.stdin.off('data', onData)
+			process.stdin.off('error', errorHandler)
 			process.stdin.setRawMode(false)
 			process.stdin.resume()
 		}
 
 		process.stdin.setRawMode(true)
 		process.stdin.resume()
-		process.stdin.once("error", errorHandler)
-		process.stdin.on("data", onData)
+		process.stdin.once('error', errorHandler)
+		process.stdin.on('data', onData)
 	})
 }

@@ -14,13 +14,13 @@ export function createUserForm(t) {
 			new FormInput({
 				name: 'name',
 				label: t('Full name'),
-				required: true
+				required: true,
 			}),
 			new FormInput({
 				name: 'email',
 				label: t('Email address'),
 				type: FormInput.TYPES.EMAIL,
-				required: true
+				required: true,
 			}),
 			new FormInput({
 				name: 'phone',
@@ -30,8 +30,8 @@ export function createUserForm(t) {
 					if (!value) return null
 					return value.length >= 10 && value.length <= 15 ? null : t('Invalid phone number')
 				},
-				required: false
-			})
-		]
+				required: false,
+			}),
+		],
 	})
 }

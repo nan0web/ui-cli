@@ -15,17 +15,16 @@ export default class OutputAdapter {
 	 * @param {Map<string, () => Promise<Function>>} [options.components] - Component loaders.
 	 */
 	constructor(options = {}) {
-		const {
-			console: initialConsole = console,
-			components = new Map(),
-		} = options
+		const { console: initialConsole = console, components = new Map() } = options
 
 		this.#console = initialConsole
 		this.#components = components
 	}
 
 	/** @returns {any} */
-	get console() { return this.#console; }
+	get console() {
+		return this.#console
+	}
 
 	/**
 	 * Render a UI component in the CLI environment.
@@ -41,7 +40,7 @@ export default class OutputAdapter {
 		if (loader) {
 			try {
 				const compFn = await loader()
-				if (typeof compFn === "function") {
+				if (typeof compFn === 'function') {
 					compFn.call(this, props)
 					return
 				}
@@ -50,9 +49,9 @@ export default class OutputAdapter {
 				this.#console.debug?.(err.stack)
 			}
 		}
-		if (props && typeof props === "object") {
+		if (props && typeof props === 'object') {
 			const { variant, content } = props
-			const prefix = variant ? `[${variant}]` : ""
+			const prefix = variant ? `[${variant}]` : ''
 			this.#console.info(`${prefix} ${String(content)}`)
 		} else {
 			this.#console.info(String(component))

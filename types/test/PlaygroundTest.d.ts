@@ -1,7 +1,7 @@
 /**
  * @typedef {object} PlaygroundTestConfig
  * @property {NodeJS.ProcessEnv} env Environment variables for the child process.
- * @property {{ includeDebugger?: boolean }} [config={}] Configuration options.
+ * @property {{ includeDebugger?: boolean, includeEmptyLines?: boolean, feedStdin?: boolean }} [config={}] Configuration options.
  */
 /**
  * Utility class to run playground demos and capture output.
@@ -18,16 +18,18 @@
 export default class PlaygroundTest {
     /**
      * @param {NodeJS.ProcessEnv} env Environment variables for the child process.
-     * @param {{ includeDebugger?: boolean, includeEmptyLines?: boolean }} [config={}] Configuration options.
+     * @param {{ includeDebugger?: boolean, includeEmptyLines?: boolean, feedStdin?: boolean }} [config={}] Configuration options.
      */
     constructor(env: NodeJS.ProcessEnv, config?: {
         includeDebugger?: boolean | undefined;
         includeEmptyLines?: boolean | undefined;
+        feedStdin?: boolean | undefined;
     } | undefined);
     env: NodeJS.ProcessEnv;
     /** @type {boolean} Include debugger lines in output (default: false). */
     includeDebugger: boolean;
     incldeEmptyLines: boolean;
+    feedStdin: boolean;
     /**
      * Subscribe to an event.
      */
@@ -75,6 +77,8 @@ export type PlaygroundTestConfig = {
      */
     config?: {
         includeDebugger?: boolean | undefined;
+        includeEmptyLines?: boolean | undefined;
+        feedStdin?: boolean | undefined;
     } | undefined;
 };
-import { EventContext } from "@nan0web/event";
+import { EventContext } from '@nan0web/event';

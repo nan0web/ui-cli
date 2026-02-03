@@ -17,7 +17,7 @@ export default class CommandError extends Error {
 	 */
 	constructor(message, data = null) {
 		super(message)
-		this.name = "CommandError"
+		this.name = 'CommandError'
 		this.data = data
 		Error.captureStackTrace(this, CommandError)
 	}
@@ -28,8 +28,6 @@ export default class CommandError extends Error {
 	 * @returns {string}
 	 */
 	toString() {
-		return this.data
-			? `${this.message}\n${JSON.stringify(this.data, null, 2)}`
-			: this.message
+		return this.data ? `${this.message}\n${JSON.stringify(this.data, null, 2)}` : this.message
 	}
 }

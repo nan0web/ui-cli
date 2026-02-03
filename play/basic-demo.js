@@ -4,7 +4,7 @@
  * @module play/basic-demo
  */
 
-import Logger from "@nan0web/log"
+import Logger from '@nan0web/log'
 
 /**
  * Run the basic demo.
@@ -13,8 +13,8 @@ import Logger from "@nan0web/log"
  */
 export async function runBasicDemo(console) {
 	console.clear()
-	console.success("Basic UI‑CLI Demo")
+	console.success('Basic UI‑CLI Demo')
 
-	console.info("✓ Logger initialized")
-	console.info("✓ This demo simply logs messages")
+	console.info('✓ Logger initialized')
+	console.info('✓ This demo simply logs messages')
 }

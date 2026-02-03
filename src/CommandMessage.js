@@ -4,9 +4,9 @@
  * @module CommandMessage
  */
 
-import { Message } from "@nan0web/co"
-import { str2argv } from "./utils/parse.js"
-import CommandError from "./CommandError.js"
+import { Message } from '@nan0web/co'
+import { str2argv } from './utils/parse.js'
+import CommandError from './CommandError.js'
 
 /**
  * @class
@@ -14,7 +14,7 @@ import CommandError from "./CommandError.js"
  * @extends Message
  */
 export default class CommandMessage extends Message {
-	#name = ""
+	#name = ''
 	#argv = []
 	#opts = {}
 	#children = []
@@ -30,14 +30,8 @@ export default class CommandMessage extends Message {
 	constructor(input = {}) {
 		super(input)
 		/** @type {any} */
-		const data = typeof input === "object" && !Array.isArray(input) ? input : {}
-		const {
-			name = "",
-			argv = [],
-			opts = {},
-			children = [],
-			body = {},
-		} = data
+		const data = typeof input === 'object' && !Array.isArray(input) ? input : {}
+		const { name = '', argv = [], opts = {}, children = [], body = {} } = data
 
 		const fullBody = { ...body, ...opts }
 		this.body = fullBody
@@ -45,9 +39,9 @@ export default class CommandMessage extends Message {
 		this.#name = String(name)
 		this.#argv = argv.map(String)
 		this.#opts = opts
-		this.#children = children.map(c => CommandMessage.from(c))
+		this.#children = children.map((c) => CommandMessage.from(c))
 
-		if (typeof input === "string" || Array.isArray(input)) {
+		if (typeof input === 'string' || Array.isArray(input)) {
 			const parsed = CommandMessage.parse(input)
 			this.#name = parsed.name
 			this.#argv = parsed.argv
@@ -57,38 +51,60 @@ export default class CommandMessage extends Message {
 	}
 
 	/** @returns {string} */
-	get name() { return this.#name }
+	get name() {
+		return this.#name
+	}
 	/** @param {string} v */
-	set name(v) { this.#name = String(v) }
+	set name(v) {
+		this.#name = String(v)
+	}
 
 	/** @returns {string[]} */
-	get argv() { return this.#argv }
+	get argv() {
+		return this.#argv
+	}
 	/** @param {string[]} v */
-	set argv(v) { this.#argv = v.map(String) }
+	set argv(v) {
+		this.#argv = v.map(String)
+	}
 
 	/** @returns {Object} */
-	get opts() { return this.#opts }
+	get opts() {
+		return this.#opts
+	}
 	/** @param {Object} v */
-	set opts(v) { this.#opts = v }
+	set opts(v) {
+		this.#opts = v
+	}
 
 	/** @returns {Array<CommandMessage>} */
-	get children() { return this.#children }
+	get children() {
+		return this.#children
+	}
 
 	/** @returns {Array<string>} Full command line (name + args). */
-	get args() { return [this.name, ...this.argv].filter(Boolean) }
+	get args() {
+		return [this.name, ...this.argv].filter(Boolean)
+	}
 
 	/** @returns {string} Sub‑command name of the first child, or empty string. */
-	get subCommand() { return this.children[0]?.name || "" }
+	get subCommand() {
+		return this.children[0]?.name || ''
+	}
 
 	/** @returns {CommandMessage|null} First child message, or null. */
-	get subCommandMessage() { return this.children[0] || null }
+	get subCommandMessage() {
+		return this.children[0] || null
+	}
 
 	/**
 	 * Append a child {@link CommandMessage}.
 	 *
 	 * @param {CommandMessage|Object} msg
 	 */
-	add(msg) { this.#children.push(CommandMessage.from(msg)) }
+	add(msg) {
+		this.#children.push(CommandMessage.from(msg))
+	}
 
 	/**
 	 * Convert the message back to a command‑line string.
@@ -98,9 +114,9 @@ export default class CommandMessage extends Message {
 	toString() {
 		const optsStr = Object.entries(this.opts)
 			.map(([k, v]) => (v === true ? `--${k}` : `--${k} ${String(v)}`))
-			.join(" ")
-		const argsStr = this.argv.join(" ")
-		return [this.name, argsStr, optsStr].filter(Boolean).join(" ")
+			.join(' ')
+		const argsStr = this.argv.join(' ')
+		return [this.name, argsStr, optsStr].filter(Boolean).join(' ')
 	}
 
 	/**
@@ -112,37 +128,37 @@ export default class CommandMessage extends Message {
 	 * @throws {CommandError} If no input is supplied.
 	 */
 	static parse(argv, BodyClass) {
-		if (typeof argv === "string") argv = str2argv(argv)
-		if (argv.length === 0) throw new CommandError("No input provided")
-		const result = { name: "", argv: [], opts: {} }
+		if (typeof argv === 'string') argv = str2argv(argv)
+		if (argv.length === 0) throw new CommandError('No input provided')
+		const result = { name: '', argv: [], opts: {} }
 		let i = 0
-		if (!argv[0].startsWith("-")) {
+		if (!argv[0].startsWith('-')) {
 			result.name = argv[0]
 			i = 1
 		}
 		while (i < argv.length) {
 			const cur = argv[i]
-			if (cur.startsWith("--")) {
-				const eq = cur.indexOf("=")
+			if (cur.startsWith('--')) {
+				const eq = cur.indexOf('=')
 				if (eq > -1) {
 					const k = cur.slice(2, eq)
 					const v = cur.slice(eq + 1)
 					result.opts[k] = v
 				} else {
 					const k = cur.slice(2)
-					if (i + 1 < argv.length && !argv[i + 1].startsWith("-")) {
+					if (i + 1 < argv.length && !argv[i + 1].startsWith('-')) {
 						result.opts[k] = argv[++i]
 					} else {
 						result.opts[k] = true
 					}
 				}
-			} else if (cur.startsWith("-") && cur.length > 1) {
+			} else if (cur.startsWith('-') && cur.length > 1) {
 				const shorts = cur.slice(1)
 				if (shorts.length > 1) {
-					shorts.split("").forEach(s => (result.opts[s] = true))
+					shorts.split('').forEach((s) => (result.opts[s] = true))
 				} else {
 					const k = shorts
-					if (i + 1 < argv.length && !argv[i + 1].startsWith("-")) {
+					if (i + 1 < argv.length && !argv[i + 1].startsWith('-')) {
 						result.opts[k] = argv[++i]
 					} else {
 						result.opts[k] = true
@@ -160,7 +176,7 @@ export default class CommandMessage extends Message {
 			msg.body = body
 			/** @ts-ignore */
 			const errors = body.getErrors?.() || {}
-			if (Object.keys(errors).length) throw new CommandError("Validation failed", { errors })
+			if (Object.keys(errors).length) throw new CommandError('Validation failed', { errors })
 		}
 		return msg
 	}
@@ -175,7 +191,7 @@ export default class CommandMessage extends Message {
 		if (input instanceof CommandMessage) return input
 		if (input instanceof Message) {
 			/** @ts-ignore */
-			return new CommandMessage({ body: input.body, name: input.name || "" })
+			return new CommandMessage({ body: input.body, name: input.name || '' })
 		}
 		return new CommandMessage(input)
 	}

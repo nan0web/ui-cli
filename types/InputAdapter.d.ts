@@ -1,5 +1,11 @@
-/** @typedef {import("./ui/select.js").InputFn} InputFn */
-/** @typedef {import("./ui/select.js").ConsoleLike} ConsoleLike */
+/**
+ * @typedef {Object} ConsoleLike
+ * @property {(...args: any[]) => void} debug
+ * @property {(...args: any[]) => void} log
+ * @property {(...args: any[]) => void} info
+ * @property {(...args: any[]) => void} warn
+ * @property {(...args: any[]) => void} error
+ */
 /**
  * Extends the generic {@link BaseInputAdapter} with CLI‑specific behaviour.
  *
@@ -9,16 +15,21 @@
 export default class CLiInputAdapter extends BaseInputAdapter {
     constructor(options?: {});
     /** @returns {ConsoleLike} */
-    get console(): import("./ui/select.js").ConsoleLike;
+    get console(): ConsoleLike;
     /** @returns {NodeJS.WriteStream} */
     get stdout(): NodeJS.WriteStream;
     /**
      * Create a handler with stop words that supports predefined answers.
      *
      * @param {string[]} stops - Stop words for cancellation.
-     * @returns {InputFn}
+     * @returns {Function}
      */
-    createHandler(stops?: string[]): InputFn;
+    createHandler(stops?: string[]): Function;
+    /**
+     * Create a select handler that supports predefined answers.
+     * @returns {Function}
+     */
+    createSelectHandler(): Function;
     /**
      * Prompt the user for a full form, handling navigation and validation.
      *
@@ -52,16 +63,51 @@ export default class CLiInputAdapter extends BaseInputAdapter {
      * Prompt the user to select an option from a list.
      *
      * @param {Object} config - Configuration object.
-     * @returns {Promise<string>} Selected value (or empty string on cancel).
+     * @returns {Promise<string|undefined>} Selected value (or undefined on cancel).
      */
-    requestSelect(config: any): Promise<string>;
+    requestSelect(config: any): Promise<string | undefined>;
     /**
      * Prompt for a single string input.
      *
      * @param {Object} config - Prompt configuration.
-     * @returns {Promise<string>} User response string.
+     * @returns {Promise<string|undefined>} User response string or undefined on cancel.
      */
-    requestInput(config: any): Promise<string>;
+    requestInput(config: any): Promise<string | undefined>;
+    /**
+     * Prompt the user for an autocomplete selection.
+     *
+     * @param {Object} config - Configuration object.
+     * @returns {Promise<any>} Selected value.
+     */
+    requestAutocomplete(config: any): Promise<any>;
+    /**
+     * Requests confirmation (yes/no).
+     *
+     * @param {Object} config - Confirmation configuration.
+     * @returns {Promise<boolean>} User confirmation.
+     */
+    requestConfirm(config: any): Promise<boolean>;
+    /**
+     * Display an interactive table.
+     *
+     * @param {Object} config - Table configuration.
+     * @returns {Promise<any>}
+     */
+    requestTable(config: any): Promise<any>;
+    /**
+     * Requests multiple selection.
+     *
+     * @param {Object} config - Multiselect configuration.
+     * @returns {Promise<any[]>} Selected values.
+     */
+    requestMultiselect(config: any): Promise<any[]>;
+    /**
+     * Requests masked input.
+     *
+     * @param {Object} config - Mask configuration.
+     * @returns {Promise<string>} Masked value.
+     */
+    requestMask(config: any): Promise<string>;
     /**
      * Asks user a question or form and returns the completed form
      * @param {string | UiForm} question
@@ -73,6 +119,7 @@ export default class CLiInputAdapter extends BaseInputAdapter {
     select(cfg: any): Promise<{
         index: number;
         value: any;
+        cancelled: boolean;
     }>;
     /**
      * **New API** – Require input for a {@link UiMessage} instance.
@@ -89,8 +136,13 @@ export default class CLiInputAdapter extends BaseInputAdapter {
     requireInput(msg: UiMessage): Promise<any>;
     #private;
 }
-export type InputFn = import("./ui/select.js").InputFn;
-export type ConsoleLike = import("./ui/select.js").ConsoleLike;
-import { InputAdapter as BaseInputAdapter } from "@nan0web/ui";
-import { UiForm } from "@nan0web/ui";
-import { UiMessage } from "@nan0web/ui";
+export type ConsoleLike = {
+    debug: (...args: any[]) => void;
+    log: (...args: any[]) => void;
+    info: (...args: any[]) => void;
+    warn: (...args: any[]) => void;
+    error: (...args: any[]) => void;
+};
+import { InputAdapter as BaseInputAdapter } from '@nan0web/ui';
+import { UiForm } from '@nan0web/ui';
+import { UiMessage } from '@nan0web/ui';

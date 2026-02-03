@@ -1,6 +1,6 @@
 {
 	"name": "@nan0web/ui-cli",
-	"version": "1.1.1",
+	"version": "1.2.0",
 	"description": "NaN•Web UI CLI. Command line interface for One application logic (algorithm) and many UI.",
 	"main": "src/index.js",
 	"types": "types/index.d.ts",
@@ -24,12 +24,12 @@
 		"build": "tsc",
 		"test": "node --test --test-timeout=3333 \"src/**/*.test.js\"",
 		"test:nan0test": "node --test --test-timeout=3333 \"src/**/*.test.js\" | nan0test parse --fail",
-		"test:coverage": "node --experimental-test-coverage --test-coverage-include=\"src/**/*.js\" --test-coverage-exclude=\"src/**/*.test.js\" --test \"src/**/*.test.js\"",
+		"test:coverage": "node --experimental-test-coverage --test-timeout=3333 --test-coverage-include=\"src/**/*.js\" --test-coverage-exclude=\"src/**/*.test.js\" --test \"src/**/*.test.js\"",
 		"test:coverage:collect": "nan0test coverage",
 		"test:docs": "node --test --test-timeout=3333 src/README.md.js",
-		"test:release": "node --test \"releases/**/*.test.js\"",
+		"test:release": "node --test --test-timeout=3333 \"releases/**/*.test.js\"",
 		"test:status": "nan0test status --hide-name --debug",
-		"test:play": "node --test play/main.test.js",
+		"test:play": "node --test --test-timeout=3333 play/main.test.js",
 		"test:all": "npm run test && npm run test:docs && npm run test:play && npm run build",
 		"test:all1": "npm run test && npm run test:docs && npm run test:status && npm run test:play && npm run build",
 		"play": "node play/main.js",
@@ -51,13 +51,14 @@
 	"devDependencies": {
 		"@nan0web/db-fs": "1.0.0",
 		"@nan0web/i18n": "^1.0.1",
-		"@nan0web/log": "1.0.1",
+		"@nan0web/log": "1.1.1",
 		"@nan0web/test": "1.1.0",
 		"@types/node": "^24.10.1"
 	},
 	"dependencies": {
 		"@nan0web/co": "^2.0.0",
 		"@nan0web/event": "^1.0.0",
-		"@nan0web/ui": "^1.1.0"
+		"@nan0web/ui": "workspace:*",
+		"prompts": "^2.4.2"
 	}
 }

@@ -14,20 +14,20 @@ export function createProfileForm(t) {
 			new FormInput({
 				name: 'username',
 				label: t('Username'),
-				required: true
+				required: true,
 			}),
 			new FormInput({
 				name: 'bio',
 				label: t('Biography'),
 				type: FormInput.TYPES.TEXTAREA,
-				required: false
+				required: false,
 			}),
 			new FormInput({
 				name: 'newsletter',
 				label: t('Subscribe to newsletter'),
 				type: FormInput.TYPES.CHECKBOX,
-				required: false
-			})
-		]
+				required: false,
+			}),
+		],
 	})
 }
