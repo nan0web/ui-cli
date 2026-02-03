@@ -111,7 +111,7 @@ const result = await adapter.requestAutocomplete({
     { title: 'Claude 3', value: 'claude3' }
   ].filter(m => m.title.toLowerCase().includes(query.toLowerCase()))
 })
-const model = result.value
+console.info(result.value) // ← gpt-4
 ```
 
 How to request autocomplete via CLiInputAdapter?
@@ -124,6 +124,7 @@ const result = await adapter.requestAutocomplete({
 		{ title: 'Claude 3', value: 'claude3' }
 	]
 })
+console.info(result.value) // ← gpt-4
 ```
 #### requestMultiselect(config)
 
@@ -135,7 +136,7 @@ const result = await adapter.requestMultiselect({
   options: ['Apple', 'Banana', 'Orange'],
   initial: ['Apple']
 })
-const fruits = result.value
+console.info(result.value) // ← ['Apple']
 ```
 
 How to request multiselect via CLiInputAdapter?
@@ -145,6 +146,7 @@ const result = await adapter.requestMultiselect({
 	message: 'Select items',
 	options: ['Option A', 'Option B']
 })
+console.info(result.value) // ← ['Option A']
 ```
 #### requestMask(config)
 
@@ -156,7 +158,7 @@ const result = await adapter.requestMask({
   mask: '(###) ###-####',
   placeholder: '(000) 000-0000'
 })
-const phone = result.value
+console.info(result.value) // ← (123) 456-7890
 ```
 
 How to request masked input via CLiInputAdapter?
@@ -166,17 +168,19 @@ const result = await adapter.requestMask({
 	message: 'Phone',
 	mask: '###-###'
 })
+console.info(result.value) // ← 123-456
 ```
 #### requestTable(config)
 
 Renders an interactive table with live filtering.
 
 ```javascript
-await adapter.requestTable({
+const result = await adapter.requestTable({
   data: [{ id: 1, name: 'Alice' }, { id: 2, name: 'Bob' }],
   title: 'User List',
   columns: ['id', 'name']
 })
+console.info(result.value) // ← [{ id: 1, name: 'Alice' }, ...]
 ```
 
 How to show interactive table via CLiInputAdapter?
@@ -186,6 +190,7 @@ const result = await adapter.requestTable({
 	data: [{ id: 1, name: 'Alice' }],
 	interactive: false // non-interactive for test
 })
+console.info(result.value) // ← [{ id: 1, name: 'Alice' }]
 ```
 #### requestInput(config)
 
@@ -196,7 +201,7 @@ const result = await adapter.requestInput({
   message: 'Enter API Key:',
   type: 'password'
 })
-const password = result.value
+console.info(result.value) // ← ***********
 ```
 
 How to request password via CLiInputAdapter?
@@ -206,6 +211,7 @@ const result = await adapter.requestInput({
 	message: 'Enter Secret:',
 	type: 'password'
 })
+console.info(result.value) // ← secret-key
 ```
 ### UI Utilities
 
@@ -247,7 +253,7 @@ How to ask a question with ask()?
 ```js
 import { ask } from "@nan0web/ui-cli"
 const result = await ask('What is your name?')
-console.info(result)
+console.info(result) // ← Alice
 ```
 #### `createInput(stops)`
 
@@ -282,7 +288,7 @@ const config = {
 	console: console,
 }
 const result = await select(config)
-console.info(result.value)
+console.info(result.value) // ← Option B
 ```
 #### `next(conf)`
 
@@ -292,7 +298,7 @@ How to pause and wait for keypress with next()?
 ```js
 import { next } from '@nan0web/ui-cli'
 const result = await next()
-console.info(typeof result === 'string')
+console.info(typeof result === 'string') // ← true
 ```
 #### `pause(ms)`
 
