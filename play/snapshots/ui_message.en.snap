@@ -21,16 +21,17 @@ Select demo to run:
  17) Spinner
  18) Date & Time
   ↓ (1 more)
-✔  15
-Slider Demo
-Select Volume (0-100) 10
-Selected: 10
-Select Speed (0-1000) 120
-Selected: 120
-Select Reward (0-1M) 555000
-Selected: 555000
-Select Disk Size (TB) 700
-Selected: 700
+✔  5
+UiMessage Demo – Schema‑driven Form
+✔ User name *:  snap_user
+✔ User age *:  25
+Favorite colour
+ 1) Red
+ 2) Green
+ 3) Blue
+✔ Choose (number):  2
+Form completed!
+Result → {"username":"snap_user","age":25,"color":"Green"}
 ==================================================
 Demo completed. Returning to menu...
 ==================================================

@@ -245,7 +245,7 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 					title: this.#t(field.label),
 					prompt: this.#t('Choose (number): '),
 					options: options.map((opt) =>
-						typeof opt === 'string' ? { label: opt, value: opt } : opt,
+						typeof opt === 'string' ? { label: this.#t(opt), value: opt } : { ...opt, label: this.#t(opt.label) },
 					),
 					console: { info: this.console.info.bind(this.console) },
 				}
@@ -491,13 +491,13 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 					if (config.title) config.console.info(config.title)
 					const limit = config.limit || choices.length
 					choices.slice(0, limit).forEach((c, i) => {
-						config.console.info(` ${i + 1}) ${c.label}`)
+						config.console.info(` ${i + 1}) ${this.#t(c.label)}`)
 					})
 					if (choices.length > limit) {
 						config.console.info(`  ↓ (${choices.length - limit} ${this.#t('more')})`)
 					}
 					const p = config.prompt ?? ''
-					config.console.info(`${p} ${predefined}`)
+					config.console.info(`✔ ${p} ${predefined}`)
 				}
 				return valToInject
 			}
@@ -521,9 +521,9 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 		const prompt = this.#t(promptOrig)
 		if (predefined !== null) {
 			if (config.type !== 'password' && config.type !== 'secret') {
-				this.console.info(`${prompt} ${predefined}`)
+				this.console.info(`✔ ${prompt} ${predefined}`)
 			} else {
-				this.console.info(`${prompt}${'*'.repeat(predefined.length)}`)
+				this.console.info(`✔ ${prompt}${'*'.repeat(predefined.length)}`)
 			}
 			return predefined
 		} else if (config.yes === true && config.value !== undefined) {
@@ -567,7 +567,7 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 		const predefined = this.#nextAnswer()
 		const prompt = config.message || 'Confirm: '
 		if (predefined !== null) {
-			this.console.info(`${prompt} ${predefined}`)
+			this.console.info(`✔ ${prompt} ${predefined}`)
 			return ['y', 'yes', 'true', '1', 'так'].includes(predefined.toLowerCase())
 		}
 		const res = await baseConfirm(config)

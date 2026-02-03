@@ -104,6 +104,10 @@ const SCENARIOS = [
         seq: '15,10,120,555000,700,19'
     },
     {
+        name: 'ui_message',
+        seq: '5,snap_user,25,2,19'
+    },
+    {
         name: 'datetime',
         seq: '18,2026-01-01,10:20,2026-01-21 16:20,a,19'
     }

@@ -21,13 +21,13 @@ Select demo to run:
  17) Spinner
  18) Date & Time
   ↓ (1 more)
- 2
+✔  2
 Select Prompt Demo
 Pick a colour
  1) Red
  2) Green
  3) Blue
- 3
+✔  3
 ✓ You selected: Blue
 ==================================================
 Demo completed. Returning to menu...
@@ -52,5 +52,5 @@ Select demo to run:
  17) Spinner
  18) Date & Time
   ↓ (1 more)
- 19
+✔  19
 Thanks for exploring UI‑CLI demos! 🚀

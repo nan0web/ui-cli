@@ -127,5 +127,8 @@ export default {
 	Info: 'Info',
 	Warning: 'Warning',
 	Online: 'Online',
-	Offline: 'Offline'
+	Offline: 'Offline',
+	'Green': 'Green',
+	'Blue': 'Blue',
+	'Red': 'Red'
 }

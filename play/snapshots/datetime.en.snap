@@ -21,7 +21,7 @@ Select demo to run:
  17) Spinner
  18) Date & Time
   ↓ (1 more)
- 18
+✔  18
 DateTime Picker Demo
 Scenario 1: Select a Date
 Pick a date: 2026-01-01
@@ -56,5 +56,5 @@ Select demo to run:
  17) Spinner
  18) Date & Time
   ↓ (1 more)
- 19
+✔  19
 Thanks for exploring UI‑CLI demos! 🚀

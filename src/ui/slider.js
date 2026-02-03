@@ -14,22 +14,30 @@ class SliderPrompt extends NumberPrompt {
 	constructor(opts) {
 		super(opts)
 		this.jump = opts.jump || 10
+		/** @type {boolean} */
 		this.shift = false
 	}
 
 	up() {
 		const self = /** @type {any} */ (this)
-		self.value = Math.min(self.max, self.value + (this.shift ? this.jump : self.increment))
+		const max = self.max ?? 100
+		const step = self.increment ?? 1
+		self.value = Math.min(max, self.value + (this.shift ? this.jump : step))
 		this.render()
 	}
 
 	down() {
 		const self = /** @type {any} */ (this)
-		self.value = Math.max(self.min, self.value - (this.shift ? this.jump : self.increment))
+		const min = self.min ?? 0
+		const step = self.increment ?? 1
+		self.value = Math.max(min, self.value - (this.shift ? this.jump : step))
 		this.render()
 	}
 
-	/** @param {any} key */
+	/**
+	 * @param {string} key
+	 * @param {any} keypress
+	 */
 	_(key, keypress) {
 		this.shift = !!keypress?.shift
 		if (key === '+' || key === '=') {
@@ -45,18 +53,22 @@ class SliderPrompt extends NumberPrompt {
 
 	render() {
 		const self = /** @type {any} */ (this)
-		if (self.closed) return
+		if (self.closed || self.aborted) return
+
+		const min = self.min ?? 0
+		const max = self.max ?? 100
 		const width = 20
-		const range = self.max - self.min || 1
-		const percent = Math.max(0, Math.min(1, (self.value - self.min) / range))
+		const range = max - min || 1
+		const percent = Math.max(0, Math.min(1, (self.value - min) / range))
 		const filled = Math.round(width * percent)
 		const bar = '━'.repeat(filled) + '─'.repeat(width - filled)
-		const label = self.msg
+		const label = self.msg || self.message || ''
 		const val = self.value
 
-		// Properly handle prompts lifecycle
-		self.out.write('\x1B[2K\x1B[G') // Clear line and move to start
-		self.out.write(`${label} [${bar}] ${val}`)
+		const out = self.out || process.stdout
+		// Clear prompt area and redraw
+		out.write('\r\x1B[K')
+		out.write(`${label} [${bar}] ${val}`)
 	}
 }
 
@@ -99,7 +111,9 @@ export async function slider(config) {
 
 		const result = await prompts(
 			{
-				type: /** @type {any} */ (SliderPrompt),
+				// Passing class directly to type as a function is the most robust way
+				// to handle custom prompts in some library versions.
+				type: () => SliderPrompt,
 				name: 'value',
 				message: `${t(message)} (${min}-${max})`,
 				initial: initial ?? min,

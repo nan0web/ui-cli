@@ -252,5 +252,8 @@ export default {
 	TOASTS: 'ПОВІДОМЛЕННЯ (TOASTS)',
 	ALERTS: 'СПОВІЩЕННЯ (ALERTS)',
 	Info: 'Інфо',
-	Warning: 'Увага'
+	Warning: 'Увага',
+	'Green': 'Зелений',
+	'Blue': 'Синій',
+	'Red': 'Червоний'
 }
