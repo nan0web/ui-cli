@@ -11,4 +11,3 @@ export function confirm(config: {
     value: boolean;
     cancelled: boolean;
 }>;
-export default confirm;

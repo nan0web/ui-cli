@@ -16,6 +16,10 @@ export default class CLiInputAdapter extends BaseInputAdapter {
     constructor(options?: {});
     /** @returns {ConsoleLike} */
     get console(): ConsoleLike;
+    /** @param {Function} val */
+    set t(val: Function);
+    /** @returns {Function} */
+    get t(): Function;
     /** @returns {NodeJS.WriteStream} */
     get stdout(): NodeJS.WriteStream;
     /**
@@ -31,6 +35,13 @@ export default class CLiInputAdapter extends BaseInputAdapter {
      */
     createSelectHandler(): Function;
     /**
+     * Pause execution and wait for user input (Press any key).
+     *
+     * @param {string} [message] - Message to display.
+     * @returns {Promise<void>}
+     */
+    pause(message?: string): Promise<void>;
+    /**
      * Prompt the user for a full form, handling navigation and validation.
      *
      * @param {UiForm} form - Form definition to present.
@@ -40,7 +51,7 @@ export default class CLiInputAdapter extends BaseInputAdapter {
      */
     requestForm(form: UiForm, options?: {
         silent?: boolean | undefined;
-    } | undefined): Promise<any>;
+    }): Promise<any>;
     /**
      * Render a UI component in the CLI environment.
      *
@@ -108,6 +119,42 @@ export default class CLiInputAdapter extends BaseInputAdapter {
      * @returns {Promise<string>} Masked value.
      */
     requestMask(config: any): Promise<string>;
+    /**
+     * Request a toggle switch.
+     * @param {Object} config
+     * @returns {Promise<boolean>}
+     */
+    requestToggle(config: any): Promise<boolean>;
+    /**
+     * Request a numeric slider.
+     * @param {Object} config
+     * @returns {Promise<number>}
+     */
+    requestSlider(config: any): Promise<number>;
+    /**
+     * Create a progress bar.
+     * @param {Object} options
+     * @returns {import('./ui/progress.js').ProgressBar}
+     */
+    requestProgress(options: any): import("./ui/progress.js").ProgressBar;
+    /**
+     * Create and start a spinner.
+     * @param {string} message
+     * @returns {import('./ui/spinner.js').Spinner}
+     */
+    requestSpinner(message: string): import("./ui/spinner.js").Spinner;
+    /**
+     * Request a selection from a tree view.
+     * @param {Object} config
+     * @returns {Promise<any>} Selected node(s).
+     */
+    requestTree(config: any): Promise<any>;
+    /**
+     * Request a date or time from the user.
+     * @param {Object} config
+     * @returns {Promise<Date|undefined>}
+     */
+    requestDateTime(config: any): Promise<Date | undefined>;
     /**
      * Asks user a question or form and returns the completed form
      * @param {string | UiForm} question

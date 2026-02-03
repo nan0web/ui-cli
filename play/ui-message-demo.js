@@ -14,7 +14,7 @@ class DemoBody {
 	static username = {
 		help: 'User name',
 		required: true,
-		validate: (v) => (/^\w+$/.test(v) ? true : 'Alphanumeric only'),
+		validate: (v) => (v.trim().length > 0 ? true : 'Username is required (supports any language)'),
 	}
 	static age = {
 		help: 'User age',
@@ -54,23 +54,24 @@ class DemoMessage extends UiMessage {
  *
  * @param {Logger} console - Logger instance.
  * @param {import("../../src/InputAdapter.js").default} adapter - Input adapter.
+ * @param {Function} t - Translation function.
  */
-export async function runUiMessageDemo(console, adapter) {
+export async function runUiMessageDemo(console, adapter, t) {
 	console.clear()
-	console.success('UiMessage Demo – Schema‑driven Form')
+	console.success(t('UiMessage Demo – Schema‑driven Form'))
 
 	const msg = new DemoMessage({ body: {} })
 
 	const result = await adapter.requireInput(msg)
 
 	if (result.cancelled) {
-		console.info('Form cancelled by user.')
+		console.info(t('Form cancelled by user.'))
 		return
 	}
 
-	console.success('Form completed!')
+	console.success(t('Form completed!'))
 	console.info(
-		`Result → ${JSON.stringify({
+		`${t('Result →')} ${JSON.stringify({
 			...result,
 			age: Number(result.age),
 		})}`,

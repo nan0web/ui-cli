@@ -21,10 +21,10 @@ export default class PlaygroundTest {
      * @param {{ includeDebugger?: boolean, includeEmptyLines?: boolean, feedStdin?: boolean }} [config={}] Configuration options.
      */
     constructor(env: NodeJS.ProcessEnv, config?: {
-        includeDebugger?: boolean | undefined;
-        includeEmptyLines?: boolean | undefined;
-        feedStdin?: boolean | undefined;
-    } | undefined);
+        includeDebugger?: boolean;
+        includeEmptyLines?: boolean;
+        feedStdin?: boolean;
+    });
     env: NodeJS.ProcessEnv;
     /** @type {boolean} Include debugger lines in output (default: false). */
     includeDebugger: boolean;
@@ -55,7 +55,7 @@ export default class PlaygroundTest {
      *
      * @param {string[]} [args=["play/main.js"]] Arguments passed to the node process.
      */
-    run(args?: string[] | undefined): Promise<{
+    run(args?: string[]): Promise<{
         stdout: any;
         stderr: any;
         exitCode: any;
@@ -76,9 +76,9 @@ export type PlaygroundTestConfig = {
      * Configuration options.
      */
     config?: {
-        includeDebugger?: boolean | undefined;
-        includeEmptyLines?: boolean | undefined;
-        feedStdin?: boolean | undefined;
+        includeDebugger?: boolean;
+        includeEmptyLines?: boolean;
+        feedStdin?: boolean;
     } | undefined;
 };
 import { EventContext } from '@nan0web/event';

@@ -15,6 +15,7 @@ import { CancelError } from '@nan0web/ui/core'
  * @param {Array<string|Object>} config.options - List of choices
  * @param {number} [config.limit=10] - Visible items limit
  * @param {Array<any>} [config.initial=[]] - Initial selected values
+ * @param {string|boolean} [config.instructions] - Custom instructions
  * @returns {Promise<{value: Array<any>, cancelled: boolean}>}
  */
 export async function multiselect(config) {
@@ -41,7 +42,7 @@ export async function multiselect(config) {
         message,
         choices,
         limit,
-        instructions: false // cleaner UI
+        instructions: config.instructions // Use provided instructions or default
     }, {
         onCancel: () => {
             throw new CancelError()
@@ -51,4 +52,3 @@ export async function multiselect(config) {
     return { value: response.value || [], cancelled: false }
 }
 
-export default multiselect

@@ -6,6 +6,7 @@
  * @param {Array<string|Object>} config.options - List of choices
  * @param {number} [config.limit=10] - Visible items limit
  * @param {Array<any>} [config.initial=[]] - Initial selected values
+ * @param {string|boolean} [config.instructions] - Custom instructions
  * @returns {Promise<{value: Array<any>, cancelled: boolean}>}
  */
 export function multiselect(config: {
@@ -13,8 +14,8 @@ export function multiselect(config: {
     options: Array<string | any>;
     limit?: number | undefined;
     initial?: any[] | undefined;
+    instructions?: string | boolean | undefined;
 }): Promise<{
     value: Array<any>;
     cancelled: boolean;
 }>;
-export default multiselect;

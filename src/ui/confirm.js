@@ -25,4 +25,3 @@ export async function confirm(config) {
     })
     return { value: response.value, cancelled: false }
 }
-export default confirm

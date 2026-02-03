@@ -1,0 +1,59 @@
+__   _ _______ __   _     _  _  _ _______ ______ 
+| \  | |_____| | \  |     |  |  | |______ |_____] 
+|  \_| |     | |  \_|  •  |__|__| |______ |_____] 
+Select demo to run:
+ 1) Basic Logging
+ 2) Select Prompt
+ 3) Simple Demo
+ 4) Form Input
+ 5) UiMessage
+ 6) View Components
+ 7) Nav Components
+ 8) Tree View
+ 9) Table Filtering
+ 10) Instant Table
+ 11) Autocomplete
+ 12) Long List
+ 13) Advanced Form
+ 14) Toggle
+ 15) Slider
+ 16) ProgressBar
+ 17) Spinner
+ 18) Date & Time
+ 19) ← Exit
+13
+Advanced Form Demo
+Testing password masking and boolean fields.
+Login *: adv_user
+Password *: ****
+Phone1234567890
+Remember me?y
+Select your rolesAdmin
+Form submitted!
+Form data (password is hidden here):
+{"username":"adv_user","password":"********","phone":"1234567890","rememberMe":true,"roles":["Admin"]}
+==================================================
+Demo completed. Returning to menu...
+==================================================
+Select demo to run:
+ 1) Basic Logging
+ 2) Select Prompt
+ 3) Simple Demo
+ 4) Form Input
+ 5) UiMessage
+ 6) View Components
+ 7) Nav Components
+ 8) Tree View
+ 9) Table Filtering
+ 10) Instant Table
+ 11) Autocomplete
+ 12) Long List
+ 13) Advanced Form
+ 14) Toggle
+ 15) Slider
+ 16) ProgressBar
+ 17) Spinner
+ 18) Date & Time
+ 19) ← Exit
+19
+Thanks for exploring UI‑CLI demos! 🚀

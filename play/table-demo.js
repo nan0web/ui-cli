@@ -22,19 +22,20 @@ const MODELS_DATA = [
  *
  * @param {Logger} console - Logger instance.
  * @param {import('../src/InputAdapter').default} adapter - CLI Input Adapter.
+ * @param {Function} t - Translation function.
  */
-export async function runTableDemo(console, adapter) {
+export async function runTableDemo(console, adapter, t) {
     console.clear()
-    console.success('Interactive Table Demo (Limo Models)')
+    console.success(t('Interactive Table Demo'))
 
     await adapter.requestTable({
         data: MODELS_DATA,
-        title: 'Available AI Models',
+        title: t('Available AI Models'),
         columns: ['id', 'provider', 'context', 'cost'],
         interactive: true
     })
 
-    console.info('Table interaction finished.')
+    console.info(t('Table interaction finished.'))
 }
 
 /**
@@ -42,19 +43,20 @@ export async function runTableDemo(console, adapter) {
  *
  * @param {Logger} console - Logger instance.
  * @param {import('../src/InputAdapter').default} adapter - CLI Input Adapter.
+ * @param {Function} t - Translation function.
  */
-export async function runInstantTableDemo(console, adapter) {
+export async function runInstantTableDemo(console, adapter, t) {
     console.clear()
-    console.success('Instant Table Filtering Demo')
-    console.info('Type characters to see immediate filtering results.')
+    console.success(t('Instant Filtering Table'))
+    console.info(t('Type characters to see immediate filtering results.'))
 
     await adapter.requestTable({
         data: MODELS_DATA,
-        title: 'Available AI Models',
+        title: t('Available AI Models'),
         columns: ['id', 'provider', 'context', 'cost'],
         interactive: true,
         instant: true
     })
 
-    console.info('Instant table interaction finished.')
+    console.info(t('Instant table interaction finished.'))
 }

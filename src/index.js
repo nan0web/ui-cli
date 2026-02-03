@@ -10,7 +10,7 @@ import CommandParser from './CommandParser.js'
 import CommandHelp from './CommandHelp.js'
 export { str2argv } from './utils/parse.js'
 
-export { select, next, pause, createInput, ask, Input, text, confirm, autocomplete, table } from './ui/index.js'
+export { select, next, pause, createInput, ask, Input, text, confirm, autocomplete, table, badge, alert, toast, breadcrumbs, tabs, steps } from './ui/index.js'
 
 /** @typedef {import("./CommandHelp.js").CommandHelpField} CommandHelpField */
 

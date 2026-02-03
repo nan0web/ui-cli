@@ -1,0 +1,58 @@
+__   _ _______ __   _     _  _  _ _______ ______ 
+| \  | |_____| | \  |     |  |  | |______ |_____] 
+|  \_| |     | |  \_|  •  |__|__| |______ |_____] 
+Select demo to run:
+ 1) Basic Logging
+ 2) Select Prompt
+ 3) Simple Demo
+ 4) Form Input
+ 5) UiMessage
+ 6) View Components
+ 7) Nav Components
+ 8) Tree View
+ 9) Table Filtering
+ 10) Instant Table
+ 11) Autocomplete
+ 12) Long List
+ 13) Advanced Form
+ 14) Toggle
+ 15) Slider
+ 16) ProgressBar
+ 17) Spinner
+ 18) Date & Time
+ 19) ← Exit
+15
+Slider Demo
+Select Volume (0-100)10
+Selected: 10
+Select Speed (0-1000)120
+Selected: 120
+Select Reward (0-1M)555000
+Selected: 555000
+Select Disk Size (TB)700
+Selected: 700
+==================================================
+Demo completed. Returning to menu...
+==================================================
+Select demo to run:
+ 1) Basic Logging
+ 2) Select Prompt
+ 3) Simple Demo
+ 4) Form Input
+ 5) UiMessage
+ 6) View Components
+ 7) Nav Components
+ 8) Tree View
+ 9) Table Filtering
+ 10) Instant Table
+ 11) Autocomplete
+ 12) Long List
+ 13) Advanced Form
+ 14) Toggle
+ 15) Slider
+ 16) ProgressBar
+ 17) Spinner
+ 18) Date & Time
+ 19) ← Exit
+19
+Thanks for exploring UI‑CLI demos! 🚀

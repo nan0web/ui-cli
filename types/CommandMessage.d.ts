@@ -12,7 +12,7 @@ export default class CommandMessage extends Message {
      * @returns {CommandMessage}
      * @throws {CommandError} If no input is supplied.
      */
-    static parse(argv: string | string[], BodyClass?: ObjectConstructor | undefined): CommandMessage;
+    static parse(argv: string | string[], BodyClass?: typeof Object): CommandMessage;
     /**
      * Convert a raw input into a {@link CommandMessage} instance.
      *
@@ -34,23 +34,23 @@ export default class CommandMessage extends Message {
         opts?: any;
         children?: CommandMessage[] | undefined;
         body?: any;
-    } | undefined);
+    });
     /** @param {string} v */
-    set name(arg: string);
+    set name(v: string);
     /** @returns {string} */
     get name(): string;
     /** @param {string[]} v */
-    set argv(arg: string[]);
+    set argv(v: string[]);
     /** @returns {string[]} */
     get argv(): string[];
     /** @param {Object} v */
-    set opts(arg: any);
+    set opts(v: any);
     /** @returns {Object} */
     get opts(): any;
     /** @returns {Array<CommandMessage>} */
-    get children(): CommandMessage[];
+    get children(): Array<CommandMessage>;
     /** @returns {Array<string>} Full command line (name + args). */
-    get args(): string[];
+    get args(): Array<string>;
     /** @returns {string} Sub‑command name of the first child, or empty string. */
     get subCommand(): string;
     /** @returns {CommandMessage|null} First child message, or null. */

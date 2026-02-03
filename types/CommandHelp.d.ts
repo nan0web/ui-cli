@@ -22,7 +22,7 @@ export default class CommandHelp {
      * @param {typeof Message} MessageClass - Message class with a schema.
      * @param {Logger} [logger=new Logger()] - Optional logger.
      */
-    constructor(MessageClass: typeof Message, logger?: Logger | undefined);
+    constructor(MessageClass: typeof Message, logger?: Logger);
     /** @type {typeof Message} Message class the help is built for */
     MessageClass: typeof Message;
     /** @type {Logger} Logger used for printing */

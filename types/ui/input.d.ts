@@ -10,6 +10,7 @@ export function beep(): void;
  * @param {string} [config.initial] - Default value
  * @param {string} [config.type] - Prompt type (text, password, etc)
  * @param {(value:string)=>boolean|string|Promise<boolean|string>} [config.validate] - Validator
+ * @param {(value:string)=>string} [config.format] - Formatter
  * @returns {Promise<{value:string, cancelled:boolean}>}
  */
 export function text(config: {
@@ -17,6 +18,7 @@ export function text(config: {
     initial?: string | undefined;
     type?: string | undefined;
     validate?: ((value: string) => boolean | string | Promise<boolean | string>) | undefined;
+    format?: ((value: string) => string) | undefined;
 }): Promise<{
     value: string;
     cancelled: boolean;
@@ -31,7 +33,7 @@ export function text(config: {
  * @param {(input: Input) => Promise<boolean>|boolean} [loop] Optional loop validator.
  * @returns {Function} Async function that resolves to an {@link Input}.
  */
-export function createInput(stops?: string[] | undefined, predef?: string | undefined, console?: any, loop?: ((input: Input) => Promise<boolean> | boolean) | undefined): Function;
+export function createInput(stops?: string[], predef?: string | undefined, console?: any, loop?: (input: Input) => Promise<boolean> | boolean): Function;
 /**
  * Mock helper for predefined inputs (Testing).
  */
@@ -59,4 +61,3 @@ export class Input {
  * Use this for simple string prompts.
  */
 export const ask: Function;
-export default createInput;

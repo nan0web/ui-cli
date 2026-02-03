@@ -11,23 +11,29 @@ import { UiForm } from '@nan0web/ui'
  *
  * @param {import('@nan0web/log').default} console - Logger instance.
  * @param {import('../src/InputAdapter').default} adapter - CLI Input Adapter.
+ * @param {Function} t - Translation function.
  */
-export async function runAdvancedFormDemo(console, adapter) {
+export async function runAdvancedFormDemo(console, adapter, t) {
     console.clear()
-    console.success('Advanced Form Demo – Security & Toggles')
-    console.info('Testing password masking and boolean fields.')
+    console.success(t('Advanced Form Demo'))
+    console.info(t('Testing password masking and boolean fields.'))
 
     const form = new UiForm({
+        title: t('Advanced Form Demo'),
         fields: [
-            { name: 'username', label: 'Login', type: 'text', required: true },
-            { name: 'password', label: 'Password', type: 'password', required: true },
-            { name: 'phone', label: 'Phone', type: 'mask', mask: '(###) ###-####', required: true },
-            { name: 'rememberMe', label: 'Remember me?', type: 'confirm' },
+            { name: 'username', label: t('Login'), type: 'text', required: true },
+            { name: 'password', label: t('Password'), type: 'password', required: true },
+            { name: 'phone', label: t('Phone'), type: 'mask', mask: '(###) ###-####', required: true },
+            { name: 'rememberMe', label: t('Remember me?'), type: 'confirm' },
             {
                 name: 'roles',
-                label: 'Select your roles',
+                label: t('Select your roles'),
                 type: 'multiselect',
-                options: ['Admin', 'Editor', 'Viewer']
+                options: [
+                    { label: t('Admin'), value: 'Admin' },
+                    { label: t('Editor'), value: 'Editor' },
+                    { label: t('Viewer'), value: 'Viewer' }
+                ]
             }
         ]
     })
@@ -36,18 +42,18 @@ export async function runAdvancedFormDemo(console, adapter) {
         const result = await adapter.requestForm(form)
 
         if (result.cancelled) {
-            console.warn('Form cancelled.')
+            console.warn(t('Selection cancelled. Returning to menu...'))
             return
         }
 
-        console.success('Form submitted!')
-        console.info('Form data (password is hidden here):')
+        console.success(t('Form submitted!'))
+        console.info(t('Form data (password is hidden here):'))
         const displayData = { ...result.form.state }
         displayData.password = '********'
         console.log(JSON.stringify(displayData))
     } catch (error) {
         if (error.message?.includes('cancel')) {
-            console.warn('\nOperation cancelled by user.')
+            console.warn(`\n${t('Selection cancelled. Returning to menu...')}`)
         } else {
             console.error(error)
         }

@@ -7,6 +7,7 @@
  * @param {string} [input.title] - Table title.
  * @param {boolean} [input.interactive=true] - Whether to allow filtering.
  * @param {boolean} [input.instant=false] - Whether to use instant search (char-by-char).
+ * @param {(val:string)=>string} [input.t] - Translation function.
  * @returns {Promise<{value:any, cancelled:boolean}>} Selected row (if interactive) or last state.
  */
 export function table(input: {
@@ -15,8 +16,8 @@ export function table(input: {
     title?: string | undefined;
     interactive?: boolean | undefined;
     instant?: boolean | undefined;
+    t?: ((val: string) => string) | undefined;
 }): Promise<{
     value: any;
     cancelled: boolean;
 }>;
-export default table;

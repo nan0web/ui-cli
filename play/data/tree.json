@@ -1,0 +1,956 @@
+{
+  "name": "ui-cli",
+  "type": "dir",
+  "children": [
+    {
+      "name": ".cache",
+      "type": "dir",
+      "children": [
+        {
+          "name": "models.json",
+          "type": "file"
+        }
+      ]
+    },
+    {
+      "name": ".datasets",
+      "type": "dir",
+      "children": [
+        {
+          "name": "README.dataset.jsonl",
+          "type": "file"
+        }
+      ]
+    },
+    {
+      "name": ".husky",
+      "type": "dir",
+      "children": [
+        {
+          "name": "_",
+          "type": "dir",
+          "children": [
+            {
+              "name": ".gitignore",
+              "type": "file"
+            },
+            {
+              "name": "applypatch-msg",
+              "type": "file"
+            },
+            {
+              "name": "commit-msg",
+              "type": "file"
+            },
+            {
+              "name": "h",
+              "type": "file"
+            },
+            {
+              "name": "husky.sh",
+              "type": "file"
+            },
+            {
+              "name": "post-applypatch",
+              "type": "file"
+            },
+            {
+              "name": "post-checkout",
+              "type": "file"
+            },
+            {
+              "name": "post-commit",
+              "type": "file"
+            },
+            {
+              "name": "post-merge",
+              "type": "file"
+            },
+            {
+              "name": "post-rewrite",
+              "type": "file"
+            },
+            {
+              "name": "pre-applypatch",
+              "type": "file"
+            },
+            {
+              "name": "pre-auto-gc",
+              "type": "file"
+            },
+            {
+              "name": "pre-commit",
+              "type": "file"
+            },
+            {
+              "name": "pre-merge-commit",
+              "type": "file"
+            },
+            {
+              "name": "pre-push",
+              "type": "file"
+            },
+            {
+              "name": "pre-rebase",
+              "type": "file"
+            },
+            {
+              "name": "prepare-commit-msg",
+              "type": "file"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "chat",
+      "type": "dir",
+      "children": [
+        {
+          "name": "1bfbe2f4-757d-48d9-8ef9-80fdab9c7cb7",
+          "type": "dir",
+          "children": [
+            {
+              "name": "steps",
+              "type": "dir",
+              "children": [
+                {
+                  "name": "001",
+                  "type": "dir",
+                  "children": [
+                    {
+                      "name": "answer.md",
+                      "type": "file"
+                    },
+                    {
+                      "name": "chunks.jsonl",
+                      "type": "file"
+                    },
+                    {
+                      "name": "input.md",
+                      "type": "file"
+                    },
+                    {
+                      "name": "model.json",
+                      "type": "file"
+                    },
+                    {
+                      "name": "prompt.md",
+                      "type": "file"
+                    },
+                    {
+                      "name": "reason.md",
+                      "type": "file"
+                    },
+                    {
+                      "name": "response.json",
+                      "type": "file"
+                    },
+                    {
+                      "name": "stream.jsonl",
+                      "type": "file"
+                    },
+                    {
+                      "name": "stream.md",
+                      "type": "file"
+                    },
+                    {
+                      "name": "unknowns.jsonl",
+                      "type": "file"
+                    },
+                    {
+                      "name": "usage.json",
+                      "type": "file"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "files.jsonl",
+              "type": "file"
+            },
+            {
+              "name": "input.md",
+              "type": "file"
+            },
+            {
+              "name": "inputs.jsonl",
+              "type": "file"
+            },
+            {
+              "name": "me.md",
+              "type": "file"
+            },
+            {
+              "name": "messages.jsonl",
+              "type": "file"
+            },
+            {
+              "name": "prompt.md",
+              "type": "file"
+            }
+          ]
+        },
+        {
+          "name": "current",
+          "type": "file"
+        }
+      ]
+    },
+    {
+      "name": "docs",
+      "type": "dir",
+      "children": [
+        {
+          "name": "uk",
+          "type": "dir",
+          "children": [
+            {
+              "name": "README.md",
+              "type": "file"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "play",
+      "type": "dir",
+      "children": [
+        {
+          "name": "data",
+          "type": "dir",
+          "children": []
+        },
+        {
+          "name": "examples",
+          "type": "dir",
+          "children": [
+            {
+              "name": "dumpBody.js",
+              "type": "file"
+            },
+            {
+              "name": "globalBody.js",
+              "type": "file"
+            },
+            {
+              "name": "messages.js",
+              "type": "file"
+            },
+            {
+              "name": "serveBody.js",
+              "type": "file"
+            }
+          ]
+        },
+        {
+          "name": "forms",
+          "type": "dir",
+          "children": [
+            {
+              "name": "addressForm.js",
+              "type": "file"
+            },
+            {
+              "name": "ageForm.js",
+              "type": "file"
+            },
+            {
+              "name": "profileForm.js",
+              "type": "file"
+            },
+            {
+              "name": "userForm.js",
+              "type": "file"
+            },
+            {
+              "name": "userForm.test.js",
+              "type": "file"
+            }
+          ]
+        },
+        {
+          "name": "scripts",
+          "type": "dir",
+          "children": [
+            {
+              "name": "scan-fs.js",
+              "type": "file"
+            }
+          ]
+        },
+        {
+          "name": "snapshots",
+          "type": "dir",
+          "children": [
+            {
+              "name": "advanced_form.en.snap",
+              "type": "file"
+            },
+            {
+              "name": "advanced_form.uk.snap",
+              "type": "file"
+            },
+            {
+              "name": "autocomplete.en.snap",
+              "type": "file"
+            },
+            {
+              "name": "autocomplete.uk.snap",
+              "type": "file"
+            },
+            {
+              "name": "form_valid.en.snap",
+              "type": "file"
+            },
+            {
+              "name": "form_valid.uk.snap",
+              "type": "file"
+            },
+            {
+              "name": "form_validation_error.en.snap",
+              "type": "file"
+            },
+            {
+              "name": "form_validation_error.uk.snap",
+              "type": "file"
+            },
+            {
+              "name": "nav_components.en.snap",
+              "type": "file"
+            },
+            {
+              "name": "nav_components.uk.snap",
+              "type": "file"
+            },
+            {
+              "name": "select.en.snap",
+              "type": "file"
+            },
+            {
+              "name": "select.uk.snap",
+              "type": "file"
+            },
+            {
+              "name": "slider.en.snap",
+              "type": "file"
+            },
+            {
+              "name": "slider.uk.snap",
+              "type": "file"
+            },
+            {
+              "name": "toggle.en.snap",
+              "type": "file"
+            },
+            {
+              "name": "toggle.uk.snap",
+              "type": "file"
+            },
+            {
+              "name": "view_components.en.snap",
+              "type": "file"
+            },
+            {
+              "name": "view_components.uk.snap",
+              "type": "file"
+            }
+          ]
+        },
+        {
+          "name": "vocabs",
+          "type": "dir",
+          "children": [
+            {
+              "name": "en.js",
+              "type": "file"
+            },
+            {
+              "name": "index.js",
+              "type": "file"
+            },
+            {
+              "name": "uk.js",
+              "type": "file"
+            }
+          ]
+        },
+        {
+          "name": "advanced-form-demo.js",
+          "type": "file"
+        },
+        {
+          "name": "autocomplete-demo.js",
+          "type": "file"
+        },
+        {
+          "name": "basic-demo.js",
+          "type": "file"
+        },
+        {
+          "name": "form-demo.js",
+          "type": "file"
+        },
+        {
+          "name": "long-list-demo.js",
+          "type": "file"
+        },
+        {
+          "name": "main.js",
+          "type": "file"
+        },
+        {
+          "name": "main.test.js",
+          "type": "file"
+        },
+        {
+          "name": "multilingual.test.js",
+          "type": "file"
+        },
+        {
+          "name": "nav-demo.js",
+          "type": "file"
+        },
+        {
+          "name": "select-demo.js",
+          "type": "file"
+        },
+        {
+          "name": "sequence-demo.js",
+          "type": "file"
+        },
+        {
+          "name": "slider-demo.js",
+          "type": "file"
+        },
+        {
+          "name": "snapshot.test.js",
+          "type": "file"
+        },
+        {
+          "name": "table-demo.js",
+          "type": "file"
+        },
+        {
+          "name": "ui-cli-demo.js",
+          "type": "file"
+        },
+        {
+          "name": "ui-message-demo.js",
+          "type": "file"
+        },
+        {
+          "name": "view-demo.js",
+          "type": "file"
+        },
+        {
+          "name": "viewport.test.js",
+          "type": "file"
+        }
+      ]
+    },
+    {
+      "name": "src",
+      "type": "dir",
+      "children": [
+        {
+          "name": "components",
+          "type": "dir",
+          "children": [
+            {
+              "name": "Alert.js",
+              "type": "file"
+            }
+          ]
+        },
+        {
+          "name": "test",
+          "type": "dir",
+          "children": [
+            {
+              "name": "index.js",
+              "type": "file"
+            },
+            {
+              "name": "PlaygroundTest.js",
+              "type": "file"
+            },
+            {
+              "name": "PlaygroundTest.sequence.test.js",
+              "type": "file"
+            },
+            {
+              "name": "PlaygroundTest.test.js",
+              "type": "file"
+            }
+          ]
+        },
+        {
+          "name": "ui",
+          "type": "dir",
+          "children": [
+            {
+              "name": "Adapter.js",
+              "type": "file"
+            },
+            {
+              "name": "alert.js",
+              "type": "file"
+            },
+            {
+              "name": "autocomplete.js",
+              "type": "file"
+            },
+            {
+              "name": "badge.js",
+              "type": "file"
+            },
+            {
+              "name": "confirm.js",
+              "type": "file"
+            },
+            {
+              "name": "confirm.test.js",
+              "type": "file"
+            },
+            {
+              "name": "form.js",
+              "type": "file"
+            },
+            {
+              "name": "form.test.js",
+              "type": "file"
+            },
+            {
+              "name": "index.js",
+              "type": "file"
+            },
+            {
+              "name": "input.ask.test.js",
+              "type": "file"
+            },
+            {
+              "name": "input.js",
+              "type": "file"
+            },
+            {
+              "name": "input.test.js",
+              "type": "file"
+            },
+            {
+              "name": "mask.js",
+              "type": "file"
+            },
+            {
+              "name": "Message.test.js",
+              "type": "file"
+            },
+            {
+              "name": "multiselect.js",
+              "type": "file"
+            },
+            {
+              "name": "nav.js",
+              "type": "file"
+            },
+            {
+              "name": "next.js",
+              "type": "file"
+            },
+            {
+              "name": "progress.js",
+              "type": "file"
+            },
+            {
+              "name": "select.js",
+              "type": "file"
+            },
+            {
+              "name": "select.test.js",
+              "type": "file"
+            },
+            {
+              "name": "slider.js",
+              "type": "file"
+            },
+            {
+              "name": "slider.test.js",
+              "type": "file"
+            },
+            {
+              "name": "spinner.js",
+              "type": "file"
+            },
+            {
+              "name": "table.js",
+              "type": "file"
+            },
+            {
+              "name": "toast.js",
+              "type": "file"
+            },
+            {
+              "name": "toggle.js",
+              "type": "file"
+            }
+          ]
+        },
+        {
+          "name": "utils",
+          "type": "dir",
+          "children": [
+            {
+              "name": "parse.js",
+              "type": "file"
+            }
+          ]
+        },
+        {
+          "name": "CLI.js",
+          "type": "file"
+        },
+        {
+          "name": "CLI.test.js",
+          "type": "file"
+        },
+        {
+          "name": "CLiMessage.js",
+          "type": "file"
+        },
+        {
+          "name": "Command.js",
+          "type": "file"
+        },
+        {
+          "name": "Command.test.js",
+          "type": "file"
+        },
+        {
+          "name": "CommandError.js",
+          "type": "file"
+        },
+        {
+          "name": "CommandError.test.js",
+          "type": "file"
+        },
+        {
+          "name": "CommandHelp.extra.test.js",
+          "type": "file"
+        },
+        {
+          "name": "CommandHelp.js",
+          "type": "file"
+        },
+        {
+          "name": "CommandHelp.test.js",
+          "type": "file"
+        },
+        {
+          "name": "CommandMessage.js",
+          "type": "file"
+        },
+        {
+          "name": "CommandMessage.test.js",
+          "type": "file"
+        },
+        {
+          "name": "CommandParser.js",
+          "type": "file"
+        },
+        {
+          "name": "CommandParser.test.js",
+          "type": "file"
+        },
+        {
+          "name": "index.js",
+          "type": "file"
+        },
+        {
+          "name": "InputAdapter.js",
+          "type": "file"
+        },
+        {
+          "name": "InputAdapter.predefined.test.js",
+          "type": "file"
+        },
+        {
+          "name": "InputAdapter.test.js",
+          "type": "file"
+        },
+        {
+          "name": "OutputAdapter.js",
+          "type": "file"
+        },
+        {
+          "name": "README.md.js",
+          "type": "file"
+        }
+      ]
+    },
+    {
+      "name": "types",
+      "type": "dir",
+      "children": [
+        {
+          "name": "components",
+          "type": "dir",
+          "children": [
+            {
+              "name": "Alert.d.ts",
+              "type": "file"
+            }
+          ]
+        },
+        {
+          "name": "test",
+          "type": "dir",
+          "children": [
+            {
+              "name": "index.d.ts",
+              "type": "file"
+            },
+            {
+              "name": "PlaygroundTest.d.ts",
+              "type": "file"
+            }
+          ]
+        },
+        {
+          "name": "ui",
+          "type": "dir",
+          "children": [
+            {
+              "name": "Adapter.d.ts",
+              "type": "file"
+            },
+            {
+              "name": "alert.d.ts",
+              "type": "file"
+            },
+            {
+              "name": "autocomplete.d.ts",
+              "type": "file"
+            },
+            {
+              "name": "badge.d.ts",
+              "type": "file"
+            },
+            {
+              "name": "confirm.d.ts",
+              "type": "file"
+            },
+            {
+              "name": "form.d.ts",
+              "type": "file"
+            },
+            {
+              "name": "index.d.ts",
+              "type": "file"
+            },
+            {
+              "name": "input.d.ts",
+              "type": "file"
+            },
+            {
+              "name": "mask.d.ts",
+              "type": "file"
+            },
+            {
+              "name": "multiselect.d.ts",
+              "type": "file"
+            },
+            {
+              "name": "nav.d.ts",
+              "type": "file"
+            },
+            {
+              "name": "next.d.ts",
+              "type": "file"
+            },
+            {
+              "name": "progress.d.ts",
+              "type": "file"
+            },
+            {
+              "name": "select.d.ts",
+              "type": "file"
+            },
+            {
+              "name": "slider.d.ts",
+              "type": "file"
+            },
+            {
+              "name": "spinner.d.ts",
+              "type": "file"
+            },
+            {
+              "name": "table.d.ts",
+              "type": "file"
+            },
+            {
+              "name": "toast.d.ts",
+              "type": "file"
+            },
+            {
+              "name": "toggle.d.ts",
+              "type": "file"
+            }
+          ]
+        },
+        {
+          "name": "utils",
+          "type": "dir",
+          "children": [
+            {
+              "name": "parse.d.ts",
+              "type": "file"
+            }
+          ]
+        },
+        {
+          "name": "CLI.d.ts",
+          "type": "file"
+        },
+        {
+          "name": "CLiMessage.d.ts",
+          "type": "file"
+        },
+        {
+          "name": "Command.d.ts",
+          "type": "file"
+        },
+        {
+          "name": "CommandError.d.ts",
+          "type": "file"
+        },
+        {
+          "name": "CommandHelp.d.ts",
+          "type": "file"
+        },
+        {
+          "name": "CommandMessage.d.ts",
+          "type": "file"
+        },
+        {
+          "name": "CommandParser.d.ts",
+          "type": "file"
+        },
+        {
+          "name": "index.d.ts",
+          "type": "file"
+        },
+        {
+          "name": "InputAdapter.d.ts",
+          "type": "file"
+        },
+        {
+          "name": "OutputAdapter.d.ts",
+          "type": "file"
+        },
+        {
+          "name": "README.md.d.ts",
+          "type": "file"
+        },
+        {
+          "name": "UiMessage.d.ts",
+          "type": "file"
+        }
+      ]
+    },
+    {
+      "name": "Users",
+      "type": "dir",
+      "children": [
+        {
+          "name": "i",
+          "type": "dir",
+          "children": [
+            {
+              "name": "src",
+              "type": "dir",
+              "children": [
+                {
+                  "name": "nan.web",
+                  "type": "dir",
+                  "children": [
+                    {
+                      "name": "packages",
+                      "type": "dir",
+                      "children": [
+                        {
+                          "name": "ui-cli",
+                          "type": "dir",
+                          "children": [
+                            {
+                              "name": "chat",
+                              "type": "dir",
+                              "children": []
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": ".editorconfig",
+      "type": "file"
+    },
+    {
+      "name": ".gitignore",
+      "type": "file"
+    },
+    {
+      "name": "CONTRIBUTING.md",
+      "type": "file"
+    },
+    {
+      "name": "FEATURES.md",
+      "type": "file"
+    },
+    {
+      "name": "knip.json",
+      "type": "file"
+    },
+    {
+      "name": "LICENSE",
+      "type": "file"
+    },
+    {
+      "name": "MAINTENANCE.md",
+      "type": "file"
+    },
+    {
+      "name": "me.md",
+      "type": "file"
+    },
+    {
+      "name": "package-lock.json",
+      "type": "file"
+    },
+    {
+      "name": "package.json",
+      "type": "file"
+    },
+    {
+      "name": "README.md",
+      "type": "file"
+    },
+    {
+      "name": "system.md",
+      "type": "file"
+    },
+    {
+      "name": "tsconfig.json",
+      "type": "file"
+    }
+  ]
+}

@@ -12,7 +12,7 @@ export default class OutputAdapter {
     constructor(options?: {
         console?: any;
         components?: Map<string, () => Promise<Function>> | undefined;
-    } | undefined);
+    });
     /** @returns {any} */
     get console(): any;
     /**

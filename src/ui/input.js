@@ -54,16 +54,18 @@ export class Input {
  * @param {string} [config.initial] - Default value
  * @param {string} [config.type] - Prompt type (text, password, etc)
  * @param {(value:string)=>boolean|string|Promise<boolean|string>} [config.validate] - Validator
+ * @param {(value:string)=>string} [config.format] - Formatter
  * @returns {Promise<{value:string, cancelled:boolean}>}
  */
 export async function text(config) {
-	const { message, initial, validate, type = 'text' } = config
+	const { message, initial, validate, type = 'text', format } = config
 	const response = await prompts({
 		type: type,
 		name: 'value',
 		message,
 		initial,
-		validate
+		validate,
+		format
 	}, {
 		onCancel: () => {
 			throw new CancelError()
@@ -138,4 +140,3 @@ export function createPredefinedInput(predefined, console, stops = []) {
 	}
 }
 
-export default createInput

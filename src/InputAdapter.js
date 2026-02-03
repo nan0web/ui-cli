@@ -9,12 +9,19 @@ import { CancelError } from '@nan0web/ui/core'
 import prompts from 'prompts'
 
 import { ask as baseAsk, text as baseText, beep, createInput, createPredefinedInput, Input } from './ui/input.js'
+import { next } from './ui/next.js'
 import { select as baseSelect } from './ui/select.js'
 import { confirm as baseConfirm } from './ui/confirm.js'
 import { autocomplete as baseAutocomplete } from './ui/autocomplete.js'
 import { table as baseTable } from './ui/table.js'
 import { multiselect as baseMultiselect } from './ui/multiselect.js'
 import { mask as baseMask } from './ui/mask.js'
+import { toggle as baseToggle } from './ui/toggle.js'
+import { slider as baseSlider } from './ui/slider.js'
+import { progress as baseProgress } from './ui/progress.js'
+import { spinner as baseSpinner } from './ui/spinner.js'
+import { tree as baseTree } from './ui/tree.js'
+import { datetime as baseDateTime } from './ui/date-time.js'
 import { generateForm } from './ui/form.js'
 
 const DEFAULT_MAX_RETRIES = 100
@@ -46,6 +53,8 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 	#components = new Map()
 	/** @type {number} */
 	#maxRetries
+	/** @type {Function} */
+	#t
 
 	constructor(options = {}) {
 		super()
@@ -55,13 +64,21 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 			console: initialConsole = console,
 			stdout = process.stdout,
 			components = new Map(),
-			maxRetries = process.env.UI_CLI_MAX_RETRIES ?? DEFAULT_MAX_RETRIES,
+			t = (key) => key,
 		} = options
+
+		let { maxRetries = process.env.UI_CLI_MAX_RETRIES ?? DEFAULT_MAX_RETRIES } = options
+
+		// Increase default retries for automated environments to prevent flakiness
+		if (process.env.PLAY_DEMO_SEQUENCE && maxRetries === DEFAULT_MAX_RETRIES) {
+			maxRetries = 1000
+		}
 
 		this.#console = initialConsole
 		this.#stdout = stdout
 		this.#components = components
 		this.#maxRetries = Number(maxRetries)
+		this.#t = t
 
 		if (Array.isArray(predefined)) {
 			this.#answers = predefined.map((v) => String(v))
@@ -78,6 +95,14 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 	/** @returns {ConsoleLike} */
 	get console() {
 		return this.#console
+	}
+	/** @returns {Function} */
+	get t() {
+		return this.#t
+	}
+	/** @param {Function} val */
+	set t(val) {
+		this.#t = val
 	}
 	/** @returns {NodeJS.WriteStream} */
 	get stdout() {
@@ -169,6 +194,23 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 	}
 
 	/**
+	 * Pause execution and wait for user input (Press any key).
+	 *
+	 * @param {string} [message] - Message to display.
+	 * @returns {Promise<void>}
+	 */
+	async pause(message) {
+		const predefined = this.#nextAnswer()
+		if (message) this.console.info(message)
+		if (predefined !== null) {
+			// Automated mode: proceed immediately
+			return
+		}
+		// Interactive mode
+		await next()
+	}
+
+	/**
 	 * Prompt the user for a full form, handling navigation and validation.
 	 *
 	 * @param {UiForm} form - Form definition to present.
@@ -178,7 +220,7 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 	 */
 	async requestForm(form, options = {}) {
 		const { silent = true } = options
-		if (!silent) this.console.info(`\n${form.title}\n`)
+		if (!silent) this.console.info(`\n${this.#t(form.title)}\n`)
 
 		let formData = { ...form.state }
 		let idx = 0
@@ -193,15 +235,15 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 					action: 'form-cancel',
 				}
 			}
-			const promptMsg = `${field.label || field.name}${field.required ? ' *' : ''}: `
+			const promptMsg = `${this.#t(field.label || field.name)}${field.required ? ' *' : ''}: `
 
 			// ---- Handle select fields (options) ----------------------------------------
 			if (field.type === 'select' || (Array.isArray(field.options ?? 0) && field.options.length && field.type !== 'multiselect' && field.type !== 'autocomplete')) {
 				const options = /** @type {any[]} */ (field.options)
 
 				const selConfig = {
-					title: field.label,
-					prompt: 'Choose (number): ',
+					title: this.#t(field.label),
+					prompt: this.#t('Choose (number): '),
 					options: options.map((opt) =>
 						typeof opt === 'string' ? { label: opt, value: opt } : opt,
 					),
@@ -230,7 +272,7 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 			}
 			// ---- Handle confirm / toggle fields --------------------------------------
 			if (field.type === 'confirm' || field.type === 'toggle') {
-				const resValue = await this.requestConfirm({ message: field.label || field.name })
+				const resValue = await this.requestConfirm({ message: this.#t(field.label || field.name) })
 				if (resValue === undefined) {
 					return {
 						body: { action: 'form-cancel', cancelled: true },
@@ -246,7 +288,7 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 			// ---- Handle multiselect fields -------------------------------------------
 			if (field.type === 'multiselect') {
 				const resValue = await this.requestMultiselect({
-					message: field.label || field.name,
+					message: this.#t(field.label || field.name),
 					options: Array.isArray(field.options) ? field.options : [],
 					initial: [],
 				})
@@ -265,9 +307,28 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 			// ---- Handle mask fields --------------------------------------------------
 			if (field.type === 'mask') {
 				const resValue = await this.requestMask({
-					message: field.label || field.name,
+					message: this.#t(field.label || field.name),
 					mask: field.mask || '',
 					placeholder: field.placeholder || '',
+				})
+				if (resValue === undefined) {
+					return {
+						body: { action: 'form-cancel', cancelled: true },
+						cancelled: true,
+						action: 'form-cancel',
+					}
+				}
+				formData[field.name] = resValue
+				idx++
+				continue
+			}
+
+			// ---- Handle date / datetime fields ---------------------------------------
+			if (field.type === 'date' || field.type === 'datetime') {
+				const resValue = await this.requestDateTime({
+					message: field.label || field.name,
+					initial: field.value instanceof Date ? field.value : new Date(),
+					mask: field.mask
 				})
 				if (resValue === undefined) {
 					return {
@@ -321,7 +382,7 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 				continue
 			}
 			if (field.required && trimmed === '') {
-				this.console.info('\nField is required.')
+				this.console.info(`\n${this.#t('Field is required.')}`)
 				retries++
 				continue
 			}
@@ -405,43 +466,40 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 	 * @returns {Promise<string|undefined>} Selected value (or undefined on cancel).
 	 */
 	async requestSelect(config) {
+		config.limit = config.limit ?? Math.max(5, (this.stdout.rows || 24) - 4)
 		try {
 			const predefined = this.#nextAnswer()
 			if (!config.console) config.console = { info: () => { } }
 
 			if (predefined !== null) {
-				config.yes = true
-				// Map 1-based index to option value if possible, to support legacy tests
-				const options = config.options || []
-				// Normalize options locally to find the value
+				// Normalize options to find value
 				let choices = []
+				const options = config.options || []
 				if (options instanceof Map) {
 					choices = Array.from(options.entries()).map(([value, label]) => ({ label, value }))
 				} else if (Array.isArray(options)) {
 					choices = options.map((el) => (typeof el === 'string' ? { label: el, value: el } : el))
 				}
 
-				// Try to parse predefined as index
 				const idx = Number(predefined) - 1
 				let valToInject = predefined
 				if (!isNaN(idx) && idx >= 0 && idx < choices.length) {
-					// It's a valid index, use the value from that index because prompts expects value
 					valToInject = choices[idx].value
 				}
 
 				if (config.console) {
-					// Legacy behavior: Echo title and options because prompts.inject skips rendering
 					if (config.title) config.console.info(config.title)
-					choices.forEach((c, i) => {
+					const limit = config.limit || choices.length
+					choices.slice(0, limit).forEach((c, i) => {
 						config.console.info(` ${i + 1}) ${c.label}`)
 					})
-
-					// Legacy behavior: echo the input selection (e.g. "3")
+					if (choices.length > limit) {
+						config.console.info(` ... (${choices.length - limit} ${this.#t('more')})`)
+					}
 					const p = config.prompt ?? ''
-					config.console.info(`${p}${predefined}`)
+					config.console.info(`${p} ${predefined}`)
 				}
-
-				prompts.inject([valToInject])
+				return valToInject
 			}
 			const result = await this.select(config)
 			return result.value
@@ -459,14 +517,15 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 	 */
 	async requestInput(config) {
 		const predefined = this.#nextAnswer()
-		const prompt = config.prompt ?? config.message ?? `${config.label ?? config.name ?? 'Input'}: `
+		const promptOrig = config.prompt ?? config.message ?? `${config.label ?? config.name ?? 'Input'}: `
+		const prompt = this.#t(promptOrig)
 		if (predefined !== null) {
 			if (config.type !== 'password' && config.type !== 'secret') {
-				this.console.info(`${prompt}${predefined}`)
+				this.console.info(`${prompt} ${predefined}`)
 			} else {
 				this.console.info(`${prompt}${'*'.repeat(predefined.length)}`)
 			}
-			prompts.inject([predefined])
+			return predefined
 		} else if (config.yes === true && config.value !== undefined) {
 			return config.value
 		}
@@ -487,11 +546,12 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 	 * @returns {Promise<any>} Selected value.
 	 */
 	async requestAutocomplete(config) {
+		config.limit = config.limit ?? Math.max(5, (this.stdout.rows || 24) - 4)
 		const predefined = this.#nextAnswer()
 		const prompt = config.message || config.title || 'Search: '
 		if (predefined !== null) {
-			this.console.info(`${prompt}${predefined}`)
-			prompts.inject([predefined])
+			this.console.info(`${prompt} ${predefined}`)
+			return predefined
 		}
 		const result = await baseAutocomplete(config)
 		return result.value
@@ -507,11 +567,8 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 		const predefined = this.#nextAnswer()
 		const prompt = config.message || 'Confirm: '
 		if (predefined !== null) {
-			this.console.info(`${prompt}${predefined}`)
-			let valToInject = null
-			if (['y', 'yes', 'true', '1'].includes(predefined.toLowerCase())) valToInject = true
-			if (['n', 'no', 'false', '0'].includes(predefined.toLowerCase())) valToInject = false
-			prompts.inject([valToInject])
+			this.console.info(`${prompt} ${predefined}`)
+			return ['y', 'yes', 'true', '1', 'так'].includes(predefined.toLowerCase())
 		}
 		const res = await baseConfirm(config)
 		return res.value
@@ -524,6 +581,7 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 	 * @returns {Promise<any>}
 	 */
 	async requestTable(config) {
+		config.t = this.t
 		return baseTable(config)
 	}
 
@@ -537,10 +595,18 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 		const predefined = this.#nextAnswer()
 		const prompt = config.message || 'Select: '
 		if (predefined !== null) {
-			this.console.info(`${prompt}${predefined}`)
-			const vals = predefined.split(',').map((v) => v.trim())
-			prompts.inject([vals])
+			this.console.info(`${prompt} ${predefined}`)
+			return predefined.split(',').map((v) => v.trim())
 		}
+		const instructions = `\n${this.#t('Instructions')}:\n` +
+			`    ↑/↓: ${this.#t('Highlight option')}\n` +
+			`    ←/→/[space]: ${this.#t('Toggle selection')}\n` +
+			`    a: ${this.#t('Toggle all')}\n` +
+			`    enter/return: ${this.#t('Complete answer')}`
+
+		// Pass instructions to multiselect config
+		config.instructions = instructions
+
 		const res = await baseMultiselect(config)
 		return res.value
 	}
@@ -555,10 +621,103 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 		const predefined = this.#nextAnswer()
 		const prompt = config.message || 'Input: '
 		if (predefined !== null) {
-			this.console.info(`${prompt}${predefined}`)
-			prompts.inject([predefined])
+			this.console.info(`${prompt} ${predefined}`)
+			return predefined
 		}
 		const res = await baseMask(config)
+		return res.value
+	}
+
+	/**
+	 * Request a toggle switch.
+	 * @param {Object} config
+	 * @returns {Promise<boolean>}
+	 */
+	async requestToggle(config) {
+		const predefined = this.#nextAnswer()
+		const prompt = config.message || 'Toggle: '
+		if (predefined !== null) {
+			this.console.info(`${prompt}${predefined}`)
+			prompts.inject([['y', 'yes', 'true', '1', 'так'].includes(predefined.toLowerCase())])
+		}
+		const res = await baseToggle(config)
+		return res.value
+	}
+
+	/**
+	 * Request a numeric slider.
+	 * @param {Object} config
+	 * @returns {Promise<number>}
+	 */
+	async requestSlider(config) {
+		const predefined = this.#nextAnswer()
+		const prompt = config.message || 'Value: '
+		if (predefined !== null) {
+			this.console.info(`${prompt} ${predefined}`)
+			return Number(predefined)
+		}
+		const res = await baseSlider(config)
+		return res.value
+	}
+
+	/**
+	 * Create a progress bar.
+	 * @param {Object} options
+	 * @returns {import('./ui/progress.js').ProgressBar}
+	 */
+	requestProgress(options) {
+		return baseProgress(options)
+	}
+
+	/**
+	 * Create and start a spinner.
+	 * @param {string} message
+	 * @returns {import('./ui/spinner.js').Spinner}
+	 */
+	requestSpinner(message) {
+		return baseSpinner(message)
+	}
+
+	/**
+	 * Request a selection from a tree view.
+	 * @param {Object} config
+	 * @returns {Promise<any>} Selected node(s).
+	 */
+	async requestTree(config) {
+		const predefined = this.#nextAnswer()
+		const prompt = config.message || 'Select: '
+		if (predefined !== null) {
+			this.console.info(`${prompt}${predefined}`)
+			// Simulate return value
+			if (config.mode === 'multi' || config.multiselect) {
+				return predefined.split(',').map(s => ({ name: s.trim() }))
+			}
+			return { name: predefined }
+		}
+		return baseTree({ t: this.t, ...config })
+	}
+
+	/**
+	 * Request a date or time from the user.
+	 * @param {Object} config
+	 * @returns {Promise<Date|undefined>}
+	 */
+	async requestDateTime(config) {
+		const predefined = this.#nextAnswer()
+		const promptOrig = config.message || config.label || config.name || 'Date: '
+		const prompt = this.#t(promptOrig)
+		if (predefined !== null) {
+			this.console.info(`${prompt} ${predefined}`)
+			let val = new Date(predefined)
+			if (isNaN(val.getTime())) {
+				if (/^\d{1,2}:\d{2}/.test(predefined)) {
+					const today = new Date().toISOString().split('T')[0]
+					val = new Date(`${today}T${predefined}`)
+				}
+			}
+			return isNaN(val.getTime()) ? undefined : val
+		}
+		const res = await baseDateTime({ t: this.t, ...config, message: prompt })
 		return res.value
 	}
 
@@ -610,6 +769,7 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 		while (errors.size > 0) {
 			const form = generateForm(/** @type {any} */(msg.constructor).Body, {
 				initialState: msg.body,
+				t: this.#t,
 			})
 
 			const formResult = await this.processForm(form, msg.body)

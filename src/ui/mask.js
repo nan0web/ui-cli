@@ -43,13 +43,42 @@ export async function mask(config) {
 		return true
 	}
 
+	/*
+	 * Helper helper to format value according to mask
+	 */
+	const applyMask = (value) => {
+		let i = 0
+		let v = 0
+		let result = ''
+		const cleanValue = value.replace(/[^a-zA-Z0-9]/g, '')
+
+		while (i < mask.length && v < cleanValue.length) {
+			const maskChar = mask[i]
+			if (maskChar === '#' || maskChar === 'A') {
+				result += cleanValue[v]
+				v++
+			} else {
+				result += maskChar
+				if (v < cleanValue.length && value[result.length - 1] === maskChar) {
+					// if user typed the separator, skip it in source too logic already handled by cleanValue
+				}
+			}
+			i++
+		}
+		// append remaining mask suffix if any non-input chars left? No, usually not for partial input but here we assume full input
+		return result
+	}
+
 	const result = await text({
 		message: `${message} (${mask})`,
 		initial: placeholder,
-		validate
+		validate,
+		format: (val) => {
+			// Apply mask formatting on submit
+			return applyMask(val)
+		}
 	})
 
 	return result
 }
 
-export default mask

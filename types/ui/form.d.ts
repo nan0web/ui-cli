@@ -14,7 +14,7 @@
 export function generateForm(BodyClass: Function, options?: {
     initialState?: any;
     t?: Function | undefined;
-} | undefined): UiForm;
+}): UiForm;
 /**
  * CLI-specific form handler that introspects a model class for static field schemas.
  *
@@ -39,6 +39,7 @@ export default class Form {
      * @param {string[]} [options.stops=["quit", "cancel", "exit"]] - Stop words.
      * @param {(prompt: string) => Promise<Input>} [options.inputFn] - Custom input function.
      * @param {(config: object) => Promise<{index:number, value:any}>} [options.selectFn] - Custom select function.
+     * @param {Function} [options.t] - Optional translation function.
      * @throws {TypeError} If model is not an object with a constructor.
      */
     constructor(model: any, options?: {
@@ -48,7 +49,8 @@ export default class Form {
             index: number;
             value: any;
         }>) | undefined;
-    } | undefined);
+        t?: Function | undefined;
+    });
     /** @type {Function} Input handler with cancellation support. */
     handler: Function;
     options: {
@@ -58,11 +60,14 @@ export default class Form {
             index: number;
             value: any;
         }>) | undefined;
+        t?: Function | undefined;
     };
+    t: Function;
     select: typeof select | ((config: object) => Promise<{
         index: number;
         value: any;
     }>);
+    get fields(): any[];
     /**
      * Prompts for input using the internal handler.
      *

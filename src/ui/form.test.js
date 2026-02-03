@@ -5,7 +5,7 @@ import { createPredefinedInput } from './input.js'
 import * as selectModule from './select.js'
 import { CancelError } from '@nan0web/ui/core'
 
-const mockConsole = { info: () => {}, error: () => {} }
+const mockConsole = { info: () => { }, error: () => { } }
 const defaultStops = ['quit', 'cancel', 'exit']
 
 class User {
@@ -231,6 +231,37 @@ describe('Form class', () => {
 			user.username = 'test'
 			assert.strictEqual(form.body, user)
 			assert.strictEqual(form.body.username, 'test')
+		})
+	})
+
+	describe('i18n and Unicode support', () => {
+		it('should translate field labels and help text', async () => {
+			class I18nModel {
+				static field = { help: 'Original Label' }
+				constructor() { this.field = '' }
+			}
+			const model = new I18nModel()
+			const t = (key) => (key === 'Original Label' ? 'Перекладена мітка' : key)
+			const form = new Form(model, { t })
+
+			assert.strictEqual(form.fields[0].label, 'Перекладена мітка')
+		})
+
+		it('should support Unicode (Cyrillic) in inputs and validation', async () => {
+			class UnicodeModel {
+				static name = {
+					help: 'Name',
+					validate: (v) => (v.length > 0 ? true : 'Empty')
+				}
+				constructor() { this.name = '' }
+			}
+			const model = new UnicodeModel()
+			const form = new Form(model, { stops: defaultStops })
+			form.handler = createPredefinedInput(['ЯRаслав'], mockConsole, defaultStops)
+
+			const result = await form.requireInput()
+			assert.strictEqual(result.cancelled, false)
+			assert.strictEqual(model.name, 'ЯRаслав')
 		})
 	})
 })

@@ -28,7 +28,7 @@ export async function select(input) {
 		title,
 		prompt,
 		options: initOptins,
-		limit = 10,
+		limit = 30,
 	} = input
 
 	let options = initOptins

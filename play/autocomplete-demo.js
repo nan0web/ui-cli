@@ -17,25 +17,27 @@ const COUNTRIES = [
  *
  * @param {import('@nan0web/log').default} console - Logger instance.
  * @param {import('../src/InputAdapter').default} adapter - CLI Input Adapter.
+ * @param {Function} t - Translation function.
  */
-export async function runAutocompleteDemo(console, adapter) {
+export async function runAutocompleteDemo(console, adapter, t) {
     console.clear()
-    console.success('Autocomplete Demo – Searchable Lists')
-    console.info('Tip: Type to filter the list of countries.')
+    console.success(t('Autocomplete Demo'))
+    console.info(t('Tip: Type to filter the list of countries.'))
 
     const result = await adapter.requestAutocomplete({
-        message: 'Search for a country:',
+        message: t('Search for a country:'),
         options: async (query) => {
             // Simulating async fetch with delay
             await new Promise(r => setTimeout(r, 100))
-            return COUNTRIES.filter(c => c.toLowerCase().includes(query.toLowerCase()))
+            const localizedCountries = COUNTRIES.map(c => t(c))
+            return localizedCountries.filter(c => c.toLowerCase().includes(query.toLowerCase()))
         },
         limit: 5 // Show only 5 items at a time
     })
 
     if (result === undefined) {
-        console.warn('Selection cancelled.')
+        console.warn(t('Selection cancelled.'))
     } else {
-        console.success(`You selected: ${result}`)
+        console.success(`${t('You selected:')} ${result}`)
     }
 }

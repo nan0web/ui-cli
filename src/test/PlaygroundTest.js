@@ -124,7 +124,7 @@ export default class PlaygroundTest {
 	 * @param {string[]} [args=["play/main.js"]] Arguments passed to the node process.
 	 */
 	async run(args = ['play/main.js']) {
-		const child = spawn('node', args, {
+		const child = spawn(process.execPath, args, {
 			env: this.env,
 			stdio: ['pipe', 'pipe', 'pipe'],
 		})

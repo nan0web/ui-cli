@@ -17,4 +17,3 @@ export function mask(config: {
     value: string;
     cancelled: boolean;
 }>;
-export default mask;

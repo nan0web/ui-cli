@@ -29,9 +29,11 @@
 		"test:docs": "node --test --test-timeout=3333 src/README.md.js",
 		"test:release": "node --test --test-timeout=3333 \"releases/**/*.test.js\"",
 		"test:status": "nan0test status --hide-name --debug",
-		"test:play": "node --test --test-timeout=3333 play/main.test.js",
-		"test:all": "npm run test && npm run test:docs && npm run test:play && npm run build",
+		"test:play": "node --test --test-timeout=10000 play/main.test.js",
+		"test:snapshot": "node --test --test-timeout=10000 play/snapshot.test.js",
+		"test:all": "npm run test && npm run test:docs && npm run test:play && npm run test:snapshot && npm run build && npm run knip",
 		"test:all1": "npm run test && npm run test:docs && npm run test:status && npm run test:play && npm run build",
+		"knip": "knip --production",
 		"play": "node play/main.js",
 		"precommit": "npm test",
 		"prepush": "npm test",
@@ -53,10 +55,10 @@
 		"@nan0web/i18n": "^1.0.1",
 		"@nan0web/log": "1.1.1",
 		"@nan0web/test": "1.1.0",
-		"@types/node": "^24.10.1"
+		"@types/node": "^24.10.1",
+		"knip": "^5.83.0"
 	},
 	"dependencies": {
-		"@nan0web/co": "^2.0.0",
 		"@nan0web/event": "^1.0.0",
 		"@nan0web/ui": "workspace:*",
 		"prompts": "^2.4.2"

@@ -36,7 +36,7 @@ export async function autocomplete(input) {
         message,
         title,
         options: initOptions,
-        limit = 10,
+        limit = 30,
     } = input
 
     let choices = []
@@ -85,4 +85,3 @@ export async function autocomplete(input) {
     return { index, value: response.value, cancelled: false }
 }
 
-export default autocomplete

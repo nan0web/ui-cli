@@ -68,18 +68,28 @@ export default class SelectDemoCLi extends SelectDemo {
  * @deprecated @todo must be changed with the Message / CLI processing
  * @param {Logger} console - Logger instance.
  * @param {CLIInputAdapter} adapter - Adapter that provides predefined answer handling.
+ * @param {Function} t - Translation function.
  */
-export async function runSelectDemo(console, adapter) {
+export async function runSelectDemo(console, adapter, t) {
 	console.clear()
-	console.success('Select Prompt Demo')
+	console.success(t('Select Prompt Demo'))
 
 	// Pass the real logger as `console` so the colour menu appears.
 	const value = await adapter.requestSelect({
-		title: 'Pick a colour',
-		prompt: '[demo]: ',
-		options: ['Red', 'Green', 'Blue'],
+		title: t('Pick a colour'),
+
+		options: [
+			{ label: t('Red'), value: 'Red' },
+			{ label: t('Green'), value: 'Green' },
+			{ label: t('Blue'), value: 'Blue' }
+		],
 		console, // <-- keep output consistent with manual run
 	})
 
-	console.info(`✓ You selected: ${value}`)
+	if (value === undefined) {
+		console.warn(t('Selection cancelled.'))
+		return
+	}
+
+	console.info(`✓ ${t('You selected:')} ${t(value)}`)
 }

@@ -18,4 +18,3 @@ export function autocomplete(input: {
     value: any;
     cancelled: boolean;
 }>;
-export default autocomplete;

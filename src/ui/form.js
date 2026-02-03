@@ -84,6 +84,7 @@ export default class Form {
 	 * @param {string[]} [options.stops=["quit", "cancel", "exit"]] - Stop words.
 	 * @param {(prompt: string) => Promise<Input>} [options.inputFn] - Custom input function.
 	 * @param {(config: object) => Promise<{index:number, value:any}>} [options.selectFn] - Custom select function.
+	 * @param {Function} [options.t] - Optional translation function.
 	 * @throws {TypeError} If model is not an object with a constructor.
 	 */
 	constructor(model, options = {}) {
@@ -92,7 +93,8 @@ export default class Form {
 		}
 		this.#model = model
 		this.options = options
-		const { stops = ['quit', 'cancel', 'exit'], inputFn, selectFn } = options
+		const { stops = ['quit', 'cancel', 'exit'], inputFn, selectFn, t = (k) => k } = options
+		this.t = t
 		this.handler = inputFn || createInput(stops)
 		this.select = selectFn || select
 		this.#fields = this.#generateFields()
@@ -109,23 +111,26 @@ export default class Form {
 		for (const [name, schema] of Object.entries(Class)) {
 			if (typeof schema !== 'object' || schema === null) continue
 			const isRequired = schema.required === true || schema.defaultValue === undefined
-			const placeholder = schema.placeholder || schema.defaultValue || ''
+			const placeholder = this.t(String(schema.placeholder || schema.defaultValue || ''))
 			const options = schema.options || []
 			const validation = schema.validate
 				? (value) => {
 					const res = schema.validate(value)
 					if (res === true) return true
-					if (typeof res === 'string') return res
-					return `Invalid ${name}`
+					if (typeof res === 'string') return this.t(res)
+					return `${this.t('Invalid')} ${name}`
 				}
 				: () => true
 			fields.push({
 				name,
-				label: schema.help || name,
+				label: this.t(schema.help || name),
 				type: schema.type || 'text',
 				required: isRequired,
 				placeholder,
-				options,
+				options: options.map(opt => {
+					if (typeof opt === 'string') return { label: this.t(opt), value: opt }
+					return { ...opt, label: this.t(opt.label) }
+				}),
 				validation,
 			})
 		}
@@ -149,6 +154,10 @@ export default class Form {
 	}
 
 
+
+	get fields() {
+		return this.#fields
+	}
 
 	/**
 	 * Prompts for input using the internal handler.
@@ -178,8 +187,8 @@ export default class Form {
 				if (field.options.length > 0 || field.type === 'autocomplete') {
 					const selConfig = {
 						title: field.label,
-						message: field.help || field.label,
-						prompt: 'Choose (number): ',
+						message: field.label,
+						prompt: `${this.t('Select')}: `,
 						options: field.options,
 						console: (/** @type {any} */(this.options)).console || { info: (msg) => process.stdout.write(msg + '\n') },
 						ask: this.handler,

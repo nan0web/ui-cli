@@ -31,6 +31,7 @@ function highlight(text, query) {
  * @param {string} [input.title] - Table title.
  * @param {boolean} [input.interactive=true] - Whether to allow filtering.
  * @param {boolean} [input.instant=false] - Whether to use instant search (char-by-char).
+ * @param {(val:string)=>string} [input.t] - Translation function.
  * @returns {Promise<{value:any, cancelled:boolean}>} Selected row (if interactive) or last state.
  */
 export async function table(input) {
@@ -40,6 +41,7 @@ export async function table(input) {
         title,
         interactive = true,
         instant = false,
+        t = (k) => k,
     } = input
 
     const logger = new Logger()
@@ -71,7 +73,7 @@ export async function table(input) {
                 const displayColumns = columns.map(c => highlight(c, query))
 
                 logger.clear()
-                const infoMsg = title ? `${title} (Instant Filter: "${query}")` : `(Instant Filter: "${query}")`
+                const infoMsg = title ? `${title} (${t('Instant Filter')}: "${query}")` : `(${t('Instant Filter')}: "${query}")`
                 logger.info(infoMsg)
                 logger.table(displayData, displayColumns)
                 process.stdout.write('> ' + query)
@@ -136,7 +138,7 @@ export async function table(input) {
         logger.table(displayData, displayColumns)
 
         const res = await text({
-            message: 'Type to filter (or "::exit" to finish / "::clear" to reset):',
+            message: t('Type to filter (or "::exit" to finish / "::clear" to reset):'),
             initial: query
         })
 
@@ -152,4 +154,3 @@ export async function table(input) {
     }
 }
 
-export default table
