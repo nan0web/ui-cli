@@ -27,33 +27,168 @@ Testing password masking and boolean fields.
 ✔ Login *:  adv_user
 ✔ Password *: ****
 Phone 1234567890
-✔ Remember me? y
-Select your roles Admin
+✔ User age *:  25
+✔ Subscribe to newsletter y
+✔ Remember me? Admin
+Select your roles 19
 Form submitted!
 Form data (password is hidden here):
-{"username":"adv_user","password":"********","phone":"1234567890","rememberMe":true,"roles":["Admin"]}
+{"username":"adv_user","password":"********","phone":"1234567890","age":"25","newsletter":true,"rememberMe":false,"roles":["19"]}
 ==================================================
 Demo completed. Returning to menu...
 ==================================================
-Select demo to run:
- 1) Basic Logging
- 2) Select Prompt
- 3) Simple Demo
- 4) Form Input
- 5) UiMessage
- 6) View Components
- 7) Nav Components
- 8) Tree View
- 9) Table Filtering
- 10) Instant Table
- 11) Autocomplete
- 12) Long List
- 13) Advanced Form
- 14) Toggle
- 15) Slider
- 16) ProgressBar
- 17) Spinner
- 18) Date & Time
-  ↓ (1 more)
-✔  19
-Thanks for exploring UI‑CLI demos! 🚀
+[?25l? Select demo to run: › - Use arrow-keys. Return to submit.
+❯   Basic Logging
+    Select Prompt
+    Simple Demo
+    Form Input
+    UiMessage
+    View Components
+    Nav Components
+    Tree View
+    Table Filtering
+  ↓ Instant Table
+[1G✔ Select demo to run: › Basic Logging
+[?25hBasic Logging Demo
+✓ Logger initialized
+✓ This demo simply logs messages
+==================================================
+Demo completed. Returning to menu...
+==================================================
+[?25l? Select demo to run: › - Use arrow-keys. Return to submit.
+❯   Basic Logging
+    Select Prompt
+    Simple Demo
+    Form Input
+    UiMessage
+    View Components
+    Nav Components
+    Tree View
+    Table Filtering
+  ↓ Instant Table
+[1G✔ Select demo to run: › Basic Logging
+[?25hBasic Logging Demo
+✓ Logger initialized
+✓ This demo simply logs messages
+==================================================
+Demo completed. Returning to menu...
+==================================================
+[?25l? Select demo to run: › - Use arrow-keys. Return to submit.
+❯   Basic Logging
+    Select Prompt
+    Simple Demo
+    Form Input
+    UiMessage
+    View Components
+    Nav Components
+    Tree View
+    Table Filtering
+  ↓ Instant Table
+[1G✔ Select demo to run: › Basic Logging
+[?25hBasic Logging Demo
+✓ Logger initialized
+✓ This demo simply logs messages
+==================================================
+Demo completed. Returning to menu...
+==================================================
+[?25l? Select demo to run: › - Use arrow-keys. Return to submit.
+❯   Basic Logging
+    Select Prompt
+    Simple Demo
+    Form Input
+    UiMessage
+    View Components
+    Nav Components
+    Tree View
+    Table Filtering
+  ↓ Instant Table
+[1G✔ Select demo to run: › Basic Logging
+[?25hBasic Logging Demo
+✓ Logger initialized
+✓ This demo simply logs messages
+==================================================
+Demo completed. Returning to menu...
+==================================================
+[?25l? Select demo to run: › - Use arrow-keys. Return to submit.
+❯   Basic Logging
+    Select Prompt
+    Simple Demo
+    Form Input
+    UiMessage
+    View Components
+    Nav Components
+    Tree View
+    Table Filtering
+  ↓ Instant Table
+[1G✔ Select demo to run: › Basic Logging
+[?25hBasic Logging Demo
+✓ Logger initialized
+✓ This demo simply logs messages
+==================================================
+Demo completed. Returning to menu...
+==================================================
+[?25l? Select demo to run: › - Use arrow-keys. Return to submit.
+❯   Basic Logging
+    Select Prompt
+    Simple Demo
+    Form Input
+    UiMessage
+    View Components
+    Nav Components
+    Tree View
+    Table Filtering
+  ↓ Instant Table
+[1G✔ Select demo to run: › Basic Logging
+[?25hBasic Logging Demo
+✓ Logger initialized
+✓ This demo simply logs messages
+==================================================
+Demo completed. Returning to menu...
+==================================================
+[?25l? Select demo to run: › - Use arrow-keys. Return to submit.
+❯   Basic Logging
+    Select Prompt
+    Simple Demo
+    Form Input
+    UiMessage
+    View Components
+    Nav Components
+    Tree View
+    Table Filtering
+  ↓ Instant Table
+[1G✔ Select demo to run: › Basic Logging
+[?25hBasic Logging Demo
+✓ Logger initialized
+✓ This demo simply logs messages
+==================================================
+Demo completed. Returning to menu...
+==================================================
+[?25l? Select demo to run: › - Use arrow-keys. Return to submit.
+❯   Basic Logging
+    Select Prompt
+    Simple Demo
+    Form Input
+    UiMessage
+    View Components
+    Nav Components
+    Tree View
+    Table Filtering
+  ↓ Instant Table
+[1G✔ Select demo to run: › Basic Logging
+[?25hBasic Logging Demo
+✓ Logger initialized
+✓ This demo simply logs messages
+==================================================
+Demo completed. Returning to menu...
+==================================================
+[?25l? Select demo to run: › - Use arrow-keys. Return to submit.
+❯   Basic Logging
+    Select Prompt
+    Simple Demo
+    Form Input
+    UiMessage
+    View Components
+    Nav Components
+    Tree View
+    Table Filtering
+  ↓ Instant Table
