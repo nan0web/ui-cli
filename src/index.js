@@ -41,6 +41,16 @@ export { mask } from './ui/mask.js';
 export { table } from './ui/table.js';
 export { autocomplete } from './ui/autocomplete.js';
 export { pause } from './ui/next.js';
+export { alert } from './ui/alert.js';
+export { badge } from './ui/badge.js';
+export { toast } from './ui/toast.js';
+export { spinner } from './ui/spinner.js';
+export { progress } from './ui/progress.js';
+export { breadcrumbs, tabs, steps } from './ui/nav.js';
+export { tree } from './ui/tree.js';
+export { datetime } from './ui/date-time.js';
+export { toggle } from './ui/toggle.js';
+export { slider } from './ui/slider.js';
 
 // Public V2 API
 export {
