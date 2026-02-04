@@ -34,6 +34,13 @@ import { ProgressBar } from './components/prompt/ProgressBar.js';
 // Legacy utils still needed for internal logic or compat
 export { createInput, ask, text } from './ui/input.js';
 export { select } from './ui/select.js';
+export { confirm } from './ui/confirm.js';
+export { next } from './ui/next.js';
+export { multiselect } from './ui/multiselect.js';
+export { mask } from './ui/mask.js';
+export { table } from './ui/table.js';
+export { autocomplete } from './ui/autocomplete.js';
+export { pause } from './ui/next.js';
 
 // Public V2 API
 export {
