@@ -1,64 +1,52 @@
-import { CancelError } from '@nan0web/ui/core'
+import { CLiInputAdapter, CancelError, OutputAdapter, CLI, CommandParser } from './index.js';
 
-import CLiInputAdapter from './InputAdapter.js'
-import OutputAdapter from './OutputAdapter.js'
-import CLI from './CLI.js'
-import Command from './Command.js'
-import CommandError from './CommandError.js'
-import CommandMessage from './CommandMessage.js'
-import CommandParser from './CommandParser.js'
-import CommandHelp from './CommandHelp.js'
-export { str2argv } from './utils/parse.js'
+// V2 Component Exports
+import { render } from './core/render.js';
 
-// Export ALL UI components
+// Views
+import { Alert } from './components/view/Alert.js';
+import { Badge } from './components/view/Badge.js';
+import { Table } from './components/view/Table.js';
+
+// Prompts
+import { Select } from './components/prompt/Select.js';
+import { Input } from './components/prompt/Input.js';
+import { Password } from './components/prompt/Password.js';
+import { Confirm } from './components/prompt/Confirm.js';
+import { Multiselect } from './components/prompt/Multiselect.js';
+import { Mask } from './components/prompt/Mask.js';
+import { Autocomplete } from './components/prompt/Autocomplete.js';
+import { Slider } from './components/prompt/Slider.js';
+import { Toggle } from './components/prompt/Toggle.js';
+
+// Legacy utils still needed for internal logic or compat
+export { createInput, ask, text } from './ui/input.js';
+export { select } from './ui/select.js';
+
+// Public V2 API
 export {
-	select, next, pause, createInput, ask, Input, text, confirm, autocomplete,
-	table, badge, alert, toast, breadcrumbs, tabs, steps,
-	spinner, Spinner,
-	progress, ProgressBar,
-	tree,
-	slider,
-	toggle,
-	mask,
-	multiselect,
-	datetime
-} from './ui/index.js'
-
-/** @typedef {import("./CommandHelp.js").CommandHelpField} CommandHelpField */
-
-export {
-	CLI,
+	// Core
+	render,
 	CLiInputAdapter,
 	CancelError,
-	OutputAdapter,
 
-	/** @deprecated */
-	Command,
-	/** @deprecated */
-	CommandError,
-	/** @deprecated */
-	CommandMessage,
-	CommandParser,
-	CommandHelp,
-}
+	// Components
+	Alert,
+	Badge,
+	Table,
+	Select,
+	Input,
+	Password,
+	Confirm,
+	Multiselect,
+	Mask,
+	Autocomplete,
+	Slider,
+	Toggle,
 
-/* New public API */
-export { default as Form, generateForm } from './ui/form.js'
+	// Tools
+	CLI,
+	CommandParser
+};
 
-export const renderers = new Map([
-	[
-		'UIProcess',
-		(data) => {
-			return `${data.title || 'Process'}: ${data.status || 'running'}`
-		},
-	],
-])
-
-
-/* V2 Component API */
-export { render } from './core/render.js';
-export { Alert } from './components/view/Alert.js';
-export { Select } from './components/prompt/Select.js';
-
-export default CLiInputAdapter
-
+export default CLiInputAdapter;
