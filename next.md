@@ -12,69 +12,76 @@ The consensus is clear. To achieve true "One Logic — Many UI" and seamless int
 
 ## 🎯 The Goal
 
-Transform `@nan0web/ui-cli` from a collection of helper functions into a **Component-Based Rendering Engine**.
+Transform `@nan0web/ui-cli` from a collection of helper functions into a **Component-Based Rendering Engine** with a strict separation between **View** (Static) and **Prompt** (Interactive) components.
+
+### Architecture: View vs Prompt
+
+We categorize UI elements into two distinct types based on their behavior:
+
+1.  **View Components (Static/Sync)**
+    *   **Purpose:** Display information, layout, structure.
+    *   **Behavior:** Synchronous. Pure functions of state.
+    *   **Capability:** Can be stringified directly via `.toString()`. Valid in `console.log`.
+    *   **Examples:** `Alert`, `Box`, `Table`, `Text`, `Badge`.
+    *   **Usage:** `console.log(Alert({ title: 'Hi' }))` OR `await render(Alert({ title: 'Hi' }))`.
+
+2.  **Prompt Components (Interactive/Async)**
+    *   **Purpose:** Gather input, user decisions.
+    *   **Behavior:** Asynchronous. Pause execution awaiting user action.
+    *   **Capability:** Cannot be stringified significantly. Must be `render()`-ed.
+    *   **Examples:** `Select`, `Input`, `Confirm`, `Multiselect`.
+    *   **Usage:** `await render(Select({ options: [...] }))`.
 
 ### Current (Legacy - Imperative)
 ```javascript
 import { alert } from './ui/alert.js';
-// Function computes string immediately or writes to stdout
-const output = alert("Hello"); 
-console.log(output);
+// Side-effect immediately
+alert("Hello"); 
 ```
 
 ### Future (Target - Declarative)
 ```javascript
-// Components return a descriptor (Virtual DOM), not a side-effect
-import { Alert, render } from '@nan0web/ui-cli';
+import { render } from '@nan0web/ui-cli';
+import { Alert } from '@nan0web/ui-cli/view';
+import { Select } from '@nan0web/ui-cli/prompt';
 
-// 1. Describe the UI
-const element = Alert({ 
-    variant: 'warning', 
-    title: 'Battery Low', 
-    children: 'Please connect power source.' 
-});
+// 1. Static View (Instant)
+console.log(Alert({ title: 'Welcome', variant: 'success' }));
 
-// 2. Render it (Side-effect happens here)
-await render(element); 
+// 2. Interactive Prompt (Async)
+const choice = await render(
+    Select({ 
+        message: 'Choose mode:',
+        options: ['Dev', 'Prod']
+    })
+);
 ```
 
 ## 🛠️ Implementation Roadmap
 
-### Phase 1: Component Definition
-Refactor existing UI files (`alert.js`, `spinner.js`, `table.js`, `select.js`) to export **Component Functions**.
-These functions should return a **Component Descriptor** (Plain Object), DO NOT write to stdout directly.
+### Phase 1: Core Foundation
+- [ ] Create `src/core/Component.js`: Base factory for components (handling `toString` logic).
+- [ ] Create `src/core/render.js`: The engine that distinguishes between Static and Interactive components.
+- [ ] Define folder structure: `src/components/view/` and `src/components/prompt/`.
 
-**Structure of a Component Descriptor:**
-```javascript
-{
-  $$typeof: Symbol.for('ui.element'),
-  type: 'Alert', // or Function
-  props: {
-    variant: 'success',
-    title: 'Done',
-    ...props
-  },
-  children: []
-}
-```
+### Phase 2: View Components (Migration)
+- [ ] `Alert`: Port `ui/alert.js` to `components/view/Alert.js`.
+- [ ] `Table`: Port `ui/table.js` to `components/view/Table.js`.
+- [ ] Ensure `toString()` works for `console.log` compatibility.
 
-### Phase 2: The Renderer (`render`)
-Create a core `render` function that:
-1.  Takes a Component Descriptor.
-2.  Recursively traverses children.
-3.  Transforms the tree into an ANSI string (for static output) or starts an interactive session (for `Select`, `Input`).
-4.  Manages `stdout` writing.
+### Phase 3: Prompt Components (Migration)
+- [ ] `Select`: Port `select` logic to `components/prompt/Select.js`.
+- [ ] `Input`: Port `text` logic to `components/prompt/Input.js`.
+- [ ] `Confirm`: Port `confirm` logic.
+- [ ] Ensure `render()` correctly handles the promise/prompts loop.
 
-### Phase 3: Interactive Components
-For components like `Spinner` or `ProgressBar`:
-- They must support a `mount/unmount` lifecycle handled by the Renderer.
-- The Renderer manages the refresh loop (clearing lines, redrawing).
-
-### Phase 4: Integration
-- Update `SunCLI` to use the new `render` function.
-- The `SunCLI` loop becomes the state manager, yielding descriptors that `render` draws.
+### Phase 4: Integration & Testing
+- [ ] Update `index.js` exports.
+- [ ] Create `play/v2_demo.js` to verify the new paradigm.
+- [ ] Unit tests for `toString()` rendering and `render()` flow.
 
 ## 📝 Success Criteria (Acceptance)
-1.  **Zero Side-Effects in Components:** Calling `Alert()` never prints anything.
-2.  **Tree Composition:** Can nest components (e.g., `Box({ children: [Text(), Alert()] })`).
-3.  **Universal Protocol:** The output objects are serializable (JSON), allowing them to be sent over API to a Web Client if needed.
+1.  **Strict Separation:** Views and Prompts are physically and logically separateds.
+2.  **Stringifiable Views:** `String(Alert())` returns valid ANSI output.
+3.  **Render Engine:** `await render()` works for both types (prints Views, executes Prompts).
+4.  **No Side-Effects in Constructors:** Calling `Alert()` or `Select()` does nothing visible until used.

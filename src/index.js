@@ -54,4 +54,11 @@ export const renderers = new Map([
 	],
 ])
 
+
+/* V2 Component API */
+export { render } from './core/render.js';
+export { Alert } from './components/view/Alert.js';
+export { Select } from './components/prompt/Select.js';
+
 export default CLiInputAdapter
+
