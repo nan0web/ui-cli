@@ -113,20 +113,32 @@ export default class Form {
 			const isRequired = schema.required === true || schema.defaultValue === undefined
 			const placeholder = this.t(String(schema.placeholder || schema.defaultValue || ''))
 			const options = schema.options || []
-			const validation = schema.validate
+
+			// Support both 'validate' and 'validator' (validator takes precedence)
+			const validateFn = schema.validator || schema.validate
+			const validation = validateFn
 				? (value) => {
-					const res = schema.validate(value)
-					if (res === true) return true
-					if (typeof res === 'string') return this.t(res)
-					return `${this.t('Invalid')} ${name}`
+					try {
+						const res = validateFn(value)
+						if (res === true) return true
+						if (res === false) return `${this.t('validate.error')} ${name}`
+						if (typeof res === 'string') return this.t(res)
+						return `${this.t('validate.error')} ${name}`
+					} catch (err) {
+						return err.message || `${this.t('validate.error')} ${name}`
+					}
 				}
 				: () => true
+
 			fields.push({
 				name,
 				label: this.t(schema.help || name),
 				type: schema.type || 'text',
 				required: isRequired,
 				placeholder,
+				min: schema.min,
+				max: schema.max,
+				step: schema.step,
 				options: options.map(opt => {
 					if (typeof opt === 'string') return { label: this.t(opt), value: opt }
 					return { ...opt, label: this.t(opt.label) }
@@ -202,6 +214,27 @@ export default class Form {
 						val = selResult.value
 					}
 
+					const validRes = field.validation(val)
+					if (validRes !== true) {
+						console.error(`\n${validRes}`)
+						continue
+					}
+					this.#model[field.name] = this.convertValue(field, val)
+					idx++
+				} else if (field.type === 'number' && field.min !== undefined && field.max !== undefined && this.options.sliderFn) {
+					// Use slider for number fields with range
+					const sliderConfig = {
+						message: field.label,
+						min: field.min,
+						max: field.max,
+						step: field.step || 1,
+						initial: Number(currentValue) || field.min
+					}
+					const sliderResult = await this.options.sliderFn(sliderConfig)
+					if (sliderResult && sliderResult.cancelled) {
+						return { cancelled: true }
+					}
+					const val = sliderResult ? sliderResult.value : currentValue
 					const validRes = field.validation(val)
 					if (validRes !== true) {
 						console.error(`\n${validRes}`)

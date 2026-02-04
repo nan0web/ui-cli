@@ -12,5 +12,5 @@ import CommandMessage from './CommandMessage.js';
 import CommandParser from './CommandParser.js';
 import CommandHelp from './CommandHelp.js';
 export { CLI, CLiInputAdapter, CancelError, OutputAdapter, Command, CommandError, CommandMessage, CommandParser, CommandHelp };
-export { select, next, pause, createInput, ask, Input, text, confirm, autocomplete, table, badge, alert, toast, breadcrumbs, tabs, steps } from "./ui/index.js";
+export { select, next, pause, createInput, ask, Input, text, confirm, autocomplete, table, badge, alert, toast, breadcrumbs, tabs, steps, spinner, Spinner, progress, ProgressBar, tree, slider, toggle, mask, multiselect, datetime } from "./ui/index.js";
 export { default as Form, generateForm } from "./ui/form.js";
