@@ -1,5 +1,8 @@
 export { str2argv } from "./utils/parse.js";
 export const renderers: Map<string, (data: any) => string>;
+export { render } from "./core/render.js";
+export { Alert } from "./components/view/Alert.js";
+export { Select } from "./components/prompt/Select.js";
 export default CLiInputAdapter;
 export type CommandHelpField = import("./CommandHelp.js").CommandHelpField;
 import CLI from './CLI.js';

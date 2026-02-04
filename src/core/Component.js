@@ -27,7 +27,8 @@ export function createView(displayName, props, formatFn) {
     const toString = () => {
         try {
             return formatFn(props);
-        } catch (e) {
+        } catch (originalError) {
+            const e = /** @type {Error} */ (originalError);
             return `[${displayName} Error: ${e.message}]`;
         }
     };

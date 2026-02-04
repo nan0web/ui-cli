@@ -84,6 +84,7 @@ export default class Form {
 	 * @param {string[]} [options.stops=["quit", "cancel", "exit"]] - Stop words.
 	 * @param {(prompt: string) => Promise<Input>} [options.inputFn] - Custom input function.
 	 * @param {(config: object) => Promise<{index:number, value:any}>} [options.selectFn] - Custom select function.
+	 * @param {(config: object) => Promise<{value: number, cancelled: boolean}>} [options.sliderFn] - Custom slider function.
 	 * @param {Function} [options.t] - Optional translation function.
 	 * @throws {TypeError} If model is not an object with a constructor.
 	 */
@@ -124,7 +125,8 @@ export default class Form {
 						if (res === false) return `${this.t('validate.error')} ${name}`
 						if (typeof res === 'string') return this.t(res)
 						return `${this.t('validate.error')} ${name}`
-					} catch (err) {
+					} catch (error) {
+						const err = /** @type {Error} */ (error)
 						return err.message || `${this.t('validate.error')} ${name}`
 					}
 				}
@@ -221,7 +223,7 @@ export default class Form {
 					}
 					this.#model[field.name] = this.convertValue(field, val)
 					idx++
-				} else if (field.type === 'number' && field.min !== undefined && field.max !== undefined && this.options.sliderFn) {
+				} else if (field.type === 'number' && field.min !== undefined && field.max !== undefined && /** @type {any} */(this.options).sliderFn) {
 					// Use slider for number fields with range
 					const sliderConfig = {
 						message: field.label,
@@ -230,7 +232,7 @@ export default class Form {
 						step: field.step || 1,
 						initial: Number(currentValue) || field.min
 					}
-					const sliderResult = await this.options.sliderFn(sliderConfig)
+					const sliderResult = await /** @type {any} */(this.options).sliderFn(sliderConfig)
 					if (sliderResult && sliderResult.cancelled) {
 						return { cancelled: true }
 					}
