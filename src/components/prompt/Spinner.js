@@ -1,5 +1,5 @@
-import { createPrompt } from '../../core/Component.js';
-import { spinner as baseSpinner } from '../../ui/spinner.js';
+import { createPrompt } from '../../core/Component.js'
+import { spinner as baseSpinner } from '../../ui/spinner.js'
 
 /**
  * Spinner Component.
@@ -13,17 +13,17 @@ import { spinner as baseSpinner } from '../../ui/spinner.js';
  */
 export function Spinner(props) {
 	return createPrompt('Spinner', props, async (p) => {
-		const spin = baseSpinner(p.message);
+		const spin = baseSpinner(p.message)
 		if (p.action && p.action.then) {
 			try {
-				const res = await p.action;
-				spin.success(p.successMessage || 'Done');
-				return res;
+				const res = await p.action
+				spin.success(p.successMessage || 'Done')
+				return res
 			} catch (err) {
-				spin.error(p.errorMessage || 'Error');
-				throw err;
+				spin.error(p.errorMessage || 'Error')
+				throw err
 			}
 		}
-		return spin; // Return controller if no action (legacy behavior)
-	});
+		return spin // Return controller if no action (legacy behavior)
+	})
 }

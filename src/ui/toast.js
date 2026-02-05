@@ -14,21 +14,21 @@ import Logger from '@nan0web/log'
  * @returns {string} Styled string.
  */
 export function toast(message, variant = 'info') {
-    const icons = {
-        info: 'ℹ',
-        success: '✔',
-        warning: '⚠',
-        error: '✖'
-    }
-    const colors = {
-        info: Logger.BLUE,
-        success: Logger.GREEN,
-        warning: Logger.YELLOW,
-        error: Logger.RED
-    }
+	const icons = {
+		info: 'ℹ',
+		success: '✔',
+		warning: '⚠',
+		error: '✖',
+	}
+	const colors = {
+		info: Logger.BLUE,
+		success: Logger.GREEN,
+		warning: Logger.YELLOW,
+		error: Logger.RED,
+	}
 
-    const icon = icons[variant] || '•'
-    const color = colors[variant] || Logger.WHITE
+	const icon = icons[variant] || '•'
+	const color = colors[variant] || Logger.WHITE
 
-    return Logger.style(`${icon} ${message}`, { color })
+	return Logger.style(`${icon} ${message}`, { color })
 }

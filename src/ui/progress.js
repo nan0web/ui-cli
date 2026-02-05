@@ -48,7 +48,10 @@ export class ProgressBar {
 		const rate = this.current / elapsed
 		const remaining = rate > 0 ? (this.total - this.current) / rate : 0
 
-		const bar = '='.repeat(filledWidth) + (filledWidth < this.width ? '>' : '') + '-'.repeat(Math.max(0, emptyWidth - 1))
+		const bar =
+			'='.repeat(filledWidth) +
+			(filledWidth < this.width ? '>' : '') +
+			'-'.repeat(Math.max(0, emptyWidth - 1))
 
 		const timeStr = `[${this.formatTime(elapsed)} < ${this.formatTime(remaining)}]`
 

@@ -250,7 +250,7 @@ describe('CommandParser', () => {
 				port: 8888,
 				public: './public',
 				yes: false,
-			},
+			}
 		)
 	})
 
@@ -268,7 +268,7 @@ describe('CommandParser', () => {
 				port: 8888,
 				public: './public',
 				yes: false,
-			},
+			}
 		)
 	})
 })

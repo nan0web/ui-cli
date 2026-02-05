@@ -120,7 +120,7 @@ describe('CLiInputAdapter', () => {
 		// output[0] = "Name: invalid" (echo from requestInput)
 		// output[1] = warn "\nIncorrect"
 		// output[2] = "Name: valid" (echo from requestInput)
-		const warns = adapter.console.output().filter(o => o[0] === 'warn')
+		const warns = adapter.console.output().filter((o) => o[0] === 'warn')
 		assert.equal(warns[0][1], '\nIncorrect')
 	})
 

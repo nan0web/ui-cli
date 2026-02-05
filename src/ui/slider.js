@@ -101,33 +101,43 @@ export async function slider(config) {
 
 		if (isTest) {
 			// In tests, fallback to a simple text-based number input to avoid complex TTY interactions
-			const res = await prompts({
-				type: 'text',
-				name: 'value',
-				message: t(message),
-				initial: String(initial ?? min),
-				validate: v => {
-					const n = Number(v)
-					return (!isNaN(n) && n >= min && n <= max) || `Enter number ${min}-${max}`
+			const res = await prompts(
+				{
+					type: 'text',
+					name: 'value',
+					message: t(message),
+					initial: String(initial ?? min),
+					validate: (v) => {
+						const n = Number(v)
+						return (!isNaN(n) && n >= min && n <= max) || `Enter number ${min}-${max}`
+					},
+				},
+				{
+					onCancel: () => {
+						throw new CancelError()
+					},
 				}
-			}, {
-				onCancel: () => { throw new CancelError() }
-			})
+			)
 			return { value: Number(res.value), cancelled: res.value === undefined }
 		}
 
 		// For interactive TTY, use the built-in number prompt (works reliably)
-		const res = await prompts({
-			type: 'number',
-			name: 'value',
-			message: t(message),
-			initial: initial ?? min,
-			min,
-			max,
-			increment: step
-		}, {
-			onCancel: () => { throw new CancelError() }
-		})
+		const res = await prompts(
+			{
+				type: 'number',
+				name: 'value',
+				message: t(message),
+				initial: initial ?? min,
+				min,
+				max,
+				increment: step,
+			},
+			{
+				onCancel: () => {
+					throw new CancelError()
+				},
+			}
+		)
 		if (res.value === undefined) {
 			return { value: initial ?? min, cancelled: true }
 		}
@@ -135,7 +145,8 @@ export async function slider(config) {
 		return { value: res.value, cancelled: false }
 	} catch (err) {
 		const error = /** @type {any} */ (err)
-		if (error instanceof CancelError || error.message === 'canceled') { // prompts throws 'canceled' sometimes
+		if (error instanceof CancelError || error.message === 'canceled') {
+			// prompts throws 'canceled' sometimes
 			throw new CancelError()
 		}
 		throw error

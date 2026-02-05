@@ -41,20 +41,20 @@ export function generateForm(BodyClass, options = {}) {
 				placeholder: translate(schema.placeholder || schema.defaultValue || ''),
 				options: schema.options
 					? schema.options.map((opt) =>
-						typeof opt === 'string'
-							? opt
-							: opt.label
-								? { label: opt.label, value: opt.value }
-								: opt,
-					)
+							typeof opt === 'string'
+								? opt
+								: opt.label
+									? { label: opt.label, value: opt.value }
+									: opt
+						)
 					: [],
 				validation: schema.validate
 					? (value) => {
-						const res = schema.validate(value)
-						return res === true ? true : typeof res === 'string' ? res : `Invalid ${name}`
-					}
+							const res = schema.validate(value)
+							return res === true ? true : typeof res === 'string' ? res : `Invalid ${name}`
+						}
 					: () => true,
-			}),
+			})
 		)
 	}
 
@@ -120,17 +120,17 @@ export default class Form {
 			const validateFn = schema.validator || schema.validate
 			const validation = validateFn
 				? (value) => {
-					try {
-						const res = validateFn(value)
-						if (res === true) return true
-						if (res === false) return `${this.t('validate.error')} ${name}`
-						if (typeof res === 'string') return this.t(res)
-						return `${this.t('validate.error')} ${name}`
-					} catch (error) {
-						const err = /** @type {Error} */ (error)
-						return err.message || `${this.t('validate.error')} ${name}`
+						try {
+							const res = validateFn(value)
+							if (res === true) return true
+							if (res === false) return `${this.t('validate.error')} ${name}`
+							if (typeof res === 'string') return this.t(res)
+							return `${this.t('validate.error')} ${name}`
+						} catch (error) {
+							const err = /** @type {Error} */ (error)
+							return err.message || `${this.t('validate.error')} ${name}`
+						}
 					}
-				}
 				: () => true
 
 			fields.push({
@@ -142,7 +142,7 @@ export default class Form {
 				min: schema.min,
 				max: schema.max,
 				step: schema.step,
-				options: options.map(opt => {
+				options: options.map((opt) => {
 					if (typeof opt === 'string') return { label: this.t(opt), value: opt }
 					return { ...opt, label: this.t(opt.label) }
 				}),
@@ -167,8 +167,6 @@ export default class Form {
 		const model = new BodyClass(initialModel)
 		return new Form(model, options)
 	}
-
-
 
 	get fields() {
 		return this.#fields
@@ -205,7 +203,9 @@ export default class Form {
 						message: field.label,
 						prompt: `${this.t('Select')}: `,
 						options: field.options,
-						console: (/** @type {any} */(this.options)).console || { info: (msg) => process.stdout.write(msg + '\n') },
+						console: /** @type {any} */ (this.options).console || {
+							info: (msg) => process.stdout.write(msg + '\n'),
+						},
 						ask: this.handler,
 					}
 					let val
@@ -224,16 +224,21 @@ export default class Form {
 					}
 					this.#model[field.name] = this.convertValue(field, val)
 					idx++
-				} else if (field.type === 'number' && field.min !== undefined && field.max !== undefined && /** @type {any} */(this.options).sliderFn) {
+				} else if (
+					field.type === 'number' &&
+					field.min !== undefined &&
+					field.max !== undefined &&
+					/** @type {any} */ (this.options).sliderFn
+				) {
 					// Use slider for number fields with range
 					const sliderConfig = {
 						message: field.label,
 						min: field.min,
 						max: field.max,
 						step: field.step || 1,
-						initial: Number(currentValue) || field.min
+						initial: Number(currentValue) || field.min,
 					}
-					const sliderResult = await /** @type {any} */(this.options).sliderFn(sliderConfig)
+					const sliderResult = await /** @type {any} */ (this.options).sliderFn(sliderConfig)
 					if (sliderResult && sliderResult.cancelled) {
 						return { cancelled: true }
 					}
@@ -245,13 +250,13 @@ export default class Form {
 					}
 					this.#model[field.name] = this.convertValue(field, val)
 					idx++
-				} else if (field.type === 'toggle' && /** @type {any} */(this.options).toggleFn) {
+				} else if (field.type === 'toggle' && /** @type {any} */ (this.options).toggleFn) {
 					// Use toggle for boolean fields
 					const toggleConfig = {
 						message: field.label,
-						initial: currentValue === 'true' || currentValue === true
+						initial: currentValue === 'true' || currentValue === true,
 					}
-					const toggleResult = await /** @type {any} */(this.options).toggleFn(toggleConfig)
+					const toggleResult = await /** @type {any} */ (this.options).toggleFn(toggleConfig)
 					if (toggleResult && toggleResult.cancelled) {
 						return { cancelled: true }
 					}

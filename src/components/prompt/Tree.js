@@ -1,5 +1,5 @@
-import { createPrompt } from '../../core/Component.js';
-import { tree } from '../../ui/tree.js';
+import { createPrompt } from '../../core/Component.js'
+import { tree } from '../../ui/tree.js'
 
 export function Tree(props) {
 	return createPrompt('Tree', props, async (p) => {
@@ -11,7 +11,7 @@ export function Tree(props) {
 			limit: p.limit,
 			initialExpanded: p.expanded,
 			multiselect: p.multiselect,
-			t: p.t
-		});
-	});
+			t: p.t,
+		})
+	})
 }

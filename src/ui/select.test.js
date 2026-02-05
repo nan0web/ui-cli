@@ -5,12 +5,10 @@ import { CancelError } from '@nan0web/ui/core'
 import prompts from 'prompts'
 
 describe('Select utility', () => {
-
 	it('throws on empty options', async () => {
-		await assert.rejects(
-			() => select({ title: 'Test', prompt: 'Choose:', options: [] }),
-			{ message: 'Options array is required and must not be empty' },
-		)
+		await assert.rejects(() => select({ title: 'Test', prompt: 'Choose:', options: [] }), {
+			message: 'Options array is required and must not be empty',
+		})
 	})
 
 	it('handles Map options', async () => {
@@ -34,7 +32,7 @@ describe('Select utility', () => {
 		const result = await select({
 			title: 'Lang',
 			prompt: 'Choose:',
-			options: ['en', 'uk']
+			options: ['en', 'uk'],
 		})
 		assert.equal(result.value, 'uk')
 		assert.equal(result.index, 1)

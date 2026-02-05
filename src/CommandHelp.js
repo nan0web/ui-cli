@@ -76,7 +76,7 @@ export default class CommandHelp {
 		lines.push(
 			[`${this.Logger.style(name, { color: this.Logger.MAGENTA })}`, help]
 				.filter(Boolean)
-				.join(' • '),
+				.join(' • ')
 		)
 		lines.push('')
 	}

@@ -79,7 +79,7 @@ export default class CommandParser {
 			const subName = remaining[0]
 			// @ts-ignore
 			const SubClass = currentMessage.constructor.Children.find(
-				(cls) => cls.name.toLowerCase() === subName.toLowerCase(),
+				(cls) => cls.name.toLowerCase() === subName.toLowerCase()
 			)
 			if (!SubClass) break
 
@@ -95,7 +95,7 @@ export default class CommandParser {
 			const parsedBody = this.#parseLeafBody(
 				remaining,
 				// @ts-ignore – `Body` may be undefined on some classes
-				currentMessage.constructor.Body,
+				currentMessage.constructor.Body
 			)
 			currentMessage.body = { ...currentMessage.body, ...parsedBody }
 		}

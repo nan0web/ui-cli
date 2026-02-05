@@ -21,37 +21,39 @@ import { CancelError } from '@nan0web/ui/core'
  * @returns {Promise<{value: Array<any>, cancelled: boolean}>}
  */
 export async function multiselect(config) {
-    const { message, options, limit = 10, initial = [], t } = config
+	const { message, options, limit = 10, initial = [], t } = config
 
-    if (!Array.isArray(options) || options.length === 0) {
-        throw new Error('Options array is required and must not be empty')
-    }
+	if (!Array.isArray(options) || options.length === 0) {
+		throw new Error('Options array is required and must not be empty')
+	}
 
-    const choices = options.map((el) => {
-        if (typeof el === 'string') {
-            return { title: el, value: el, selected: initial.includes(el) }
-        }
-        return {
-            title: el.label || el.title,
-            value: el.value,
-            selected: initial.includes(el.value)
-        }
-    })
+	const choices = options.map((el) => {
+		if (typeof el === 'string') {
+			return { title: el, value: el, selected: initial.includes(el) }
+		}
+		return {
+			title: el.label || el.title,
+			value: el.value,
+			selected: initial.includes(el.value),
+		}
+	})
 
-    const response = await prompts({
-        type: 'multiselect',
-        name: 'value',
-        message,
-        choices,
-        limit,
-        instructions: config.instructions !== undefined ? config.instructions : false,
-        hint: config.hint || (t ? t('hint.multiselect') : undefined)
-    }, {
-        onCancel: () => {
-            throw new CancelError()
-        }
-    })
+	const response = await prompts(
+		{
+			type: 'multiselect',
+			name: 'value',
+			message,
+			choices,
+			limit,
+			instructions: config.instructions !== undefined ? config.instructions : false,
+			hint: config.hint || (t ? t('hint.multiselect') : undefined),
+		},
+		{
+			onCancel: () => {
+				throw new CancelError()
+			},
+		}
+	)
 
-    return { value: response.value || [], cancelled: false }
+	return { value: response.value || [], cancelled: false }
 }
-

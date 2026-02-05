@@ -1,5 +1,5 @@
-import { createPrompt } from '../../core/Component.js';
-import { progress as baseProgress } from '../../ui/progress.js';
+import { createPrompt } from '../../core/Component.js'
+import { progress as baseProgress } from '../../ui/progress.js'
 
 /**
  * ProgressBar Component.
@@ -9,8 +9,8 @@ import { progress as baseProgress } from '../../ui/progress.js';
  */
 export function ProgressBar(props) {
 	return createPrompt('ProgressBar', props, async (p) => {
-		const bar = baseProgress(p);
+		const bar = baseProgress(p)
 		// If action is provided, we could auto-run it, but progress bars usually strictly driven
-		return bar;
-	});
+		return bar
+	})
 }

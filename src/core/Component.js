@@ -4,8 +4,8 @@
  * Defines the contract for View (static) and Prompt (interactive) components.
  */
 
-export const ComponentSymbol = Symbol.for('ui.component');
-export const PromptSymbol = Symbol.for('ui.prompt');
+export const ComponentSymbol = Symbol.for('ui.component')
+export const PromptSymbol = Symbol.for('ui.prompt')
 
 /**
  * Creates a Static View Component.
@@ -20,30 +20,30 @@ export function createView(displayName, props, formatFn) {
 		$$typeof: ComponentSymbol,
 		type: displayName,
 		props,
-	};
+	}
 
 	// Magic: toString calls the formatter
 	// We also implement nodejs.util.inspect.custom so console.log works directly
 	const toString = () => {
 		try {
-			return formatFn(props);
+			return formatFn(props)
 		} catch (originalError) {
-			const e = /** @type {Error} */ (originalError);
-			return `[${displayName} Error: ${e.message}]`;
+			const e = /** @type {Error} */ (originalError)
+			return `[${displayName} Error: ${e.message}]`
 		}
-	};
+	}
 
 	Object.defineProperty(component, 'toString', {
 		value: toString,
-		enumerable: false
-	});
+		enumerable: false,
+	})
 
 	Object.defineProperty(component, Symbol.for('nodejs.util.inspect.custom'), {
 		value: () => toString(),
-		enumerable: false
-	});
+		enumerable: false,
+	})
 
-	return component;
+	return component
 }
 
 /**
@@ -59,21 +59,21 @@ export function createPrompt(displayName, props, executorFn) {
 		$$typeof: PromptSymbol,
 		type: displayName,
 		props,
-		execute: () => executorFn(props)
-	};
+		execute: () => executorFn(props),
+	}
 
 	// Prompts cannot be stringified meaningfully
-	const toString = () => `[Prompt: ${displayName}]`;
+	const toString = () => `[Prompt: ${displayName}]`
 
 	Object.defineProperty(component, 'toString', {
 		value: toString,
-		enumerable: false
-	});
+		enumerable: false,
+	})
 
 	Object.defineProperty(component, Symbol.for('nodejs.util.inspect.custom'), {
 		value: toString,
-		enumerable: false
-	});
+		enumerable: false,
+	})
 
-	return component;
+	return component
 }

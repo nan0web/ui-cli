@@ -65,22 +65,24 @@ export async function text(config) {
 	validateFunction(config.format, 'format', 'Input.text')
 
 	const { message, initial, validate, type = 'text', format } = config
-	const response = await prompts({
-		type: type,
-		name: 'value',
-		message,
-		initial,
-		validate,
-		format
-	}, {
-		onCancel: () => {
-			throw new CancelError()
+	const response = await prompts(
+		{
+			type: type,
+			name: 'value',
+			message,
+			initial,
+			validate,
+			format,
+		},
+		{
+			onCancel: () => {
+				throw new CancelError()
+			},
 		}
-	})
+	)
 
 	return { value: response.value, cancelled: response.value === undefined }
 }
-
 
 /**
  * Factory that creates a reusable async input handler.
@@ -117,7 +119,7 @@ export function createInput(stops = [], predef = undefined, console = undefined,
 
 		const result = await text({
 			message: question,
-			validate: validationFn
+			validate: validationFn,
 		})
 
 		return new Input({ value: result.value, stops })
@@ -145,4 +147,3 @@ export function createPredefinedInput(predefined, console, stops = []) {
 		return new Input({ value: val, stops })
 	}
 }
-

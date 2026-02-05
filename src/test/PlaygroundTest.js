@@ -90,9 +90,7 @@ export default class PlaygroundTest {
 		const raw = this.env.PLAY_DEMO_SEQUENCE
 		if (!raw) return
 
-		const sequence = raw
-			.split(',')
-			.map((s) => s.trim())
+		const sequence = raw.split(',').map((s) => s.trim())
 		// Allow empty strings to signify "Enter" (default)
 		if (sequence.length === 0) return
 
@@ -102,7 +100,7 @@ export default class PlaygroundTest {
 			if (idx >= sequence.length) {
 				try {
 					child.stdin?.end()
-				} catch (_) { }
+				} catch (_) {}
 				return
 			}
 			// Use 200ms delay for rock-solid stability across all platforms.
@@ -157,9 +155,9 @@ export default class PlaygroundTest {
 			this.incldeEmptyLines
 				? txt
 				: txt
-					.split('\n')
-					.filter((row) => row.trim() !== '')
-					.join('\n')
+						.split('\n')
+						.filter((row) => row.trim() !== '')
+						.join('\n')
 
 		this.recentResult = {
 			stdout: normalize(stdout),

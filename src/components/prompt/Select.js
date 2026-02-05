@@ -1,5 +1,5 @@
-import { createPrompt } from '../../core/Component.js';
-import { select } from '../../ui/select.js';
+import { createPrompt } from '../../core/Component.js'
+import { select } from '../../ui/select.js'
 
 /**
  * Select Prompt Component.
@@ -21,9 +21,9 @@ export function Select(props) {
 			limit: p.limit,
 			hint: p.hint || (p.t ? p.t('hint.select') : undefined),
 			// Pass other potential legacy props
-			...p
-		};
+			...p,
+		}
 
-		return await select(config);
-	});
+		return await select(config)
+	})
 }

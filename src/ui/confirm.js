@@ -17,30 +17,33 @@ import { validateString, validateBoolean, validateFunction } from '../core/PropV
  * @returns {Promise<{value:boolean, cancelled:boolean}>}
  */
 export async function confirm(config) {
-    // Validation
-    validateString(config.message, 'message', 'Confirm', true)
-    validateBoolean(config.initial, 'initial', 'Confirm')
-    validateFunction(config.format, 'format', 'Confirm')
-    validateString(config.active, 'active', 'Confirm')
-    validateString(config.inactive, 'inactive', 'Confirm')
-    validateFunction(config.t, 't', 'Confirm')
+	// Validation
+	validateString(config.message, 'message', 'Confirm', true)
+	validateBoolean(config.initial, 'initial', 'Confirm')
+	validateFunction(config.format, 'format', 'Confirm')
+	validateString(config.active, 'active', 'Confirm')
+	validateString(config.inactive, 'inactive', 'Confirm')
+	validateFunction(config.t, 't', 'Confirm')
 
-    const { message, initial = true, format, t = (k) => k } = config
-    const active = config.active || t('yes')
-    const inactive = config.inactive || t('no')
+	const { message, initial = true, format, t = (k) => k } = config
+	const active = config.active || t('yes')
+	const inactive = config.inactive || t('no')
 
-    const response = await prompts({
-        type: 'toggle',
-        name: 'value',
-        message,
-        initial,
-        format,
-        active,
-        inactive
-    }, {
-        onCancel: () => {
-            throw new CancelError()
-        }
-    })
-    return { value: response.value, cancelled: false }
+	const response = await prompts(
+		{
+			type: 'toggle',
+			name: 'value',
+			message,
+			initial,
+			format,
+			active,
+			inactive,
+		},
+		{
+			onCancel: () => {
+				throw new CancelError()
+			},
+		}
+	)
+	return { value: response.value, cancelled: false }
 }

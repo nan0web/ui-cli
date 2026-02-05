@@ -1,4 +1,3 @@
-
 import { describe, it, beforeEach, afterEach, mock } from 'node:test'
 import assert from 'node:assert/strict'
 import { tree } from './tree.js'
@@ -7,130 +6,130 @@ import process from 'node:process'
 import { CancelError } from '@nan0web/ui/core'
 
 describe('Tree Component', () => {
-    let stdin
-    let stdout
-    let output = ''
+	let stdin
+	let stdout
+	let output = ''
 
-    // Store original process.stdin/stdout
-    const originalStdin = Object.getOwnPropertyDescriptor(process, 'stdin')
-    const originalStdout = Object.getOwnPropertyDescriptor(process, 'stdout')
+	// Store original process.stdin/stdout
+	const originalStdin = Object.getOwnPropertyDescriptor(process, 'stdin')
+	const originalStdout = Object.getOwnPropertyDescriptor(process, 'stdout')
 
-    beforeEach(() => {
-        // Mock Stdin
-        stdin = new EventEmitter()
-        stdin.setRawMode = mock.fn()
-        stdin.resume = mock.fn()
-        stdin.pause = mock.fn()
-        stdin.removeListener = mock.fn()
+	beforeEach(() => {
+		// Mock Stdin
+		stdin = new EventEmitter()
+		stdin.setRawMode = mock.fn()
+		stdin.resume = mock.fn()
+		stdin.pause = mock.fn()
+		stdin.removeListener = mock.fn()
 
-        Object.defineProperty(process, 'stdin', { value: stdin, configurable: true, writable: true })
+		Object.defineProperty(process, 'stdin', { value: stdin, configurable: true, writable: true })
 
-        // Mock Stdout
-        output = ''
-        stdout = {
-            write: mock.fn((str) => {
-                output += str
-                return true
-            }),
-            rows: 24,
-            columns: 80
-        }
-        Object.defineProperty(process, 'stdout', { value: stdout, configurable: true, writable: true })
-    })
+		// Mock Stdout
+		output = ''
+		stdout = {
+			write: mock.fn((str) => {
+				output += str
+				return true
+			}),
+			rows: 24,
+			columns: 80,
+		}
+		Object.defineProperty(process, 'stdout', { value: stdout, configurable: true, writable: true })
+	})
 
-    afterEach(() => {
-        // Restore
-        if (originalStdin) Object.defineProperty(process, 'stdin', originalStdin)
-        if (originalStdout) Object.defineProperty(process, 'stdout', originalStdout)
-        mock.reset()
-    })
+	afterEach(() => {
+		// Restore
+		if (originalStdin) Object.defineProperty(process, 'stdin', originalStdin)
+		if (originalStdout) Object.defineProperty(process, 'stdout', originalStdout)
+		mock.reset()
+	})
 
-    const emitKey = (name, sequence = undefined, ctrl = false) => {
-        stdin.emit('keypress', sequence || name, { name, sequence: sequence || name, ctrl })
-    }
+	const emitKey = (name, sequence = undefined, ctrl = false) => {
+		stdin.emit('keypress', sequence || name, { name, sequence: sequence || name, ctrl })
+	}
 
-    const wait = (ms = 10) => new Promise(r => setTimeout(r, ms))
+	const wait = (ms = 10) => new Promise((r) => setTimeout(r, ms))
 
-    it('renders basic tree and returns selection', async () => {
-        const root = { name: 'root', type: 'dir', children: [{ name: 'child', type: 'file' }] }
+	it('renders basic tree and returns selection', async () => {
+		const root = { name: 'root', type: 'dir', children: [{ name: 'child', type: 'file' }] }
 
-        const promise = tree({ tree: root, message: 'Test Tree' })
-        await wait()
+		const promise = tree({ tree: root, message: 'Test Tree' })
+		await wait()
 
-        assert.match(output, /Test Tree/)
-        assert.match(output, /root/)
-        assert.match(output, /▶/) // Collapsed by default
+		assert.match(output, /Test Tree/)
+		assert.match(output, /root/)
+		assert.match(output, /▶/) // Collapsed by default
 
-        // Expand root
-        emitKey('right')
-        await wait()
-        assert.match(output, /▼/) // Expanded
-        assert.match(output, /child/) // Should verify 'child' is visible
+		// Expand root
+		emitKey('right')
+		await wait()
+		assert.match(output, /▼/) // Expanded
+		assert.match(output, /child/) // Should verify 'child' is visible
 
-        // Move down to child
-        emitKey('down')
-        await wait()
+		// Move down to child
+		emitKey('down')
+		await wait()
 
-        // Select child
-        emitKey('enter')
-        const result = await promise
+		// Select child
+		emitKey('enter')
+		const result = await promise
 
-        assert.equal(result.node.name, 'child')
-        assert.equal(result.value, 'child')
-    })
+		assert.equal(result.node.name, 'child')
+		assert.equal(result.value, 'child')
+	})
 
-    it('supports localization via t function', async () => {
-        const t = mock.fn((k) => {
-            if (k === 'tree.empty') return 'ПУСТО'
-            if (k === 'Select:') return 'Оберіть:'
-            if (k === 'tree.help.single') return 'Інструкція'
-            return k
-        })
+	it('supports localization via t function', async () => {
+		const t = mock.fn((k) => {
+			if (k === 'tree.empty') return 'ПУСТО'
+			if (k === 'Select:') return 'Оберіть:'
+			if (k === 'tree.help.single') return 'Інструкція'
+			return k
+		})
 
-        const promise = tree({
-            tree: [], // Empty tree
-            message: 'Select:',
-            t
-        })
-        await wait()
+		const promise = tree({
+			tree: [], // Empty tree
+			message: 'Select:',
+			t,
+		})
+		await wait()
 
-        assert.match(output, /ПУСТО/)
-        assert.match(output, /Оберіть:/)
+		assert.match(output, /ПУСТО/)
+		assert.match(output, /Оберіть:/)
 
-        emitKey('c', 'c', true) // Ctrl+C to exit
-        await assert.rejects(promise, CancelError)
+		emitKey('c', 'c', true) // Ctrl+C to exit
+		await assert.rejects(promise, CancelError)
 
-        // assert.equal(t.mock.callCount(), 3) // At least called
-    })
+		// assert.equal(t.mock.callCount(), 3) // At least called
+	})
 
-    it('handles multi-select', async () => {
-        const nodes = [
-            { name: '1', type: 'file' },
-            { name: '2', type: 'file' }
-        ]
+	it('handles multi-select', async () => {
+		const nodes = [
+			{ name: '1', type: 'file' },
+			{ name: '2', type: 'file' },
+		]
 
-        const promise = tree({ tree: nodes, mode: 'multi' })
-        await wait()
+		const promise = tree({ tree: nodes, mode: 'multi' })
+		await wait()
 
-        // Select first
-        emitKey('space')
-        await wait()
-        assert.match(output, /◉/) // Checked
+		// Select first
+		emitKey('space')
+		await wait()
+		assert.match(output, /◉/) // Checked
 
-        // Move down
-        emitKey('down')
-        await wait()
+		// Move down
+		emitKey('down')
+		await wait()
 
-        // Select second
-        emitKey('space')
-        await wait()
+		// Select second
+		emitKey('space')
+		await wait()
 
-        // Confirm
-        emitKey('enter')
-        const result = await promise
+		// Confirm
+		emitKey('enter')
+		const result = await promise
 
-        assert.equal(result.value.length, 2)
-        assert.equal(result.value[0], '1')
-        assert.equal(result.value[1], '2')
-    })
+		assert.equal(result.value.length, 2)
+		assert.equal(result.value[0], '1')
+		assert.equal(result.value[1], '2')
+	})
 })

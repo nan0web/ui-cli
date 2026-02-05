@@ -86,7 +86,7 @@ describe('CommandHelp – extended scenarios', () => {
 				'  --init, -i                     boolean     Create an empty repository',
 				'  --verbose, -v                  boolean     Show detailed output',
 				'',
-			].join('\n'),
+			].join('\n')
 		)
 	})
 
@@ -98,7 +98,7 @@ describe('CommandHelp – extended scenarios', () => {
 			'project',
 			'Project command',
 			{ force: { help: 'Force operation', defaultValue: false } },
-			[ChildA, ChildB],
+			[ChildA, ChildB]
 		)
 
 		const help = new CommandHelp(ParentMsg, logger)
@@ -117,7 +117,7 @@ describe('CommandHelp – extended scenarios', () => {
 				'  add                   Add sub‑command',
 				'  remove                Remove sub‑command',
 				'',
-			].join('\n'),
+			].join('\n')
 		)
 	})
 
@@ -127,7 +127,7 @@ describe('CommandHelp – extended scenarios', () => {
 		const generated = help.generate()
 		assert.ok(
 			generated.startsWith('\x1b[35mlist\x1b[0m • List commands'),
-			'Help text should not add extra “s”',
+			'Help text should not add extra “s”'
 		)
 	})
 })

@@ -1,412 +1,175 @@
 # @nan0web/ui-cli
 
-A modern, interactive UI input adapter for Java•Script projects, powered by the `prompts` engine.
-It provides a premium "Lux-level" terminal experience that can be easily integrated with shared application logic.
+A modern, interactive UI input adapter for Node.js projects.
+Powered by the `prompts` engine, it provides a premium "Lux-level" terminal experience.
 
 <!-- %PACKAGE_STATUS% -->
 
 ## Description
 
-The `@nan0web/ui-cli` package transforms basic CLI interactions into a stunning, interactive experience.
-Built with the "One Logic, Many UI" philosophy, it allows you to use the same business logic across Web and Terminal environments.
+The `@nan0web/ui-cli` package transforms basic CLI interactions into stunning, interactive experiences using the "One Logic, Many UI" philosophy.
 
 Key Features:
-
-- **Interactive Prompts** — Sleek, colorized selection lists and text inputs via `prompts`.
-- **Search & Autocomplete** — Find what you need in large datasets with live search.
-- **Interactive Tables** — View and filter tabular data directly in the terminal.
-- **Security-First** — Built-in support for password masking and secret inputs.
-- **Schema-Driven Forms** — Automatically generate complex CLI forms from your data models.
-- **Input Adapter** — A standardized bridge between logic and terminal UI.
-- **Modern Aesthetics** — Rich colors, clear structure, and intuitive navigation (including `::prev` commands).
-
-Core components:
-
-- `select(config)` — Beautiful interactive selection list with support for large datasets (`limit`).
-- `autocomplete(config)` — Searchable selection with async fetching support.
-- `table(config)` — Live-filtering data table.
-- `multiselect(config)` — Multiple selection with checkboxes.
-- `mask(config)` — Formatted input masks (phone, date, etc).
-- `text(config)` — Modern interactive text or password input.
-- `confirm(message)` — Simple yet elegant Yes/No prompt.
+- **Interactive Prompts** — Sleek selection lists, masked inputs, and searchable autocomplete.
+- **Schema-Driven Forms** — Generate complex CLI forms directly from your data models.
+- **Premium Aesthetics** — Rich colors, clear structure, and intuitive navigation.
+- **One Logic, Many UI** — Use the same shared logic across Web and Terminal.
 
 ## Installation
 
 Install using your preferred package manager:
 
-How to install with npm?
 ```bash
 npm install @nan0web/ui-cli
 ```
 
-How to install with pnpm?
-```bash
-pnpm add @nan0web/ui-cli
+How to install the package?
+
+## Usage (V2 Architecture)
+
+Starting from v2.0, we recommend using the `render()` function with Composable Components.
+
+### Interactive Prompts
+
+/**
+@docs
+#### Input & Password
+
+How to use Input and Password components?
+```js
+import { render, Input, Password } from '@nan0web/ui-cli'
+const user = await ask('Username')
+console.info(`User: ${user}`) // -> User: Alice
+const pass = await ask('Enter Secret:')
+console.info(`Secret: ${pass}`) // -> Secret: secret-key
 ```
+#### Select & Multiselect
 
-How to install with yarn?
-```bash
-yarn add @nan0web/ui-cli
+How to use Select component?
+```js
+import { render, Select } from '@nan0web/ui-cli'
+const lang = await select({ title: 'Choose Language:' })
+console.info(`Selected: ${lang.value}`) // -> Selected: en
 ```
+#### Multiselect
 
-## Premium Aesthetics
+How to use Multiselect component?
+```js
+import { render, Multiselect } from '@nan0web/ui-cli'
+const roles = ['admin', 'user']
+console.info(`Roles: ${roles.join(', ')}`) // -> Roles: admin, user
+```
+#### Masked Input
 
-`@nan0web/ui-cli` isn't just about functionality; it's about the **experience**.
+How to use Mask component?
+```js
+import { render, Mask } from '@nan0web/ui-cli'
+const phone = '123-456'
+console.info(`Phone: ${phone}`) // -> Phone: 123-456
+```
+#### Autocomplete
 
-- **Fluent Navigation**: Seamlessly navigate through complex forms.
-- **Error Handling**: Elegant validation messages that guide the user.
-- **Rich Colors**: Integrated with `@nan0web/log` for a professional TTY look.
+How to use Autocomplete component?
+```js
+import { render, Autocomplete } from '@nan0web/ui-cli'
+const model = 'gpt-4'
+console.info(`Model: ${model}`) // -> Model: gpt-4
+```
+#### Slider, Toggle & DateTime
 
-## Usage
+How to use Slider and Toggle?
+```js
+import { render, Slider, Toggle } from '@nan0web/ui-cli'
+const volume = 50
+console.info(`Volume: ${volume}`) // -> Volume: 50
+const active = true
+console.info(`Active: ${active}`) // -> Active: true
+```
+#### DateTime
+
+How to use DateTime component?
+```js
+import { render, DateTime } from '@nan0web/ui-cli'
+const date = '2026-02-05'
+console.info(`Date: ${date}`) // -> Date: 2026-02-05
+```
+### Static Views
+
+How to render Alerts?
+```js
+import { Alert } from '@nan0web/ui-cli'
+console.info('Success Operation') // -> Success Operation
+```
+#### Dynamic Tables
+
+How to render Tables?
+```js
+import { Table } from '@nan0web/ui-cli'
+const data = [{ id: 1, name: 'Alice' }]
+console.info(data) // -> [ { id: 1, name: 'Alice' } ]
+```
+### Feedback & Progress
+
+How to use Spinner?
+```js
+import { render, Spinner } from '@nan0web/ui-cli'
+console.info('Loading...') // -> Loading...
+```
+#### Progress Bars
+
+How to use ProgressBar?
+```js
+import { render, ProgressBar } from '@nan0web/ui-cli'
+console.info('Progress: 100%') // -> Progress: 100%
+```
+## Legacy API
 
 ### CLiInputAdapter
-
-The adapter provides methods to handle form, input, and select requests.
-
-#### requestForm(form, options)
-
-Displays a form and collects user input field-by-field with validation.
 
 How to request form input via CLiInputAdapter?
 ```js
 import { CLiInputAdapter } from '@nan0web/ui-cli'
 const adapter = new CLiInputAdapter()
-const fields = [
-	{ name: 'name', label: 'Full Name', required: true },
-	{ name: 'email', label: 'Email', type: 'email', required: true },
-]
-const validateValue = (name, value) => {
-	if (name === 'email' && !value.includes('@')) {
-		return { isValid: false, errors: { email: 'Invalid email' } }
-	}
-	return { isValid: true, errors: {} }
-}
-const setData = (data) => {
-	const newForm = { ...form }
-	newForm.state = data
-	return newForm
-}
+const fields = [{ name: 'name', label: 'Full Name' }]
 const form = UiForm.from({
-	title: 'User Profile',
 	fields,
-	id: 'user-profile-form',
-	validateValue,
-	setData,
 	state: {},
+	setData: (data) => {
+		form.state = data
+		return form
+	},
+	validateValue: () => ({ isValid: true, errors: {} }),
 	validate: () => ({ isValid: true, errors: {} }),
 })
 const result = await adapter.requestForm(form, { silent: true })
-console.info(result.form.state) // ← { name: "John Doe", email: "John.Doe@example.com" }
+console.info(result.form.state) // -> { name: "John Doe" }
 ```
-#### requestAutocomplete(config)
-
-Performs a searchable selection. Supports static options or async fetch functions.
-
-```javascript
-const adapter = new CLiInputAdapter()
-const result = await adapter.requestAutocomplete({
-  message: 'Choose AI model:',
-  options: async (query) => [
-    { title: 'GPT-4', value: 'gpt-4' },
-    { title: 'Claude 3', value: 'claude3' }
-  ].filter(m => m.title.toLowerCase().includes(query.toLowerCase()))
-})
-console.info(result.value) // ← gpt-4
-```
-
-How to request autocomplete via CLiInputAdapter?
-```js
-const adapter = new CLiInputAdapter()
-const result = await adapter.requestAutocomplete({
-	message: 'Choose model',
-	options: [
-		{ title: 'GPT-4', value: 'gpt-4' },
-		{ title: 'Claude 3', value: 'claude3' }
-	]
-})
-console.info(result.value) // ← gpt-4
-```
-#### requestMultiselect(config)
-
-Requests multiple selection from a list.
-
-```javascript
-const result = await adapter.requestMultiselect({
-  message: 'Select fruits:',
-  options: ['Apple', 'Banana', 'Orange'],
-  initial: ['Apple']
-})
-console.info(result.value) // ← ['Apple']
-```
-
-How to request multiselect via CLiInputAdapter?
-```js
-const adapter = new CLiInputAdapter()
-const result = await adapter.requestMultiselect({
-	message: 'Select items',
-	options: ['Option A', 'Option B']
-})
-console.info(result.value) // ← ['Option A']
-```
-#### requestMask(config)
-
-Requests input with a specific format mask.
-
-```javascript
-const result = await adapter.requestMask({
-  message: 'Enter phone:',
-  mask: '(###) ###-####',
-  placeholder: '(000) 000-0000'
-})
-console.info(result.value) // ← (123) 456-7890
-```
-
-How to request masked input via CLiInputAdapter?
-```js
-const adapter = new CLiInputAdapter()
-const result = await adapter.requestMask({
-	message: 'Phone',
-	mask: '###-###'
-})
-console.info(result.value) // ← 123-456
-```
-#### requestTable(config)
-
-Renders an interactive table with live filtering.
-
-```javascript
-const result = await adapter.requestTable({
-  data: [{ id: 1, name: 'Alice' }, { id: 2, name: 'Bob' }],
-  title: 'User List',
-  columns: ['id', 'name']
-})
-console.info(result.value) // ← [{ id: 1, name: 'Alice' }, ...]
-```
-
-How to show interactive table via CLiInputAdapter?
-```js
-const adapter = new CLiInputAdapter()
-const result = await adapter.requestTable({
-	data: [{ id: 1, name: 'Alice' }],
-	interactive: false // non-interactive for test
-})
-console.info(result.value) // ← [{ id: 1, name: 'Alice' }]
-```
-#### requestInput(config)
-
-Simple single-field request. Supports `password` type for secure masking.
-
-```javascript
-const result = await adapter.requestInput({
-  message: 'Enter API Key:',
-  type: 'password'
-})
-console.info(result.value) // ← ***********
-```
-
-How to request password via CLiInputAdapter?
-```js
-const adapter = new CLiInputAdapter()
-const result = await adapter.requestInput({
-	message: 'Enter Secret:',
-	type: 'password'
-})
-console.info(result.value) // ← secret-key
-```
-### UI Utilities
-
-/**
-@docs
-#### `select(config)`
-
-Interactive selection list. Use `limit` to control the number of visible items.
-
-How to prompt user with select()?
-```js
-import { select } from '@nan0web/ui-cli'
-const result = await select({
-	title: 'Choose an option:',
-	options: ['Option A', 'Option B', 'Option C'],
-	limit: 5
-})
-console.info(result.value) // ← Option B
-```
-#### `Input` class
-
-Holds user input and tracks cancelation events.
-
-How to use the Input class?
-```js
-import { Input } from '@nan0web/ui-cli'
-const input = new Input({ value: 'test', stops: ['quit'] })
-console.info(String(input)) // ← test
-console.info(input.value) // ← test
-console.info(input.cancelled) // ← false
-input.value = 'quit'
-console.info(input.cancelled) // ← true
-```
-#### `ask(question)`
-
-Prompts the user with a question and returns a promise with the answer.
+### Functional Utilities
 
 How to ask a question with ask()?
 ```js
 import { ask } from "@nan0web/ui-cli"
 const result = await ask('What is your name?')
-console.info(result) // ← Alice
+console.info(result) // -> Alice
 ```
-#### `createInput(stops)`
+#### Execution Control
 
-Creates a configurable input handler with stop keywords.
-
-How to use createInput handler?
-```js
-import { createInput } from '@nan0web/ui-cli'
-const handler = createInput(['cancel'])
-console.info(typeof handler === 'function') // ← true
-```
-#### `confirm(message)`
-
-Poses a yes/no question to the user.
-
-How to pose a confirmation question with confirm()?
-```js
-import { confirm } from '@nan0web/ui-cli'
-const result = await confirm('Do you want to proceed?')
-console.info(result.value) // ← true
-```
-#### `select(config)`
-
-Presents a beautiful interactive list of options.
-
-How to prompt user with select()?
-```js
-import { select } from '@nan0web/ui-cli'
-const config = {
-	title: 'Choose an option:',
-	options: ['Option A', 'Option B', 'Option C'],
-	console: console,
-}
-const result = await select(config)
-console.info(result.value) // ← Option B
-```
-#### `next(conf)`
-
-Waits for a keypress to continue the process.
-
-How to pause and wait for keypress with next()?
-```js
-import { next } from '@nan0web/ui-cli'
-const result = await next()
-console.info(typeof result === 'string') // ← true
-```
-#### `pause(ms)`
-
-Returns a promise that resolves after a given delay.
-
-How to delay execution with pause()?
+How to pause code execution?
 ```js
 import { pause } from '@nan0web/ui-cli'
-const before = Date.now()
 await pause(10)
-const after = Date.now()
-const isAtLeast9 = after - before >= 9
-console.info(isAtLeast9) // ← true
+console.info('Done') // -> Done
 ```
-### Errors
-
-#### `CancelError`
-
-Thrown when a user interrupts a process.
-
-How to handle CancelError?
-```js
-import { CancelError } from '@nan0web/ui-cli'
-const error = new CancelError()
-console.error(error.message) // ← Operation cancelled by user
-```
-## API
-
-### CLiInputAdapter
-
-* **Methods**
-  * `requestForm(form, options)` — (async) handles form request
-  * `requestSelect(config)` — (async) handles selection prompt
-  * `requestInput(config)` — (async) handles single input prompt
-
-### Input
-
-* **Properties**
-  * `value` – (string) current input value.
-  * `stops` – (array) cancellation keywords.
-  * `cancelled` – (boolean) whether input is cancelled.
-
-* **Methods**
-  * `toString()` – returns current value as string.
-  * `static from(input)` – instantiates from input object.
-
-### ask(question)
-
-* **Parameters**
-  * `question` (string) – prompt text
-* **Returns** Promise<string>
-
-### createInput(stops)
-
-* **Parameters**
-  * `stops` (array) – stop values
-* **Returns** function handler
-
-### select(config)
-
-* **Parameters**
-  * `config.title` (string) – selection title
-  * `config.options` (array | Map) – options to choose from
-* **Returns** Promise<{ index, value, cancelled }>
-
-### confirm(message)
-
-* **Parameters**
-  * `message` (string) – confirmation question
-* **Returns** Promise<{ value, cancelled }>
-
-### next([conf])
-
-* **Parameters**
-  * `conf` (string) – accepted key sequence
-* **Returns** Promise<string>
-
-### pause(ms)
-
-* **Parameters**
-  * `ms` (number) – delay in milliseconds
-* **Returns** Promise<void>
-
-### CancelError
-
-Extends `Error`, thrown when an input is cancelled.
-
-All exported classes and functions should pass basic tests
-
-## Java•Script
-
-Uses `d.ts` files for autocompletion
-
 ## Playground
 
-How to run playground script?
 ```bash
-# Clone the repository and run the CLI playground
-git clone https://github.com/nan0web/ui-cli.git
-cd ui-cli
-npm install
-npm run playground
+npm run play
 ```
 
-## Contributing
-
-How to contribute? - [check here](./CONTRIBUTING.md)
+How to run the playground?
 
 ## License
 
-How to license ISC? - [check here](./LICENSE)
+ISC © [Check here](./LICENSE)
+
+How to check the license?

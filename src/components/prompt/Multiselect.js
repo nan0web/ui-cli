@@ -1,13 +1,15 @@
-import { createPrompt } from '../../core/Component.js';
-import { multiselect as baseMultiselect } from '../../ui/multiselect.js';
+import { createPrompt } from '../../core/Component.js'
+import { multiselect as baseMultiselect } from '../../ui/multiselect.js'
 
 function getMultiselectInstructions(t) {
-	if (!t) return undefined;
-	return `\n${t('Instructions')}:\n` +
+	if (!t) return undefined
+	return (
+		`\n${t('Instructions')}:\n` +
 		`    ↑/↓: ${t('Highlight option')}\n` +
 		`    ←/→/[space]: ${t('Toggle selection')}\n` +
 		`    a: ${t('Toggle all')}\n` +
-		`    enter/return: ${t('Complete answer')}`;
+		`    enter/return: ${t('Complete answer')}`
+	)
 }
 
 export function Multiselect(props) {
@@ -18,7 +20,7 @@ export function Multiselect(props) {
 			limit: p.limit,
 			initial: p.initial,
 			instructions: p.instructions !== undefined ? p.instructions : getMultiselectInstructions(p.t),
-			hint: p.hint || (p.t ? p.t('hint.multiselect') : undefined)
-		});
-	});
+			hint: p.hint || (p.t ? p.t('hint.multiselect') : undefined),
+		})
+	})
 }

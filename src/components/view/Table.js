@@ -1,5 +1,5 @@
-import { createPrompt } from '../../core/Component.js';
-import { table as baseTable } from '../../ui/table.js';
+import { createPrompt } from '../../core/Component.js'
+import { table as baseTable } from '../../ui/table.js'
 
 /**
  * Table Component.
@@ -7,6 +7,6 @@ import { table as baseTable } from '../../ui/table.js';
  */
 export function Table(props) {
 	return createPrompt('Table', props, async (p) => {
-		return await baseTable(p);
-	});
+		return await baseTable(p)
+	})
 }

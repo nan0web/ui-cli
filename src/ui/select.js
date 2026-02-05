@@ -27,12 +27,7 @@ import { validateString, validateFunction, validateNumber } from '../core/PropVa
  * @throws {CancelError} When the user cancels the operation.
  */
 export async function select(input) {
-	const {
-		title,
-		prompt,
-		options: initOptins,
-		limit = 30,
-	} = input
+	const { title, prompt, options: initOptins, limit = 30 } = input
 
 	// Prop Validation
 	validateString(title || prompt, 'title', 'Select', true)
@@ -57,21 +52,24 @@ export async function select(input) {
 		return { title: el.label || el.title, value: el.value }
 	})
 
-	const response = await prompts({
-		type: 'select',
-		name: 'value',
-		message: title ? title : prompt,
-		choices: choices,
-		hint: input.hint || (input.t ? input.t('hint.select') : undefined),
-		instructions: false,
-		limit
-	}, {
-		onCancel: () => {
-			throw new CancelError()
+	const response = await prompts(
+		{
+			type: 'select',
+			name: 'value',
+			message: title ? title : prompt,
+			choices: choices,
+			hint: input.hint || (input.t ? input.t('hint.select') : undefined),
+			instructions: false,
+			limit,
+		},
+		{
+			onCancel: () => {
+				throw new CancelError()
+			},
 		}
-	})
+	)
 
-	const index = choices.findIndex(c => c.value === response.value)
+	const index = choices.findIndex((c) => c.value === response.value)
 
 	return { index, value: response.value, cancelled: response.value === undefined }
 }

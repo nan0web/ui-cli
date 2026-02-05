@@ -40,10 +40,11 @@
 		"play:v2": "node play/main.js --demo=v2",
 		"play:mask": "node play/main.js --demo=mask",
 		"play:all": "node play/main.js",
-		"precommit": "npm test && npm run test:i18n",
+		"precommit": "npm run format && npm test && npm run test:i18n",
 		"prepush": "npm test",
 		"prepare": "husky",
 		"release": "nan0release publish",
+		"format": "prettier --write \"src/**/*.js\"",
 		"clean": "rm -rf .cache/ && rm -rf dist/",
 		"clean:modules": "rm -rf node_modules"
 	},
@@ -61,7 +62,8 @@
 		"@nan0web/log": "1.1.1",
 		"@nan0web/test": "1.1.0",
 		"@types/node": "^24.10.1",
-		"knip": "^5.83.0"
+		"knip": "^5.83.0",
+		"prettier": "^3.8.1"
 	},
 	"dependencies": {
 		"@nan0web/event": "^1.0.0",

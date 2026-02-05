@@ -8,7 +8,7 @@ import { NoConsole } from '@nan0web/log'
 /** @typedef {import("@nan0web/co").ValidateFn} ValidateFn */
 /** @typedef {import("@nan0web/co").MessageInput} MessageInput */
 
-class Body { }
+class Body {}
 
 // Mock Message class for testing
 class AuthMessage extends Message {
@@ -67,7 +67,7 @@ class AuthMessage extends Message {
 class EmptyMessage extends Message {
 	static name = 'empty'
 	static help = 'Empty command'
-	static Body = class EmptyBody extends Body { }
+	static Body = class EmptyBody extends Body {}
 }
 
 // Message with subcommands
@@ -81,7 +81,7 @@ class ParentMessage extends Message {
 	static help = 'Parent command'
 	static Children = [ChildMessage]
 
-	static Body = class EmptyBody extends Body { }
+	static Body = class EmptyBody extends Body {}
 }
 
 class MainBody {
@@ -219,7 +219,7 @@ describe('CommandHelp', () => {
 				'  --password, -p                 string    * No description',
 				'  --remember_me                  boolean     Remember my session for 1 year',
 				'',
-			].join('\n'),
+			].join('\n')
 		)
 	})
 
@@ -228,7 +228,7 @@ describe('CommandHelp', () => {
 		const generated = help.generate()
 		assert.equal(
 			generated,
-			['\x1B[35mempty\x1B[0m • Empty command', '', 'Usage: empty', ''].join('\n'),
+			['\x1B[35mempty\x1B[0m • Empty command', '', 'Usage: empty', ''].join('\n')
 		)
 	})
 
@@ -245,7 +245,7 @@ describe('CommandHelp', () => {
 				'Subcommands:',
 				'  child                 Child command',
 				'',
-			].join('\n'),
+			].join('\n')
 		)
 	})
 
@@ -289,7 +289,7 @@ describe('CommandHelp', () => {
 		assert.equal(
 			result.get('username'),
 			'Username must be at least 3 characters',
-			'username should be invalid (too short)',
+			'username should be invalid (too short)'
 		)
 		assert.equal(result.get('password'), undefined, 'password should be valid')
 	})

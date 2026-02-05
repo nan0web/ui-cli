@@ -1,5 +1,5 @@
-import { createPrompt } from '../../core/Component.js';
-import { slider as baseSlider } from '../../ui/slider.js';
+import { createPrompt } from '../../core/Component.js'
+import { slider as baseSlider } from '../../ui/slider.js'
 
 export function Slider(props) {
 	return createPrompt('Slider', props, async (p) => {
@@ -10,7 +10,7 @@ export function Slider(props) {
 			max: p.max,
 			step: p.step,
 			jump: p.jump,
-			t: p.t
-		});
-	});
+			t: p.t,
+		})
+	})
 }

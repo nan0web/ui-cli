@@ -9,7 +9,14 @@ import { CancelError } from '@nan0web/ui/core'
 import prompts from 'prompts'
 import readline from 'node:readline'
 
-import { ask as baseAsk, text as baseText, beep, createInput, createPredefinedInput, Input } from './ui/input.js'
+import {
+	ask as baseAsk,
+	text as baseText,
+	beep,
+	createInput,
+	createPredefinedInput,
+	Input,
+} from './ui/input.js'
 import { next } from './ui/next.js'
 import { select as baseSelect } from './ui/select.js'
 import { confirm as baseConfirm } from './ui/confirm.js'
@@ -270,14 +277,22 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 			const promptMsg = `${label}${field.required ? ' *' : ''}${hasPunctuation ? '' : ':'}`
 
 			// ---- Handle select fields (options) ----------------------------------------
-			if (field.type === 'select' || (Array.isArray(field.options ?? 0) && field.options.length && field.type !== 'multiselect' && field.type !== 'autocomplete')) {
+			if (
+				field.type === 'select' ||
+				(Array.isArray(field.options ?? 0) &&
+					field.options.length &&
+					field.type !== 'multiselect' &&
+					field.type !== 'autocomplete')
+			) {
 				const options = /** @type {any[]} */ (field.options)
 
 				const selConfig = {
 					title: this.#t(field.label),
 					prompt: this.#t('Choose (number): '),
 					options: options.map((opt) =>
-						typeof opt === 'string' ? { label: this.#t(opt), value: opt } : { ...opt, label: this.#t(opt.label) },
+						typeof opt === 'string'
+							? { label: this.#t(opt), value: opt }
+							: { ...opt, label: this.#t(opt.label) }
 					),
 					console: { info: this.console.info.bind(this.console) },
 				}
@@ -290,7 +305,7 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 					}
 				}
 
-				const values = options.map(o => typeof o === 'string' ? o : o.value)
+				const values = options.map((o) => (typeof o === 'string' ? o : o.value))
 				if (!values.includes(chosen.value)) {
 					this.console.error('\nEnumeration must have one value')
 					retries++
@@ -359,7 +374,7 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 				const res = await this.requestDateTime({
 					message: promptMsg,
 					initial: field.value instanceof Date ? field.value : new Date(),
-					mask: field.mask
+					mask: field.mask,
 				})
 				if (!res || res.cancelled) {
 					return {
@@ -552,7 +567,8 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 	 */
 	async requestInput(config) {
 		const predefined = this.#nextAnswer()
-		const promptOrig = config.prompt ?? config.message ?? `${config.label ?? config.name ?? 'Input'}: `
+		const promptOrig =
+			config.prompt ?? config.message ?? `${config.label ?? config.name ?? 'Input'}: `
 		const prompt = this.#t(promptOrig)
 		if (predefined !== null) {
 			if (config.type !== 'password' && config.type !== 'secret') {
@@ -612,7 +628,7 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 		const prompt = config.message || 'Confirm: '
 		if (predefined !== null) {
 			const val = ['y', 'yes', 'true', '1', 'так', '+'].includes(predefined.toLowerCase())
-			const display = val ? (config.active || this.#t('yes')) : (config.inactive || this.#t('no'))
+			const display = val ? config.active || this.#t('yes') : config.inactive || this.#t('no')
 			this.console.info(`✔ ${prompt} ${display}`)
 			return { value: val, cancelled: false }
 		}
@@ -658,7 +674,8 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 			this.console.info(`${prompt} ${predefined}`)
 			return { value: predefined.split(',').map((v) => v.trim()), cancelled: false }
 		}
-		const instructions = `\n${this.#t('Instructions')}:\n` +
+		const instructions =
+			`\n${this.#t('Instructions')}:\n` +
 			`    ↑/↓: ${this.#t('Highlight option')}\n` +
 			`    ←/→/[space]: ${this.#t('Toggle selection')}\n` +
 			`    a: ${this.#t('Toggle all')}\n` +
@@ -725,7 +742,10 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 		const prompt = config.message || 'Confirm: '
 		if (predefined !== null) {
 			this.console.info(`✔ ${prompt} ${predefined}`)
-			return { value: ['y', 'yes', 'true', '1', 'так'].includes(predefined.toLowerCase()), cancelled: false }
+			return {
+				value: ['y', 'yes', 'true', '1', 'так'].includes(predefined.toLowerCase()),
+				cancelled: false,
+			}
 		}
 		try {
 			return await baseToggle(config)
@@ -870,7 +890,7 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 		/** @type {Map<string,string>} */
 		let errors = msg.validate()
 		while (errors.size > 0) {
-			const form = generateForm(/** @type {any} */(msg.constructor).Body, {
+			const form = generateForm(/** @type {any} */ (msg.constructor).Body, {
 				initialState: msg.body,
 				t: this.#t,
 			})

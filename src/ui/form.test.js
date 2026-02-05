@@ -5,7 +5,7 @@ import { createPredefinedInput } from './input.js'
 import * as selectModule from './select.js'
 import { CancelError } from '@nan0web/ui/core'
 
-const mockConsole = { info: () => { }, error: () => { } }
+const mockConsole = { info: () => {}, error: () => {} }
 const defaultStops = ['quit', 'cancel', 'exit']
 
 class User {
@@ -117,7 +117,7 @@ describe('Form class', () => {
 			const predefined = createPredefinedInput(
 				['invalid@username', 'validuser', '25'],
 				mockConsole,
-				defaultStops,
+				defaultStops
 			)
 			form.handler = predefined
 
@@ -238,7 +238,9 @@ describe('Form class', () => {
 		it('should translate field labels and help text', async () => {
 			class I18nModel {
 				static field = { help: 'Original Label' }
-				constructor() { this.field = '' }
+				constructor() {
+					this.field = ''
+				}
 			}
 			const model = new I18nModel()
 			const t = (key) => (key === 'Original Label' ? 'Перекладена мітка' : key)
@@ -251,9 +253,11 @@ describe('Form class', () => {
 			class UnicodeModel {
 				static name = {
 					help: 'Name',
-					validate: (v) => (v.length > 0 ? true : 'Empty')
+					validate: (v) => (v.length > 0 ? true : 'Empty'),
 				}
-				constructor() { this.name = '' }
+				constructor() {
+					this.name = ''
+				}
 			}
 			const model = new UnicodeModel()
 			const form = new Form(model, { stops: defaultStops })

@@ -91,7 +91,7 @@ describe('CLI', () => {
 
 		assert.deepStrictEqual(
 			results.map((el) => el.body),
-			[['Unknown command: unknown'], ['Available commands: help']],
+			[['Unknown command: unknown'], ['Available commands: help']]
 		)
 	})
 

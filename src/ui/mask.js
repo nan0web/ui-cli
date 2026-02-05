@@ -97,18 +97,21 @@ export async function mask(config) {
 	// Pre-format the placeholder if it exists so the default value is visual
 	const initialValue = placeholder ? formatMask(placeholder, mask) : undefined
 
-	const response = await prompts({
-		type: 'text',
-		name: 'value',
-		message,
-		initial: initialValue,
-		validate,
-		format: (val) => formatMask(val, mask)
-	}, {
-		onCancel: () => {
-			throw new CancelError()
+	const response = await prompts(
+		{
+			type: 'text',
+			name: 'value',
+			message,
+			initial: initialValue,
+			validate,
+			format: (val) => formatMask(val, mask),
+		},
+		{
+			onCancel: () => {
+				throw new CancelError()
+			},
 		}
-	})
+	)
 
 	// Ensure the returned value is always formatted
 	const formatted = formatMask(response.value, mask)
@@ -118,7 +121,7 @@ export async function mask(config) {
 	// We force a clean UI by removing the last line and printing our own.
 	if (process.stdout.isTTY) {
 		process.stdout.moveCursor(0, -1) // Move up one line
-		process.stdout.clearLine(0)      // Clear the line
+		process.stdout.clearLine(0) // Clear the line
 		// Re-print the message and value manually with proper formatting
 		// Note: We use '✔' to match prompts style, or we can use our own if desired.
 		// prompts default style: '✔ Message … Value'
