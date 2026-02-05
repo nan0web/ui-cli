@@ -22,6 +22,8 @@ export default class CLiInputAdapter extends BaseInputAdapter {
     get t(): Function;
     /** @returns {NodeJS.WriteStream} */
     get stdout(): NodeJS.WriteStream;
+    /** @returns {string[]} */
+    getRemainingAnswers(): string[];
     /**
      * Create a handler with stop words that supports predefined answers.
      *
@@ -104,10 +106,10 @@ export default class CLiInputAdapter extends BaseInputAdapter {
      * Requests confirmation (yes/no).
      *
      * @param {Object} config - Confirmation configuration.
-     * @returns {Promise<{value: boolean, cancelled: boolean}>} User confirmation.
+     * @returns {Promise<{value: boolean|undefined, cancelled: boolean}>} User confirmation.
      */
     requestConfirm(config: any): Promise<{
-        value: boolean;
+        value: boolean | undefined;
         cancelled: boolean;
     }>;
     /**
@@ -124,38 +126,38 @@ export default class CLiInputAdapter extends BaseInputAdapter {
      * Requests multiple selection.
      *
      * @param {Object} config - Multiselect configuration.
-     * @returns {Promise<{value: any[], cancelled: boolean}>} Selected values.
+     * @returns {Promise<{value: any[]|undefined, cancelled: boolean}>} Selected values.
      */
     requestMultiselect(config: any): Promise<{
-        value: any[];
+        value: any[] | undefined;
         cancelled: boolean;
     }>;
     /**
      * Requests masked input.
      *
      * @param {Object} config - Mask configuration.
-     * @returns {Promise<{value: string, cancelled: boolean}>} Masked value.
+     * @returns {Promise<{value: string|undefined, cancelled: boolean}>} Masked value.
      */
     requestMask(config: any): Promise<{
-        value: string;
+        value: string | undefined;
         cancelled: boolean;
     }>;
     /**
      * Request a toggle switch.
      * @param {Object} config
-     * @returns {Promise<{value: boolean, cancelled: boolean}>}
+     * @returns {Promise<{value: boolean|undefined, cancelled: boolean}>}
      */
     requestToggle(config: any): Promise<{
-        value: boolean;
+        value: boolean | undefined;
         cancelled: boolean;
     }>;
     /**
      * Request a numeric slider.
      * @param {Object} config
-     * @returns {Promise<{value: number, cancelled: boolean}>}
+     * @returns {Promise<{value: number|undefined, cancelled: boolean}>}
      */
     requestSlider(config: any): Promise<{
-        value: number;
+        value: number | undefined;
         cancelled: boolean;
     }>;
     /**

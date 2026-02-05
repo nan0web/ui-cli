@@ -7,7 +7,10 @@
 import process from 'node:process'
 import readline from 'node:readline'
 import Logger from '@nan0web/log'
+import prompts from 'prompts'
+import { CancelError } from '@nan0web/ui/core'
 import { beep } from './input.js'
+import { validateString, validateFunction, validateNumber, validateBoolean } from '../core/PropValidation.js'
 
 // --- ANSI Utilities ---
 const ESC = '\x1B['
@@ -22,6 +25,8 @@ const ERASE_DOWN = `${ESC}J`
  * @property {'file'|'dir'} type
  * @property {TreeNode[]} [children] -- If undefined, might be loaded async
  * @property {any} [payload] -- Custom data
+ * @property {any} [value] -- Result value (usually same as path or name)
+ * @property {string} [path] -- File path
  * @property {boolean} [expanded] -- Internal state
  * @property {boolean} [checked] -- Internal state
  * @property {number} [depth] -- Calculated
@@ -42,12 +47,31 @@ export async function tree(config) {
         t = (k) => k
     } = config
 
+    // Prop Validation
+    validateString(message, 'message', 'Tree')
+    validateString(mode, 'mode', 'Tree')
+    validateNumber(limit, 'limit', 'Tree')
+    validateFunction(loader, 'loader', 'Tree')
+    validateFunction(t, 't', 'Tree')
+    validateBoolean(multiselect, 'multiselect', 'Tree')
+
     // Initialize State
     let roots = Array.isArray(tree) ? tree : (tree ? [tree] : [])
     // If tree is empty, try to load if loader exists
     if (roots.length === 0 && loader) {
         const res = await loader(null) // Load roots
         roots = res || []
+    }
+
+    // Automated environments support via PLAY_DEMO_SEQUENCE
+    if (process.env.PLAY_DEMO_SEQUENCE) {
+        const response = await prompts({
+            type: 'text',
+            name: 'value',
+            message: t(message),
+            initial: config.initial || (roots[0]?.name || 'unknown')
+        })
+        return { value: response.value, cancelled: response.value === undefined }
     }
 
     // Internal State
@@ -165,7 +189,9 @@ export async function tree(config) {
 
     // Setup Input
     const { stdin, stdout } = process
-    stdin.setRawMode(true)
+    if (stdin.isTTY && typeof stdin.setRawMode === 'function') {
+        stdin.setRawMode(true)
+    }
     stdin.resume()
     readline.emitKeypressEvents(stdin)
 
@@ -218,10 +244,10 @@ export async function tree(config) {
 
             if (isFocused) {
                 // Use bold/color for focus
-                line += Logger.style(nameDisplay, { color: Logger.CYAN })
+                line += Logger.style('> ' + nameDisplay, { color: Logger.CYAN })
                 if (state.loading && state.expanded.has(node)) line += Logger.style(` ${t('tree.loading')}`, { color: Logger.DIM })
             } else {
-                line += nameDisplay
+                line += '  ' + nameDisplay
             }
 
             out += line + '\n'
@@ -243,7 +269,7 @@ export async function tree(config) {
             // Handle Ctrl+C
             if (key.ctrl && key.name === 'c') {
                 cleanup()
-                reject(new Error('Cancelled'))
+                reject(new CancelError())
                 return
             }
 
@@ -258,6 +284,21 @@ export async function tree(config) {
                 case 'return': case 'enter':
                     submit()
                     return
+                default:
+                    if (!key.ctrl && !key.meta && str && str.length === 1) {
+                        const s = str.toLowerCase()
+                        const idx = state.flat.findIndex((n, i) => i > state.cursor && n.name.toLowerCase().startsWith(s))
+                        if (idx !== -1) {
+                            state.cursor = idx
+                        } else {
+                            const idx2 = state.flat.findIndex((n) => n.name.toLowerCase().startsWith(s))
+                            if (idx2 !== -1) state.cursor = idx2
+                        }
+                        // Adjust scroll offset
+                        if (state.cursor < state.offset) state.offset = state.cursor
+                        if (state.cursor >= state.offset + limit) state.offset = Math.max(0, state.cursor - limit + 1)
+                    }
+                    break
             }
 
             state.flat = flatten() // Re-flatten (redundant if only selection moved, but safe)
@@ -268,7 +309,7 @@ export async function tree(config) {
             if (multiselect) {
                 state.done = true
                 cleanup()
-                resolve(Array.from(state.checked))
+                resolve({ value: Array.from(state.checked).map(n => n.value || n.path || n.name), cancelled: false })
             } else {
                 const node = state.flat[state.cursor]
                 if (!node) return // Nothing to submit
@@ -289,15 +330,17 @@ export async function tree(config) {
                 }
                 state.done = true
                 cleanup()
-                resolve(node)
+                resolve({ value: node.value || node.path || node.name, cancelled: false, node })
             }
         }
 
         function cleanup() {
             stdin.removeListener('keypress', onKey)
-            if (process.stdin.isTTY) {
+            if (process.stdin.isTTY && typeof process.stdin.setRawMode === 'function') {
                 process.stdin.setRawMode(false)
             }
+            stdin.pause() // Crucial for automated tests to release event loop
+
             // Final cleanup message or checkmark?
             if (state.done) {
                 stdout.write(UP(linesRendered) + ERASE_DOWN)
@@ -313,6 +356,7 @@ export async function tree(config) {
                 // Cancelled
                 stdout.write('\n')
             }
+            stdout.write(SHOW_CURSOR)
         }
 
         stdin.on('keypress', onKey)

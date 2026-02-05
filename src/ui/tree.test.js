@@ -4,6 +4,7 @@ import assert from 'node:assert/strict'
 import { tree } from './tree.js'
 import { EventEmitter } from 'node:events'
 import process from 'node:process'
+import { CancelError } from '@nan0web/ui/core'
 
 describe('Tree Component', () => {
     let stdin
@@ -74,7 +75,8 @@ describe('Tree Component', () => {
         emitKey('enter')
         const result = await promise
 
-        assert.equal(result.name, 'child')
+        assert.equal(result.node.name, 'child')
+        assert.equal(result.value, 'child')
     })
 
     it('supports localization via t function', async () => {
@@ -96,7 +98,7 @@ describe('Tree Component', () => {
         assert.match(output, /Оберіть:/)
 
         emitKey('c', 'c', true) // Ctrl+C to exit
-        await assert.rejects(promise, /Cancelled/)
+        await assert.rejects(promise, CancelError)
 
         // assert.equal(t.mock.callCount(), 3) // At least called
     })
@@ -127,8 +129,8 @@ describe('Tree Component', () => {
         emitKey('enter')
         const result = await promise
 
-        assert.equal(result.length, 2)
-        assert.equal(result[0].name, '1')
-        assert.equal(result[1].name, '2')
+        assert.equal(result.value.length, 2)
+        assert.equal(result.value[0], '1')
+        assert.equal(result.value[1], '2')
     })
 })

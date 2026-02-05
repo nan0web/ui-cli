@@ -7,13 +7,19 @@
  * @param {string} config.message - Prompt question
  * @param {string} config.mask - Mask pattern (e.g., '###-###')
  * @param {string} [config.placeholder] - Hint for the user
+ * @param {Function} [config.t] - Translation function
  * @returns {Promise<{value: string, cancelled: boolean}>}
  */
-export function mask(config: {
-    message: string;
-    mask: string;
-    placeholder?: string | undefined;
-}): Promise<{
+/**
+ * Formats a value according to the given mask.
+ * pattern: # = digit, A = letter, 0 = digit.
+ *
+ * @param {string} value
+ * @param {string} mask
+ * @returns {string}
+ */
+export function formatMask(value: string, mask: string): string;
+export function mask(config: any): Promise<{
     value: string;
     cancelled: boolean;
 }>;

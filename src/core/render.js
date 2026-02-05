@@ -15,7 +15,12 @@ export async function render(component) {
 
     // 3. Handle Interactive Prompts (Active)
     if (typeof component.execute === 'function') {
-        return await component.execute();
+        const result = await component.execute();
+        // If result is the unified return contract { value, cancelled }, unwrap it
+        if (result && typeof result === 'object' && 'value' in result) {
+            return result.value;
+        }
+        return result;
     }
 
     // 4. Handle Static Views (Passive)

@@ -2,6 +2,7 @@
 
 import process from 'node:process'
 import Logger from '@nan0web/log'
+import prompts from 'prompts'
 import { runBasicDemo } from './basic-demo.js'
 import SelectDemo, { SelectBody, runSelectDemo } from './select-demo.js'
 import { runUiCliDemo } from './ui-cli-demo.js'
@@ -17,6 +18,8 @@ import { runViewDemo } from './view-demo.js'
 import { runNavDemo } from './nav-demo.js'
 import { runTreeDemo } from './tree-demo.js'
 import { runDateTimeDemo } from './datetime-demo.js'
+import { runMaskDemo } from './mask-demo.js'
+import { runV2Demo } from './v2_demo.js'
 import { CancelError } from '../src/index.js'
 import getT, { localesMap } from './vocabs/index.js'
 
@@ -113,12 +116,16 @@ async function main() {
 		process.exit(0)
 	})
 
-	// 1. Determine locale (env -> manual prompt)
-	let locale = process.env.LANG?.split('_')[0] || process.env.LANGUAGE?.split(':')[0] || 'en'
-	if (!localesMap.has(locale)) locale = 'en'
+	// Parse CLI arguments: --demo=name --lang=uk
+	const args = process.argv.slice(2).reduce((acc, arg) => {
+		if (arg.startsWith('--demo=')) acc.demo = arg.split('=')[1]
+		if (arg.startsWith('--lang=')) acc.lang = arg.split('=')[1]
+		return acc
+	}, {})
 
-	// If we are not in automated test mode, we might want to ask for language
-	if (!process.env.PLAY_DEMO_SEQUENCE) {
+	// 1. Determine locale (arg -> manual prompt -> env)
+	let locale = args.lang
+	if (!locale && !process.env.PLAY_DEMO_SEQUENCE) {
 		const result = await inputAdapter.requestSelect({
 			title: 'Choose language / Виберіть мову:',
 			options: Array.from(localesMap.values()),
@@ -134,9 +141,14 @@ async function main() {
 			}
 		}
 	}
+	if (!locale) locale = process.env.LANG?.split('_')[0] || process.env.LANGUAGE?.split(':')[0] || 'en'
+	if (!localesMap.has(locale)) locale = 'en'
+
 
 	t = getT(locale)
 	inputAdapter.t = t
+
+	let firstRun = true
 
 	while (true) {
 		try {
@@ -159,21 +171,25 @@ async function main() {
 				{ name: t('ProgressBar'), value: 'progress' },
 				{ name: t('Spinner'), value: 'spinner' },
 				{ name: t('Date & Time'), value: 'datetime' },
+				{ name: t('V2 Components'), value: 'v2' },
 				{ name: `← ${t('Exit')}`, value: 'exit' },
 			]
 
-			const result = await inputAdapter.requestSelect({
-				title: t('Select demo to run:'),
-				options: demos.map((d) => d.name),
-				limit: Math.max(5, (process.stdout.rows || 24) - 6),
-				console, // ensure menu is visible in snapshots
-			})
+			let demo
+			if (firstRun && args.demo) {
+				demo = args.demo
+			} else {
+				const result = await inputAdapter.requestSelect({
+					title: t('Select demo to run:'),
+					options: demos.map((d) => d.name),
+					limit: Math.max(5, (process.stdout.rows || 24) - 6),
+					console, // ensure menu is visible in snapshots
+				})
 
-			const selection = result.value
-
-
-			const demoItem = demos.find((d) => d.name === selection)
-			const demo = demoItem ? demoItem.value : 'exit'
+				const selection = result.value
+				const demoItem = demos.find((d) => d.name === selection)
+				demo = demoItem ? demoItem.value : 'exit'
+			}
 
 			switch (demo) {
 				case 'basic':
@@ -216,12 +232,13 @@ async function main() {
 					await runAdvancedFormDemo(console, inputAdapter, t)
 					break
 				case 'toggle':
-					await inputAdapter.requestToggle({
+					const toggleRes = await inputAdapter.requestToggle({
 						message: t('Subscribe to newsletter'),
 						initial: true,
 						active: t('yes'),
 						inactive: t('no')
 					})
+					console.success(`✓ ${t('You selected:')} ${toggleRes.value ? t('Yes') : t('No')}`)
 					break
 				case 'slider':
 					await runSliderDemo(console, inputAdapter, t)
@@ -246,19 +263,32 @@ async function main() {
 				case 'datetime':
 					await runDateTimeDemo(console, inputAdapter, t)
 					break
+				case 'mask':
+					if (inputAdapter.getRemainingAnswers().length > 0) {
+						prompts.inject(inputAdapter.getRemainingAnswers());
+					}
+					await runMaskDemo(console, inputAdapter, t)
+					break
+				case 'v2':
+					if (inputAdapter.getRemainingAnswers().length > 0) {
+						prompts.inject(inputAdapter.getRemainingAnswers());
+					}
+					await runV2Demo(console, t)
+					break
 				case 'exit':
 					console.success(t('Thanks for exploring UI‑CLI demos! 🚀'))
 					break
 			}
-			if (demo === 'exit') break
-			await showMenu(t)
+
+			if (demo === 'exit' || (firstRun && args.demo)) break
+
+			firstRun = false
 		} catch (error) {
 			if (error instanceof CancelError || error.message?.includes('cancel') || error.message?.includes('Cancelled')) {
 				console.info(Logger.style('\n' + t('Selection cancelled. Returning to menu...'), { color: Logger.DIM }))
+				if (firstRun && args.demo) break
 				continue
 			}
-			// Don't exit on other errors, just log them and continue.
-			// This prevents test failures when a demo throws (like validation error interpreted as crash).
 			console.error(error)
 			console.info(Logger.style('\n' + t('Error occurred. Returning to menu...'), { color: Logger.RED }))
 		}

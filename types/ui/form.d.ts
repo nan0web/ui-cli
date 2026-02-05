@@ -40,6 +40,7 @@ export default class Form {
      * @param {(prompt: string) => Promise<Input>} [options.inputFn] - Custom input function.
      * @param {(config: object) => Promise<{index:number, value:any}>} [options.selectFn] - Custom select function.
      * @param {(config: object) => Promise<{value: number, cancelled: boolean}>} [options.sliderFn] - Custom slider function.
+     * @param {(config: object) => Promise<{value: boolean, cancelled: boolean}>} [options.toggleFn] - Custom toggle function.
      * @param {Function} [options.t] - Optional translation function.
      * @throws {TypeError} If model is not an object with a constructor.
      */
@@ -52,6 +53,10 @@ export default class Form {
         }>) | undefined;
         sliderFn?: ((config: object) => Promise<{
             value: number;
+            cancelled: boolean;
+        }>) | undefined;
+        toggleFn?: ((config: object) => Promise<{
+            value: boolean;
             cancelled: boolean;
         }>) | undefined;
         t?: Function | undefined;
@@ -67,6 +72,10 @@ export default class Form {
         }>) | undefined;
         sliderFn?: ((config: object) => Promise<{
             value: number;
+            cancelled: boolean;
+        }>) | undefined;
+        toggleFn?: ((config: object) => Promise<{
+            value: boolean;
             cancelled: boolean;
         }>) | undefined;
         t?: Function | undefined;

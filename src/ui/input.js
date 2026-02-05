@@ -7,6 +7,7 @@
 import prompts from 'prompts'
 import { CancelError } from '@nan0web/ui/core'
 import process from 'node:process'
+import { validateString, validateFunction } from '../core/PropValidation.js'
 
 /**
  * Triggers a system beep (ASCII Bell).
@@ -58,6 +59,11 @@ export class Input {
  * @returns {Promise<{value:string, cancelled:boolean}>}
  */
 export async function text(config) {
+	validateString(config.message, 'message', 'Input.text', true)
+	validateString(config.initial, 'initial', 'Input.text')
+	validateFunction(config.validate, 'validate', 'Input.text')
+	validateFunction(config.format, 'format', 'Input.text')
+
 	const { message, initial, validate, type = 'text', format } = config
 	const response = await prompts({
 		type: type,

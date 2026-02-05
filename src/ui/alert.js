@@ -37,18 +37,24 @@ export function alert(message, variant = 'info', options = {}) {
         error: '✖'
     }[variant] || '•'
 
-    let out = ''
-    const border = Logger.style('━'.repeat(message.length + 4), { color })
+    const lines = String(message || '').split('\n');
+    const maxLineLen = Math.max(
+        title ? String(title).length + 4 : 0,
+        ...lines.map(l => l.length)
+    );
+    const len = Math.max(60, maxLineLen + 4);
+    const border = Logger.style('━'.repeat(len), { color })
 
+    let out = ''
     out += `\n${border}\n`
     if (title) {
-        // Logger.style doesn't support bold, so we rely on color or generic style
-        out += Logger.style(` ${icon} ${title} \n`, { color })
-        // Use DIM for separator
-        out += Logger.style('─'.repeat(message.length + 4) + '\n', { color: Logger.DIM })
+        out += Logger.style(` ${icon} ${title} `, { color }) + '\n'
+        out += Logger.style('─'.repeat(len) + '\n', { color: Logger.DIM })
     }
-    out += Logger.style(` ${message} `, { color })
-    out += `\n${border}\n`
+    lines.forEach(line => {
+        out += '   ' + Logger.style(line.trim(), { color }) + '\n'
+    })
+    out += `${border}\n`
 
     return out
 }

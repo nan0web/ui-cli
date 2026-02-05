@@ -75,7 +75,7 @@ export async function table(input) {
                 const displayColumns = columns.map(c => highlight(c, query))
 
                 logger.clear()
-                const infoMsg = title ? `${title} (${t('Instant Filter')}: "${query}")` : `(${t('Instant Filter')}: "${query}")`
+                const infoMsg = title ? `${title} (${t('filter')}: "${query}")` : `(${t('filter')}: "${query}")`
                 logger.info(infoMsg)
                 logger.table(displayData, displayColumns)
                 process.stdout.write('> ' + query)
@@ -136,7 +136,7 @@ export async function table(input) {
         const displayColumns = columns.map(c => highlight(c, query))
 
         logger.clear()
-        if (title) logger.info(`${title} (Filter: "${query || 'none'}")`)
+        if (title) logger.info(`${title} (${t('filter')}: "${query || t('none')}")`)
         logger.table(displayData, displayColumns)
 
         const promptFn = input.prompt || text

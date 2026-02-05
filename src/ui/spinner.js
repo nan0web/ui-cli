@@ -36,8 +36,18 @@ export class Spinner {
         if (this.interval) {
             clearInterval(this.interval)
             this.interval = null
-            process.stdout.write(`\r${status} ${this.message}\n`)
+            process.stdout.write(`\r${status} ${this.message}\x1b[K\n`)
         }
+    }
+
+    success(msg) {
+        if (msg) this.message = msg
+        this.stop('✔')
+    }
+
+    error(msg) {
+        if (msg) this.message = msg
+        this.stop('✖')
     }
 }
 

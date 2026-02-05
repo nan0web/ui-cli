@@ -6,6 +6,7 @@
 
 import prompts from 'prompts'
 import { CancelError } from '@nan0web/ui/core'
+import { validateString, validateFunction, validateNumber } from '../core/PropValidation.js'
 
 /**
  * Configuration object for {@link select}.
@@ -19,6 +20,8 @@ import { CancelError } from '@nan0web/ui/core'
  * @param {any} [input.ask] - Deprecated. Ignored in new implementation.
  * @param {string} [input.invalidPrompt] - Deprecated. Ignored in new implementation.
  * @param {number} [input.limit=10] - Max visible items.
+ * @param {string} [input.hint] - Hint text.
+ * @param {Function} [input.t] - Translation function.
  * @returns {Promise<{index:number,value:any,cancelled:boolean}>} Resolves with the selected index and its value.
  *
  * @throws {CancelError} When the user cancels the operation.
@@ -30,6 +33,12 @@ export async function select(input) {
 		options: initOptins,
 		limit = 30,
 	} = input
+
+	// Prop Validation
+	validateString(title || prompt, 'title', 'Select', true)
+	validateNumber(limit, 'limit', 'Select')
+	validateFunction(input.t, 't', 'Select')
+	validateString(input.hint, 'hint', 'Select')
 
 	let options = initOptins
 
@@ -53,7 +62,8 @@ export async function select(input) {
 		name: 'value',
 		message: title ? title : prompt,
 		choices: choices,
-		hint: prompt && title ? prompt : undefined,
+		hint: input.hint || (input.t ? input.t('hint.select') : undefined),
+		instructions: false,
 		limit
 	}, {
 		onCancel: () => {

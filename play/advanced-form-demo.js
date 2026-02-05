@@ -24,6 +24,8 @@ export async function runAdvancedFormDemo(console, adapter, t) {
             { name: 'username', label: t('Login'), type: 'text', required: true },
             { name: 'password', label: t('Password'), type: 'password', required: true },
             { name: 'phone', label: t('Phone'), type: 'mask', mask: '(###) ###-####', required: true },
+            { name: 'age', label: t('User age'), type: 'number', min: 18, max: 99, step: 1, required: true },
+            { name: 'newsletter', label: t('Subscribe to newsletter'), type: 'toggle' },
             { name: 'rememberMe', label: t('Remember me?'), type: 'confirm' },
             {
                 name: 'roles',

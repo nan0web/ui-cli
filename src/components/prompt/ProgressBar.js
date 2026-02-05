@@ -8,9 +8,9 @@ import { progress as baseProgress } from '../../ui/progress.js';
  * bar.update(50);
  */
 export function ProgressBar(props) {
-    return createPrompt('ProgressBar', props, async (p) => {
-        const bar = baseProgress(p);
-        // If action is provided, we could auto-run it, but progress bars usually strictly driven
-        return bar;
-    });
+	return createPrompt('ProgressBar', props, async (p) => {
+		const bar = baseProgress(p);
+		// If action is provided, we could auto-run it, but progress bars usually strictly driven
+		return bar;
+	});
 }

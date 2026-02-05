@@ -10,7 +10,6 @@ import {
 	CLiInputAdapter as BaseCLiInputAdapter,
 	CancelError,
 	createInput,
-	Input,
 	pause,
 	ask as baseAsk,
 	select as baseSelect,
@@ -18,10 +17,11 @@ import {
 	confirm as baseConfirm,
 	text as baseText,
 } from './index.js'
+import { Input } from './ui/input.js'
 
 async function ask(question) {
-	if ('Full Name *: ' === question) return 'John Doe'
-	if ('Email *: ' === question) return 'John.Doe@example.com'
+	if ('Full Name *:' === question) return 'John Doe'
+	if ('Email *:' === question) return 'John.Doe@example.com'
 	if ('What is your name?' === question) return 'Alice'
 	if ('Enter Secret:' === question) return 'secret-key'
 	return ''
@@ -630,7 +630,7 @@ function testRender() {
 	 * ## Contributing
 	 */
 	it('How to contribute? - [check here](./CONTRIBUTING.md)', async () => {
-		assert.equal(pkg.scripts?.precommit, 'npm test')
+		assert.equal(pkg.scripts?.precommit, 'npm test && npm run test:i18n')
 		assert.equal(pkg.scripts?.prepush, 'npm test')
 		assert.equal(pkg.scripts?.prepare, 'husky')
 		try {

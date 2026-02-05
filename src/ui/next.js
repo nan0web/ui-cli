@@ -24,6 +24,11 @@ export async function pause(ms) {
  * @throws {Error} If stdin is already in raw mode.
  */
 export async function next(conf = undefined) {
+	// Automated environments support via PLAY_DEMO_SEQUENCE
+	if (process.env.PLAY_DEMO_SEQUENCE) {
+		return Promise.resolve('[SIMULATED KEY]')
+	}
+
 	return new Promise((resolve, reject) => {
 		if (process.stdin.isRaw) {
 			reject(new Error('stdin is already in raw mode'))
@@ -63,7 +68,7 @@ export async function next(conf = undefined) {
 			process.stdin.off('data', onData)
 			process.stdin.off('error', errorHandler)
 			process.stdin.setRawMode(false)
-			process.stdin.resume()
+			process.stdin.pause()
 		}
 
 		process.stdin.setRawMode(true)

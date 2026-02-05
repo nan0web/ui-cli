@@ -16,7 +16,8 @@ import { CancelError } from '@nan0web/ui/core'
  * @returns {Promise<{value:Date, cancelled:boolean}>}
  */
 export async function datetime(config) {
-    const { message, initial = new Date(), mask, t = (k) => k } = config
+    const { message, initial: rawInitial = new Date(), mask, t = (k) => k } = config
+    const initial = rawInitial instanceof Date ? rawInitial : new Date(rawInitial)
 
     try {
         const result = await prompts({

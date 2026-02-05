@@ -16,10 +16,12 @@ import { CancelError } from '@nan0web/ui/core'
  * @param {number} [config.limit=10] - Visible items limit
  * @param {Array<any>} [config.initial=[]] - Initial selected values
  * @param {string|boolean} [config.instructions] - Custom instructions
+ * @param {string} [config.hint] - Navigation hint
+ * @param {Function} [config.t] - Translation function
  * @returns {Promise<{value: Array<any>, cancelled: boolean}>}
  */
 export async function multiselect(config) {
-    const { message, options, limit = 10, initial = [] } = config
+    const { message, options, limit = 10, initial = [], t } = config
 
     if (!Array.isArray(options) || options.length === 0) {
         throw new Error('Options array is required and must not be empty')
@@ -42,7 +44,8 @@ export async function multiselect(config) {
         message,
         choices,
         limit,
-        instructions: config.instructions // Use provided instructions or default
+        instructions: config.instructions !== undefined ? config.instructions : false,
+        hint: config.hint || (t ? t('hint.multiselect') : undefined)
     }, {
         onCancel: () => {
             throw new CancelError()

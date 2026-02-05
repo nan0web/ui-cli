@@ -93,7 +93,7 @@ export default class PlaygroundTest {
 		const sequence = raw
 			.split(',')
 			.map((s) => s.trim())
-			.filter(Boolean)
+		// Allow empty strings to signify "Enter" (default)
 		if (sequence.length === 0) return
 
 		if (child.stdin) child.stdin.setDefaultEncoding('utf-8')
@@ -105,6 +105,7 @@ export default class PlaygroundTest {
 				} catch (_) { }
 				return
 			}
+			// Use 200ms delay for rock-solid stability across all platforms.
 			setTimeout(() => {
 				try {
 					if (!child.killed && child.stdin?.writable) {
@@ -112,7 +113,7 @@ export default class PlaygroundTest {
 						writeNext(idx + 1)
 					}
 				} catch (_) {
-					// Silently swallow EPIPE and stop feeding.
+					// Silently swallow EPIPE
 				}
 			}, 200)
 		}
@@ -124,6 +125,8 @@ export default class PlaygroundTest {
 	 * @param {string[]} [args=["play/main.js"]] Arguments passed to the node process.
 	 */
 	async run(args = ['play/main.js']) {
+		// Optimization: if we have --demo or --lang in env equivalent, let's use them directly
+		// But for now, we follow the args passed.
 		const child = spawn(process.execPath, args, {
 			env: this.env,
 			stdio: ['pipe', 'pipe', 'pipe'],
@@ -136,7 +139,7 @@ export default class PlaygroundTest {
 		let stdout = ''
 		for await (const chunk of child.stdout) {
 			stdout += chunk.toString()
-			this.emit('stdout', { chunk })
+			await this.emit('stdout', { chunk })
 		}
 
 		let stderr = ''

@@ -1,27 +1,6 @@
 __   _ _______ __   _     _  _  _ _______ ______ 
 | \  | |_____| | \  |     |  |  | |______ |_____] 
 |  \_| |     | |  \_|  •  |__|__| |______ |_____] 
-Select demo to run:
- 1) Basic Logging
- 2) Select Prompt
- 3) Simple Demo
- 4) Form Input
- 5) UiMessage
- 6) View Components
- 7) Nav Components
- 8) Tree View
- 9) Table Filtering
- 10) Instant Table
- 11) Autocomplete
- 12) Long List
- 13) Advanced Form
- 14) Toggle
- 15) Slider
- 16) ProgressBar
- 17) Spinner
- 18) Date & Time
-  ↓ (1 more)
-✔  4
 Form Demo – Using Custom Form Class
 Filling user form... (uses predefined sequence if set)
 Unique user name []: snap_user
@@ -33,28 +12,3 @@ Favorite color
 Select: 2
 Form completed successfully!
 User: snap_user, Age: 25, Color: Green
-==================================================
-Demo completed. Returning to menu...
-==================================================
-Select demo to run:
- 1) Basic Logging
- 2) Select Prompt
- 3) Simple Demo
- 4) Form Input
- 5) UiMessage
- 6) View Components
- 7) Nav Components
- 8) Tree View
- 9) Table Filtering
- 10) Instant Table
- 11) Autocomplete
- 12) Long List
- 13) Advanced Form
- 14) Toggle
- 15) Slider
- 16) ProgressBar
- 17) Spinner
- 18) Date & Time
-  ↓ (1 more)
-✔  19
-Thanks for exploring UI‑CLI demos! 🚀

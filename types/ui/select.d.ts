@@ -10,6 +10,8 @@
  * @param {any} [input.ask] - Deprecated. Ignored in new implementation.
  * @param {string} [input.invalidPrompt] - Deprecated. Ignored in new implementation.
  * @param {number} [input.limit=10] - Max visible items.
+ * @param {string} [input.hint] - Hint text.
+ * @param {Function} [input.t] - Translation function.
  * @returns {Promise<{index:number,value:any,cancelled:boolean}>} Resolves with the selected index and its value.
  *
  * @throws {CancelError} When the user cancels the operation.
@@ -23,6 +25,8 @@ export function select(input: {
     ask?: any;
     invalidPrompt?: string | undefined;
     limit?: number | undefined;
+    hint?: string | undefined;
+    t?: Function | undefined;
 }): Promise<{
     index: number;
     value: any;

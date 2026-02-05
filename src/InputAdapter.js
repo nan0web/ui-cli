@@ -7,6 +7,7 @@
 import { UiForm, InputAdapter as BaseInputAdapter, UiMessage } from '@nan0web/ui'
 import { CancelError } from '@nan0web/ui/core'
 import prompts from 'prompts'
+import readline from 'node:readline'
 
 import { ask as baseAsk, text as baseText, beep, createInput, createPredefinedInput, Input } from './ui/input.js'
 import { next } from './ui/next.js'
@@ -118,6 +119,11 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 		return null
 	}
 
+	/** @returns {string[]} */
+	getRemainingAnswers() {
+		return this.#answers.slice(this.#cursor)
+	}
+
 	/**
 	 * Normalise a value that can be either a raw string or an {@link Input}
 	 * instance (which carries the actual value in its `value` property).
@@ -130,6 +136,30 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 			return String(val.value)
 		}
 		return String(val ?? '')
+	}
+
+	/**
+	 * Private helper to format value according to mask
+	 * @param {string|number} value
+	 * @param {string} mask
+	 */
+	#applyMask(value, mask) {
+		if (!mask) return String(value)
+		const cleanValue = String(value).replace(/[^a-zA-Z0-9]/g, '')
+		let i = 0
+		let v = 0
+		let result = ''
+		while (i < mask.length && v < cleanValue.length) {
+			const maskChar = mask[i]
+			if (maskChar === '#' || maskChar === '0' || maskChar === 'A') {
+				result += cleanValue[v]
+				v++
+			} else {
+				result += maskChar
+			}
+			i++
+		}
+		return result
 	}
 
 	/**
@@ -235,7 +265,9 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 					action: 'form-cancel',
 				}
 			}
-			const promptMsg = `${this.#t(field.label || field.name)}${field.required ? ' *' : ''}: `
+			const label = this.#t(field.label || field.name)
+			const hasPunctuation = label.trim().endsWith('?') || label.trim().endsWith(':')
+			const promptMsg = `${label}${field.required ? ' *' : ''}${hasPunctuation ? '' : ':'}`
 
 			// ---- Handle select fields (options) ----------------------------------------
 			if (field.type === 'select' || (Array.isArray(field.options ?? 0) && field.options.length && field.type !== 'multiselect' && field.type !== 'autocomplete')) {
@@ -271,7 +303,7 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 			}
 			// ---- Handle confirm / toggle fields --------------------------------------
 			if (field.type === 'confirm' || field.type === 'toggle') {
-				const res = await this.requestConfirm({ message: this.#t(field.label || field.name) })
+				const res = await this.requestConfirm({ message: promptMsg })
 				if (!res || res.cancelled) {
 					return {
 						body: { action: 'form-cancel', cancelled: true },
@@ -287,7 +319,7 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 			// ---- Handle multiselect fields -------------------------------------------
 			if (field.type === 'multiselect') {
 				const res = await this.requestMultiselect({
-					message: this.#t(field.label || field.name),
+					message: promptMsg,
 					options: Array.isArray(field.options) ? field.options : [],
 					initial: [],
 				})
@@ -306,7 +338,7 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 			// ---- Handle mask fields --------------------------------------------------
 			if (field.type === 'mask') {
 				const res = await this.requestMask({
-					message: this.#t(field.label || field.name),
+					message: promptMsg,
 					mask: field.mask || '',
 					placeholder: field.placeholder || '',
 				})
@@ -325,7 +357,7 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 			// ---- Handle date / datetime fields ---------------------------------------
 			if (field.type === 'date' || field.type === 'datetime') {
 				const res = await this.requestDateTime({
-					message: field.label || field.name,
+					message: promptMsg,
 					initial: field.value instanceof Date ? field.value : new Date(),
 					mask: field.mask
 				})
@@ -503,6 +535,7 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 				}
 				return { value: valToInject, cancelled: false }
 			}
+			config.t = this.t
 			const res = await this.select(config)
 			return { value: res.value, cancelled: res.cancelled ?? false }
 		} catch (e) {
@@ -572,18 +605,22 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 	 * Requests confirmation (yes/no).
 	 *
 	 * @param {Object} config - Confirmation configuration.
-	 * @returns {Promise<{value: boolean, cancelled: boolean}>} User confirmation.
+	 * @returns {Promise<{value: boolean|undefined, cancelled: boolean}>} User confirmation.
 	 */
 	async requestConfirm(config) {
 		const predefined = this.#nextAnswer()
 		const prompt = config.message || 'Confirm: '
 		if (predefined !== null) {
-			this.console.info(`✔ ${prompt} ${predefined}`)
-			const val = ['y', 'yes', 'true', '1', 'так'].includes(predefined.toLowerCase())
+			const val = ['y', 'yes', 'true', '1', 'так', '+'].includes(predefined.toLowerCase())
+			const display = val ? (config.active || this.#t('yes')) : (config.inactive || this.#t('no'))
+			this.console.info(`✔ ${prompt} ${display}`)
 			return { value: val, cancelled: false }
 		}
 		try {
-			return await baseConfirm(config)
+			const active = config.active || (this.#t ? this.#t('yes') : 'Yes')
+			const inactive = config.inactive || (this.#t ? this.#t('no') : 'No')
+			if (typeof config === 'object' && config !== null) config.t = this.t
+			return await baseConfirm({ ...config, message: prompt, active, inactive, t: this.t })
 		} catch (e) {
 			if (e instanceof CancelError) return { value: undefined, cancelled: true }
 			throw e
@@ -612,7 +649,7 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 	 * Requests multiple selection.
 	 *
 	 * @param {Object} config - Multiselect configuration.
-	 * @returns {Promise<{value: any[], cancelled: boolean}>} Selected values.
+	 * @returns {Promise<{value: any[]|undefined, cancelled: boolean}>} Selected values.
 	 */
 	async requestMultiselect(config) {
 		const predefined = this.#nextAnswer()
@@ -629,6 +666,7 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 
 		// Pass instructions to multiselect config
 		config.instructions = instructions
+		config.t = this.t
 
 		try {
 			return await baseMultiselect(config)
@@ -642,17 +680,35 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 	 * Requests masked input.
 	 *
 	 * @param {Object} config - Mask configuration.
-	 * @returns {Promise<{value: string, cancelled: boolean}>} Masked value.
+	 * @returns {Promise<{value: string|undefined, cancelled: boolean}>} Masked value.
 	 */
 	async requestMask(config) {
 		const predefined = this.#nextAnswer()
 		const prompt = config.message || 'Input: '
 		if (predefined !== null) {
-			this.console.info(`${prompt} ${predefined}`)
+			const display = this.#applyMask(predefined, config.mask)
+			this.console.info(`✔ ${prompt} ${display}`)
 			return { value: predefined, cancelled: false }
 		}
 		try {
-			return await baseMask(config)
+			const maskImpl = this.#components.get('mask') || baseMask
+			const res = await maskImpl({ ...config, message: prompt })
+			if (res && !res.cancelled) {
+				try {
+					readline.moveCursor(this.#stdout, 0, -1)
+					readline.clearLine(this.#stdout, 0)
+					this.console.info(`✔ ${prompt} ${res.value}`)
+				} catch (e) {
+					this.console.error('Cursor op failed:', e)
+					// Ignore cursor errors in non-TTY environments, but ensure output is logged
+					// If cursor moved failed, we might have duplicate log.
+					// But we prioritize showing correct value.
+					// If readline failed, we assume console.info needs to run?
+					// If readline failed, console.info might have been cleared? No.
+					// We only print if we tried to clear.
+				}
+			}
+			return res
 		} catch (e) {
 			if (e instanceof CancelError) return { value: undefined, cancelled: true }
 			throw e
@@ -662,7 +718,7 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 	/**
 	 * Request a toggle switch.
 	 * @param {Object} config
-	 * @returns {Promise<{value: boolean, cancelled: boolean}>}
+	 * @returns {Promise<{value: boolean|undefined, cancelled: boolean}>}
 	 */
 	async requestToggle(config) {
 		const predefined = this.#nextAnswer()
@@ -682,7 +738,7 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 	/**
 	 * Request a numeric slider.
 	 * @param {Object} config
-	 * @returns {Promise<{value: number, cancelled: boolean}>}
+	 * @returns {Promise<{value: number|undefined, cancelled: boolean}>}
 	 */
 	async requestSlider(config) {
 		const predefined = this.#nextAnswer()
@@ -692,6 +748,7 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 			return { value: Number(predefined), cancelled: false }
 		}
 		try {
+			config.t = this.t
 			return await baseSlider(config)
 		} catch (e) {
 			if (e instanceof CancelError) return { value: undefined, cancelled: true }
@@ -730,6 +787,7 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 			return { value: predefined, cancelled: false }
 		}
 		try {
+			config.t = this.t
 			return await baseTree(config)
 		} catch (e) {
 			if (e instanceof CancelError) return { value: undefined, cancelled: true }

@@ -5,6 +5,7 @@
 import NumberPrompt from 'prompts/lib/elements/number.js'
 import prompts from 'prompts'
 import { CancelError } from '@nan0web/ui/core'
+import { validateString, validateNumber, validateFunction } from '../core/PropValidation.js'
 
 /**
  * Custom SliderPrompt that adds visual bar and Shift+Up/Down jumps.
@@ -84,15 +85,21 @@ class SliderPrompt extends NumberPrompt {
  * @returns {Promise<{value:number, cancelled:boolean}>}
  */
 export async function slider(config) {
+	validateString(config.message, 'message', 'Slider', true)
+	validateNumber(config.initial, 'initial', 'Slider')
+	validateNumber(config.min, 'min', 'Slider')
+	validateNumber(config.max, 'max', 'Slider')
+	validateNumber(config.step, 'step', 'Slider')
+	validateFunction(config.t, 't', 'Slider')
+
 	const { message, initial, min = 0, max = 100, step = 1, t = (k) => k } = config
 	const range = max - min
 	const jump = config.jump || Math.max(step, Math.round(range / 10))
 
 	try {
-		const isTTY = process.stdout.isTTY
 		const isTest = process.env.NODE_TEST_CONTEXT || process.env.PLAY_DEMO_SEQUENCE
 
-		if (isTest || !isTTY) {
+		if (isTest) {
 			// In tests, fallback to a simple text-based number input to avoid complex TTY interactions
 			const res = await prompts({
 				type: 'text',
@@ -109,35 +116,28 @@ export async function slider(config) {
 			return { value: Number(res.value), cancelled: res.value === undefined }
 		}
 
-		const result = await prompts(
-			{
-				// Passing class directly to type as a function is the most robust way
-				// to handle custom prompts in some library versions.
-				type: () => SliderPrompt,
-				name: 'value',
-				message: `${t(message)} (${min}-${max})`,
-				initial: initial ?? min,
-				min,
-				max,
-				increment: step,
-				jump,
-			},
-			{
-				onCancel: () => {
-					throw new CancelError()
-				},
-			}
-		)
-
-		if (result.value === undefined) {
+		// For interactive TTY, use the built-in number prompt (works reliably)
+		const res = await prompts({
+			type: 'number',
+			name: 'value',
+			message: `${t(message)} (${min}-${max})`,
+			initial: initial ?? min,
+			min,
+			max,
+			increment: step
+		}, {
+			onCancel: () => { throw new CancelError() }
+		})
+		if (res.value === undefined) {
 			return { value: initial ?? min, cancelled: true }
 		}
 
-		return { value: result.value, cancelled: false }
+		return { value: res.value, cancelled: false }
 	} catch (err) {
-		if (err instanceof CancelError) {
-			throw err
+		const error = /** @type {any} */ (err)
+		if (error instanceof CancelError || error.message === 'canceled') { // prompts throws 'canceled' sometimes
+			throw new CancelError()
 		}
-		throw new CancelError()
+		throw error
 	}
 }

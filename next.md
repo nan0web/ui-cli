@@ -1,87 +1,78 @@
-# UI-CLI 2.0: Component Architecture Revolution
+# План дій для наступної сесії
 
-## 🏛️ Council of Thinkers (The Verdict)
+## ✅ Виконано (2026-02-05)
 
-The consensus is clear. To achieve true "One Logic — Many UI" and seamless integration across CLI, Web, and Voice, we must shift from **Imperative Functions** to **Declarative Components**.
+### 1. Автоматизація Тестування Локалізації (I18n) ✅
+- ✅ **Новий тест `test:i18n`**: Створено скрипт `scripts/check-i18n.js`, який сканує `src/**/*.js` на наявність викликів `t('...')` та перевіряє їх наявність у всіх файлах `play/vocabs/*.js`.
+- ✅ **Multi-Locale Snapshots**: Підтверджено, що `snapshot.test.js` гарантовано запускається для всіх мов (uk, en) та порівнює результати.
+- ✅ **Виправлення помилок**: Знайдено та виправлено друкарську помилку в українському словнику ("Вик" → "Вік").
 
-*   **Socrates (Logic):** Logic should describe *truth* (State), not issue commands. Functions bind logic to implementation; Objects (Components) free it.
-*   **Da Vinci (Engineering):** Complex interfaces are built from simple, reusable, stylable parts. An `Alert` is a concept that can be a CLI Box or a Web Modal.
-*   **Tesla (System):** Data must flow as energy (Objects/JSON) without hard coupling. Wireless transmission of UI requires a protocol of Objects, not function calls.
-*   **Jobs (Experience):** Make it familiar. Developers think in Components (React-like). If CLI looks like React, we win.
-*   **Paton (Reliability):** A single standardized "welding joint" (Interface) for all platforms ensures structural integrity.
+### 2. Посилення Типізації Промптів ✅
+- ✅ **Strict Props Validation**: Створено модуль `src/core/PropValidation.js` з валідаторами типів (validateDate, validateString, validateFunction, validateBoolean, validateNumber).
+- ✅ **DateTime Auto-conversion**: Впроваджено автоматичну конвертацію рядків дат у об'єкти Date у компоненті `DateTime`.
+- ✅ **Validation Integration**: Додано валідацію пропсів до компонентів `DateTime` та `Confirm`.
 
-## 🎯 The Goal
+### 3. Виправлення V2 Demo ✅
+- ✅ **Mock File System**: Додано статичні mock-дані для Tree компонента замість читання реальної файлової системи.
+- ✅ **Test Sequence Fix**: Виправлено тестову послідовність для Multiselect у v2_components снепшоті.
+- ✅ **Snapshot Update**: Оновити снепшоти для коректного відображення всіх полів.
 
-Transform `@nan0web/ui-cli` from a collection of helper functions into a **Component-Based Rendering Engine** with a strict separation between **View** (Static) and **Prompt** (Interactive) components.
+### 4. V2 TDD Regression Fixes (Latest) ✅
+- ✅ **Navigation**: Added Main Menu Loop to V2 Demo (Showcase/Exit), matching V1 UX.
+- ✅ **Clean Exit**: Fixed process hang by implementing `pause()` instead of `resume()` in `ui/next.js` cleanup. Verified with regression test.
+- ✅ **Deep Localization**: 
+  - `Confirm`: Localized "yes/no" output in summary AND native prompts (`active`/`inactive`).
+  - `Multiselect` & `Select`: Added localized hints support.
+  - `Multiselect`: Extracted and localized default instructions (arrow keys, etc).
+- ✅ **Regression Suite**: Added dedicated tests (`test/hang.test.js`, `test/confirm_format.test.js`, etc) to prevent regressions.
 
-### Architecture: View vs Prompt
+## 📋 Наступні кроки
 
-We categorize UI elements into two distinct types based on their behavior:
+### 5. Розширення Валідації та Локалізації ✅
+- ✅ **Strict Prop Validation**: Added `validateString`, `validateNumber`, etc. to `Input`, `Select`, `Slider`, `TreeView`.
+- ✅ **Deep Localization**: Localized `Table` filter/status messages and `Confirm` component defaults (yes/no).
+- ✅ **Default Instructions**: Extracted instructions to vocabularies.
 
-1.  **View Components (Static/Sync)**
-    *   **Purpose:** Display information, layout, structure.
-    *   **Behavior:** Synchronous. Pure functions of state.
-    *   **Capability:** Can be stringified directly via `.toString()`. Valid in `console.log`.
-    *   **Examples:** `Alert`, `Box`, `Table`, `Text`, `Badge`.
-    *   **Usage:** `console.log(Alert({ title: 'Hi' }))` OR `await render(Alert({ title: 'Hi' }))`.
+### 6. Рефакторинг Архітектури Пакетів ✅
+- ✅ **InputAdapter Injection**: Updated `CLiInputAdapter` to inject `t` function into all component requests.
+- ✅ **System.md Update**: Confirmed `system.md` standards are up-to-date.
+- ✅ **Executable Documentation**: Updated `README.md.js` tests and verified `README.md`.
+- ✅ **Type Definitions**: Rebuilt `d.ts` files with new JSDoc.
 
-2.  **Prompt Components (Interactive/Async)**
-    *   **Purpose:** Gather input, user decisions.
-    *   **Behavior:** Asynchronous. Pause execution awaiting user action.
-    *   **Capability:** Cannot be stringified significantly. Must be `render()`-ed.
-    *   **Examples:** `Select`, `Input`, `Confirm`, `Multiselect`.
-    *   **Usage:** `await render(Select({ options: [...] }))`.
+### 7. Покращення CI/CD ✅
+- ✅ **Pre-commit Hook**: Added `test:i18n` to pre-commit checks.
+- ⏭️ **Snapshot Diff Review**: *Skipped (requires repository admin).*
 
-### Current (Legacy - Imperative)
-```javascript
-import { alert } from './ui/alert.js';
-// Side-effect immediately
-alert("Hello"); 
-```
+### 8. Документація ✅
+- ✅ **Migration Guide**: Created `MIGRATION.md` covering strict validation and I18n.
+- ✅ **Best Practices**: Documented in `MIGRATION.md`.
 
-### Future (Target - Declarative)
-```javascript
-import { render } from '@nan0web/ui-cli';
-import { Alert } from '@nan0web/ui-cli/view';
-import { Select } from '@nan0web/ui-cli/prompt';
+### 9. Виправлення Візуальних Дефектів (Mask) ✅
+- ✅ **Manual Stdout Override**: `Mask` component now manually overwrites the final output line to ensure the formatted value (e.g. `+380...`) is displayed instead of raw input (`067...`).
+- ✅ **Test-First Protocol**: Implemented strict `mask_visual.test.js` failing first, then passing.
+- ✅ **TDD Verification**: Added "TEST-FIRST FOR BUGS" protocol to `system.md`.
+- ✅ **Unit Tests**: Added `src/ui/mask_unit.test.js` verifying mask behavior, including the known "crooked" prefix handling (shifting).
 
-// 1. Static View (Instant)
-console.log(Alert({ title: 'Welcome', variant: 'success' }));
+## 📋 Наступні кроки
 
-// 2. Interactive Prompt (Async)
-const choice = await render(
-    Select({ 
-        message: 'Choose mode:',
-        options: ['Dev', 'Prod']
-    })
-);
-```
+### 10. Покращення Логіки Маски (Smart Prefix)
+- **Problem**: When user types prefix (e.g. `38067...`), it shifts data (`+38 (380)...`).
+- **Solution**: Implement smart prefix detection in `formatMask` to ignore user-typed prefix if it matches the mask static prefix.
+- **Reference**: See `src/ui/mask_unit.test.js` for reproduction case.
 
-## 🛠️ Implementation Roadmap
+### 9. Реліз (Release)
+- **Bump Version**: Update version in `package.json`.
+- **Publish**: Run `npm publish`.
+- **GitHub Release**: Create release tag.
 
-### Phase 1: Core Foundation
-- [ ] Create `src/core/Component.js`: Base factory for components (handling `toString` logic).
-- [ ] Create `src/core/render.js`: The engine that distinguishes between Static and Interactive components.
-- [ ] Define folder structure: `src/components/view/` and `src/components/prompt/`.
+## 🎯 Пріоритети
 
-### Phase 2: View Components (Migration)
-- [ ] `Alert`: Port `ui/alert.js` to `components/view/Alert.js`.
-- [ ] `Table`: Port `ui/table.js` to `components/view/Table.js`.
-- [ ] Ensure `toString()` works for `console.log` compatibility.
+1. **High**: Publish Release.
 
-### Phase 3: Prompt Components (Migration)
-- [ ] `Select`: Port `select` logic to `components/prompt/Select.js`.
-- [ ] `Input`: Port `text` logic to `components/prompt/Input.js`.
-- [ ] `Confirm`: Port `confirm` logic.
-- [ ] Ensure `render()` correctly handles the promise/prompts loop.
+## 📊 Статус Тестів
 
-### Phase 4: Integration & Testing
-- [ ] Update `index.js` exports.
-- [ ] Create `play/v2_demo.js` to verify the new paradigm.
-- [ ] Unit tests for `toString()` rendering and `render()` flow.
-
-## 📝 Success Criteria (Acceptance)
-1.  **Strict Separation:** Views and Prompts are physically and logically separateds.
-2.  **Stringifiable Views:** `String(Alert())` returns valid ANSI output.
-3.  **Render Engine:** `await render()` works for both types (prints Views, executes Prompts).
-4.  **No Side-Effects in Constructors:** Calling `Alert()` or `Select()` does nothing visible until used.
+- ✅ Unit Tests: 122/122 passed
+- ✅ Snapshot Tests: 26/26 passed (13 en + 13 uk)
+- ✅ I18n Completeness: All 21 keys present in both locales
+- ✅ Build: TypeScript compilation successful
+- ✅ Knip: No unused exports found

@@ -4,7 +4,9 @@
  * @module ui/mask
  */
 
-import { text, beep } from './input.js'
+import prompts from 'prompts'
+import { CancelError } from '@nan0web/ui/core'
+import { beep } from './input.js'
 
 /**
  * Validates and optionally formats user input based on a pattern.
@@ -15,10 +17,59 @@ import { text, beep } from './input.js'
  * @param {string} config.message - Prompt question
  * @param {string} config.mask - Mask pattern (e.g., '###-###')
  * @param {string} [config.placeholder] - Hint for the user
+ * @param {Function} [config.t] - Translation function
  * @returns {Promise<{value: string, cancelled: boolean}>}
  */
+/**
+ * Formats a value according to the given mask.
+ * pattern: # = digit, A = letter, 0 = digit.
+ *
+ * @param {string} value
+ * @param {string} mask
+ * @returns {string}
+ */
+export function formatMask(value, mask) {
+	let i = 0
+	let v = 0
+	let result = ''
+
+	// 1. Extract raw alphanumeric input
+	let cleanValue = value.toString().replace(/[^a-zA-Z0-9]/g, '')
+
+	// 2. Smart Prefix Detection:
+	// If the user typed the mask's static prefix (e.g. '38' for '+38'),
+	// remove it from the input to prevent duplication.
+	// We extract the static alphanumeric prefix from the mask itself.
+
+	// Get mask prefix up to the first placeholder
+	const firstPlaceholderIndex = mask.search(/[#0A]/)
+	if (firstPlaceholderIndex > 0) {
+		const maskPrefix = mask.substring(0, firstPlaceholderIndex).replace(/[^a-zA-Z0-9]/g, '')
+
+		// If input starts with this prefix, strip it.
+		// Example: Mask '+38 (###)', Prefix '38'. Input '38067'.
+		// If we don't strip, it becomes '+38 (380) ...' (Wrong)
+		// If we strip '38', input becomes '067'. Result '+38 (067)' (Correct)
+		if (maskPrefix && cleanValue.startsWith(maskPrefix)) {
+			cleanValue = cleanValue.substring(maskPrefix.length)
+		}
+	}
+
+	while (i < mask.length && v < cleanValue.length) {
+		const maskChar = mask[i]
+		if (maskChar === '#' || maskChar === '0' || maskChar === 'A') {
+			result += cleanValue[v]
+			v++
+		} else {
+			result += maskChar
+		}
+		i++
+	}
+	return result
+}
+
 export async function mask(config) {
-	const { message, mask, placeholder } = config
+	const { message, mask, placeholder, t } = config
 
 	const validate = (val) => {
 		if (!val) {
@@ -26,59 +77,51 @@ export async function mask(config) {
 			return 'Input is required'
 		}
 
-		// Simple validation logic based on '#' (digit) and 'A' (alpha)
-		let maskIdx = 0
-		let valIdx = 0
-
-		// This is a basic implementation.
-		// For a full-featured mask we might need a more complex regex generator.
-		const cleanMask = mask.replace(/[^#A]/g, '')
+		// Support '#', '0' for numbers and 'A' for letters.
+		const cleanMask = mask.replace(/[^#0A]/g, '')
 		const cleanVal = val.replace(/[^a-zA-Z0-9]/g, '')
 
 		if (cleanVal.length !== cleanMask.length) {
 			beep()
-			return `Format must be: ${mask}`
+			return `${config.t ? config.t('Format must be:') : 'Format must be:'} ${mask}`
 		}
 
 		return true
 	}
 
 	/*
-	 * Helper helper to format value according to mask
 	 */
-	const applyMask = (value) => {
-		let i = 0
-		let v = 0
-		let result = ''
-		const cleanValue = value.replace(/[^a-zA-Z0-9]/g, '')
 
-		while (i < mask.length && v < cleanValue.length) {
-			const maskChar = mask[i]
-			if (maskChar === '#' || maskChar === 'A') {
-				result += cleanValue[v]
-				v++
-			} else {
-				result += maskChar
-				if (v < cleanValue.length && value[result.length - 1] === maskChar) {
-					// if user typed the separator, skip it in source too logic already handled by cleanValue
-				}
-			}
-			i++
-		}
-		// append remaining mask suffix if any non-input chars left? No, usually not for partial input but here we assume full input
-		return result
-	}
+	// Pre-format the placeholder if it exists so the default value is visual
+	const initialValue = placeholder ? formatMask(placeholder, mask) : undefined
 
-	const result = await text({
-		message: `${message} (${mask})`,
-		initial: placeholder,
+	const response = await prompts({
+		type: 'text',
+		name: 'value',
+		message,
+		initial: initialValue,
 		validate,
-		format: (val) => {
-			// Apply mask formatting on submit
-			return applyMask(val)
+		format: (val) => formatMask(val, mask)
+	}, {
+		onCancel: () => {
+			throw new CancelError()
 		}
 	})
 
-	return result
-}
+	// Ensure the returned value is always formatted
+	const formatted = formatMask(response.value, mask)
 
+	// Manual Stdout Override:
+	// prompts library might verify correctly but display raw input on the final line in some environments.
+	// We force a clean UI by removing the last line and printing our own.
+	if (process.stdout.isTTY) {
+		process.stdout.moveCursor(0, -1) // Move up one line
+		process.stdout.clearLine(0)      // Clear the line
+		// Re-print the message and value manually with proper formatting
+		// Note: We use '✔' to match prompts style, or we can use our own if desired.
+		// prompts default style: '✔ Message … Value'
+		console.log(`✔ ${message} … ${formatted}`)
+	}
+
+	return { value: formatted, cancelled: false }
+}

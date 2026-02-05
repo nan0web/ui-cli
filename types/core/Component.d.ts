@@ -3,7 +3,7 @@
  * These components are synchronous and can be stringified directly.
  *
  * @param {string} displayName - Name of the component (e.g. 'Alert').
- * @param {Object} props - Props passed to the component.
+ * @param {any} props - Props passed to the component.
  * @param {Function} formatFn - Pure function (props) => string.
  */
 export function createView(displayName: string, props: any, formatFn: Function): {
@@ -16,7 +16,7 @@ export function createView(displayName: string, props: any, formatFn: Function):
  * These components are asynchronous and require `render()` or `await` handling.
  *
  * @param {string} displayName - Name of the component.
- * @param {Object} props - Props.
+ * @param {any} props - Props.
  * @param {Function} executorFn - Async function (props) => Promise<result>.
  */
 export function createPrompt(displayName: string, props: any, executorFn: Function): {

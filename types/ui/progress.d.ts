@@ -5,6 +5,10 @@
  */
 export function progress(options: any): ProgressBar;
 /**
+ * Progress module – visual progress bar with timers.
+ * @module ui/progress
+ */
+/**
  * Renders a progress bar.
  */
 export class ProgressBar {

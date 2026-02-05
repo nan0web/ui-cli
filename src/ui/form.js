@@ -85,6 +85,7 @@ export default class Form {
 	 * @param {(prompt: string) => Promise<Input>} [options.inputFn] - Custom input function.
 	 * @param {(config: object) => Promise<{index:number, value:any}>} [options.selectFn] - Custom select function.
 	 * @param {(config: object) => Promise<{value: number, cancelled: boolean}>} [options.sliderFn] - Custom slider function.
+	 * @param {(config: object) => Promise<{value: boolean, cancelled: boolean}>} [options.toggleFn] - Custom toggle function.
 	 * @param {Function} [options.t] - Optional translation function.
 	 * @throws {TypeError} If model is not an object with a constructor.
 	 */
@@ -244,6 +245,19 @@ export default class Form {
 					}
 					this.#model[field.name] = this.convertValue(field, val)
 					idx++
+				} else if (field.type === 'toggle' && /** @type {any} */(this.options).toggleFn) {
+					// Use toggle for boolean fields
+					const toggleConfig = {
+						message: field.label,
+						initial: currentValue === 'true' || currentValue === true
+					}
+					const toggleResult = await /** @type {any} */(this.options).toggleFn(toggleConfig)
+					if (toggleResult && toggleResult.cancelled) {
+						return { cancelled: true }
+					}
+					const val = toggleResult ? toggleResult.value : currentValue
+					idx++ // Toggles don't fail validation usually
+					this.#model[field.name] = val
 				} else {
 					const inputObj = await this.input(prompt)
 					if (inputObj.cancelled) {

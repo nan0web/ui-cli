@@ -17,8 +17,14 @@ import { PlaygroundTest } from '../src/test/index.js'
  */
 function normalizeOutput(str) {
     return str
-        // Remove ANSI codes
-        .replace(/\x1B\[[0-9;]*[mK]/g, '')
+        // Remove ANSI codes (including cursor movement, erase, etc)
+        .replace(/\x1B\[[0-9;?]*[a-zA-Z]/g, '')
+        // Normalize progress bars: [====>---] 20% [00:00 < 00:00]
+        .replace(/\[\=*\>?-*\] \d+% \[\d{2}:\d{2}( < \d{2}:\d{2})?\]/g, '[PROGRESS_BAR]')
+        // Normalize spinner frames (braille patterns)
+        .replace(/^[⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏].*$/gm, '[SPINNER_FRAME]')
+        // Deduplicate consecutive spinner frames
+        .replace(/(\[SPINNER_FRAME\]\n?)+/g, '[SPINNER_ANIMATION]\n')
         // Normalize spinner durations [00:02] -> [XX:XX]
         .replace(/\[\d{2}:\d{2}\]/g, '[XX:XX]')
         // Remove clear screen empty lines at start
@@ -29,9 +35,10 @@ function normalizeOutput(str) {
 
 const SNAPSHOT_DIR = path.join(process.cwd(), 'play', 'snapshots')
 
-async function verifySnapshot(name, env) {
+async function verifySnapshot(name, demo, lang, env) {
     const pt = new PlaygroundTest({ ...process.env, ...env }, { includeDebugger: false, feedStdin: true })
-    const { stdout, stderr } = await pt.run(['play/main.js'])
+    // Use --demo and --lang to skip menu and language selection
+    const { stdout, stderr } = await pt.run(['play/main.js', `--demo=${demo}`, `--lang=${lang}`])
 
     // Include stderr for validation errors
     const combined = stdout + (stderr ? '\n--- STDERR ---\n' + stderr : '')
@@ -60,56 +67,72 @@ async function verifySnapshot(name, env) {
     }
 }
 
-// NOTE: Exit is item 19.
 const SCENARIOS = [
     {
         name: 'select',
-        seq: '2,3,19'
+        demo: 'select',
+        seq: '3' // Choose Blue
     },
     {
         name: 'form_valid',
-        seq: '4,snap_user,25,2,19'
+        demo: 'form',
+        seq: 'snap_user,25,2'
     },
     {
         name: 'form_validation_error',
-        seq: '4,snap_user,3,25,2,19'
+        demo: 'form',
+        seq: 'snap_user,3,25,2'
     },
     {
         name: 'view_components',
-        seq: '6,a,19'
+        demo: 'view',
+        seq: 'a' // any key to exit
     },
     {
         name: 'nav_components',
-        seq: '7,a,19'
+        demo: 'nav',
+        seq: 'a' // any key to exit
     },
     {
         name: 'tree_view',
-        seq: '8,package.json,src,play,a,19'
+        demo: 'tree',
+        seq: 'package.json,a' // Simplified: pick file, then any key to exit (Scenario 2 & Pause are skipped in test mode)
     },
     {
         name: 'autocomplete',
-        seq: '11,Ukraine,19',
-        seq_uk: '11,Укр,19'
+        demo: 'autocomplete',
+        seq: 'Ukraine',
+        seq_uk: 'Україна'
     },
     {
         name: 'advanced_form',
-        seq: '13,adv_user,pass,1234567890,y,Admin,19'
+        demo: 'advanced-form',
+        seq: 'adv_user,pass,1234567890,25,,y,Admin'
     },
     {
         name: 'toggle',
-        seq: '14,y,19'
+        demo: 'toggle',
+        seq: 'y'
     },
     {
         name: 'slider',
-        seq: '15,10,120,555000,700,19'
+        demo: 'slider',
+        seq: '10,120,555000,700'
     },
     {
         name: 'ui_message',
-        seq: '5,snap_user,25,2,19'
+        demo: 'ui-message',
+        seq: 'snap_user,25,2'
     },
     {
         name: 'datetime',
-        seq: '18,2026-01-01,10:20,2026-01-21 16:20,a,19'
+        demo: 'datetime',
+        seq: '2026-01-01,10:20,2026-01-21 16:20,a'
+    },
+    {
+        name: 'v2_components',
+        demo: 'v2',
+        seq: 'showcase,UserV2,12345,y,y,1,Logging,Ukraine,75,0671234567,2026-02-07,package.json,,exit'
     }
 ]
 
@@ -124,8 +147,7 @@ describe('Snapshot Verification (Golden Master)', () => {
             for (const scenario of SCENARIOS) {
                 const seq = (lang === 'uk' && scenario.seq_uk) ? scenario.seq_uk : scenario.seq
                 it(`matches snapshot: ${scenario.name} [${lang}]`, async () => {
-                    await verifySnapshot(`${scenario.name}.${lang}`, {
-                        LANG: lang,
+                    await verifySnapshot(`${scenario.name}.${lang}`, scenario.demo, lang, {
                         PLAY_DEMO_SEQUENCE: seq
                     })
                 })

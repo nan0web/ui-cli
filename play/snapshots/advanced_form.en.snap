@@ -1,194 +1,31 @@
 __   _ _______ __   _     _  _  _ _______ ______ 
 | \  | |_____| | \  |     |  |  | |______ |_____] 
 |  \_| |     | |  \_|  •  |__|__| |______ |_____] 
-Select demo to run:
- 1) Basic Logging
- 2) Select Prompt
- 3) Simple Demo
- 4) Form Input
- 5) UiMessage
- 6) View Components
- 7) Nav Components
- 8) Tree View
- 9) Table Filtering
- 10) Instant Table
- 11) Autocomplete
- 12) Long List
- 13) Advanced Form
- 14) Toggle
- 15) Slider
- 16) ProgressBar
- 17) Spinner
- 18) Date & Time
-  ↓ (1 more)
-✔  13
 Advanced Form Demo
 Testing password masking and boolean fields.
-✔ Login *:  adv_user
-✔ Password *: ****
-Phone 1234567890
-✔ User age *:  25
-✔ Subscribe to newsletter y
-✔ Remember me? Admin
-Select your roles 19
+✔ Login *: adv_user
+✔ Password *:****
+✔ Phone *: (123) 456-7890
+✔ User age *: 25
+✔ Subscribe to newsletter: Yes
+✔ Remember me? No
+? Select your roles: › (Space to select. Enter to submit) 
+Instructions:
+    ↑/↓: Highlight option
+    ←/→/[space]: Toggle selection
+    a: Toggle all
+    enter/return: Complete answer
+◯   Admin
+◯   Editor
+◯   Viewer? Select your roles: › (Space to select. Enter to submit) 
+Instructions:
+    ↑/↓: Highlight option
+    ←/→/[space]: Toggle selection
+    a: Toggle all
+    enter/return: Complete answer
+◉   Admin
+◉   Editor
+◉   Viewer✔ Select your roles: › Admin, Editor, Viewer
 Form submitted!
 Form data (password is hidden here):
-{"username":"adv_user","password":"********","phone":"1234567890","age":"25","newsletter":true,"rememberMe":false,"roles":["19"]}
-==================================================
-Demo completed. Returning to menu...
-==================================================
-? Select demo to run: › - Use arrow-keys. Return to submit.
-❯   Basic Logging
-    Select Prompt
-    Simple Demo
-    Form Input
-    UiMessage
-    View Components
-    Nav Components
-    Tree View
-    Table Filtering
-  ↓ Instant Table
-✔ Select demo to run: › Basic Logging
-Basic Logging Demo
-✓ Logger initialized
-✓ This demo simply logs messages
-==================================================
-Demo completed. Returning to menu...
-==================================================
-? Select demo to run: › - Use arrow-keys. Return to submit.
-❯   Basic Logging
-    Select Prompt
-    Simple Demo
-    Form Input
-    UiMessage
-    View Components
-    Nav Components
-    Tree View
-    Table Filtering
-  ↓ Instant Table
-✔ Select demo to run: › Basic Logging
-Basic Logging Demo
-✓ Logger initialized
-✓ This demo simply logs messages
-==================================================
-Demo completed. Returning to menu...
-==================================================
-? Select demo to run: › - Use arrow-keys. Return to submit.
-❯   Basic Logging
-    Select Prompt
-    Simple Demo
-    Form Input
-    UiMessage
-    View Components
-    Nav Components
-    Tree View
-    Table Filtering
-  ↓ Instant Table
-✔ Select demo to run: › Basic Logging
-Basic Logging Demo
-✓ Logger initialized
-✓ This demo simply logs messages
-==================================================
-Demo completed. Returning to menu...
-==================================================
-? Select demo to run: › - Use arrow-keys. Return to submit.
-❯   Basic Logging
-    Select Prompt
-    Simple Demo
-    Form Input
-    UiMessage
-    View Components
-    Nav Components
-    Tree View
-    Table Filtering
-  ↓ Instant Table
-✔ Select demo to run: › Basic Logging
-Basic Logging Demo
-✓ Logger initialized
-✓ This demo simply logs messages
-==================================================
-Demo completed. Returning to menu...
-==================================================
-? Select demo to run: › - Use arrow-keys. Return to submit.
-❯   Basic Logging
-    Select Prompt
-    Simple Demo
-    Form Input
-    UiMessage
-    View Components
-    Nav Components
-    Tree View
-    Table Filtering
-  ↓ Instant Table
-✔ Select demo to run: › Basic Logging
-Basic Logging Demo
-✓ Logger initialized
-✓ This demo simply logs messages
-==================================================
-Demo completed. Returning to menu...
-==================================================
-? Select demo to run: › - Use arrow-keys. Return to submit.
-❯   Basic Logging
-    Select Prompt
-    Simple Demo
-    Form Input
-    UiMessage
-    View Components
-    Nav Components
-    Tree View
-    Table Filtering
-  ↓ Instant Table
-✔ Select demo to run: › Basic Logging
-Basic Logging Demo
-✓ Logger initialized
-✓ This demo simply logs messages
-==================================================
-Demo completed. Returning to menu...
-==================================================
-? Select demo to run: › - Use arrow-keys. Return to submit.
-❯   Basic Logging
-    Select Prompt
-    Simple Demo
-    Form Input
-    UiMessage
-    View Components
-    Nav Components
-    Tree View
-    Table Filtering
-  ↓ Instant Table
-✔ Select demo to run: › Basic Logging
-Basic Logging Demo
-✓ Logger initialized
-✓ This demo simply logs messages
-==================================================
-Demo completed. Returning to menu...
-==================================================
-? Select demo to run: › - Use arrow-keys. Return to submit.
-❯   Basic Logging
-    Select Prompt
-    Simple Demo
-    Form Input
-    UiMessage
-    View Components
-    Nav Components
-    Tree View
-    Table Filtering
-  ↓ Instant Table
-✔ Select demo to run: › Basic Logging
-Basic Logging Demo
-✓ Logger initialized
-✓ This demo simply logs messages
-==================================================
-Demo completed. Returning to menu...
-==================================================
-? Select demo to run: › - Use arrow-keys. Return to submit.
-❯   Basic Logging
-    Select Prompt
-    Simple Demo
-    Form Input
-    UiMessage
-    View Components
-    Nav Components
-    Tree View
-    Table Filtering
-  ↓ Instant Table
+{"username":"adv_user","password":"********","phone":"1234567890","age":"25","newsletter":true,"rememberMe":false,"roles":["Admin","Editor","Viewer"]}
