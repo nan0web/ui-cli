@@ -1,4 +1,3 @@
-
 # Changelog
 
 All notable changes to this project will be documented in this file.
@@ -9,30 +8,64 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [2.0.0] - 2026-02-05
 
 ### Added
-- **Mask Component Visuals**: Implemented `Manual Stdout Override` for `Mask` component to guarantee correctly formatted output (e.g. `+380...`) in terminals, preventing raw input leakage.
-- **Smart Prefix Logic**: Added intelligent handling for mask prefixes (e.g. typing `380` into `+38` mask) to prevent data duplication.
-- **System Protocols**: Established "TEST-FIRST FOR BUGS" protocol in `system.md` to mandate TDD for all bug fixes.
-- **Testing**: Added `test:i18n` script for automated localization verification.
-- **Validation**: Introduced strict prop validation for `Input`, `Select`, `Slider`, `TreeView`, and `DateTime`.
-- **Localization**: Added deep localization support for `Confirm`, `Table`, `Multiselect` and all prompt instructions.
-- **Architecture**: Implemented `InputAdapter` injection pattern for universal component testing.
+- **UI Architecture V2 (Prompt/View)**: Complete rewrite of component architecture splitting logic into `Prompt` (interactive) and `View` (static) components.
+- **Manual Stdout Override**: `Mask` component now manually overwrites the final output line to ensure the formatted value (e.g. `+380...`) is displayed terminals.
+- **Smart Prefix Logic**: `Mask` intelligently handles user-typed prefixes (e.g. typing `380` into `+38` mask) to prevent data duplication.
+- **TDD Protocols**: Established "The Sandbox Rule" and "The Final Stroke" in system documentation.
+- **Validators**: Added strict `PropValidation` for all inputs (`validateString`, `validateNumber`, etc).
+- **Localization**: Full I18n support for all components including `Confirm`, `Table`, `Multiselect`.
+- **System**: Implemented `pause()` and `next()` controls for better flow management.
+- **Tree Component**: New file system navigation component with async loading simulation.
 
 ### Fixed
-- **Prefix Duplication**: Fixed an issue where typing the mask prefix (e.g. `38` in `380`) resulted in shifted/broken input.
-- **Visual Glitches**: Resolved visual discrepancy in `Mask` component where raw input was displayed after submission.
-- **V2 Demo**: Fixed file system mocking in `Tree` demo and corrected snapshot sequences.
-- **Process Hangs**: Fixed process hanging issues in `ui/next.js` by implementing correct pause/resume logic.
+- **Slider UX**: Removed duplicate range display `(0-100) (0-100)` in prompts.
+- **Mask Input**: Fixed "crooked" input shifting when users type the mask prefix manually.
+- **Process Hangs**: Fixed process hanging issues in `ui/next.js` cleanup.
+- **Types**: Resolved strict TypeScript compilation errors across the package.
 
 ### Changed
-- **Strict Mode**: `Mask` component now internally overrides `prompts` stdout rendering for final value display.
-- **Documentation**: Updated `README.md` and `MIGRATION.md` to reflect V2 architecture and strict validation rules.
+- **CLI Adapter**: `CLiInputAdapter` now injects `t` function automatically into components.
+- **Exports**: Standardized exports into `src/components/prompt` and `src/components/view` with backward compatibility layers.
+
+## [1.2.0] - 2026-02-04
+*Internal checkpoint before V2 migration.*
+
+### Added
+- **Documentation Testing**: Implemented `console.output()` verification for README examples.
+- **UI Refresh**: Modernized prompt aesthetics and improved color localization.
+
+### Changed
+- Refactored `select` and `slider` visuals.
+- Updated README with unified return contract specifications.
 
 ## [1.1.1] - 2026-02-03
+
 ### Fixed
-- Fixed localization bugs in `DateTime` component.
-- Resolved CLI timeouts in automated testing environments.
+- **CLI Runner**: Fixed command execution logic in `CLiInputAdapter`.
 
 ## [1.1.0] - 2026-02-02
+
 ### Added
-- Initial support for TreeView component.
-- Added prompt injection mechanism for E2E testing.
+- **Schema Forms**: Added schema-driven form generation support.
+- **Select Handling**: Integrated `UiMessage.requireInput` into adapter.
+
+### Changed
+- **Renaming**: Renamed `CLIInputAdapter` to `CLiInputAdapter` (standardization).
+
+## [1.0.2] - 2026-01-20
+
+### Fixed
+- **Validation**: Improved `CommandHelp` validation logic.
+- **Dependencies**: Bumped internal dependency versions.
+
+## [1.0.1] - 2026-01-15
+
+### Fixed
+- **Packaging**: Compact version of package.json.
+- **Naming**: Renamed `rootClasses` to `Messages`.
+- **Core**: Replaced `Command` with `CLI` architecture base.
+
+## [1.0.0] - 2026-01-01
+
+### Added
+- Initial stable release of UI-CLI package.
