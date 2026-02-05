@@ -24,14 +24,218 @@ Select demo to run:
 ✔  8
 Tree View Demo
 Scenario 1: Select a File (Static Tree)
-Select a file: package.json
-You selected: package.json
+? Select a file:
+▶ 📁 ui-cli
+(Use arrow keys to navigate, Enter to confirm)? Select a file:
+▶ 📁 ui-cli
+(Use arrow keys to navigate, Enter to confirm)? Select a file:
+▼ 📁 ui-cli
+  ▶ 📁 .cache
+  ▶ 📁 .datasets
+  ▶ 📁 .husky
+  ▶ 📁 chat
+  ▶ 📁 docs
+  ▶ 📁 play
+  ▶ 📁 src
+  ▶ 📁 types
+  ▶ 📁 Users
+(Use arrow keys to navigate, Enter to confirm)? Select a file:
+▼ 📁 ui-cli
+  ▶ 📁 .cache
+  ▶ 📁 .datasets
+  ▶ 📁 .husky
+  ▶ 📁 chat
+  ▶ 📁 docs
+  ▶ 📁 play
+  ▶ 📁 src
+  ▶ 📁 types
+  ▶ 📁 Users
+(Use arrow keys to navigate, Enter to confirm)? Select a file:
+▼ 📁 ui-cli
+  ▶ 📁 .cache
+  ▶ 📁 .datasets
+  ▶ 📁 .husky
+  ▶ 📁 chat
+  ▶ 📁 docs
+  ▶ 📁 play
+  ▶ 📁 src
+  ▶ 📁 types
+  ▶ 📁 Users
+(Use arrow keys to navigate, Enter to confirm)? Select a file:
+  ▶ 📁 .husky
+  ▶ 📁 chat
+  ▶ 📁 docs
+  ▶ 📁 play
+  ▶ 📁 src
+  ▶ 📁 types
+  ▶ 📁 Users
+    📄 .editorconfig
+    📄 .gitignore
+    📄 CONTRIBUTING.md
+(Use arrow keys to navigate, Enter to confirm)? Select a file:
+  ▶ 📁 docs
+  ▶ 📁 play
+  ▶ 📁 src
+  ▶ 📁 types
+  ▶ 📁 Users
+    📄 .editorconfig
+    📄 .gitignore
+    📄 CONTRIBUTING.md
+    📄 FEATURES.md
+    📄 knip.json
+(Use arrow keys to navigate, Enter to confirm)? Select a file:
+  ▶ 📁 docs
+  ▶ 📁 play
+  ▶ 📁 src
+  ▶ 📁 types
+  ▶ 📁 Users
+    📄 .editorconfig
+    📄 .gitignore
+    📄 CONTRIBUTING.md
+    📄 FEATURES.md
+    📄 knip.json
+(Use arrow keys to navigate, Enter to confirm)? Select a file:
+  ▶ 📁 docs
+  ▶ 📁 play
+  ▶ 📁 src
+  ▶ 📁 types
+  ▶ 📁 Users
+    📄 .editorconfig
+    📄 .gitignore
+    📄 CONTRIBUTING.md
+    📄 FEATURES.md
+    📄 knip.json
+(Use arrow keys to navigate, Enter to confirm)? Select a file:
+  ▶ 📁 docs
+  ▶ 📁 play
+  ▶ 📁 src
+  ▶ 📁 types
+  ▶ 📁 Users
+    📄 .editorconfig
+    📄 .gitignore
+    📄 CONTRIBUTING.md
+    📄 FEATURES.md
+    📄 knip.json
+(Use arrow keys to navigate, Enter to confirm)? Select a file:
+  ▶ 📁 .cache
+  ▶ 📁 .datasets
+  ▶ 📁 .husky
+  ▶ 📁 chat
+  ▶ 📁 docs
+  ▶ 📁 play
+  ▶ 📁 src
+  ▶ 📁 types
+  ▶ 📁 Users
+    📄 .editorconfig
+(Use arrow keys to navigate, Enter to confirm)? Select a file:
+  ▶ 📁 .cache
+  ▶ 📁 .datasets
+  ▶ 📁 .husky
+  ▶ 📁 chat
+  ▶ 📁 docs
+  ▶ 📁 play
+  ▶ 📁 src
+  ▶ 📁 types
+  ▶ 📁 Users
+    📄 .editorconfig
+(Use arrow keys to navigate, Enter to confirm)? Select a file:
+  ▶ 📁 .cache
+  ▶ 📁 .datasets
+  ▶ 📁 .husky
+  ▶ 📁 chat
+  ▶ 📁 docs
+  ▶ 📁 play
+  ▶ 📁 src
+  ▶ 📁 types
+  ▶ 📁 Users
+    📄 .editorconfig
+(Use arrow keys to navigate, Enter to confirm)? Select a file:
+  ▶ 📁 .cache
+  ▶ 📁 .datasets
+  ▶ 📁 .husky
+  ▶ 📁 chat
+  ▶ 📁 docs
+  ▶ 📁 play
+  ▶ 📁 src
+  ▶ 📁 types
+  ▶ 📁 Users
+    📄 .editorconfig
+(Use arrow keys to navigate, Enter to confirm)? Select a file:
+  ▶ 📁 .cache
+  ▶ 📁 .datasets
+  ▶ 📁 .husky
+  ▶ 📁 chat
+  ▶ 📁 docs
+  ▶ 📁 play
+  ▶ 📁 src
+  ▶ 📁 types
+  ▶ 📁 Users
+    📄 .editorconfig
+(Use arrow keys to navigate, Enter to confirm)? Select a file:
+  ▶ 📁 .cache
+  ▶ 📁 .datasets
+  ▶ 📁 .husky
+  ▶ 📁 chat
+  ▶ 📁 docs
+  ▶ 📁 play
+  ▼ 📁 src
+    ▶ 📁 components
+    ▶ 📁 test
+    ▶ 📁 ui
+(Use arrow keys to navigate, Enter to confirm)? Select a file:
+    📄 CONTRIBUTING.md
+    📄 FEATURES.md
+    📄 knip.json
+    📄 LICENSE
+    📄 MAINTENANCE.md
+    📄 me.md
+    📄 package-lock.json
+    📄 package.json
+    📄 README.md
+    📄 system.md
+(Use arrow keys to navigate, Enter to confirm)? Select a file:
+      📄 README.md.js
+  ▶ 📁 types
+  ▶ 📁 Users
+    📄 .editorconfig
+    📄 .gitignore
+    📄 CONTRIBUTING.md
+    📄 FEATURES.md
+    📄 knip.json
+    📄 LICENSE
+    📄 MAINTENANCE.md
+(Use arrow keys to navigate, Enter to confirm)? Select a file:
+      📄 README.md.js
+  ▶ 📁 types
+  ▶ 📁 Users
+    📄 .editorconfig
+    📄 .gitignore
+    📄 CONTRIBUTING.md
+    📄 FEATURES.md
+    📄 knip.json
+    📄 LICENSE
+    📄 MAINTENANCE.md
+(Use arrow keys to navigate, Enter to confirm)✔ Select a file: CONTRIBUTING.md
+You selected: /Users/i/src/nan.web/packages/ui-cli/CONTRIBUTING.md
 Scenario 2: Select a Directory (Async/Lazy)
-Select a directory: src
-You selected: src
+? Select a directory:
+▶ 📁 ui-cli
+(Use arrow keys to navigate, Enter to confirm)? Select a directory:
+▶ 📁 ui-cli
+(Use arrow keys to navigate, Enter to confirm)✔ Select a directory: ui-cli
+You selected: /Users/i/src/nan.web/packages/ui-cli
 Scenario 3: Multi-Select Files
-Select files to delete: play
-Error occurred. Returning to menu...
+? Select files to delete:
+▶ ◯ 📁 ui-cli
+(Use arrow keys to navigate, Space to select, Enter to confirm)? Select files to delete:
+▶ ◯ 📁 ui-cli
+(Use arrow keys to navigate, Space to select, Enter to confirm)? Select files to delete:
+▶ ◯ 📁 ui-cli
+(Use arrow keys to navigate, Space to select, Enter to confirm)✔ Select files to delete: 0 selected
+Selected 0 items: 
+==================================================
+Demo completed. Returning to menu...
+==================================================
 Select demo to run:
  1) Basic Logging
  2) Select Prompt
@@ -52,7 +256,5 @@ Select demo to run:
  17) Spinner
  18) Date & Time
   ↓ (1 more)
-✔  a
+✔  package.json
 Thanks for exploring UI‑CLI demos! 🚀
---- STDERR ---
-TypeError: selected?.map is not a function

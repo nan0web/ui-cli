@@ -24,14 +24,218 @@ __   _ _______ __   _     _  _  _ _______ ______
 ✔  8
 Демо перегляду дерева
 Сценарій 1: Вибір файлу (Статичне дерево)
-Оберіть файл: package.json
-Ви обрали: package.json
+? Оберіть файл:
+▶ 📁 ui-cli
+(Стрілки для навігації, Enter - обрати)? Оберіть файл:
+▶ 📁 ui-cli
+(Стрілки для навігації, Enter - обрати)? Оберіть файл:
+▼ 📁 ui-cli
+  ▶ 📁 .cache
+  ▶ 📁 .datasets
+  ▶ 📁 .husky
+  ▶ 📁 chat
+  ▶ 📁 docs
+  ▶ 📁 play
+  ▶ 📁 src
+  ▶ 📁 types
+  ▶ 📁 Users
+(Стрілки для навігації, Enter - обрати)? Оберіть файл:
+▼ 📁 ui-cli
+  ▶ 📁 .cache
+  ▶ 📁 .datasets
+  ▶ 📁 .husky
+  ▶ 📁 chat
+  ▶ 📁 docs
+  ▶ 📁 play
+  ▶ 📁 src
+  ▶ 📁 types
+  ▶ 📁 Users
+(Стрілки для навігації, Enter - обрати)? Оберіть файл:
+▼ 📁 ui-cli
+  ▶ 📁 .cache
+  ▶ 📁 .datasets
+  ▶ 📁 .husky
+  ▶ 📁 chat
+  ▶ 📁 docs
+  ▶ 📁 play
+  ▶ 📁 src
+  ▶ 📁 types
+  ▶ 📁 Users
+(Стрілки для навігації, Enter - обрати)? Оберіть файл:
+  ▶ 📁 .husky
+  ▶ 📁 chat
+  ▶ 📁 docs
+  ▶ 📁 play
+  ▶ 📁 src
+  ▶ 📁 types
+  ▶ 📁 Users
+    📄 .editorconfig
+    📄 .gitignore
+    📄 CONTRIBUTING.md
+(Стрілки для навігації, Enter - обрати)? Оберіть файл:
+  ▶ 📁 docs
+  ▶ 📁 play
+  ▶ 📁 src
+  ▶ 📁 types
+  ▶ 📁 Users
+    📄 .editorconfig
+    📄 .gitignore
+    📄 CONTRIBUTING.md
+    📄 FEATURES.md
+    📄 knip.json
+(Стрілки для навігації, Enter - обрати)? Оберіть файл:
+  ▶ 📁 docs
+  ▶ 📁 play
+  ▶ 📁 src
+  ▶ 📁 types
+  ▶ 📁 Users
+    📄 .editorconfig
+    📄 .gitignore
+    📄 CONTRIBUTING.md
+    📄 FEATURES.md
+    📄 knip.json
+(Стрілки для навігації, Enter - обрати)? Оберіть файл:
+  ▶ 📁 docs
+  ▶ 📁 play
+  ▶ 📁 src
+  ▶ 📁 types
+  ▶ 📁 Users
+    📄 .editorconfig
+    📄 .gitignore
+    📄 CONTRIBUTING.md
+    📄 FEATURES.md
+    📄 knip.json
+(Стрілки для навігації, Enter - обрати)? Оберіть файл:
+  ▶ 📁 docs
+  ▶ 📁 play
+  ▶ 📁 src
+  ▶ 📁 types
+  ▶ 📁 Users
+    📄 .editorconfig
+    📄 .gitignore
+    📄 CONTRIBUTING.md
+    📄 FEATURES.md
+    📄 knip.json
+(Стрілки для навігації, Enter - обрати)? Оберіть файл:
+  ▶ 📁 .cache
+  ▶ 📁 .datasets
+  ▶ 📁 .husky
+  ▶ 📁 chat
+  ▶ 📁 docs
+  ▶ 📁 play
+  ▶ 📁 src
+  ▶ 📁 types
+  ▶ 📁 Users
+    📄 .editorconfig
+(Стрілки для навігації, Enter - обрати)? Оберіть файл:
+  ▶ 📁 .cache
+  ▶ 📁 .datasets
+  ▶ 📁 .husky
+  ▶ 📁 chat
+  ▶ 📁 docs
+  ▶ 📁 play
+  ▶ 📁 src
+  ▶ 📁 types
+  ▶ 📁 Users
+    📄 .editorconfig
+(Стрілки для навігації, Enter - обрати)? Оберіть файл:
+  ▶ 📁 .cache
+  ▶ 📁 .datasets
+  ▶ 📁 .husky
+  ▶ 📁 chat
+  ▶ 📁 docs
+  ▶ 📁 play
+  ▶ 📁 src
+  ▶ 📁 types
+  ▶ 📁 Users
+    📄 .editorconfig
+(Стрілки для навігації, Enter - обрати)? Оберіть файл:
+  ▶ 📁 .cache
+  ▶ 📁 .datasets
+  ▶ 📁 .husky
+  ▶ 📁 chat
+  ▶ 📁 docs
+  ▶ 📁 play
+  ▶ 📁 src
+  ▶ 📁 types
+  ▶ 📁 Users
+    📄 .editorconfig
+(Стрілки для навігації, Enter - обрати)? Оберіть файл:
+  ▶ 📁 .cache
+  ▶ 📁 .datasets
+  ▶ 📁 .husky
+  ▶ 📁 chat
+  ▶ 📁 docs
+  ▶ 📁 play
+  ▶ 📁 src
+  ▶ 📁 types
+  ▶ 📁 Users
+    📄 .editorconfig
+(Стрілки для навігації, Enter - обрати)? Оберіть файл:
+  ▶ 📁 .cache
+  ▶ 📁 .datasets
+  ▶ 📁 .husky
+  ▶ 📁 chat
+  ▶ 📁 docs
+  ▶ 📁 play
+  ▼ 📁 src
+    ▶ 📁 components
+    ▶ 📁 test
+    ▶ 📁 ui
+(Стрілки для навігації, Enter - обрати)? Оберіть файл:
+    📄 CONTRIBUTING.md
+    📄 FEATURES.md
+    📄 knip.json
+    📄 LICENSE
+    📄 MAINTENANCE.md
+    📄 me.md
+    📄 package-lock.json
+    📄 package.json
+    📄 README.md
+    📄 system.md
+(Стрілки для навігації, Enter - обрати)? Оберіть файл:
+      📄 README.md.js
+  ▶ 📁 types
+  ▶ 📁 Users
+    📄 .editorconfig
+    📄 .gitignore
+    📄 CONTRIBUTING.md
+    📄 FEATURES.md
+    📄 knip.json
+    📄 LICENSE
+    📄 MAINTENANCE.md
+(Стрілки для навігації, Enter - обрати)? Оберіть файл:
+      📄 README.md.js
+  ▶ 📁 types
+  ▶ 📁 Users
+    📄 .editorconfig
+    📄 .gitignore
+    📄 CONTRIBUTING.md
+    📄 FEATURES.md
+    📄 knip.json
+    📄 LICENSE
+    📄 MAINTENANCE.md
+(Стрілки для навігації, Enter - обрати)✔ Оберіть файл: CONTRIBUTING.md
+Ви обрали: /Users/i/src/nan.web/packages/ui-cli/CONTRIBUTING.md
 Сценарій 2: Вибір папки (Асинхронно)
-Оберіть папку: src
-Ви обрали: src
+? Оберіть папку:
+▶ 📁 ui-cli
+(Стрілки для навігації, Enter - обрати)? Оберіть папку:
+▶ 📁 ui-cli
+(Стрілки для навігації, Enter - обрати)✔ Оберіть папку: ui-cli
+Ви обрали: /Users/i/src/nan.web/packages/ui-cli
 Сценарій 3: Мульти-вибір файлів
-Оберіть файли для видалення: play
-Сталася помилка. Повернення до меню...
+? Оберіть файли для видалення:
+▶ ◯ 📁 ui-cli
+(Стрілки для навігації, Пробіл - обрати, Enter - підтвердити)? Оберіть файли для видалення:
+▶ ◯ 📁 ui-cli
+(Стрілки для навігації, Пробіл - обрати, Enter - підтвердити)? Оберіть файли для видалення:
+▶ ◯ 📁 ui-cli
+(Стрілки для навігації, Пробіл - обрати, Enter - підтвердити)✔ Оберіть файли для видалення: 0 обрано
+Обрано 0 об'єктів: 
+==================================================
+Демо завершено. Повернення до меню...
+==================================================
 Виберіть демо для запуску:
  1) Базове логування
  2) Вибір зі списку
@@ -52,7 +256,5 @@ __   _ _______ __   _     _  _  _ _______ ______
  17) Спінер
  18) Дата та час
   ↓ (1 ще)
-✔  a
+✔  package.json
 Дякуємо, що спробували UI‑CLI! 🚀
---- STDERR ---
-TypeError: selected?.map is not a function
