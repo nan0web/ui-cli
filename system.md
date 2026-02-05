@@ -44,13 +44,22 @@ LANGUAGE: 'Ui, CLi, CliInput - для всіх імен класів робим�
 - **Console Logs are Lies**: User Output > Code Intent.
 - **Visual Verification is Mandatory**: For visual output formatting (masks, tables, cursors), DO NOT trust library defaults. Always verify with a reproduction script or implement **Manual Stdout Override** to guarantee what the user sees.
 
-**TDD PROTOCOL (TEST DRIVEN DEVELOPMENT)**
-1. **CAPTURE BUG**: Create a test case that reproduces the error (shows current bad output).
-2. **ASSERT DESIRED**: Assert the *expected* result (e.g., localized string, formatted mask).
-3. **FAIL**: Verify the test fails.
-4. **CODE**: Fix the code.
-5. **PASS**: Verify the test passes.
-6. **REGRESSION CHECK**: Run `test:all`.
+
+## UI ENGINEERING PROTOCOLS
+
+### 1. The Sandbox Rule (Ізольована Лабораторія)
+> **BEFORE** writing tests for complex UI (e.g. Mask, Tree), create a small isolated demo script (`play:XXX`).
+> Achieve visual perfection **manually** in the demo first. Only when your eyes see perfection — fix it in automated tests.
+> *Goal:* Do not automate bugs.
+
+### 2. The Single Sanitizer (Єдиний Очищувач)
+> Input sanitation logic (strip prefix, trim, normalize) MUST live in a separate exported function.
+> This function **MUST** be used in `validate()`, `format()`, and the final `result`.
+> *Goal:* Avoid discrepancies where validator says "fail" but formatter says "ok".
+
+### 3. The Final Stroke (Фінальний Штрих)
+> For CLI components that transform input (Mask, Password), **ALWAYS** implement `Manual Stdout Override` for the final line.
+> Never trust prompt libraries to render the final state correctly in all terminals. Correctness > Defaults.
 
 ## 📦 Основні компоненти
 

@@ -21,6 +21,28 @@ import { beep } from './input.js'
  * @returns {Promise<{value: string, cancelled: boolean}>}
  */
 /**
+ * Cleans the input value by stripping non-alphanumerics and smart prefix.
+ */
+export function cleanMaskInput(value, mask) {
+	let cleanValue = value.toString().replace(/[^a-zA-Z0-9]/g, '')
+
+	// Smart Prefix Detection:
+	// If the user typed the mask's static prefix (e.g. '38' for '+38'),
+	// remove it from the input to prevent duplication.
+	const firstPlaceholderIndex = mask.search(/[#0A]/)
+	if (firstPlaceholderIndex > 0) {
+		const maskPrefix = mask.substring(0, firstPlaceholderIndex).replace(/[^a-zA-Z0-9]/g, '')
+		if (maskPrefix && cleanValue.startsWith(maskPrefix)) {
+			// Special Check: If the user typed ONLY the prefix so far, don't strip it yet?
+			// Actually, removing it is safer to avoid "Format must be: +38 (38)" error midway?
+			// But for full validation, we strip it.
+			cleanValue = cleanValue.substring(maskPrefix.length)
+		}
+	}
+	return cleanValue
+}
+
+/**
  * Formats a value according to the given mask.
  * pattern: # = digit, A = letter, 0 = digit.
  *
@@ -33,27 +55,7 @@ export function formatMask(value, mask) {
 	let v = 0
 	let result = ''
 
-	// 1. Extract raw alphanumeric input
-	let cleanValue = value.toString().replace(/[^a-zA-Z0-9]/g, '')
-
-	// 2. Smart Prefix Detection:
-	// If the user typed the mask's static prefix (e.g. '38' for '+38'),
-	// remove it from the input to prevent duplication.
-	// We extract the static alphanumeric prefix from the mask itself.
-
-	// Get mask prefix up to the first placeholder
-	const firstPlaceholderIndex = mask.search(/[#0A]/)
-	if (firstPlaceholderIndex > 0) {
-		const maskPrefix = mask.substring(0, firstPlaceholderIndex).replace(/[^a-zA-Z0-9]/g, '')
-
-		// If input starts with this prefix, strip it.
-		// Example: Mask '+38 (###)', Prefix '38'. Input '38067'.
-		// If we don't strip, it becomes '+38 (380) ...' (Wrong)
-		// If we strip '38', input becomes '067'. Result '+38 (067)' (Correct)
-		if (maskPrefix && cleanValue.startsWith(maskPrefix)) {
-			cleanValue = cleanValue.substring(maskPrefix.length)
-		}
-	}
+	const cleanValue = cleanMaskInput(value, mask)
 
 	while (i < mask.length && v < cleanValue.length) {
 		const maskChar = mask[i]
@@ -79,7 +81,7 @@ export async function mask(config) {
 
 		// Support '#', '0' for numbers and 'A' for letters.
 		const cleanMask = mask.replace(/[^#0A]/g, '')
-		const cleanVal = val.replace(/[^a-zA-Z0-9]/g, '')
+		const cleanVal = cleanMaskInput(val, mask)
 
 		if (cleanVal.length !== cleanMask.length) {
 			beep()

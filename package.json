@@ -38,6 +38,7 @@
 		"play": "node play/main.js --demo=v2",
 		"play:v1": "node play/main.js",
 		"play:v2": "node play/main.js --demo=v2",
+		"play:mask": "node play/main.js --demo=mask",
 		"play:all": "node play/main.js",
 		"precommit": "npm test && npm run test:i18n",
 		"prepush": "npm test",

@@ -104,7 +104,7 @@ export async function slider(config) {
 			const res = await prompts({
 				type: 'text',
 				name: 'value',
-				message: `${t(message)} (${min}-${max})`,
+				message: t(message),
 				initial: String(initial ?? min),
 				validate: v => {
 					const n = Number(v)
@@ -120,7 +120,7 @@ export async function slider(config) {
 		const res = await prompts({
 			type: 'number',
 			name: 'value',
-			message: `${t(message)} (${min}-${max})`,
+			message: t(message),
 			initial: initial ?? min,
 			min,
 			max,

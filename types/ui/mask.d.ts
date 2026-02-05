@@ -11,6 +11,10 @@
  * @returns {Promise<{value: string, cancelled: boolean}>}
  */
 /**
+ * Cleans the input value by stripping non-alphanumerics and smart prefix.
+ */
+export function cleanMaskInput(value: any, mask: any): any;
+/**
  * Formats a value according to the given mask.
  * pattern: # = digit, A = letter, 0 = digit.
  *
