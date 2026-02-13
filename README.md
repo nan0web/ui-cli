@@ -25,6 +25,49 @@ npm install @nan0web/ui-cli
 
 How to install the package?
 
+## nan0cli — Universal CLI Runner
+
+The `nan0cli` binary provides a universal entry point for any nan0web application.
+It reads the app's `package.json`, resolves the CLI entry point, and runs commands.
+
+### App Contract
+
+Your app must export Messages from its entry point:
+
+```js
+// E1: Messages Array (recommended)
+export default [Serve, Dump]
+
+// E2: Single Message class (auto-wrapped to array)
+export default class MyApp { }
+```
+
+### Entry Point Resolution
+
+`nan0cli` looks for the entry point in this order:
+1. `nan0web.cli.entry` field in `package.json`
+2. `src/cli.js` (convention)
+3. `src/messages/index.js` (legacy)
+
+### Configuration
+
+```json
+{
+  "nan0web": {
+    "cli": { "entry": "src/cli.js" }
+  }
+}
+```
+
+nan0cli binary is registered
+
+### Error Handling
+
+When no entry point is found, `nan0cli` displays a styled `Alert` error and exits with code 1.
+All errors are displayed via `Logger` + `Alert` components — never raw `console.log`.
+
+nan0cli is included in package files
+
 ## Usage (V2 Architecture)
 
 Starting from v2.0, we recommend using the `render()` function with Composable Components.

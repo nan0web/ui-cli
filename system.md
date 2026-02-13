@@ -9,6 +9,8 @@ LOGIC_BASE: 'Запит → відповідь → валідація → рез
 LANGUAGE: 'Ui, CLi, CliInput - для всіх імен класів робимо i маленькою, якщо не починається з неї слово.'
 ---
 
+Дотримуйся правил в [RULES](../../.agent/RULES.md)
+
 # ✨ UI‑CLI – системне керівництво
 
 > **MENTAL MATRIX & LOGIC PROTOCOL (MANDATORY)**
@@ -21,6 +23,7 @@ LANGUAGE: 'Ui, CLi, CliInput - для всіх імен класів робим�
 > 4.  **Борис Патон (Структура)**: Чи є рішення системним, а не "латкою"?
 >
 > **4 Закони Логіки:**
+>
 > 1.  **Тотожність**: Код має робити саме те, що написано в ТЗ.
 > 2.  **Несуперечність**: Тести "зелені", а в консолі "yes"? Це суперечність. Виправляй.
 > 3.  **Виключене третє**: Функція або працює правильно, або ні. Стану "працює, але..." не існує.
@@ -31,6 +34,7 @@ LANGUAGE: 'Ui, CLi, CliInput - для всіх імен класів робим�
 ## 🔥 THE IRON RULE OF WORK (ЗАЛІЗНЕ ПРАВИЛО)
 
 **You MUST follow this Loop for EVERY code change:**
+
 1. **EDIT**: Apply changes to code.
 2. **VERIFY SYNTAX**: Run `npm run build` (tsc) IMMEDIATELY via `run_command`. DO NOT rely on your internal parser.
 3. **VERIFY LOGIC**: Run `npm run test` (or specific test file).
@@ -39,25 +43,28 @@ LANGUAGE: 'Ui, CLi, CliInput - для всіх імен класів робим�
 6. **REPORT**: Only AFTER steps 2-5 are GREEN, report to User.
 
 **PROTOCOL: ZERO TRUST TO SELF**
+
 - Never assume code works.
 - Never assume syntax is correct (extra braces happen).
 - **Console Logs are Lies**: User Output > Code Intent.
 - **Visual Verification is Mandatory**: For visual output formatting (masks, tables, cursors), DO NOT trust library defaults. Always verify with a reproduction script or implement **Manual Stdout Override** to guarantee what the user sees.
 
-
 ## UI ENGINEERING PROTOCOLS
 
 ### 1. The Sandbox Rule (Ізольована Лабораторія)
+
 > **BEFORE** writing tests for complex UI (e.g. Mask, Tree), create a small isolated demo script (`play:XXX`).
 > Achieve visual perfection **manually** in the demo first. Only when your eyes see perfection — fix it in automated tests.
-> *Goal:* Do not automate bugs.
+> _Goal:_ Do not automate bugs.
 
 ### 2. The Single Sanitizer (Єдиний Очищувач)
+
 > Input sanitation logic (strip prefix, trim, normalize) MUST live in a separate exported function.
 > This function **MUST** be used in `validate()`, `format()`, and the final `result`.
-> *Goal:* Avoid discrepancies where validator says "fail" but formatter says "ok".
+> _Goal:_ Avoid discrepancies where validator says "fail" but formatter says "ok".
 
 ### 3. The Final Stroke (Фінальний Штрих)
+
 > For CLI components that transform input (Mask, Password), **ALWAYS** implement `Manual Stdout Override` for the final line.
 > Never trust prompt libraries to render the final state correctly in all terminals. Correctness > Defaults.
 
@@ -70,13 +77,13 @@ LANGUAGE: 'Ui, CLi, CliInput - для всіх імен класів робим�
 | `CancelError`     | Помилка, кидається при скасуванні запиту.                                     | `CancelError`                |
 | `ask`             | Проста функція‑проміс, що виводить питання та повертає відповідь.             | `ask`                        |
 | `createInput`     | Фабрика, що створює кастомізований обробник вводу з ключовими словами «stop». | `createInput`                |
-| `select`          | Генерує список варіантів, повертає обраний `value`.                          | `select`                     |
+| `select`          | Генерує список варіантів, повертає обраний `value`.                           | `select`                     |
 | `autocomplete`    | Пошук по списку (Interactive Search) з підтримкою асинхронних джерел.         | `autocomplete`               |
 | `table`           | Інтерактивна таблиця з "живою" фільтрацією даних.                             | `table`                      |
-| `multiselect`    | Множинний вибір варіантів з чекбоксами.                        | `multiselect`                |
-| `mask`           | Форматований ввід (телефон, дата тощо) з маскою.              | `mask`                       |
-| `next`            | Очікує будь‑яку клавішу.                                      | `next`                       |
-| `pause`           | Пауза на вказану кількість мілісекунд.                        | `pause`                      |
+| `multiselect`     | Множинний вибір варіантів з чекбоксами.                                       | `multiselect`                |
+| `mask`            | Форматований ввід (телефон, дата тощо) з маскою.                              | `mask`                       |
+| `next`            | Очікує будь‑яку клавішу.                                                      | `next`                       |
+| `pause`           | Пауза на вказану кількість мілісекунд.                                        | `pause`                      |
 
 ## 🚀 Швидкий старт
 
@@ -95,20 +102,22 @@ console.log('Вітаємо,', name)
 
 // Приклад: вибір зі списку
 const lang = await adapter.select({
-  title: 'Виберіть мову',
-  prompt: 'Введіть номер: ',
-  options: new Map([
-    ['en', 'English'],
-    ['uk', 'Українська'],
-  ]),
-  console: console,
+	title: 'Виберіть мову',
+	prompt: 'Введіть номер: ',
+	options: new Map([
+		['en', 'English'],
+		['uk', 'Українська'],
+	]),
+	console: console,
 })
 console.log('Обрана мова:', lang.value)
 ```
 
 ### Захист від зациклення (Infinite Loop Protection)
+
 У циклічного вводу форми є ліміт спроб (за замовчуванням **100**), щоб уникнути «зависання» у тестах або середовищах без TTY при помилках валідації.  
 Розробник або користувач може змінити цей параметр:
+
 - Через **змінну оточення**: `UI_CLI_MAX_RETRIES=33`
 - Через **параметри конструктора**: `new CLiInputAdapter({ maxRetries: 33 })`
 
@@ -117,6 +126,7 @@ console.log('Обрана мова:', lang.value)
 ## 🛠️ Тестування та Якість (TDD+)
 
 Протокол перевірки та тестування змін:
+
 1. **Локальні тести** (`npm test`) – запускає всі `*.test.js` у `src/`. Обов'язково перед пушем.
 2. **Локалізація (I18n Test)** – автоматична перевірка наявності всіх ключів `t('...')` у словниках (`uk.js`, `en.js`). Будь-який неперекладений ключ — це критична помилка.
 3. **Multi-Locale Snapshots** – генерація та порівняння знімків інтерфейсу для всіх підтримуваних мов одночасно (`pnpm test:snapshot`). Це гарантує паритет дизайну та відсутність регресій у текстах.
@@ -127,21 +137,23 @@ console.log('Обрана мова:', lang.value)
 
 ## 🧭 Доступні CLI‑методи
 
-| Метод                                         | Параметри                                 | Повертає                      | Опис                                                                                 |
-| --------------------------------------------- | ----------------------------------------- | ----------------------------- | ------------------------------------------------------------------------------------ | ----------------------------------------- |
-| `ask(question)`                               | `string` – підказка                       | `Promise<string>`             | Запит користувачу, повертає введений рядок.                                          |
-| `createInput(stops?)`                         | `string[]` – слова‑сигнали                | `Promise<Input>`              | Створює інстанс `Input` з автоскасуванням.                                           |
-| `select(config)`                              | `{title, prompt, options, console, ask?}` | `Promise<{index, value}>`     | Виводить нумерований список, повертає вибір.                                         |
-| `next(conf?)`                                 | `string                                   | array` – послідовність клавіш | `Promise<string>`                                                                    | Чекає на натискання клавіші (або набору). |
-| `pause(ms)`                                   | `number` – мілісекунди                    | `Promise<void>`               | Затримка виконання.                                                                  |
-| `CLiInputAdapter.requestForm(form, {silent})` | `UIForm` + опції                          | `Promise<FormMessage>`        | Показує форму, проходить по полях, валідує, повертає результат.                      |
-| `CLiInputAdapter.requestSelect(config)`       | `config` (аналог `select`)                | `Promise<InputMessage>`       | Викликає `select`, повертає вибір.                                                   |
-| `CLiInputAdapter.requestAutocomplete(config)` | `config` (аналог `autocomplete`)          | `Promise<InputMessage>`       | Викликає `autocomplete`, повертає обране значення.                                   |
-| `CLiInputAdapter.requestTable(config)`        | `config` (аналог `table`)                 | `Promise<any>`                | Виводить інтерактивну таблицю з фільтрацією.                                         |
-| `CLiInputAdapter.requestInput(config)`        | `{prompt, id, label, name}`               | `Promise<InputMessage>`       | Простий рядковий запит.                                                              |
-| `CLiInputAdapter.requestMultiselect(config)`  | `config` (аналог `multiselect`)           | `Promise<any[]>`              | Викликає `multiselect`, повертає масив значень.                                      |
-| `CLiInputAdapter.requestMask(config)`         | `config` (аналог `mask`)                  | `Promise<string>`             | Викликає `mask`, повертає відформатований рядок.                                     |
+| Метод                                         | Параметри                                 | Повертає                      | Опис                                                            |
+| --------------------------------------------- | ----------------------------------------- | ----------------------------- | --------------------------------------------------------------- | ----------------------------------------- |
+| `ask(question)`                               | `string` – підказка                       | `Promise<string>`             | Запит користувачу, повертає введений рядок.                     |
+| `createInput(stops?)`                         | `string[]` – слова‑сигнали                | `Promise<Input>`              | Створює інстанс `Input` з автоскасуванням.                      |
+| `select(config)`                              | `{title, prompt, options, console, ask?}` | `Promise<{index, value}>`     | Виводить нумерований список, повертає вибір.                    |
+| `next(conf?)`                                 | `string                                   | array` – послідовність клавіш | `Promise<string>`                                               | Чекає на натискання клавіші (або набору). |
+| `pause(ms)`                                   | `number` – мілісекунди                    | `Promise<void>`               | Затримка виконання.                                             |
+| `CLiInputAdapter.requestForm(form, {silent})` | `UIForm` + опції                          | `Promise<FormMessage>`        | Показує форму, проходить по полях, валідує, повертає результат. |
+| `CLiInputAdapter.requestSelect(config)`       | `config` (аналог `select`)                | `Promise<InputMessage>`       | Викликає `select`, повертає вибір.                              |
+| `CLiInputAdapter.requestAutocomplete(config)` | `config` (аналог `autocomplete`)          | `Promise<InputMessage>`       | Викликає `autocomplete`, повертає обране значення.              |
+| `CLiInputAdapter.requestTable(config)`        | `config` (аналог `table`)                 | `Promise<any>`                | Виводить інтерактивну таблицю з фільтрацією.                    |
+| `CLiInputAdapter.requestInput(config)`        | `{prompt, id, label, name}`               | `Promise<InputMessage>`       | Простий рядковий запит.                                         |
+| `CLiInputAdapter.requestMultiselect(config)`  | `config` (аналог `multiselect`)           | `Promise<any[]>`              | Викликає `multiselect`, повертає масив значень.                 |
+| `CLiInputAdapter.requestMask(config)`         | `config` (аналог `mask`)                  | `Promise<string>`             | Викликає `mask`, повертає відформатований рядок.                |
+
 –
+
 ## 📝 Рекомендації для розробників
 
 1. **JSDoc** – кожна функція/клас має повний опис (`@param`, `@returns`, `@throws`). Це забезпечує автодоповнення у IDE без TypeScript.

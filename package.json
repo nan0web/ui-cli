@@ -8,7 +8,8 @@
 	"files": [
 		"src/**/*.js",
 		"!src/**/*.test.js",
-		"types/**/*.d.ts"
+		"types/**/*.d.ts",
+		"bin/**/*.js"
 	],
 	"exports": {
 		".": {
@@ -57,17 +58,20 @@
 	"author": "ЯRаСлав (YaRaSLove) <support@yaro.page>",
 	"license": "ISC",
 	"devDependencies": {
-		"@nan0web/db-fs": "1.0.0",
 		"@nan0web/i18n": "^1.0.1",
-		"@nan0web/log": "1.1.1",
 		"@nan0web/test": "1.1.0",
 		"@types/node": "^24.10.1",
 		"knip": "^5.83.0",
 		"prettier": "^3.8.1"
 	},
+	"bin": {
+		"nan0cli": "./bin/nan0cli.js"
+	},
 	"dependencies": {
+		"@nan0web/db-fs": "1.0.0",
 		"@nan0web/event": "^1.0.0",
-		"@nan0web/ui": "workspace:*",
+		"@nan0web/log": "1.1.1",
+		"@nan0web/ui": "^1.1.0",
 		"prompts": "^2.4.2"
 	}
 }
