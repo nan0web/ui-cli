@@ -5,6 +5,3 @@ Tree View Demo
 Scenario 1: Select a File (Static Tree)
 ? Select a file: › ui-cli78? Select a file: › p78? Select a file: › pa78? Select a file: › pac78? Select a file: › pack78? Select a file: › packa78? Select a file: › packag78? Select a file: › package78? Select a file: › package.78? Select a file: › package.j78? Select a file: › package.js78? Select a file: › package.jso78? Select a file: › package.json78✔ Select a file: … package.json78
 You selected: package.json
-Scenario 3: Multi-Select Files
-? Select files to delete: › ui-cli78? Select files to delete: › a78✔ Select files to delete: … a78
-Selected 1 items: a

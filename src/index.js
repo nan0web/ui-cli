@@ -31,6 +31,7 @@ import { Pause } from './components/prompt/Pause.js'
 import { Tree } from './components/prompt/Tree.js'
 import { Spinner } from './components/prompt/Spinner.js'
 import { ProgressBar } from './components/prompt/ProgressBar.js'
+import { Sortable } from './components/prompt/Sortable.js'
 
 // Legacy utils still needed for internal logic or compat
 export { createInput, ask, text } from './ui/input.js'
@@ -52,6 +53,7 @@ export { tree } from './ui/tree.js'
 export { datetime } from './ui/date-time.js'
 export { toggle } from './ui/toggle.js'
 export { slider } from './ui/slider.js'
+export { sortable } from './ui/sortable.js'
 
 // Public V2 API
 export {
@@ -83,6 +85,7 @@ export {
 	Tree,
 	Spinner,
 	ProgressBar,
+	Sortable,
 
 	// Tools
 	CLI,

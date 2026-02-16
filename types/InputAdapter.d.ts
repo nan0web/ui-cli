@@ -182,6 +182,32 @@ export default class CLiInputAdapter extends BaseInputAdapter {
         cancelled: boolean;
     }>;
     /**
+     * Request a sortable (reorderable) list.
+     *
+     * In predefined mode the answer is treated as a comma‑separated list of
+     * values representing the desired final order.  Only items whose values
+     * appear in the answer are included; this lets you reorder a subset.
+     *
+     * @param {Object} config
+     * @param {string} config.message - Prompt / title.
+     * @param {Array<string|{label:string,value:any}>} config.items - Items to sort.
+     * @param {string} [config.hint] - Hint text.
+     * @param {Function} [config.onChange] - Callback on every reorder.
+     * @returns {Promise<{value: any[]|undefined, cancelled: boolean}>}
+     */
+    requestSortable(config: {
+        message: string;
+        items: Array<string | {
+            label: string;
+            value: any;
+        }>;
+        hint?: string | undefined;
+        onChange?: Function | undefined;
+    }): Promise<{
+        value: any[] | undefined;
+        cancelled: boolean;
+    }>;
+    /**
      * Request a date or time from the user.
      * @param {Object} config
      * @returns {Promise<{value: Date|undefined, cancelled: boolean}>}

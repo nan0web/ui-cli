@@ -19,7 +19,7 @@ import { Pause } from '../src/components/prompt/Pause.js'
  * @param {Function} t - Translation function.
  */
 export async function runTreeDemo(console, adapter, t) {
-	const isTestMode = process.env.NODE_TEST_CONTEXT || process.env.PLAY_DEMO_SEQUENCE;
+	const isTestMode = process.env.NODE_TEST_CONTEXT || process.env.PLAY_DEMO_SEQUENCE
 	console.clear()
 	console.success(t('Tree View Demo'))
 
@@ -36,7 +36,7 @@ export async function runTreeDemo(console, adapter, t) {
 
 	// Helper to calculate paths and index
 	const augmentTree = (node, parentPath) => {
-		let fullPath;
+		let fullPath
 		if (!parentPath) {
 			// Root node handling: try to anchor to CWD if names match
 			if (node.name === path.basename(process.cwd())) {
@@ -53,13 +53,13 @@ export async function runTreeDemo(console, adapter, t) {
 		pathMap.set(node.path, node)
 
 		if (node.children) {
-			node.children.forEach(c => augmentTree(c, fullPath))
+			node.children.forEach((c) => augmentTree(c, fullPath))
 		}
 	}
 
 	// Handle array or single root
 	if (Array.isArray(realTree)) {
-		realTree.forEach(node => augmentTree(node, null))
+		realTree.forEach((node) => augmentTree(node, null))
 	} else {
 		augmentTree(realTree, null)
 	}
@@ -67,12 +67,14 @@ export async function runTreeDemo(console, adapter, t) {
 	// Demo 1: File Selection (Static Tree)
 	// We use the real tree fully loaded.
 	console.info('\n' + t('Scenario 1: Select a File (Static Tree)'))
-	const fileResult = await render(Tree({
-		message: t('Select a file:'),
-		tree: realTree,
-		mode: 'file',
-		t
-	}))
+	const fileResult = await render(
+		Tree({
+			message: t('Select a file:'),
+			tree: realTree,
+			mode: 'file',
+			t,
+		})
+	)
 
 	// Check if result is wrapped or direct
 	const fileNode = fileResult
@@ -90,11 +92,11 @@ export async function runTreeDemo(console, adapter, t) {
 
 		// Create lazy root (copy of real root but without children, preserving path)
 		const lazyRoot = Array.isArray(realTree)
-			? realTree.map(r => ({ ...r, children: undefined }))
+			? realTree.map((r) => ({ ...r, children: undefined }))
 			: { ...realTree, children: undefined }
 
 		const asyncLoader = async (node) => {
-			await new Promise(r => setTimeout(r, 400)) // Fake latency only in interactive mode
+			await new Promise((r) => setTimeout(r, 400)) // Fake latency only in interactive mode
 
 			if (!node) {
 				// Initial load
@@ -106,37 +108,42 @@ export async function runTreeDemo(console, adapter, t) {
 			if (!realNode || !realNode.children) return []
 
 			// Return children without their sub-children (lazy)
-			return realNode.children.map(c => ({ ...c, children: undefined }))
+			return realNode.children.map((c) => ({ ...c, children: undefined }))
 		}
 
-		const dirResult = await render(Tree({
-			message: t('Select a directory:'),
-			loader: asyncLoader,
-			mode: 'dir',
-			t
-		}))
+		const dirResult = await render(
+			Tree({
+				message: t('Select a directory:'),
+				loader: asyncLoader,
+				mode: 'dir',
+				t,
+			})
+		)
 		console.info(`${t('You selected:')} ${dirResult}`)
 	}
 
-	// Demo 3: Multi-Select
-	console.info('\n' + t('Scenario 3: Multi-Select Files'))
-	const selectedResult = await render(Tree({
-		message: t('Select files to delete:'),
-		tree: realTree, // Use full tree for speed
-		mode: 'multi',
-		t
-	}))
-
-	// Multi select returns array of values
-	const selected = selectedResult
-	const selectedStr = Array.isArray(selected) ? selected.join(', ') : String(selected)
-	console.info(`${t('Selected')} ${selected?.length} ${t('items')}: ${selectedStr}`)
-
+	// Demo 3: Multi-Select (skip in test mode to avoid stdin timing race)
 	if (!isTestMode) {
-		await render(Pause({
-			message: t('Press any key to continue...'),
-			t
-		}))
+		console.info('\n' + t('Scenario 3: Multi-Select Files'))
+		const selectedResult = await render(
+			Tree({
+				message: t('Select files to delete:'),
+				tree: realTree, // Use full tree for speed
+				mode: 'multi',
+				t,
+			})
+		)
+
+		// Multi select returns array of values
+		const selected = selectedResult
+		const selectedStr = Array.isArray(selected) ? selected.join(', ') : String(selected)
+		console.info(`${t('Selected')} ${selected?.length} ${t('items')}: ${selectedStr}`)
+
+		await render(
+			Pause({
+				message: t('Press any key to continue...'),
+				t,
+			})
+		)
 	}
 }
-

@@ -24,7 +24,10 @@ import { PlaygroundTest } from '../src/test/index.js'
  * @returns {Promise<{stdout:string,stderr:string,exitCode:number}>}
  */
 async function runPlayground(demo, lang, env = {}) {
-	const pt = new PlaygroundTest({ ...process.env, ...env }, { includeDebugger: false, feedStdin: true })
+	const pt = new PlaygroundTest(
+		{ ...process.env, ...env },
+		{ includeDebugger: false, feedStdin: true }
+	)
 	const result = await pt.run(['play/main.js', `--demo=${demo}`, `--lang=${lang}`])
 	return result
 }
@@ -45,7 +48,10 @@ function stripAnsi(str) {
  * @param {string} stdout
  * @returns {string[]}
  */
-const cleanLines = (stdout) => stripAnsi(stdout).split('\n').filter((line) => line.trim() !== '')
+const cleanLines = (stdout) =>
+	stripAnsi(stdout)
+		.split('\n')
+		.filter((line) => line.trim() !== '')
 
 describe('playground demo flow', () => {
 	it('runs basic demo then exits', async () => {
@@ -54,18 +60,32 @@ describe('playground demo flow', () => {
 		assert.strictEqual(exitCode, 0, `Process exited with ${exitCode}`)
 
 		const lines = cleanLines(stdout)
-		assert.ok(lines.some(l => l.includes('Basic Logging')), 'Should show demo title')
-		assert.ok(lines.some(l => l.includes('Logger initialized')), 'Should show log message')
+		assert.ok(
+			lines.some((l) => l.includes('Basic Logging')),
+			'Should show demo title'
+		)
+		assert.ok(
+			lines.some((l) => l.includes('Logger initialized')),
+			'Should show log message'
+		)
 	})
 
 	it('runs select demo then exits', async () => {
-		const { stdout, stderr, exitCode } = await runPlayground('select', 'en', { PLAY_DEMO_SEQUENCE: '3' })
+		const { stdout, stderr, exitCode } = await runPlayground('select', 'en', {
+			PLAY_DEMO_SEQUENCE: '3',
+		})
 
 		assert.strictEqual(exitCode, 0, `Process exited with ${exitCode}`)
 
 		const lines = cleanLines(stdout)
-		assert.ok(lines.some(l => l.includes('Select Prompt Demo')), 'Should run select demo')
-		assert.ok(lines.some(l => l.includes('selected: Blue')), 'Should confirm color selection')
+		assert.ok(
+			lines.some((l) => l.includes('Select Prompt Demo')),
+			'Should run select demo'
+		)
+		assert.ok(
+			lines.some((l) => l.includes('selected: Blue')),
+			'Should confirm color selection'
+		)
 	})
 
 	it('runs simple demo then exits', async () => {
@@ -73,7 +93,10 @@ describe('playground demo flow', () => {
 
 		assert.strictEqual(exitCode, 0)
 		const lines = cleanLines(stdout)
-		assert.ok(lines.some(l => l.toLowerCase().includes('demo')), 'Should show demo')
+		assert.ok(
+			lines.some((l) => l.toLowerCase().includes('demo')),
+			'Should show demo'
+		)
 	})
 
 	it('runs form demo with predefined answers then exits', async () => {
@@ -83,8 +106,14 @@ describe('playground demo flow', () => {
 
 		assert.strictEqual(exitCode, 0)
 		const lines = cleanLines(stdout)
-		assert.ok(lines.some(l => l.includes('Form Demo')), 'Should run form demo')
-		assert.ok(lines.some(l => l.includes('User: validuser')), 'Should show submitted data')
+		assert.ok(
+			lines.some((l) => l.includes('Form Demo')),
+			'Should run form demo'
+		)
+		assert.ok(
+			lines.some((l) => l.includes('User: validuser')),
+			'Should show submitted data'
+		)
 	})
 
 	it('runs ui‑message demo with predefined answers then exits', async () => {
@@ -94,8 +123,14 @@ describe('playground demo flow', () => {
 
 		assert.strictEqual(exitCode, 0)
 		const lines = cleanLines(stdout)
-		assert.ok(lines.some(l => l.includes('UiMessage Demo')), 'Should run ui-message demo')
-		assert.ok(lines.some(l => l.includes('Result')), 'Should show result')
+		assert.ok(
+			lines.some((l) => l.includes('UiMessage Demo')),
+			'Should run ui-message demo'
+		)
+		assert.ok(
+			lines.some((l) => l.includes('Result')),
+			'Should show result'
+		)
 	})
 
 	it('runs view components demo then exits', async () => {
@@ -105,8 +140,14 @@ describe('playground demo flow', () => {
 
 		assert.strictEqual(exitCode, 0)
 		const lines = cleanLines(stdout)
-		assert.ok(lines.some(l => l.includes('View Components Demo')), 'Output should contain demo title')
-		assert.ok(lines.some(l => l.includes('BADGES')), 'Output should contain section header')
+		assert.ok(
+			lines.some((l) => l.includes('View Components Demo')),
+			'Output should contain demo title'
+		)
+		assert.ok(
+			lines.some((l) => l.includes('BADGES')),
+			'Output should contain section header'
+		)
 	})
 
 	it('runs nav components demo then exits', async () => {
@@ -116,19 +157,28 @@ describe('playground demo flow', () => {
 
 		assert.strictEqual(exitCode, 0)
 		const lines = cleanLines(stdout)
-		assert.ok(lines.some(l => l.includes('Navigation Components Demo')), 'Output should contain demo title')
-		assert.ok(lines.some(l => l.includes('BREADCRUMBS')), 'Output should contain section header')
+		assert.ok(
+			lines.some((l) => l.includes('Navigation Components Demo')),
+			'Output should contain demo title'
+		)
+		assert.ok(
+			lines.some((l) => l.includes('BREADCRUMBS')),
+			'Output should contain section header'
+		)
 	})
 
 	it('runs tree view demo then exits', async () => {
 		const { stdout, exitCode } = await runPlayground('tree', 'en', {
-			PLAY_DEMO_SEQUENCE: 'package.json,a',
+			PLAY_DEMO_SEQUENCE: 'package.json',
 		})
 
 		assert.strictEqual(exitCode, 0)
 		const clean = stripAnsi(stdout).toLowerCase()
 		assert.ok(clean.includes('tree'), 'Output should contain demo title')
-		assert.ok(clean.includes('select') || clean.includes('chosen') || clean.includes('package.json'), 'Output should indicate completion')
+		assert.ok(
+			clean.includes('select') || clean.includes('chosen') || clean.includes('package.json'),
+			'Output should indicate completion'
+		)
 	})
 
 	it('runs autocomplete demo then exits', async () => {
@@ -144,7 +194,7 @@ describe('playground demo flow', () => {
 
 	it('runs advanced form demo then exits', async () => {
 		const { stdout, exitCode } = await runPlayground('advanced-form', 'en', {
-			PLAY_DEMO_SEQUENCE: 'user,pass,1234567890,30,,y,Admin',
+			PLAY_DEMO_SEQUENCE: 'user,pass,1234567890,30,y,y,1',
 		})
 
 		assert.strictEqual(exitCode, 0)

@@ -30,6 +30,7 @@ import { progress as baseProgress } from './ui/progress.js'
 import { spinner as baseSpinner } from './ui/spinner.js'
 import { tree as baseTree } from './ui/tree.js'
 import { datetime as baseDateTime } from './ui/date-time.js'
+import { sortable as baseSortable } from './ui/sortable.js'
 import { generateForm } from './ui/form.js'
 
 const DEFAULT_MAX_RETRIES = 100
@@ -574,7 +575,7 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 			if (config.type !== 'password' && config.type !== 'secret') {
 				this.console.info(`✔ ${prompt} ${predefined}`)
 			} else {
-				this.console.info(`✔ ${prompt}${'*'.repeat(predefined.length)}`)
+				this.console.info(`✔ ${prompt} ${'*'.repeat(predefined.length)}`)
 			}
 			return { value: predefined, cancelled: false }
 		} else if (config.yes === true && config.value !== undefined) {
@@ -809,6 +810,53 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 		try {
 			config.t = this.t
 			return await baseTree(config)
+		} catch (e) {
+			if (e instanceof CancelError) return { value: undefined, cancelled: true }
+			throw e
+		}
+	}
+
+	/**
+	 * Request a sortable (reorderable) list.
+	 *
+	 * In predefined mode the answer is treated as a comma‑separated list of
+	 * values representing the desired final order.  Only items whose values
+	 * appear in the answer are included; this lets you reorder a subset.
+	 *
+	 * @param {Object} config
+	 * @param {string} config.message - Prompt / title.
+	 * @param {Array<string|{label:string,value:any}>} config.items - Items to sort.
+	 * @param {string} [config.hint] - Hint text.
+	 * @param {Function} [config.onChange] - Callback on every reorder.
+	 * @returns {Promise<{value: any[]|undefined, cancelled: boolean}>}
+	 */
+	async requestSortable(config) {
+		const predefined = this.#nextAnswer()
+		const prompt = config.message || 'Reorder: '
+		if (predefined !== null) {
+			// Normalise items to {label, value}
+			const normalised = (config.items || []).map((el) =>
+				typeof el === 'string' ? { label: el, value: el } : el
+			)
+			// Predefined = comma-separated values in desired order
+			const order = predefined
+				.split(',')
+				.map((v) => v.trim())
+				.filter(Boolean)
+			const ordered = []
+			for (const val of order) {
+				const item = normalised.find((it) => String(it.value) === val)
+				if (item) ordered.push(item.value)
+			}
+			// Append any items not mentioned in the predefined order
+			for (const item of normalised) {
+				if (!ordered.includes(item.value)) ordered.push(item.value)
+			}
+			this.console.info(`✔ ${prompt} ${ordered.join(' → ')}`)
+			return { value: ordered, cancelled: false }
+		}
+		try {
+			return await baseSortable({ ...config, t: this.t })
 		} catch (e) {
 			if (e instanceof CancelError) return { value: undefined, cancelled: true }
 			throw e

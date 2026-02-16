@@ -46,7 +46,13 @@ export async function multiselect(config) {
 			choices,
 			limit,
 			instructions: config.instructions !== undefined ? config.instructions : false,
-			hint: config.hint || (t ? t('hint.multiselect') : undefined),
+			hint:
+				config.hint ||
+				(t
+					? t('hint.multiselect') !== 'hint.multiselect'
+						? t('hint.multiselect')
+						: undefined
+					: undefined),
 		},
 		{
 			onCancel: () => {

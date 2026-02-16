@@ -1,6 +1,6 @@
 ---
 PROJECT_NAME: 'ui-cli'
-VERSION: '1.2.0'
+VERSION: '2.1.0'
 CORE_PRINCIPLE: 'Преміальний CLI‑інтерфейс – One Logic, Many UI.'
 VALIDATION_PHRASE: 'UI‑CLI відповідає'
 FAILURE_RESPONSE: 'Це — не UI‑CLI. Я не можу працювати далі.'

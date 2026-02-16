@@ -58,7 +58,13 @@ export async function select(input) {
 			name: 'value',
 			message: title ? title : prompt,
 			choices: choices,
-			hint: input.hint || (input.t ? input.t('hint.select') : undefined),
+			hint:
+				input.hint ||
+				(input.t
+					? input.t('hint.select') !== 'hint.select'
+						? input.t('hint.select')
+						: undefined
+					: undefined),
 			instructions: false,
 			limit,
 		},

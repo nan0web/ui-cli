@@ -95,6 +95,8 @@ export default class PlaygroundTest {
 		if (sequence.length === 0) return
 
 		if (child.stdin) child.stdin.setDefaultEncoding('utf-8')
+		// Silently handle EPIPE when child exits before all writes complete
+		if (child.stdin) child.stdin.on('error', () => {})
 
 		const writeNext = (idx) => {
 			if (idx >= sequence.length) {

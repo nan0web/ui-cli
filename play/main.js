@@ -20,6 +20,7 @@ import { runTreeDemo } from './tree-demo.js'
 import { runDateTimeDemo } from './datetime-demo.js'
 import { runMaskDemo } from './mask-demo.js'
 import { runV2Demo } from './v2_demo.js'
+import { runSortableDemo } from './sortable-demo.js'
 import { CancelError } from '../src/index.js'
 import getT, { localesMap } from './vocabs/index.js'
 
@@ -129,7 +130,7 @@ async function main() {
 		const result = await inputAdapter.requestSelect({
 			title: 'Choose language / Виберіть мову:',
 			options: Array.from(localesMap.values()),
-			limit: Math.max(5, (process.stdout.rows || 24) - 6)
+			limit: Math.max(5, (process.stdout.rows || 24) - 6),
 		})
 		const langChoice = result.value
 		if (langChoice) {
@@ -141,9 +142,9 @@ async function main() {
 			}
 		}
 	}
-	if (!locale) locale = process.env.LANG?.split('_')[0] || process.env.LANGUAGE?.split(':')[0] || 'en'
+	if (!locale)
+		locale = process.env.LANG?.split('_')[0] || process.env.LANGUAGE?.split(':')[0] || 'en'
 	if (!localesMap.has(locale)) locale = 'en'
-
 
 	t = getT(locale)
 	inputAdapter.t = t
@@ -172,6 +173,7 @@ async function main() {
 				{ name: t('Spinner'), value: 'spinner' },
 				{ name: t('Date & Time'), value: 'datetime' },
 				{ name: t('V2 Components'), value: 'v2' },
+				{ name: t('Sortable'), value: 'sortable' },
 				{ name: `← ${t('Exit')}`, value: 'exit' },
 			]
 
@@ -236,7 +238,7 @@ async function main() {
 						message: t('Subscribe to newsletter'),
 						initial: true,
 						active: t('yes'),
-						inactive: t('no')
+						inactive: t('no'),
 					})
 					console.success(`✓ ${t('You selected:')} ${toggleRes.value ? t('Yes') : t('No')}`)
 					break
@@ -248,7 +250,7 @@ async function main() {
 						const bar = inputAdapter.requestProgress({ total: 100, title: t('ProgressBar Demo') })
 						for (let i = 0; i <= 100; i++) {
 							bar.update(i)
-							await new Promise(r => setTimeout(r, 20))
+							await new Promise((r) => setTimeout(r, 20))
 						}
 					}
 					break
@@ -256,7 +258,7 @@ async function main() {
 					{
 						const s = inputAdapter.requestSpinner(t('Spinner Demo'))
 						const delay = process.env.PLAY_DEMO_SEQUENCE ? 60 : 3000
-						await new Promise(r => setTimeout(r, delay))
+						await new Promise((r) => setTimeout(r, delay))
 						s.stop('✓')
 					}
 					break
@@ -265,15 +267,18 @@ async function main() {
 					break
 				case 'mask':
 					if (inputAdapter.getRemainingAnswers().length > 0) {
-						prompts.inject(inputAdapter.getRemainingAnswers());
+						prompts.inject(inputAdapter.getRemainingAnswers())
 					}
 					await runMaskDemo(console, inputAdapter, t)
 					break
 				case 'v2':
 					if (inputAdapter.getRemainingAnswers().length > 0) {
-						prompts.inject(inputAdapter.getRemainingAnswers());
+						prompts.inject(inputAdapter.getRemainingAnswers())
 					}
 					await runV2Demo(console, t)
+					break
+				case 'sortable':
+					await runSortableDemo(console, inputAdapter, t)
 					break
 				case 'exit':
 					console.success(t('Thanks for exploring UI‑CLI demos! 🚀'))
@@ -284,13 +289,21 @@ async function main() {
 
 			firstRun = false
 		} catch (error) {
-			if (error instanceof CancelError || error.message?.includes('cancel') || error.message?.includes('Cancelled')) {
-				console.info(Logger.style('\n' + t('Selection cancelled. Returning to menu...'), { color: Logger.DIM }))
+			if (
+				error instanceof CancelError ||
+				error.message?.includes('cancel') ||
+				error.message?.includes('Cancelled')
+			) {
+				console.info(
+					Logger.style('\n' + t('Selection cancelled. Returning to menu...'), { color: Logger.DIM })
+				)
 				if (firstRun && args.demo) break
 				continue
 			}
 			console.error(error)
-			console.info(Logger.style('\n' + t('Error occurred. Returning to menu...'), { color: Logger.RED }))
+			console.info(
+				Logger.style('\n' + t('Error occurred. Returning to menu...'), { color: Logger.RED })
+			)
 		}
 	}
 }

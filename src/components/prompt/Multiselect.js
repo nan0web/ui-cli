@@ -20,7 +20,13 @@ export function Multiselect(props) {
 			limit: p.limit,
 			initial: p.initial,
 			instructions: p.instructions !== undefined ? p.instructions : getMultiselectInstructions(p.t),
-			hint: p.hint || (p.t ? p.t('hint.multiselect') : undefined),
+			hint:
+				p.hint ||
+				(p.t
+					? p.t('hint.multiselect') !== 'hint.multiselect'
+						? p.t('hint.multiselect')
+						: undefined
+					: undefined),
 		})
 	})
 }
