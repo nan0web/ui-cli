@@ -63,7 +63,14 @@ LANGUAGE: 'Ui, CLi, CliInput - для всіх імен класів робим�
 > This function **MUST** be used in `validate()`, `format()`, and the final `result`.
 > _Goal:_ Avoid discrepancies where validator says "fail" but formatter says "ok".
 
-### 3. The Final Stroke (Фінальний Штрих)
+### 3. The Snapshot Mandate (Абсолютна фіксація UX)
+
+> На кожен пройдений CLI-сценарій ти **МАЄШ** створити snapshot тести (фіксація послідовності виводу).
+> Обов'язково збирай перехоплені `console.log` і порівнюй їх через масиви (`deepStrictEqual` або аналог) з хардкод-еталоном.
+> Навіть зміна відступу має ламати тест. І тільки коли всі snapshot тести пройдені та "зелені", ми вважаємо, що CLI-модуль візуально працює. Перевіряється спочатку машиною посимвольно, а лише потім очима.
+> _Goal:_ Запобігти невидимим регресіям у термінальному інтерфейсі.
+
+### 4. The Final Stroke (Фінальний Штрих)
 
 > For CLI components that transform input (Mask, Password), **ALWAYS** implement `Manual Stdout Override` for the final line.
 > Never trust prompt libraries to render the final state correctly in all terminals. Correctness > Defaults.
