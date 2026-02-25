@@ -3,6 +3,7 @@ import OutputAdapter from './OutputAdapter.js'
 import { CancelError } from '@nan0web/ui/core'
 import CLI from './CLI.js'
 import CommandParser from './CommandParser.js'
+import CommandHelp from './CommandHelp.js'
 import Form, { generateForm } from './ui/form.js'
 
 // V2 Component Exports
@@ -90,6 +91,7 @@ export {
 	// Tools
 	CLI,
 	CommandParser,
+	CommandHelp,
 	OutputAdapter,
 	Form,
 	generateForm,

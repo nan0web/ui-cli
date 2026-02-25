@@ -21,9 +21,10 @@ Home › NanoWeb › UI-CLI › V2-Demo
 ✔ Plan ─ ● Build ─ ○ Verify
 Перегляд Даних (Статична Таблиця):
 Регістр Компонентів
-Prompt Interactive Stable 
-View   Static      LTS    
-Nav    Recursive   Alpha  
+component type        status 
+Prompt    Interactive Stable 
+View      Static      LTS    
+Nav       Recursive   Alpha  
 Інтерактивна Фаза 1: Ідентифікація
 Інтерактивна Фаза 2: Конфігурація
 Інтерактивна Фаза 3: Параметри

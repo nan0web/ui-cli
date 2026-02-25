@@ -21,9 +21,10 @@ Home › NanoWeb › UI-CLI › V2-Demo
 ✔ Plan ─ ● Build ─ ○ Verify
 Data Views (Static Table):
 Component Registry
-Prompt Interactive Stable 
-View   Static      LTS    
-Nav    Recursive   Alpha  
+component type        status 
+Prompt    Interactive Stable 
+View      Static      LTS    
+Nav       Recursive   Alpha  
 Interactive Phase 1: Identity
 Interactive Phase 2: Configuration
 Interactive Phase 3: Parameters

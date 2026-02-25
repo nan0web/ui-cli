@@ -69,3 +69,21 @@ npx @nan0web/ui-cli signup
 # or if installed globally
 nan0cli signup
 ```
+
+---
+
+## Universal Documentation Blocks (Phase 8 MVP)
+
+**Target**: `src/BlockRenderers/*`
+**Status**: NEW
+**Date**: 2026-02-22
+
+**Problem**:
+CLI UI does not currently support the new `Layout.*` or `Control.*` namespaces defined in `UNIVERSAL_BLOCKS_SPEC.md` (e.g. `Layout.Page`, `Layout.Sidebar`, `Control.ThemeToggle`).
+
+**Required Action**:
+Implement text-based log/terminal fallbacks in `ui-cli`:
+
+- `Layout.Page`, `Layout.Nav` could act as section boundaries or headers in CLI.
+- `Layout.Sidebar` could render as an indented tree list in the terminal.
+- `Control.*` blocks can either be gracefully ignored or represent a CLI interactive prompt if necessary.
