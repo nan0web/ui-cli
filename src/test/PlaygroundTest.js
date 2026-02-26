@@ -90,7 +90,8 @@ export default class PlaygroundTest {
 		const raw = this.env.PLAY_DEMO_SEQUENCE
 		if (!raw) return
 
-		const sequence = raw.split(',').map((s) => s.trim())
+		const divider = this.env.PLAY_DEMO_DIVIDER || ','
+		const sequence = raw.split(divider).map((s) => s.trim())
 		// Allow empty strings to signify "Enter" (default)
 		if (sequence.length === 0) return
 

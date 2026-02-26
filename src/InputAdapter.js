@@ -92,10 +92,7 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 		if (Array.isArray(predefined)) {
 			this.#answers = predefined.map((v) => String(v))
 		} else if (typeof predefined === 'string') {
-			this.#answers = predefined
-				.split(divider)
-				.map((v) => v.trim())
-				.filter(Boolean)
+			this.#answers = predefined.split(divider).map((v) => v.trim())
 		} else {
 			this.#answers = []
 		}
@@ -913,6 +910,27 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 
 	/** @inheritDoc */
 	async select(cfg) {
+		const predefined = this.#nextAnswer()
+		if (predefined !== null) {
+			const prompt = cfg.message || cfg.title || 'Select: '
+
+			// Find human label
+			let textValue = predefined
+			if (cfg.options && Array.isArray(cfg.options)) {
+				const opt = cfg.options.find(
+					(o) => o === predefined || (o && typeof o === 'object' && o.value === predefined)
+				)
+				if (opt) {
+					textValue = typeof opt === 'object' ? opt.title || opt.label : opt
+				}
+			}
+			this.stdout.write(`✔ ${prompt} ${textValue}\n`)
+
+			// Also need to support nested structure index mapping if called from baseSelect internally?
+			// But for adapter returning `{ index, value, cancelled }` is correct.
+			return { index: -1, value: predefined, cancelled: false }
+		}
+
 		return baseSelect(cfg)
 	}
 
@@ -929,11 +947,14 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 	 * @throws {CancelError} When user cancels the input process.
 	 */
 	async requireInput(msg) {
-		if (!msg) {
+		if (!msg || typeof msg !== 'object') {
 			throw new Error('Message instance is required')
 		}
-		if (!(msg instanceof UiMessage)) {
-			throw new TypeError('Message must be an instance UiMessage')
+		// Use duck typing instead of instanceof to avoid monorepo duplicate module issues
+		if (typeof msg.validate !== 'function' || !msg.constructor || !msg.constructor.Body) {
+			throw new TypeError(
+				'Message must be an instance of UiMessage (implementing static Body and validate())'
+			)
 		}
 		/** @type {Map<string,string>} */
 		let errors = msg.validate()
