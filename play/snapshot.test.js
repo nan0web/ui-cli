@@ -146,6 +146,13 @@ const SCENARIOS = [
 		seq: 'high,medium,low,critical',
 		divider: '|',
 	},
+	{
+		name: 'object_form',
+		demo: 'object-form',
+		seq: 'address|Object Address|_save',
+		seq_uk: 'Адреса|Київська 10|_save',
+		divider: '|',
+	},
 ]
 
 const LANGUAGES = ['en', 'uk']

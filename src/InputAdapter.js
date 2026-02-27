@@ -31,7 +31,7 @@ import { spinner as baseSpinner } from './ui/spinner.js'
 import { tree as baseTree } from './ui/tree.js'
 import { datetime as baseDateTime } from './ui/date-time.js'
 import { sortable as baseSortable } from './ui/sortable.js'
-import { generateForm } from './ui/form.js'
+import { generateForm, Form } from './ui/form.js'
 
 const DEFAULT_MAX_RETRIES = 100
 
@@ -582,7 +582,7 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 		try {
 			const res = await baseText({
 				message: prompt,
-				initial: config.initial ?? config.placeholder,
+				initial: config.initial !== undefined ? String(config.initial) : config.placeholder,
 				type: config.type === 'password' || config.type === 'secret' ? 'password' : 'text',
 				validate: config.validate || config.validation,
 			})
@@ -980,5 +980,132 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 			break
 		}
 		return /** @type {any} */ (msg.body)
+	}
+
+	/**
+	 * Render a form for the given data and schema class.
+	 *
+	 * @param {Object} data - Initial document data.
+	 * @param {Function} SchemaClass - Schema constructor with static fields.
+	 * @returns {{fill: () => Promise<void>}} Form object with fill method.
+	 */
+	/**
+	 * Render a form for the given data and schema class.
+	 *
+	 * @param {Object} data - Initial document data.
+	 * @param {Function} SchemaClass - Schema constructor with static fields.
+	 * @returns {{fill: () => Promise<void>}} Form object with fill method.
+	 */
+	renderForm(data, SchemaClass) {
+		const form = new Form(data, {
+			t: this.t,
+			inputFn: (p) => this.requestInput({ message: p }),
+			selectFn: (cfg) => this.requestSelect(cfg),
+			toggleFn: (cfg) => this.requestToggle(cfg),
+			sliderFn: (cfg) => this.requestSlider(cfg),
+			console: this.console,
+		})
+
+		const fields = form.fields
+		this.console.debug('renderForm: Fields found:', fields.map((f) => f.name).join(', '))
+		if (fields.length === 0) {
+			this.console.debug('renderForm: No fields found in schema', SchemaClass.name)
+		}
+
+		return {
+			fill: async () => {
+				while (true) {
+					// Prepare choices: Field [Value]
+					const choices = [
+						...fields.map((f) => {
+							const val = data[f.name] ?? ''
+							let displayVal = val
+
+							if (typeof val === 'boolean') {
+								displayVal = val ? 'Так' : 'Ні'
+							} else if (typeof val === 'object' && val !== null) {
+								displayVal = JSON.stringify(val)
+							}
+
+							if (typeof displayVal === 'string' && displayVal.length > 50) {
+								displayVal = displayVal.slice(0, 47) + '...'
+							}
+
+							return {
+								label: `${f.label}: [${displayVal}]`,
+								value: f.name,
+							}
+						}),
+						{ label: '──────────────────────────', value: 'sep', disabled: true },
+						{ label: '✅ Зберегти та вийти', value: '_save' },
+						{ label: '❌ Скасувати зміни', value: '_cancel' },
+					]
+
+					const selectedField = await this.requestSelect({
+						title: `📝 Редагування: ${SchemaClass.name}`,
+						message: 'Виберіть поле для редагування:',
+						options: choices,
+						limit: 15,
+					})
+
+					if (selectedField.cancelled || selectedField.value === '_cancel') {
+						return { value: data, cancelled: true }
+					}
+
+					if (selectedField.value === '_save') {
+						return { value: data, cancelled: false }
+					}
+
+					const field = fields.find((f) => f.name === selectedField.value)
+					if (!field) continue
+
+					// Determine current value for initial
+					const currentValue = data[field.name]
+
+					let result
+					if (field.type === 'toggle') {
+						result = await this.requestToggle({
+							message: field.label,
+							initial: currentValue === true,
+							active: field.active || 'Так',
+							inactive: field.inactive || 'Ні',
+						})
+					} else if (field.type === 'select') {
+						result = await this.requestSelect({
+							message: field.label,
+							options: field.options,
+							initial: currentValue,
+						})
+					} else if (field.type === 'mask') {
+						result = await this.requestMask({
+							message: field.label,
+							mask: field.mask,
+							initial: currentValue,
+						})
+					} else if (field.type === 'slider') {
+						result = await this.requestSlider({
+							message: field.label,
+							min: field.min,
+							max: field.max,
+							step: field.step,
+							initial: currentValue,
+						})
+					} else {
+						result = await this.requestInput({
+							message: field.label,
+							initial:
+								typeof currentValue === 'object' && currentValue !== null
+									? JSON.stringify(currentValue)
+									: (currentValue ?? field.placeholder),
+							validate: field.validation,
+						})
+					}
+
+					if (!result.cancelled) {
+						data[field.name] = form.convertValue(field, result.value)
+					}
+				}
+			},
+		}
 	}
 }

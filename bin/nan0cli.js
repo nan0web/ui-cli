@@ -26,9 +26,9 @@ const fs = new DBFS()
  * @param {string} title
  * @param {string} text
  */
-const showError = (title, text) => {
+const showError = async (title, text) => {
 	try {
-		console.error(render(new Alert({ type: 'error', title, description: text })))
+		console.error(await render(new Alert({ type: 'error', title, description: text })))
 	} catch {
 		console.error(`[CRITICAL] ${title}: ${text}`)
 	}
@@ -47,7 +47,7 @@ const showError = (title, text) => {
 		for (const candidate of candidates) {
 			const stat = await fs.statDocument(candidate)
 			if (!stat.error) {
-				appPath = fs.location(candidate)
+				appPath = fs.absolute(candidate)
 				break
 			}
 		}

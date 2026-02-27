@@ -133,10 +133,13 @@ export default class Form {
 					}
 				: () => true
 
+			const rawType = schema.type || typeof (schema.defaultValue ?? 'string')
+			const type = rawType === 'boolean' ? 'toggle' : rawType
+
 			fields.push({
 				name,
 				label: this.t(schema.help || name),
-				type: schema.type || 'text',
+				type,
 				required: isRequired,
 				placeholder,
 				min: schema.min,
@@ -306,9 +309,17 @@ export default class Form {
 			case 'number':
 				return Number(value) || 0
 			case 'boolean':
-				return value.toLowerCase() === 'true'
+				return typeof value === 'string' ? value.toLowerCase() === 'true' : Boolean(value)
+			case 'json':
+			case 'array':
+			case 'object':
+				try {
+					return typeof value === 'string' ? JSON.parse(value) : value
+				} catch (e) {
+					return value
+				}
 			default:
-				return String(value)
+				return value
 		}
 	}
 
@@ -317,3 +328,5 @@ export default class Form {
 		return this.#model
 	}
 }
+
+export { Form }

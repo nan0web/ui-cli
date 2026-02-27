@@ -8,6 +8,7 @@ import process from 'node:process'
 import readline from 'node:readline'
 import Logger from '@nan0web/log'
 import prompts from 'prompts'
+import { iconBraille } from '@nan0web/icons/adapters/cli'
 import { CancelError } from '@nan0web/ui/core'
 import { beep } from './input.js'
 import {
@@ -90,24 +91,46 @@ export async function tree(config) {
 		flat: [], // Flattened visible nodes
 		loading: false,
 		message,
+		filter: '',
+		searching: false,
 		done: false,
 		aborted: false,
 	}
 
 	// Helper: Flatten visible nodes
 	function flatten() {
-		/** @type {TreeNode[]} */
 		const list = []
-		const traverse = (nodes, depth) => {
+		const filter = state.filter ? state.filter.toLowerCase() : null
+
+		const walk = (nodes, depth) => {
+			let count = 0
 			for (const node of nodes) {
-				node.depth = depth
-				list.push(node)
-				if (state.expanded.has(node) && node.children) {
-					traverse(node.children, depth + 1)
+				const matches = !filter || node.name.toLowerCase().includes(filter)
+				const startIdx = list.length
+				let added = false
+
+				// In search mode, we implicitly visit all branches
+				if (matches) {
+					node.depth = depth
+					list.push(node)
+					added = true
 				}
+
+				if (node.children && (state.expanded.has(node) || filter)) {
+					const childrenCount = walk(node.children, depth + 1)
+					if (childrenCount > 0 && !added) {
+						node.depth = depth
+						list.splice(startIdx, 0, node)
+						added = true
+					}
+					if (added) count += childrenCount
+				}
+				if (added) count++
 			}
+			return count
 		}
-		traverse(state.roots, 0)
+
+		walk(state.roots, 0)
 		return list
 	}
 
@@ -215,6 +238,10 @@ export async function tree(config) {
 		// Title
 		out += Logger.style(`? ${t(state.message)}\n`, { color: Logger.CYAN })
 
+		if (state.searching) {
+			out += Logger.style(`  ${iconBraille()} / ${state.filter}_ \n`, { color: Logger.YELLOW })
+		}
+
 		// Tree View
 		const visible = state.flat.slice(state.offset, state.offset + limit)
 
@@ -281,7 +308,34 @@ export async function tree(config) {
 				return
 			}
 
-			if (state.loading) return // Block input while loading
+			if (key.name === 'tab') {
+				state.searching = !state.searching
+				if (!state.searching) state.filter = ''
+				state.flat = flatten()
+				state.cursor = 0
+				render()
+				return
+			}
+
+			if (state.searching) {
+				if (key.name === 'backspace') {
+					state.filter = state.filter.slice(0, -1)
+				} else if (key.name === 'escape') {
+					state.searching = false
+					state.filter = ''
+				} else if (str && str.length === 1 && !key.ctrl && !key.meta) {
+					state.filter += str
+				}
+				state.flat = flatten()
+				state.cursor = 0
+				render()
+				// Still allow navigation keys to pass through
+				if (['up', 'down', 'left', 'right', 'enter', 'return'].includes(key.name)) {
+					// continue to switch
+				} else {
+					return
+				}
+			}
 
 			switch (key.name) {
 				case 'up':
@@ -307,12 +361,12 @@ export async function tree(config) {
 					if (!key.ctrl && !key.meta && str && str.length === 1) {
 						const s = str.toLowerCase()
 						const idx = state.flat.findIndex(
-							(n, i) => i > state.cursor && n.name.toLowerCase().startsWith(s)
+							(n, i) => i > state.cursor && n.name && n.name.toLowerCase().startsWith(s)
 						)
 						if (idx !== -1) {
 							state.cursor = idx
 						} else {
-							const idx2 = state.flat.findIndex((n) => n.name.toLowerCase().startsWith(s))
+							const idx2 = state.flat.findIndex((n) => n.name && n.name.toLowerCase().startsWith(s))
 							if (idx2 !== -1) state.cursor = idx2
 						}
 						// Adjust scroll offset
@@ -355,6 +409,7 @@ export async function tree(config) {
 				}
 				state.done = true
 				cleanup()
+				console.debug('Tree submitted:', node.value || node.path || node.name)
 				resolve({ value: node.value || node.path || node.name, cancelled: false, node })
 			}
 		}
