@@ -532,6 +532,14 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 				let valToInject = predefined
 				if (!isNaN(idx) && idx >= 0 && idx < choices.length) {
 					valToInject = choices[idx].value
+				} else {
+					// Search by label (case-insensitive)
+					const match = choices.find(
+						(c) =>
+							String(c.label).toLowerCase().includes(predefined.toLowerCase()) ||
+							String(c.value).toLowerCase() === predefined.toLowerCase()
+					)
+					if (match) valToInject = match.value
 				}
 
 				if (config.console) {
@@ -546,13 +554,26 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 					const p = config.prompt ?? ''
 					config.console.info(`✔ ${p} ${predefined}`)
 				}
-				return { value: valToInject, cancelled: false }
+				if (predefined === '_cancel') {
+					return { value: undefined, index: -1, cancelled: true }
+				}
+				if (predefined === '_save') {
+					const saveIdx = choices.findIndex((c) => c.value === '_save')
+					return { value: '_save', index: saveIdx, cancelled: false }
+				}
+
+				const matchedIdx = choices.findIndex(
+					(c) =>
+						String(c.label).toLowerCase().includes(predefined.toLowerCase()) ||
+						String(c.value).toLowerCase() === predefined.toLowerCase()
+				)
+				return { value: valToInject, index: matchedIdx, cancelled: false }
 			}
 			config.t = this.t
-			const res = await this.select(config)
-			return { value: res.value, cancelled: res.cancelled ?? false }
+			const res = await baseSelect(config)
+			return { value: res.value, index: res.index, cancelled: res.cancelled ?? false }
 		} catch (e) {
-			if (e instanceof CancelError) return { value: undefined, cancelled: true }
+			if (e instanceof CancelError) return { value: undefined, index: -1, cancelled: true }
 			throw e
 		}
 	}
@@ -928,7 +949,15 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 
 			// Also need to support nested structure index mapping if called from baseSelect internally?
 			// But for adapter returning `{ index, value, cancelled }` is correct.
-			return { index: -1, value: predefined, cancelled: false }
+			// Find index for human consumption or nested logic
+			const idx =
+				cfg.options && Array.isArray(cfg.options)
+					? cfg.options.findIndex(
+							(o) => o === predefined || (o && typeof o === 'object' && o.value === predefined)
+						)
+					: -1
+
+			return { index: idx, value: predefined, cancelled: false }
 		}
 
 		return baseSelect(cfg)
@@ -1014,6 +1043,7 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 
 		return {
 			fill: async () => {
+				let lastIndex = 0
 				while (true) {
 					// Prepare choices: Field [Value]
 					const choices = [
@@ -1022,7 +1052,7 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 							let displayVal = val
 
 							if (typeof val === 'boolean') {
-								displayVal = val ? 'Так' : 'Ні'
+								displayVal = val ? this.t('Yes') : this.t('No')
 							} else if (typeof val === 'object' && val !== null) {
 								displayVal = JSON.stringify(val)
 							}
@@ -1037,15 +1067,16 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 							}
 						}),
 						{ label: '──────────────────────────', value: 'sep', disabled: true },
-						{ label: '✅ Зберегти та вийти', value: '_save' },
-						{ label: '❌ Скасувати зміни', value: '_cancel' },
+						{ label: `✅ ${this.t('Save and exit')}`, value: '_save' },
+						{ label: `❌ ${this.t('Cancel changes')}`, value: '_cancel' },
 					]
 
 					const selectedField = await this.requestSelect({
-						title: `📝 Редагування: ${SchemaClass.name}`,
-						message: 'Виберіть поле для редагування:',
+						title: `📝 ${this.t('Edit:')} ${this.t(SchemaClass.name)}`,
+						message: this.t('Select field to edit:'),
 						options: choices,
 						limit: 15,
+						initial: lastIndex,
 					})
 
 					if (selectedField.cancelled || selectedField.value === '_cancel') {
@@ -1056,6 +1087,9 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 						return { value: data, cancelled: false }
 					}
 
+					if (typeof selectedField.index === 'number' && selectedField.index >= 0) {
+						lastIndex = selectedField.index
+					}
 					const field = fields.find((f) => f.name === selectedField.value)
 					if (!field) continue
 
@@ -1067,8 +1101,8 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 						result = await this.requestToggle({
 							message: field.label,
 							initial: currentValue === true,
-							active: field.active || 'Так',
-							inactive: field.inactive || 'Ні',
+							active: field.active || this.t('Yes'),
+							inactive: field.inactive || this.t('No'),
 						})
 					} else if (field.type === 'select') {
 						result = await this.requestSelect({

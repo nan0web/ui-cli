@@ -29,13 +29,22 @@ Interactive Phase 1: Identity
 Interactive Phase 2: Configuration
 Interactive Phase 3: Parameters
 Interactive Phase 4: File System
+[TREE] Select deploy target:
+*     src
+      package.json
+      README.md
+      dist
+===
+✔ Select deploy target: [RESULT] src
+===
+
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
  ✔ Setup Complete  
 ────────────────────────────────────────────────────────────
    User: showcase
-   Env: y
+   Env: N/A
    Country: Logging
    CPU: NaN%
-   Target: 2026-02-07
+   Target: src
    Features: 1
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

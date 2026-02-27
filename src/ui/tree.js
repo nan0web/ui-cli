@@ -69,17 +69,6 @@ export async function tree(config) {
 		roots = res || []
 	}
 
-	// Automated environments support via PLAY_DEMO_SEQUENCE
-	if (process.env.PLAY_DEMO_SEQUENCE) {
-		const response = await prompts({
-			type: 'text',
-			name: 'value',
-			message: t(message),
-			initial: config.initial || roots[0]?.name || 'unknown',
-		})
-		return { value: response.value, cancelled: response.value === undefined }
-	}
-
 	// Internal State
 	const state = {
 		roots,
@@ -95,6 +84,28 @@ export async function tree(config) {
 		searching: false,
 		done: false,
 		aborted: false,
+	}
+
+	// Initial Expansion from roots data
+	const autoExpand = (nodes) => {
+		for (const node of nodes) {
+			if (node.expanded) state.expanded.add(node)
+			if (node.children) autoExpand(node.children)
+		}
+	}
+	autoExpand(state.roots)
+
+	// Initial Expansion from config keys
+	if (initialExpanded.length > 0) {
+		const walk = (nodes) => {
+			for (const node of nodes) {
+				if (initialExpanded.includes(node.path) || initialExpanded.includes(node.name)) {
+					state.expanded.add(node)
+				}
+				if (node.children) walk(node.children)
+			}
+		}
+		walk(state.roots)
 	}
 
 	// Helper: Flatten visible nodes
@@ -226,8 +237,43 @@ export async function tree(config) {
 	// Render Loop
 	let linesRendered = 0
 	let firstRender = true
+	let lastCanonical = ''
+
+	// Search state for incremental jump
+	let searchBuffer = ''
+	let searchTimer = null
+
+	function renderCanonical() {
+		let out = `[TREE] ${t(state.message)}\n`
+		if (state.searching) {
+			out += `[SEARCH] ${state.filter}_\n`
+		}
+
+		for (let i = 0; i < state.flat.length; i++) {
+			const node = state.flat[i]
+			const isFocused = i === state.cursor
+			const isExpanded = state.expanded.has(node)
+			const isChecked = state.checked.has(node)
+
+			const focus = isFocused ? '*' : ' '
+			const indent = '. '.repeat(node.depth || 0)
+			const expand = node.type === 'dir' ? (isExpanded ? '[-]' : '[+]') : '   '
+			const check = multiselect ? (isChecked ? '[x]' : '[ ]') : ''
+
+			out += `${focus} ${indent}${expand} ${check}${node.name}\n`
+		}
+		const current = out + '===\n'
+		if (current !== lastCanonical) {
+			stdout.write(current)
+			lastCanonical = current
+			linesRendered = current.split('\n').length - 1
+		}
+	}
 
 	function render() {
+		if (process.env.UI_SNAPSHOT) {
+			return renderCanonical()
+		}
 		if (!firstRender) {
 			// Clear previous output
 			stdout.write(UP(linesRendered) + ERASE_DOWN)
@@ -244,10 +290,6 @@ export async function tree(config) {
 
 		// Tree View
 		const visible = state.flat.slice(state.offset, state.offset + limit)
-
-		if (visible.length === 0) {
-			out += Logger.style(`  ${t('tree.empty')}\n`, { color: Logger.DIM })
-		}
 
 		for (let i = 0; i < visible.length; i++) {
 			const node = visible[i]
@@ -290,7 +332,13 @@ export async function tree(config) {
 
 		// Instructions / Footer
 		const helpKey = multiselect ? 'tree.help.multi' : 'tree.help.single'
-		out += Logger.style(`\n${t(helpKey)}`, { color: Logger.DIM })
+		let help = t(helpKey)
+		if (help === helpKey) {
+			help = multiselect
+				? 'Use arrow-keys. Space to toggle. Enter to submit. TAB for search.'
+				: 'Use arrow-keys. Enter to select. TAB for search.'
+		}
+		out += Logger.style(`\n${help}`, { color: Logger.DIM })
 
 		stdout.write(out)
 		linesRendered = out.split('\n').length - 1 // approximate
@@ -300,7 +348,6 @@ export async function tree(config) {
 	return new Promise((resolve, reject) => {
 		const onKey = async (str, key) => {
 			if (state.done) return
-
 			// Handle Ctrl+C
 			if (key.ctrl && key.name === 'c') {
 				cleanup()
@@ -359,20 +406,25 @@ export async function tree(config) {
 					return
 				default:
 					if (!key.ctrl && !key.meta && str && str.length === 1) {
+						// Incremental search jump
 						const s = str.toLowerCase()
-						const idx = state.flat.findIndex(
-							(n, i) => i > state.cursor && n.name && n.name.toLowerCase().startsWith(s)
+						searchBuffer += s
+						if (searchTimer) clearTimeout(searchTimer)
+						searchTimer = setTimeout(() => {
+							searchBuffer = ''
+							searchTimer = null
+						}, 700)
+
+						const idx = state.flat.findIndex((n) =>
+							n.name?.toLowerCase().startsWith(searchBuffer.toLowerCase())
 						)
 						if (idx !== -1) {
 							state.cursor = idx
-						} else {
-							const idx2 = state.flat.findIndex((n) => n.name && n.name.toLowerCase().startsWith(s))
-							if (idx2 !== -1) state.cursor = idx2
+							// Adjust scroll offset
+							if (state.cursor < state.offset) state.offset = state.cursor
+							if (state.cursor >= state.offset + limit)
+								state.offset = Math.max(0, state.cursor - limit + 1)
 						}
-						// Adjust scroll offset
-						if (state.cursor < state.offset) state.offset = state.cursor
-						if (state.cursor >= state.offset + limit)
-							state.offset = Math.max(0, state.cursor - limit + 1)
 					}
 					break
 			}
@@ -409,17 +461,28 @@ export async function tree(config) {
 				}
 				state.done = true
 				cleanup()
-				console.debug('Tree submitted:', node.value || node.path || node.name)
 				resolve({ value: node.value || node.path || node.name, cancelled: false, node })
 			}
 		}
 
 		function cleanup() {
+			if (searchTimer) clearTimeout(searchTimer)
 			stdin.removeListener('keypress', onKey)
 			if (process.stdin.isTTY && typeof process.stdin.setRawMode === 'function') {
 				process.stdin.setRawMode(false)
 			}
 			stdin.pause() // Crucial for automated tests to release event loop
+
+			if (process.env.UI_SNAPSHOT) {
+				const node = state.flat[state.cursor]
+				const result = multiselect
+					? `${state.checked.size} ${t('tree.selected')}`
+					: node?.name || '(none)'
+				stdout.write(`✔ ${t(state.message)} [RESULT] ${result}\n`)
+				stdout.write('===\n')
+				stdout.write(SHOW_CURSOR)
+				return
+			}
 
 			// Final cleanup message or checkmark?
 			if (state.done) {

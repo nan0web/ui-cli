@@ -24,6 +24,14 @@ function normalizeOutput(str) {
 			.replace(/\[\=*\>?-*\] \d+% \[\d{2}:\d{2}( < \d{2}:\d{2})?\]/g, '[PROGRESS_BAR]')
 			// Normalize spinner frames (braille patterns)
 			.replace(/^[⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏].*$/gm, '[SPINNER_FRAME]')
+			// Normalize tree icons and special symbols for better snapshot readability
+			.replace(/📁/g, '[D]')
+			.replace(/📄/g, '[F]')
+			.replace(/▼/g, 'v')
+			.replace(/▶/g, '>')
+			.replace(/◉/g, '(x)')
+			.replace(/◯/g, '( )')
+			.replace(/[\u2800-\u28FF]/g, '*') // Match all braille symbols
 			// Deduplicate consecutive spinner frames
 			.replace(/(\[SPINNER_FRAME\]\n?)+/g, '[SPINNER_ANIMATION]\n')
 			// Normalize spinner durations [00:02] -> [XX:XX]
@@ -39,7 +47,7 @@ const SNAPSHOT_DIR = path.join(process.cwd(), 'play', 'snapshots')
 
 async function verifySnapshot(name, demo, lang, env) {
 	const pt = new PlaygroundTest(
-		{ ...process.env, ...env },
+		{ ...process.env, UI_SNAPSHOT: '1', ...env },
 		{ includeDebugger: false, feedStdin: true }
 	)
 	// Use --demo and --lang to skip menu and language selection
@@ -101,7 +109,7 @@ const SCENARIOS = [
 	{
 		name: 'tree_view',
 		demo: 'tree',
-		seq: 'package.json', // Scenario 2 & 3 are skipped in test mode
+		seq: 'README.md', // Scenario 2 & 3 are skipped in test mode
 	},
 	{
 		name: 'autocomplete',
@@ -147,10 +155,22 @@ const SCENARIOS = [
 		divider: '|',
 	},
 	{
+		name: 'tree_search',
+		demo: 'tree',
+		seq: '\tREADME.md',
+	},
+	{
 		name: 'object_form',
 		demo: 'object-form',
-		seq: 'address|Object Address|_save',
-		seq_uk: 'Адреса|Київська 10|_save',
+		seq: 'address|New Address|city|New City|_save',
+		seq_uk: 'Адреса|Нова адреса|Місто|Нове місто|_save',
+		divider: '|',
+	},
+	{
+		name: 'object_form_complex',
+		demo: 'object-form',
+		seq: 'type|ATM|_save',
+		seq_uk: 'Тип|Банкомат|_save',
 		divider: '|',
 	},
 ]

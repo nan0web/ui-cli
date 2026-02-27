@@ -23,13 +23,40 @@ export async function runTreeDemo(console, adapter, t) {
 	console.clear()
 	console.success(t('Tree View Demo'))
 
-	// Load real data
-	const dataPath = path.join(process.cwd(), 'play', 'data', 'tree.json')
-	if (!fs.existsSync(dataPath)) {
-		console.warn(t('Scan data found not found. Please run: node play/scripts/scan-fs.js'))
-		return
+	const MOCK_TREE = {
+		name: 'project',
+		type: 'dir',
+		children: [
+			{
+				name: 'src',
+				type: 'dir',
+				children: [
+					{ name: 'index.js', type: 'file' },
+					{ name: 'utils.js', type: 'file' },
+				],
+			},
+			{
+				name: 'docs',
+				type: 'dir',
+				children: [{ name: 'setup.md', type: 'file' }],
+			},
+			{ name: 'package.json', type: 'file' },
+			{ name: 'README.md', type: 'file' },
+		],
 	}
-	const realTree = JSON.parse(fs.readFileSync(dataPath, 'utf8'))
+
+	let realTree
+	if (isTestMode) {
+		realTree = MOCK_TREE
+	} else {
+		// Load real data
+		const dataPath = path.join(process.cwd(), 'play', 'data', 'tree.json')
+		if (!fs.existsSync(dataPath)) {
+			console.warn(t('Scan data found not found. Please run: node play/scripts/scan-fs.js'))
+			return
+		}
+		realTree = JSON.parse(fs.readFileSync(dataPath, 'utf8'))
+	}
 
 	// Pre-process realTree to assign paths and index
 	const pathMap = new Map()

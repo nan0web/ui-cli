@@ -271,6 +271,16 @@ export default {
 	'Format must be:': 'Формат має бути:',
 	yes: 'Так',
 	no: 'Ні',
+	'Object Form': "Форма об'єкта",
+	'Object Map Form Demo – Premium UX': "Демо форми об'єкта – Premium UX",
+	'Entering Object Map interface...': "Вхід в інтерфейс карти об'єкта...",
+	'Data Saved:': 'Дані збережено:',
+	'Editing cancelled.': 'Редагування скасовано.',
+	Branch: 'Філіал',
+	'Save and exit': 'Зберегти та вийти',
+	'Cancel changes': 'Скасувати зміни',
+	'Edit:': 'Редагування:',
+	'Select field to edit:': 'Виберіть поле для редагування:',
 	// V2 Components
 	'V2 Components': 'V2 Компоненти',
 	'This demo uses declarative functional components via render().':

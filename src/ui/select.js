@@ -27,10 +27,11 @@ import { validateString, validateFunction, validateNumber } from '../core/PropVa
  * @throws {CancelError} When the user cancels the operation.
  */
 export async function select(input) {
-	const { title, prompt, options: initOptins, limit = 30 } = input
+	const { title, prompt, message, label, options: initOptins, limit = 30, initial } = input
 
 	// Prop Validation
-	validateString(title || prompt, 'title', 'Select', true)
+	const displayTitle = title || prompt || message || label
+	validateString(displayTitle, 'title', 'Select', true)
 	validateNumber(limit, 'limit', 'Select')
 	validateFunction(input.t, 't', 'Select')
 	validateString(input.hint, 'hint', 'Select')
@@ -56,8 +57,13 @@ export async function select(input) {
 		{
 			type: 'select',
 			name: 'value',
-			message: title ? title : prompt,
+			message: displayTitle,
 			choices: choices,
+			initial: (() => {
+				const idx =
+					typeof initial === 'number' ? initial : choices.findIndex((c) => c.value === initial)
+				return idx >= 0 && idx < choices.length ? idx : 0
+			})(),
 			hint:
 				input.hint ||
 				(input.t
@@ -75,9 +81,14 @@ export async function select(input) {
 		}
 	)
 
-	const index = choices.findIndex((c) => c.value === response.value)
+	let index = choices.findIndex((c) => c.value === response.value)
 
-	return { index, value: response.value, cancelled: response.value === undefined }
+	// If prompts returned an index (like 0) instead of the value, or value not found
+	if (index === -1) {
+		return { index: -1, value: undefined, cancelled: true }
+	}
+
+	return { index, value: response.value, cancelled: false }
 }
 
 /**
