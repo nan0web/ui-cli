@@ -21,18 +21,18 @@
  */
 export function select(input: {
     title: string;
-    prompt?: string | undefined;
-    message?: string | undefined;
-    label?: string | undefined;
+    prompt?: string;
+    message?: string;
+    label?: string;
     options: any[] | Map<any, any>;
     console?: any;
-    stops?: string[] | undefined;
+    stops?: string[];
     ask?: any;
-    invalidPrompt?: string | undefined;
-    limit?: number | undefined;
+    invalidPrompt?: string;
+    limit?: number;
     initial?: any;
-    hint?: string | undefined;
-    t?: Function | undefined;
+    hint?: string;
+    t?: Function;
 }): Promise<{
     index: number;
     value: any;

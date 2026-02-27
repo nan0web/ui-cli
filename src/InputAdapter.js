@@ -507,7 +507,7 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 	 * Prompt the user to select an option from a list.
 	 *
 	 * @param {Object} config - Configuration object.
-	 * @returns {Promise<{value: string|undefined, cancelled: boolean}>} Selected value (or undefined on cancel).
+	 * @returns {Promise<{value: string|undefined, index: number, cancelled: boolean}>} Selected value (or undefined on cancel).
 	 */
 	async requestSelect(config) {
 		config.limit = config.limit ?? Math.max(5, (this.stdout.rows || 24) - 4)
@@ -980,7 +980,11 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 			throw new Error('Message instance is required')
 		}
 		// Use duck typing instead of instanceof to avoid monorepo duplicate module issues
-		if (typeof msg.validate !== 'function' || !msg.constructor || !msg.constructor.Body) {
+		if (
+			typeof msg.validate !== 'function' ||
+			!msg.constructor ||
+			!(/** @type {any} */ (msg.constructor).Body)
+		) {
 			throw new TypeError(
 				'Message must be an instance of UiMessage (implementing static Body and validate())'
 			)
@@ -1016,19 +1020,12 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 	 *
 	 * @param {Object} data - Initial document data.
 	 * @param {Function} SchemaClass - Schema constructor with static fields.
-	 * @returns {{fill: () => Promise<void>}} Form object with fill method.
-	 */
-	/**
-	 * Render a form for the given data and schema class.
-	 *
-	 * @param {Object} data - Initial document data.
-	 * @param {Function} SchemaClass - Schema constructor with static fields.
-	 * @returns {{fill: () => Promise<void>}} Form object with fill method.
+	 * @returns {{fill: () => Promise<any>}} Form object with fill method.
 	 */
 	renderForm(data, SchemaClass) {
 		const form = new Form(data, {
 			t: this.t,
-			inputFn: (p) => this.requestInput({ message: p }),
+			inputFn: (p) => /** @type {any} */ (this.requestInput({ message: p })),
 			selectFn: (cfg) => this.requestSelect(cfg),
 			toggleFn: (cfg) => this.requestToggle(cfg),
 			sliderFn: (cfg) => this.requestSlider(cfg),
@@ -1135,8 +1132,8 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 						})
 					}
 
-					if (!result.cancelled) {
-						data[field.name] = form.convertValue(field, result.value)
+					if (!result.cancelled && result.value !== undefined) {
+						data[field.name] = form.convertValue(field, /** @type {any} */ (result.value))
 					}
 				}
 			},

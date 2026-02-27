@@ -13,7 +13,7 @@
  */
 export function generateForm(BodyClass: Function, options?: {
     initialState?: any;
-    t?: Function | undefined;
+    t?: Function;
 }): UiForm;
 /**
  * CLI-specific form handler that introspects a model class for static field schemas.
@@ -39,55 +39,52 @@ export default class Form {
      * @param {string[]} [options.stops=["quit", "cancel", "exit"]] - Stop words.
      * @param {(prompt: string) => Promise<Input>} [options.inputFn] - Custom input function.
      * @param {(config: object) => Promise<{index:number, value:any}>} [options.selectFn] - Custom select function.
-     * @param {(config: object) => Promise<{value: number|undefined, cancelled: boolean}>} [options.sliderFn] - Custom slider function.
-     * @param {(config: object) => Promise<{value: boolean|undefined, cancelled: boolean}>} [options.toggleFn] - Custom toggle function.
-     * @param {Object} [options.console] - Optional console for logging.
+     * @param {(config: object) => Promise<{value: number, cancelled: boolean}>} [options.sliderFn] - Custom slider function.
+     * @param {(config: object) => Promise<{value: boolean, cancelled: boolean}>} [options.toggleFn] - Custom toggle function.
      * @param {Function} [options.t] - Optional translation function.
      * @throws {TypeError} If model is not an object with a constructor.
      */
     constructor(model: any, options?: {
-        stops?: string[] | undefined;
-        inputFn?: ((prompt: string) => Promise<Input>) | undefined;
-        selectFn?: ((config: object) => Promise<{
+        stops?: string[];
+        inputFn?: (prompt: string) => Promise<Input>;
+        selectFn?: (config: object) => Promise<{
             index: number;
             value: any;
-        }>) | undefined;
-        sliderFn?: ((config: object) => Promise<{
-            value: number | undefined;
+        }>;
+        sliderFn?: (config: object) => Promise<{
+            value: number;
             cancelled: boolean;
-        }>) | undefined;
-        toggleFn?: ((config: object) => Promise<{
-            value: boolean | undefined;
+        }>;
+        toggleFn?: (config: object) => Promise<{
+            value: boolean;
             cancelled: boolean;
-        }>) | undefined;
-        console?: any;
-        t?: Function | undefined;
+        }>;
+        t?: Function;
     });
     /** @type {Function} Input handler with cancellation support. */
     handler: Function;
     options: {
-        stops?: string[] | undefined;
-        inputFn?: ((prompt: string) => Promise<Input>) | undefined;
-        selectFn?: ((config: object) => Promise<{
+        stops?: string[];
+        inputFn?: (prompt: string) => Promise<Input>;
+        selectFn?: (config: object) => Promise<{
             index: number;
             value: any;
-        }>) | undefined;
-        sliderFn?: ((config: object) => Promise<{
-            value: number | undefined;
+        }>;
+        sliderFn?: (config: object) => Promise<{
+            value: number;
             cancelled: boolean;
-        }>) | undefined;
-        toggleFn?: ((config: object) => Promise<{
-            value: boolean | undefined;
+        }>;
+        toggleFn?: (config: object) => Promise<{
+            value: boolean;
             cancelled: boolean;
-        }>) | undefined;
-        console?: any;
-        t?: Function | undefined;
+        }>;
+        t?: Function;
     };
     t: Function;
-    select: typeof select | ((config: object) => Promise<{
+    select: (config: object) => Promise<{
         index: number;
         value: any;
-    }>);
+    }>;
     get fields(): any[];
     /**
      * Prompts for input using the internal handler.
@@ -111,14 +108,13 @@ export default class Form {
      * Converts raw input value based on field schema.
      *
      * @param {Object} field - Field config.
-     * @param {any} value - Input value.
+     * @param {string} value - Raw string value.
      * @returns {string|number|boolean} Typed value.
      */
-    convertValue(field: any, value: any): string | number | boolean;
+    convertValue(field: any, value: string): string | number | boolean;
     /** @returns {Object} The updated model instance. */
     get body(): any;
     #private;
 }
 import { UiForm } from '@nan0web/ui';
 import { Input } from './input.js';
-import { select } from './select.js';

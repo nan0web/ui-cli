@@ -84,8 +84,9 @@ export default class Form {
 	 * @param {string[]} [options.stops=["quit", "cancel", "exit"]] - Stop words.
 	 * @param {(prompt: string) => Promise<Input>} [options.inputFn] - Custom input function.
 	 * @param {(config: object) => Promise<{index:number, value:any}>} [options.selectFn] - Custom select function.
-	 * @param {(config: object) => Promise<{value: number, cancelled: boolean}>} [options.sliderFn] - Custom slider function.
-	 * @param {(config: object) => Promise<{value: boolean, cancelled: boolean}>} [options.toggleFn] - Custom toggle function.
+	 * @param {(config: object) => Promise<{value: number|undefined, cancelled: boolean}>} [options.sliderFn] - Custom slider function.
+	 * @param {(config: object) => Promise<{value: boolean|undefined, cancelled: boolean}>} [options.toggleFn] - Custom toggle function.
+	 * @param {Object} [options.console] - Optional console for logging.
 	 * @param {Function} [options.t] - Optional translation function.
 	 * @throws {TypeError} If model is not an object with a constructor.
 	 */
@@ -299,7 +300,7 @@ export default class Form {
 	 * Converts raw input value based on field schema.
 	 *
 	 * @param {Object} field - Field config.
-	 * @param {string} value - Raw string value.
+	 * @param {any} value - Input value.
 	 * @returns {string|number|boolean} Typed value.
 	 */
 	convertValue(field, value) {

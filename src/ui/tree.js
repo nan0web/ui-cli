@@ -291,6 +291,10 @@ export async function tree(config) {
 		// Tree View
 		const visible = state.flat.slice(state.offset, state.offset + limit)
 
+		if (visible.length === 0) {
+			out += Logger.style(`  ${t('tree.empty')}\n`, { color: Logger.DIM })
+		}
+
 		for (let i = 0; i < visible.length; i++) {
 			const node = visible[i]
 			const absIndex = state.offset + i

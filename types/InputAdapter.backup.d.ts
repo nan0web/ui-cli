@@ -76,11 +76,10 @@ export default class CLiInputAdapter extends BaseInputAdapter {
      * Prompt the user to select an option from a list.
      *
      * @param {Object} config - Configuration object.
-     * @returns {Promise<{value: string|undefined, index: number, cancelled: boolean}>} Selected value (or undefined on cancel).
+     * @returns {Promise<{value: string|undefined, cancelled: boolean}>} Selected value (or undefined on cancel).
      */
     requestSelect(config: any): Promise<{
         value: string | undefined;
-        index: number;
         cancelled: boolean;
     }>;
     /**
@@ -252,10 +251,17 @@ export default class CLiInputAdapter extends BaseInputAdapter {
      *
      * @param {Object} data - Initial document data.
      * @param {Function} SchemaClass - Schema constructor with static fields.
-     * @returns {{fill: () => Promise<any>}} Form object with fill method.
+     * @returns {{fill: () => Promise<void>}} Form object with fill method.
+     */
+    /**
+     * Render a form for the given data and schema class.
+     *
+     * @param {Object} data - Initial document data.
+     * @param {Function} SchemaClass - Schema constructor with static fields.
+     * @returns {{fill: () => Promise<void>}} Form object with fill method.
      */
     renderForm(data: any, SchemaClass: Function): {
-        fill: () => Promise<any>;
+        fill: () => Promise<void>;
     };
     #private;
 }

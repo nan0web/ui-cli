@@ -240,4 +240,9 @@ export default {
 	Medium: 'Medium',
 	Low: 'Low',
 	'Final order:': 'Final order:',
+	'Object Form': 'Object Form',
+	'Save and exit': 'Save and exit',
+	'Cancel changes': 'Cancel changes',
+	'Edit:': 'Edit:',
+	'Select field to edit:': 'Select field to edit:',
 }
