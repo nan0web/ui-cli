@@ -23,6 +23,7 @@
 	},
 	"scripts": {
 		"build": "tsc",
+		"build:docs": "node scripts/build-docs.mjs",
 		"test": "node --test --test-timeout=3333 \"src/**/*.test.js\"",
 		"test:nan0test": "node --test --test-timeout=3333 \"src/**/*.test.js\" | nan0test parse --fail",
 		"test:coverage": "node --experimental-test-coverage --test-timeout=3333 --test-coverage-include=\"src/**/*.js\" --test-coverage-exclude=\"src/**/*.test.js\" --test \"src/**/*.test.js\"",

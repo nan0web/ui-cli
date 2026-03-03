@@ -29,9 +29,9 @@ function normalizeOutput(str) {
 
 const SNAPSHOT_DIR = path.join(process.cwd(), 'snapshots', 'sandbox')
 
-async function verifySandboxSnapshot(scenarioName, compName, env) {
+async function verifySandboxSnapshot(scenarioName, compName, env, locale = 'en') {
 	const pt = new PlaygroundTest(
-		{ ...process.env, UI_SNAPSHOT: '1', ...env },
+		{ ...process.env, UI_SNAPSHOT: '1', G_LANG: locale, ...env },
 		{ includeDebugger: false, feedStdin: true }
 	)
 
@@ -42,17 +42,19 @@ async function verifySandboxSnapshot(scenarioName, compName, env) {
 
 	const compDir = path.join(SNAPSHOT_DIR, compName.toLowerCase())
 	if (!fs.existsSync(compDir)) fs.mkdirSync(compDir, { recursive: true })
-	const snapshotPath = path.join(compDir, `${scenarioName}.snap`)
+	const snapshotPath = path.join(compDir, `${scenarioName}.${locale}.snap`)
 
 	if (process.env.UPDATE_SNAPSHOTS) {
 		fs.writeFileSync(snapshotPath, actual, 'utf8')
-		console.log(`Updated snapshot: sandbox/${compName.toLowerCase()}/${scenarioName}.snap`)
+		console.log(
+			`Updated snapshot: sandbox/${compName.toLowerCase()}/${scenarioName}.${locale}.snap`
+		)
 		return
 	}
 
 	if (!fs.existsSync(snapshotPath)) {
 		console.warn(
-			`WARN: Snapshot not found: sandbox/${compName.toLowerCase()}/${scenarioName}.snap. Creating it...`
+			`WARN: Snapshot not found: sandbox/${compName.toLowerCase()}/${scenarioName}.${locale}.snap. Creating it...`
 		)
 		fs.writeFileSync(snapshotPath, actual, 'utf8')
 		return
@@ -95,49 +97,75 @@ describe('Sandbox E2E Snapshots', () => {
 	if (fs.existsSync(TEST_CONFIG)) fs.unlinkSync(TEST_CONFIG)
 	if (!fs.existsSync(SNAPSHOT_DIR)) fs.mkdirSync(SNAPSHOT_DIR, { recursive: true })
 
-	for (const comp of COMPONENTS.view) {
-		it(`matches snapshot for View Component: ${comp}`, async () => {
-			// Sequence:
-			// 1. Select Component
-			// 2. Select Default Variant
-			// 3. Go Back
-			// 4. Create New Variant (Name: TestVar)
-			// 5. Reset to Defaults
-			// 6. Delete Variant
-			// 7. Back to Components
-			// 8. Exit
-			const seq = `${comp}|[Variant] Default|← Back|+ Create New Variant|TestVar|↺ Reset to Defaults|✖ Delete Variant|← Back to Components|← Exit`
-			await verifySandboxSnapshot('lifecycle', comp, {
-				CLI_SANDBOX_CONFIG: TEST_CONFIG,
-				PLAY_DEMO_SEQUENCE: seq,
-				PLAY_DEMO_DIVIDER: '|',
-			})
-		})
-	}
+	const locales = ['en', 'uk']
 
-	for (const p of COMPONENTS.prompt) {
-		it(`matches snapshot for Prompt Component: ${p.name}`, async () => {
-			// Sequence:
-			// 1. Select Component
-			// 2. Select Default Variant
-			// 3. Run Prompt (provide answer if needed)
-			// 4. Go Back
-			// 5. Create New Variant (Name: TestVar)
-			// 6. Delete Variant
-			// 7. Back to Components
-			// 8. Exit
-			let seqParams = `${p.name}|[Variant] Default|▶ Run Prompt (Test)`
-			if (p.answer !== null) {
-				seqParams += `|${p.answer}`
-			}
-			seqParams += `|← Back|+ Create New Variant|TestVar|✖ Delete Variant|← Back to Components|← Exit`
+	for (const locale of locales) {
+		for (const comp of COMPONENTS.view) {
+			it(`matches snapshot for View Component: ${comp} (${locale})`, async () => {
+				// Sequence:
+				// 1. Select Component
+				// 2. Select Default Variant
+				// 3. Go Back
+				// 4. Create New Variant (Name: TestVar)
+				// 5. Reset to Defaults
+				// 6. Delete Variant
+				// 7. Back to Components
+				// 8. Exit
+				// For Ukrainian we need the translated sequence keys:
+				const divider = '|'
+				let seq
+				if (locale === 'uk') {
+					seq = `${comp}|[Варіант] Default|← Назад|+ Створити Новий Варіант|TestVar|↺ Скинути до Стандартних|✖ Видалити Варіант|← Назад до Компонентів|← Вийти`
+				} else {
+					seq = `${comp}|[Variant] Default|← Back|+ Create New Variant|TestVar|↺ Reset to Defaults|✖ Delete Variant|← Back to Components|← Exit`
+				}
 
-			await verifySandboxSnapshot('lifecycle', p.name, {
-				CLI_SANDBOX_CONFIG: TEST_CONFIG,
-				PLAY_DEMO_SEQUENCE: seqParams,
-				PLAY_DEMO_DIVIDER: '|',
+				await verifySandboxSnapshot(
+					'lifecycle',
+					comp,
+					{
+						CLI_SANDBOX_CONFIG: TEST_CONFIG,
+						PLAY_DEMO_SEQUENCE: seq,
+						PLAY_DEMO_DIVIDER: divider,
+					},
+					locale
+				)
 			})
-		})
+		}
+
+		for (const p of COMPONENTS.prompt) {
+			it(`matches snapshot for Prompt Component: ${p.name} (${locale})`, async () => {
+				const divider = '|'
+				let seqParams
+
+				if (locale === 'uk') {
+					seqParams = `${p.name}|[Варіант] Default|▶ Запустити Інтерактив (Test)`
+				} else {
+					seqParams = `${p.name}|[Variant] Default|▶ Run Prompt (Test)`
+				}
+
+				if (p.answer !== null) {
+					seqParams += `${divider}${p.answer}`
+				}
+
+				if (locale === 'uk') {
+					seqParams += `${divider}← Назад${divider}+ Створити Новий Варіант${divider}TestVar${divider}✖ Видалити Варіант${divider}← Назад до Компонентів${divider}← Вийти`
+				} else {
+					seqParams += `${divider}← Back${divider}+ Create New Variant${divider}TestVar${divider}✖ Delete Variant${divider}← Back to Components${divider}← Exit`
+				}
+
+				await verifySandboxSnapshot(
+					'lifecycle',
+					p.name,
+					{
+						CLI_SANDBOX_CONFIG: TEST_CONFIG,
+						PLAY_DEMO_SEQUENCE: seqParams,
+						PLAY_DEMO_DIVIDER: divider,
+					},
+					locale
+				)
+			})
+		}
 	}
 
 	// Clean up config after all tests

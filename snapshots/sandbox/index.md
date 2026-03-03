@@ -5,7 +5,7 @@
 
 ---
 
-## 🖥 Екран: `Alert Lifecycle` (`alert/lifecycle.snap`)
+## 🖥 Екран: `Alert Lifecycle En` (`alert/lifecycle.en.snap`)
 
 ```text
 🧱 UI-CLI Sandbox 
@@ -117,12 +117,48 @@ Select a component to test:
 Exiting Sandbox. 👋
 ```
 
-> **💬 Коментарі щодо Alert Lifecycle:**
+> **💬 Коментарі щодо Alert Lifecycle En:**
 > *(напишіть тут що змінити: кольори, відступи, тексти, логіку)*
 
 ---
 
-## 🖥 Екран: `Badge Lifecycle` (`badge/lifecycle.snap`)
+## 🖥 Екран: `Alert Lifecycle Uk` (`alert/lifecycle.uk.snap`)
+
+```text
+🧱 UI-CLI Sandbox 
+Select a component to test:
+ 1) Alert
+ 2) Badge
+ 3) Toast
+ 4) Table
+ 5) Tabs
+ 6) Breadcrumbs
+ 7) Steps
+ 8) Input
+ 9) Password
+ 10) Toggle
+ 11) Confirm
+ 12) Select
+ 13) Multiselect
+ 14) Slider
+ 15) DateTime
+  ↓ (3 more)
+✔  Alert
+Sandbox > Alert. Choose variation:
+ 1) [Variant] Default
+ 2) + Create New Variant
+ 3) ← Back to Components
+✔  [Варіант] Default
+--- STDERR ---
+TypeError: Cannot read properties of undefined (reading 'props')
+```
+
+> **💬 Коментарі щодо Alert Lifecycle Uk:**
+> *(напишіть тут що змінити: кольори, відступи, тексти, логіку)*
+
+---
+
+## 🖥 Екран: `Badge Lifecycle En` (`badge/lifecycle.en.snap`)
 
 ```text
 🧱 UI-CLI Sandbox 
@@ -219,12 +255,48 @@ Select a component to test:
 Exiting Sandbox. 👋
 ```
 
-> **💬 Коментарі щодо Badge Lifecycle:**
+> **💬 Коментарі щодо Badge Lifecycle En:**
 > *(напишіть тут що змінити: кольори, відступи, тексти, логіку)*
 
 ---
 
-## 🖥 Екран: `Breadcrumbs Lifecycle` (`breadcrumbs/lifecycle.snap`)
+## 🖥 Екран: `Badge Lifecycle Uk` (`badge/lifecycle.uk.snap`)
+
+```text
+🧱 UI-CLI Sandbox 
+Select a component to test:
+ 1) Alert
+ 2) Badge
+ 3) Toast
+ 4) Table
+ 5) Tabs
+ 6) Breadcrumbs
+ 7) Steps
+ 8) Input
+ 9) Password
+ 10) Toggle
+ 11) Confirm
+ 12) Select
+ 13) Multiselect
+ 14) Slider
+ 15) DateTime
+  ↓ (3 more)
+✔  Badge
+Sandbox > Badge. Choose variation:
+ 1) [Variant] Default
+ 2) + Create New Variant
+ 3) ← Back to Components
+✔  [Варіант] Default
+--- STDERR ---
+TypeError: Cannot read properties of undefined (reading 'props')
+```
+
+> **💬 Коментарі щодо Badge Lifecycle Uk:**
+> *(напишіть тут що змінити: кольори, відступи, тексти, логіку)*
+
+---
+
+## 🖥 Екран: `Breadcrumbs Lifecycle En` (`breadcrumbs/lifecycle.en.snap`)
 
 ```text
 🧱 UI-CLI Sandbox 
@@ -315,12 +387,49 @@ Select a component to test:
 Exiting Sandbox. 👋
 ```
 
-> **💬 Коментарі щодо Breadcrumbs Lifecycle:**
+> **💬 Коментарі щодо Breadcrumbs Lifecycle En:**
 > *(напишіть тут що змінити: кольори, відступи, тексти, логіку)*
 
 ---
 
-## 🖥 Екран: `Confirm Lifecycle` (`confirm/lifecycle.snap`)
+## 🖥 Екран: `Breadcrumbs Lifecycle Uk` (`breadcrumbs/lifecycle.uk.snap`)
+
+```text
+🧱 UI-CLI Sandbox 
+Select a component to test:
+ 1) Alert
+ 2) Badge
+ 3) Toast
+ 4) Table
+ 5) Tabs
+ 6) Breadcrumbs
+ 7) Steps
+ 8) Input
+ 9) Password
+ 10) Toggle
+ 11) Confirm
+ 12) Select
+ 13) Multiselect
+ 14) Slider
+ 15) DateTime
+  ↓ (3 more)
+✔  Breadcrumbs
+Sandbox > Breadcrumbs. Choose variation:
+ 1) [Variant] Default
+ 2) + Create New Variant
+ 3) ← Back to Components
+✔  [Варіант] Default
+==================================================
+--- STDERR ---
+TypeError: Cannot read properties of undefined (reading 'title')
+```
+
+> **💬 Коментарі щодо Breadcrumbs Lifecycle Uk:**
+> *(напишіть тут що змінити: кольори, відступи, тексти, логіку)*
+
+---
+
+## 🖥 Екран: `Confirm Lifecycle En` (`confirm/lifecycle.en.snap`)
 
 ```text
 🧱 UI-CLI Sandbox 
@@ -416,12 +525,48 @@ Select a component to test:
 Exiting Sandbox. 👋
 ```
 
-> **💬 Коментарі щодо Confirm Lifecycle:**
+> **💬 Коментарі щодо Confirm Lifecycle En:**
 > *(напишіть тут що змінити: кольори, відступи, тексти, логіку)*
 
 ---
 
-## 🖥 Екран: `Datetime Lifecycle` (`datetime/lifecycle.snap`)
+## 🖥 Екран: `Confirm Lifecycle Uk` (`confirm/lifecycle.uk.snap`)
+
+```text
+🧱 UI-CLI Sandbox 
+Select a component to test:
+ 1) Alert
+ 2) Badge
+ 3) Toast
+ 4) Table
+ 5) Tabs
+ 6) Breadcrumbs
+ 7) Steps
+ 8) Input
+ 9) Password
+ 10) Toggle
+ 11) Confirm
+ 12) Select
+ 13) Multiselect
+ 14) Slider
+ 15) DateTime
+  ↓ (3 more)
+✔  Confirm
+Sandbox > Confirm. Choose variation:
+ 1) [Variant] Default
+ 2) + Create New Variant
+ 3) ← Back to Components
+✔  [Варіант] Default
+--- STDERR ---
+TypeError: Cannot read properties of undefined (reading 'props')
+```
+
+> **💬 Коментарі щодо Confirm Lifecycle Uk:**
+> *(напишіть тут що змінити: кольори, відступи, тексти, логіку)*
+
+---
+
+## 🖥 Екран: `Datetime Lifecycle En` (`datetime/lifecycle.en.snap`)
 
 ```text
 🧱 UI-CLI Sandbox 
@@ -459,8 +604,9 @@ Variant Options:
  3) ↺ Reset to Defaults
  4) ← Back
 ✔  > Run Prompt (Test)
-? Pick a date: › 2026-03-03 14:18:04? Pick a date: › 2026-03-03 14:18:04✔ Pick a date: › 2026-03-03 14:18:04
-Result: Tue Mar 03 2026 14:18:04 GMT+0200 (Eastern European Standard Time)
+? Pick a date: › 2026-03-03 15:54:54? Pick a date: › 2026-03-03 15:54:54✔ Pick a date: › 2026-03-03 15:54:54
+
+Result: Tue Mar 03 2026 15:54:54 GMT+0200 (Eastern European Standard Time)
 Press any key to continue...
 ==================================================
  Sandbox: > DateTime > Default < 
@@ -517,12 +663,48 @@ Select a component to test:
 Exiting Sandbox. 👋
 ```
 
-> **💬 Коментарі щодо Datetime Lifecycle:**
+> **💬 Коментарі щодо Datetime Lifecycle En:**
 > *(напишіть тут що змінити: кольори, відступи, тексти, логіку)*
 
 ---
 
-## 🖥 Екран: `Input Lifecycle` (`input/lifecycle.snap`)
+## 🖥 Екран: `Datetime Lifecycle Uk` (`datetime/lifecycle.uk.snap`)
+
+```text
+🧱 UI-CLI Sandbox 
+Select a component to test:
+ 1) Alert
+ 2) Badge
+ 3) Toast
+ 4) Table
+ 5) Tabs
+ 6) Breadcrumbs
+ 7) Steps
+ 8) Input
+ 9) Password
+ 10) Toggle
+ 11) Confirm
+ 12) Select
+ 13) Multiselect
+ 14) Slider
+ 15) DateTime
+  ↓ (3 more)
+✔  DateTime
+Sandbox > DateTime. Choose variation:
+ 1) [Variant] Default
+ 2) + Create New Variant
+ 3) ← Back to Components
+✔  [Варіант] Default
+--- STDERR ---
+TypeError: Cannot read properties of undefined (reading 'props')
+```
+
+> **💬 Коментарі щодо Datetime Lifecycle Uk:**
+> *(напишіть тут що змінити: кольори, відступи, тексти, логіку)*
+
+---
+
+## 🖥 Екран: `Input Lifecycle En` (`input/lifecycle.en.snap`)
 
 ```text
 🧱 UI-CLI Sandbox 
@@ -561,9 +743,10 @@ Variant Options:
  4) ↺ Reset to Defaults
  5) ← Back
 ✔  > Run Prompt (Test)
-? Enter your name: › 78? Enter your name: › I78? Enter your name: › In78? Enter your name: › Inp78? Enter your name: › Inpu78? Enter your name: › Input78? Enter your name: › Input[78? Enter your name: › Input[V78? Enter your name: › Input[Va78? Enter your name: › Input[Var78? Enter your name: › Input[Vari78? Enter your name: › Input[Varia78? Enter your name: › Input[Varian78? Enter your name: › Input[Variant78? Enter your name: › Input[Variant]78? Enter your name: › Input[Variant] 78? Enter your name: › Input[Variant] D78? Enter your name: › Input[Variant] De78? Enter your name: › Input[Variant] Def78? Enter your name: › Input[Variant] Defa78? Enter your name: › Input[Variant] Defau78? Enter your name: › Input[Variant] Defaul78? Enter your name: › Input[Variant] Default78✔ Enter your name: … Input[Variant] Default78
+? Enter your name: › 78? Enter your name: › I78? Enter your name: › In78? Enter your name: › Inp78? Enter your name: › Inpu78? Enter your name: › Input78? Enter your name: › Input[78? Enter your name: › Input[V78? Enter your name: › Input[Va78? Enter your name: › Input[Var78? Enter your name: › Input[Vari78? Enter your name: › Input[Varia78? Enter your name: › Input[Varian78? Enter your name: › Input[Variant78? Enter your name: › Input[Variant]78? Enter your name: › Input[Variant] 78? Enter your name: › Input[Variant] D78? Enter your name: › Input[Variant] De78? Enter your name: › Input[Variant] Def78? Enter your name: › Input[Variant] Defa78? Enter your name: › Input[Variant] Defau78? Enter your name: › Input[Variant] Defaul78? Enter your name: › Input[Variant] Default78? Enter your name: › Input[Variant] Default>78? Enter your name: › Input[Variant] Default> 78? Enter your name: › Input[Variant] Default> R78? Enter your name: › Input[Variant] Default> Ru78? Enter your name: › Input[Variant] Default> Run78? Enter your name: › Input[Variant] Default> Run 78? Enter your name: › Input[Variant] Default> Run P78? Enter your name: › Input[Variant] Default> Run Pr78? Enter your name: › Input[Variant] Default> Run Pro78? Enter your name: › Input[Variant] Default> Run Prom78? Enter your name: › Input[Variant] Default> Run Promp78? Enter your name: › Input[Variant] Default> Run Prompt78? Enter your name: › Input[Variant] Default> Run Prompt 78? Enter your name: › Input[Variant] Default> Run Prompt (78? Enter your name: › Input[Variant] Default> Run Prompt (T78? Enter your name: › Input[Variant] Default> Run Prompt (Te78? Enter your name: › Input[Variant] Default> Run Prompt (Tes78? Enter your name: › Input[Variant] Default> Run Prompt (Test78? Enter your name: › Input[Variant] Default> Run Prompt (Test)78✔ Enter your name: … Input[Variant] Default> Run Prompt (Test)78
 
-Result: Input[Variant] Default
+
+Result: Input[Variant] Default> Run Prompt (Test)
 Press any key to continue...
 ==================================================
  Sandbox: > Input > Default < 
@@ -622,12 +805,48 @@ Select a component to test:
 Exiting Sandbox. 👋
 ```
 
-> **💬 Коментарі щодо Input Lifecycle:**
+> **💬 Коментарі щодо Input Lifecycle En:**
 > *(напишіть тут що змінити: кольори, відступи, тексти, логіку)*
 
 ---
 
-## 🖥 Екран: `Multiselect Lifecycle` (`multiselect/lifecycle.snap`)
+## 🖥 Екран: `Input Lifecycle Uk` (`input/lifecycle.uk.snap`)
+
+```text
+🧱 UI-CLI Sandbox 
+Select a component to test:
+ 1) Alert
+ 2) Badge
+ 3) Toast
+ 4) Table
+ 5) Tabs
+ 6) Breadcrumbs
+ 7) Steps
+ 8) Input
+ 9) Password
+ 10) Toggle
+ 11) Confirm
+ 12) Select
+ 13) Multiselect
+ 14) Slider
+ 15) DateTime
+  ↓ (3 more)
+✔  Input
+Sandbox > Input. Choose variation:
+ 1) [Variant] Default
+ 2) + Create New Variant
+ 3) ← Back to Components
+✔  [Варіант] Default
+--- STDERR ---
+TypeError: Cannot read properties of undefined (reading 'props')
+```
+
+> **💬 Коментарі щодо Input Lifecycle Uk:**
+> *(напишіть тут що змінити: кольори, відступи, тексти, логіку)*
+
+---
+
+## 🖥 Екран: `Multiselect Lifecycle En` (`multiselect/lifecycle.en.snap`)
 
 ```text
 🧱 UI-CLI Sandbox 
@@ -726,12 +945,48 @@ Select a component to test:
 Exiting Sandbox. 👋
 ```
 
-> **💬 Коментарі щодо Multiselect Lifecycle:**
+> **💬 Коментарі щодо Multiselect Lifecycle En:**
 > *(напишіть тут що змінити: кольори, відступи, тексти, логіку)*
 
 ---
 
-## 🖥 Екран: `Password Lifecycle` (`password/lifecycle.snap`)
+## 🖥 Екран: `Multiselect Lifecycle Uk` (`multiselect/lifecycle.uk.snap`)
+
+```text
+🧱 UI-CLI Sandbox 
+Select a component to test:
+ 1) Alert
+ 2) Badge
+ 3) Toast
+ 4) Table
+ 5) Tabs
+ 6) Breadcrumbs
+ 7) Steps
+ 8) Input
+ 9) Password
+ 10) Toggle
+ 11) Confirm
+ 12) Select
+ 13) Multiselect
+ 14) Slider
+ 15) DateTime
+  ↓ (3 more)
+✔  Multiselect
+Sandbox > Multiselect. Choose variation:
+ 1) [Variant] Default
+ 2) + Create New Variant
+ 3) ← Back to Components
+✔  [Варіант] Default
+--- STDERR ---
+TypeError: Cannot read properties of undefined (reading 'props')
+```
+
+> **💬 Коментарі щодо Multiselect Lifecycle Uk:**
+> *(напишіть тут що змінити: кольори, відступи, тексти, логіку)*
+
+---
+
+## 🖥 Екран: `Password Lifecycle En` (`password/lifecycle.en.snap`)
 
 ```text
 🧱 UI-CLI Sandbox 
@@ -769,8 +1024,11 @@ Variant Options:
  3) ↺ Reset to Defaults
  4) ← Back
 ✔  > Run Prompt (Test)
-? Enter your password: › 78? Enter your password: › *78? Enter your password: › **78? Enter your password: › ***78? Enter your password: › ****78? Enter your password: › *****78? Enter your password: › ******78? Enter your password: › *******78? Enter your password: › ********78✔ Enter your password: … ********78
-Result: Password
+? Enter your password: › 78? Enter your password: › *78? Enter your password: › **78? Enter your password: › ***78? Enter your password: › ****78? Enter your password: › *****78? Enter your password: › ******78? Enter your password: › *******78? Enter your password: › ********78? Enter your password: › *********78? Enter your password: › **********78? Enter your password: › ***********78? Enter your password: › ************78? Enter your password: › *************78? Enter your password: › **************78? Enter your password: › ***************78? Enter your password: › ****************78? Enter your password: › *****************78? Enter your password: › ******************78? Enter your password: › *******************78? Enter your password: › ********************78? Enter your password: › *********************78? Enter your password: › **********************78? Enter your password: › ***********************78? Enter your password: › ************************78? Enter your password: › *************************78? Enter your password: › **************************78? Enter your password: › ***************************78? Enter your password: › ****************************78? Enter your password: › *****************************78? Enter your password: › ******************************78? Enter your password: › *******************************78? Enter your password: › ********************************78? Enter your password: › *********************************78? Enter your password: › **********************************78? Enter your password: › ***********************************78? Enter your password: › ************************************78? Enter your password: › *************************************78? Enter your password: › **************************************78? Enter your password: › ***************************************78? Enter your password: › ****************************************78? Enter your password: › *****************************************78? Enter your password: › ******************************************78? Enter your password: › *******************************************78? Enter your password: › ********************************************78? Enter your password: › *********************************************78? Enter your password: › **********************************************78? Enter your password: › ***********************************************78? Enter your password: › ************************************************78? Enter your password: › *************************************************78? Enter your password: › **************************************************78? Enter your password: › ***************************************************78? Enter your password: › ****************************************************78? Enter your password: › *****************************************************78✔ Enter your password: … *****************************************************78
+
+
+
+Result: Password[Variant] Default> Run Prompt (Test)secret123
 Press any key to continue...
 ==================================================
  Sandbox: > Password > Default < 
@@ -827,12 +1085,48 @@ Select a component to test:
 Exiting Sandbox. 👋
 ```
 
-> **💬 Коментарі щодо Password Lifecycle:**
+> **💬 Коментарі щодо Password Lifecycle En:**
 > *(напишіть тут що змінити: кольори, відступи, тексти, логіку)*
 
 ---
 
-## 🖥 Екран: `Progressbar Lifecycle` (`progressbar/lifecycle.snap`)
+## 🖥 Екран: `Password Lifecycle Uk` (`password/lifecycle.uk.snap`)
+
+```text
+🧱 UI-CLI Sandbox 
+Select a component to test:
+ 1) Alert
+ 2) Badge
+ 3) Toast
+ 4) Table
+ 5) Tabs
+ 6) Breadcrumbs
+ 7) Steps
+ 8) Input
+ 9) Password
+ 10) Toggle
+ 11) Confirm
+ 12) Select
+ 13) Multiselect
+ 14) Slider
+ 15) DateTime
+  ↓ (3 more)
+✔  Password
+Sandbox > Password. Choose variation:
+ 1) [Variant] Default
+ 2) + Create New Variant
+ 3) ← Back to Components
+✔  [Варіант] Default
+--- STDERR ---
+TypeError: Cannot read properties of undefined (reading 'props')
+```
+
+> **💬 Коментарі щодо Password Lifecycle Uk:**
+> *(напишіть тут що змінити: кольори, відступи, тексти, логіку)*
+
+---
+
+## 🖥 Екран: `Progressbar Lifecycle En` (`progressbar/lifecycle.en.snap`)
 
 ```text
 🧱 UI-CLI Sandbox 
@@ -926,12 +1220,48 @@ Select a component to test:
 Exiting Sandbox. 👋
 ```
 
-> **💬 Коментарі щодо Progressbar Lifecycle:**
+> **💬 Коментарі щодо Progressbar Lifecycle En:**
 > *(напишіть тут що змінити: кольори, відступи, тексти, логіку)*
 
 ---
 
-## 🖥 Екран: `Select Lifecycle` (`select/lifecycle.snap`)
+## 🖥 Екран: `Progressbar Lifecycle Uk` (`progressbar/lifecycle.uk.snap`)
+
+```text
+🧱 UI-CLI Sandbox 
+Select a component to test:
+ 1) Alert
+ 2) Badge
+ 3) Toast
+ 4) Table
+ 5) Tabs
+ 6) Breadcrumbs
+ 7) Steps
+ 8) Input
+ 9) Password
+ 10) Toggle
+ 11) Confirm
+ 12) Select
+ 13) Multiselect
+ 14) Slider
+ 15) DateTime
+  ↓ (3 more)
+✔  ProgressBar
+Sandbox > ProgressBar. Choose variation:
+ 1) [Variant] Default
+ 2) + Create New Variant
+ 3) ← Back to Components
+✔  [Варіант] Default
+--- STDERR ---
+TypeError: Cannot read properties of undefined (reading 'props')
+```
+
+> **💬 Коментарі щодо Progressbar Lifecycle Uk:**
+> *(напишіть тут що змінити: кольори, відступи, тексти, логіку)*
+
+---
+
+## 🖥 Екран: `Select Lifecycle En` (`select/lifecycle.en.snap`)
 
 ```text
 🧱 UI-CLI Sandbox 
@@ -1031,12 +1361,48 @@ Select a component to test:
 Exiting Sandbox. 👋
 ```
 
-> **💬 Коментарі щодо Select Lifecycle:**
+> **💬 Коментарі щодо Select Lifecycle En:**
 > *(напишіть тут що змінити: кольори, відступи, тексти, логіку)*
 
 ---
 
-## 🖥 Екран: `Slider Lifecycle` (`slider/lifecycle.snap`)
+## 🖥 Екран: `Select Lifecycle Uk` (`select/lifecycle.uk.snap`)
+
+```text
+🧱 UI-CLI Sandbox 
+Select a component to test:
+ 1) Alert
+ 2) Badge
+ 3) Toast
+ 4) Table
+ 5) Tabs
+ 6) Breadcrumbs
+ 7) Steps
+ 8) Input
+ 9) Password
+ 10) Toggle
+ 11) Confirm
+ 12) Select
+ 13) Multiselect
+ 14) Slider
+ 15) DateTime
+  ↓ (3 more)
+✔  Select
+Sandbox > Select. Choose variation:
+ 1) [Variant] Default
+ 2) + Create New Variant
+ 3) ← Back to Components
+✔  [Варіант] Default
+--- STDERR ---
+TypeError: Cannot read properties of undefined (reading 'props')
+```
+
+> **💬 Коментарі щодо Select Lifecycle Uk:**
+> *(напишіть тут що змінити: кольори, відступи, тексти, логіку)*
+
+---
+
+## 🖥 Екран: `Slider Lifecycle En` (`slider/lifecycle.en.snap`)
 
 ```text
 🧱 UI-CLI Sandbox 
@@ -1077,12 +1443,55 @@ Variant Options:
  6) ↺ Reset to Defaults
  7) ← Back
 ✔  > Run Prompt (Test)
-? Adjust Volume: › 5078? Adjust Volume: › S78? Adjust Volume: › Sl78? Adjust Volume: › Sli78? Adjust Volume: › Slid78? Adjust Volume: › Slide78? Adjust Volume: › Slider78? Adjust Volume: › Slider[78? Adjust Volume: › Slider[V78? Adjust Volume: › Slider[Va78? Adjust Volume: › Slider[Var78? Adjust Volume: › Slider[Vari78? Adjust Volume: › Slider[Varia78? Adjust Volume: › Slider[Varian78? Adjust Volume: › Slider[Variant78? Adjust Volume: › Slider[Variant]78? Adjust Volume: › Slider[Variant] 78? Adjust Volume: › Slider[Variant] D78? Adjust Volume: › Slider[Variant] De78? Adjust Volume: › Slider[Variant] Def78? Adjust Volume: › Slider[Variant] Defa78? Adjust Volume: › Slider[Variant] Defau78? Adjust Volume: › Slider[Variant] Defaul78? Adjust Volume: › Slider[Variant] Default78? Adjust Volume: › Slider[Variant] Default>78? Adjust Volume: › Slider[Variant] Default> 78? Adjust Volume: › Slider[Variant] Default> R78? Adjust Volume: › Slider[Variant] Default> Ru78? Adjust Volume: › Slider[Variant] Default> Run78? Adjust Volume: › Slider[Variant] Default> Run 78? Adjust Volume: › Slider[Variant] Default> Run P78? Adjust Volume: › Slider[Variant] Default> Run Pr78? Adjust Volume: › Slider[Variant] Default> Run Pro78? Adjust Volume: › Slider[Variant] Default> Run Prom78? Adjust Volume: › Slider[Variant] Default> Run Promp78? Adjust Volume: › Slider[Variant] Default> Run Prompt78? Adjust Volume: › Slider[Variant] Default> Run Prompt 78? Adjust Volume: › Slider[Variant] Default> Run Prompt (78? Adjust Volume: › Slider[Variant] Default> Run Prompt (T78? Adjust Volume: › Slider[Variant] Default> Run Prompt (Te78? Adjust Volume: › Slider[Variant] Default> Run Prompt (Tes78? Adjust Volume: › Slider[Variant] Default> Run Prompt (Test78? Adjust Volume: › Slider[Variant] Default> Run Prompt (Test)78? Adjust Volume: › Slider[Variant] Default> Run Prompt (Test)←78? Adjust Volume: › Slider[Variant] Default> Run Prompt (Test)← 78? Adjust Volume: › Slider[Variant] Default> Run Prompt (Test)← B78? Adjust Volume: › Slider[Variant] Default> Run Prompt (Test)← Ba78? Adjust Volume: › Slider[Variant] Default> Run Prompt (Test)← Bac78? Adjust Volume: › Slider[Variant] Default> Run Prompt (Test)← Back78? Adjust Volume: › Slider[Variant] Default> Run Prompt (Test)← Back+78? Adjust Volume: › Slider[Variant] Default> Run Prompt (Test)← Back+ 78? Adjust Volume: › Slider[Variant] Default> Run Prompt (Test)← Back+ C78? Adjust Volume: › Slider[Variant] Default> Run Prompt (Test)← Back+ Cr78? Adjust Volume: › Slider[Variant] Default> Run Prompt (Test)← Back+ Cre78? Adjust Volume: › Slider[Variant] Default> Run Prompt (Test)← Back+ Crea78? Adjust Volume: › Slider[Variant] Default> Run Prompt (Test)← Back+ Creat78? Adjust Volume: › Slider[Variant] Default> Run Prompt (Test)← Back+ Create78? Adjust Volume: › Slider[Variant] Default> Run Prompt (Test)← Back+ Create 78? Adjust Volume: › Slider[Variant] Default> Run Prompt (Test)← Back+ Create N78? Adjust Volume: › Slider[Variant] Default> Run Prompt (Test)← Back+ Create Ne78? Adjust Volume: › Slider[Variant] Default> Run Prompt (Test)← Back+ Create New78? Adjust Volume: › Slider[Variant] Default> Run Prompt (Test)← Back+ Create New 78? Adjust Volume: › Slider[Variant] Default> Run Prompt (Test)← Back+ Create New V78? Adjust Volume: › Slider[Variant] Default> Run Prompt (Test)← Back+ Create New Va78? Adjust Volume: › Slider[Variant] Default> Run Prompt (Test)← Back+ Create New Var78? Adjust Volume: › Slider[Variant] Default> Run Prompt (Test)← Back+ Create New Vari78? Adjust Volume: › Slider[Variant] Default> Run Prompt (Test)← Back+ Create New Varia78? Adjust Volume: › Slider[Variant] Default> Run Prompt (Test)← Back+ Create New Varian78? Adjust Volume: › Slider[Variant] Default> Run Prompt (Test)← Back+ Create New Variant78? Adjust Volume: › Slider[Variant] Default> Run Prompt (Test)← Back+ Create New VariantT78? Adjust Volume: › Slider[Variant] Default> Run Prompt (Test)← Back+ Create New VariantTe78? Adjust Volume: › Slider[Variant] Default> Run Prompt (Test)← Back+ Create New VariantTes78? Adjust Volume: › Slider[Variant] Default> Run Prompt (Test)← Back+ Create New VariantTest78? Adjust Volume: › Slider[Variant] Default> Run Prompt (Test)← Back+ Create New VariantTestV78? Adjust Volume: › Slider[Variant] Default> Run Prompt (Test)← Back+ Create New VariantTestVa78? Adjust Volume: › Slider[Variant] Default> Run Prompt (Test)← Back+ Create New VariantTestVar78? Adjust Volume: › Slider[Variant] Default> Run Prompt (Test)← Back+ Create New VariantTestVar✖78? Adjust Volume: › Slider[Variant] Default> Run Prompt (Test)← Back+ Create New VariantTestVar✖ 78? Adjust Volume: › Slider[Variant] Default> Run Prompt (Test)← Back+ Create New VariantTestVar✖ D78? Adjust Volume: › Slider[Variant] Default> Run Prompt (Test)← Back+ Create New VariantTestVar✖ De78? Adjust Volume: › Slider[Variant] Default> Run Prompt (Test)← Back+ Create New VariantTestVar✖ Del78? Adjust Volume: › Slider[Variant] Default> Run Prompt (Test)← Back+ Create New VariantTestVar✖ Dele78? Adjust Volume: › Slider[Variant] Default> Run Prompt (Test)← Back+ Create New VariantTestVar✖ Delet78? Adjust Volume: › Slider[Variant] Default> Run Prompt (Test)← Back+ Create New VariantTestVar✖ Delete78? Adjust Volume: › Slider[Variant] Default> Run Prompt (Test)← Back+ Create New VariantTestVar✖ Delete 78? Adjust Volume: › Slider[Variant] Default> Run Prompt (Test)← Back+ Create New VariantTestVar✖ Delete V78? Adjust Volume: › Slider[Variant] Default> Run Prompt (Test)← Back+ Create New VariantTestVar✖ Delete Va78? Adjust Volume: › Slider[Variant] Default> Run Prompt (Test)← Back+ Create New VariantTestVar✖ Delete Var78? Adjust Volume: › Slider[Variant] Default> Run Prompt (Test)← Back+ Create New VariantTestVar✖ Delete Vari78? Adjust Volume: › Slider[Variant] Default> Run Prompt (Test)← Back+ Create New VariantTestVar✖ Delete Varia78? Adjust Volume: › Slider[Variant] Default> Run Prompt (Test)← Back+ Create New VariantTestVar✖ Delete Varian78? Adjust Volume: › Slider[Variant] Default> Run Prompt (Test)← Back+ Create New VariantTestVar✖ Delete Variant78? Adjust Volume: › Slider[Variant] Default> Run Prompt (Test)← Back+ Create New VariantTestVar✖ Delete Variant7
-› Enter number 0-1008? Adjust Volume: › Slider[Variant] Default> Run Prompt (Test)← Back+ Create New VariantTestVar✖ Delete Variant7
-› Enter number 0-1008? Adjust Volume: › Slider[Variant] Default> Run Prompt (Test)← Back+ Create New VariantTestVar✖ Delete Variant7
-› Enter number 0-1008? Adjust Volume: › Slider[Variant] Default> Run Prompt (Test)← Back+ Create New VariantTestVar✖ Delete Variant7
-› Enter number 0-1008? Adjust Volume: › Slider[Variant] Default> Run Prompt (Test)← Back+ Create New VariantTestVar✖ Delete Variant7
-› Enter number 0-1008? Adjust Volume: › Slider[Variant] Default> Run Prompt (Test)← Back+ Create New VariantTestVar✖ Delete Variant7
+? Adjust Volume: › 5078? Adjust Volume: › S78? Adjust Volume: › Sl78? Adjust Volume: › Sli78? Adjust Volume: › Slid78? Adjust Volume: › Slide78? Adjust Volume: › Slider78? Adjust Volume: › Slider[78? Adjust Volume: › Slider[V78? Adjust Volume: › Slider[Va78? Adjust Volume: › Slider[Var78? Adjust Volume: › Slider[Vari78? Adjust Volume: › Slider[Varia78? Adjust Volume: › Slider[Varian78? Adjust Volume: › Slider[Variant78? Adjust Volume: › Slider[Variant]78? Adjust Volume: › Slider[Variant] 78? Adjust Volume: › Slider[Variant] D78? Adjust Volume: › Slider[Variant] De78? Adjust Volume: › Slider[Variant] Def78? Adjust Volume: › Slider[Variant] Defa78? Adjust Volume: › Slider[Variant] Defau78? Adjust Volume: › Slider[Variant] Defaul78? Adjust Volume: › Slider[Variant] Default78? Adjust Volume: › Slider[Variant] Default>78? Adjust Volume: › Slider[Variant] Default> 78? Adjust Volume: › Slider[Variant] Default> R78? Adjust Volume: › Slider[Variant] Default> Ru78? Adjust Volume: › Slider[Variant] Default> Run78? Adjust Volume: › Slider[Variant] Default> Run 78? Adjust Volume: › Slider[Variant] Default> Run P78? Adjust Volume: › Slider[Variant] Default> Run Pr78? Adjust Volume: › Slider[Variant] Default> Run Pro78? Adjust Volume: › Slider[Variant] Default> Run Prom78? Adjust Volume: › Slider[Variant] Default> Run Promp78? Adjust Volume: › Slider[Variant] Default> Run Prompt78? Adjust Volume: › Slider[Variant] Default> Run Prompt 78? Adjust Volume: › Slider[Variant] Default> Run Prompt (78? Adjust Volume: › Slider[Variant] Default> Run Prompt (T78? Adjust Volume: › Slider[Variant] Default> Run Prompt (Te78? Adjust Volume: › Slider[Variant] Default> Run Prompt (Tes78? Adjust Volume: › Slider[Variant] Default> Run Prompt (Test78? Adjust Volume: › Slider[Variant] Default> Run Prompt (Test)78? Adjust Volume: › Slider[Variant] Default> Run Prompt (Test)←78? Adjust Volume: › Slider[Variant] Default> Run Prompt (Test)← 78? Adjust Volume: › Slider[Variant] Default> Run Prompt (Test)← B78? Adjust Volume: › Slider[Variant] Default> Run Prompt (Test)← Ba78? Adjust Volume: › Slider[Variant] Default> Run Prompt (Test)← Bac78? Adjust Volume: › Slider[Variant] Default> Run Prompt (Test)← Back78? Adjust Volume: › Slider[Variant] Default> Run Prompt (Test)← Back7
+› Enter number 0-1008? Adjust Volume: › Slider[Variant] Default> Run Prompt (Test)← Back7
+› Enter number 0-1008? Adjust Volume: › Slider[Variant] Default> Run Prompt (Test)← Back7
+› Enter number 0-1008? Adjust Volume: › Slider[Variant] Default> Run Prompt (Test)← Back7
+› Enter number 0-1008? Adjust Volume: › Slider[Variant] Default> Run Prompt (Test)← Back7
+› Enter number 0-1008? Adjust Volume: › Slider[Variant] Default> Run Prompt (Test)← Back+7
+› Enter number 0-1008? Adjust Volume: › Slider[Variant] Default> Run Prompt (Test)← Back+ 7
+› Enter number 0-1008? Adjust Volume: › Slider[Variant] Default> Run Prompt (Test)← Back+ C7
+› Enter number 0-1008? Adjust Volume: › Slider[Variant] Default> Run Prompt (Test)← Back+ Cr7
+› Enter number 0-1008? Adjust Volume: › Slider[Variant] Default> Run Prompt (Test)← Back+ Cre7
+› Enter number 0-1008? Adjust Volume: › Slider[Variant] Default> Run Prompt (Test)← Back+ Crea7
+› Enter number 0-1008? Adjust Volume: › Slider[Variant] Default> Run Prompt (Test)← Back+ Creat7
+› Enter number 0-1008? Adjust Volume: › Slider[Variant] Default> Run Prompt (Test)← Back+ Create7
+› Enter number 0-1008? Adjust Volume: › Slider[Variant] Default> Run Prompt (Test)← Back+ Create 7
+› Enter number 0-1008? Adjust Volume: › Slider[Variant] Default> Run Prompt (Test)← Back+ Create N7
+› Enter number 0-1008? Adjust Volume: › Slider[Variant] Default> Run Prompt (Test)← Back+ Create Ne7
+› Enter number 0-1008? Adjust Volume: › Slider[Variant] Default> Run Prompt (Test)← Back+ Create New7
+› Enter number 0-1008? Adjust Volume: › Slider[Variant] Default> Run Prompt (Test)← Back+ Create New 7
+› Enter number 0-1008? Adjust Volume: › Slider[Variant] Default> Run Prompt (Test)← Back+ Create New V7
+› Enter number 0-1008? Adjust Volume: › Slider[Variant] Default> Run Prompt (Test)← Back+ Create New Va7
+› Enter number 0-1008? Adjust Volume: › Slider[Variant] Default> Run Prompt (Test)← Back+ Create New Var7
+› Enter number 0-1008? Adjust Volume: › Slider[Variant] Default> Run Prompt (Test)← Back+ Create New Vari7
+› Enter number 0-1008? Adjust Volume: › Slider[Variant] Default> Run Prompt (Test)← Back+ Create New Varia7
+› Enter number 0-1008? Adjust Volume: › Slider[Variant] Default> Run Prompt (Test)← Back+ Create New Varian7
+› Enter number 0-1008? Adjust Volume: › Slider[Variant] Default> Run Prompt (Test)← Back+ Create New Variant7
+› Enter number 0-1008? Adjust Volume: › Slider[Variant] Default> Run Prompt (Test)← Back+ Create New Variant7
+› Enter number 0-1008? Adjust Volume: › Slider[Variant] Default> Run Prompt (Test)← Back+ Create New VariantT7
+› Enter number 0-1008? Adjust Volume: › Slider[Variant] Default> Run Prompt (Test)← Back+ Create New VariantTe7
+› Enter number 0-1008? Adjust Volume: › Slider[Variant] Default> Run Prompt (Test)← Back+ Create New VariantTes7
+› Enter number 0-1008? Adjust Volume: › Slider[Variant] Default> Run Prompt (Test)← Back+ Create New VariantTest7
+› Enter number 0-1008? Adjust Volume: › Slider[Variant] Default> Run Prompt (Test)← Back+ Create New VariantTestV7
+› Enter number 0-1008? Adjust Volume: › Slider[Variant] Default> Run Prompt (Test)← Back+ Create New VariantTestVa7
+› Enter number 0-1008? Adjust Volume: › Slider[Variant] Default> Run Prompt (Test)← Back+ Create New VariantTestVar7
+› Enter number 0-1008? Adjust Volume: › Slider[Variant] Default> Run Prompt (Test)← Back+ Create New VariantTestVar7
+› Enter number 0-1008? Adjust Volume: › Slider[Variant] Default> Run Prompt (Test)← Back+ Create New VariantTestVar✖7
+› Enter number 0-1008? Adjust Volume: › Slider[Variant] Default> Run Prompt (Test)← Back+ Create New VariantTestVar✖ 7
+› Enter number 0-1008? Adjust Volume: › Slider[Variant] Default> Run Prompt (Test)← Back+ Create New VariantTestVar✖ D7
+› Enter number 0-1008? Adjust Volume: › Slider[Variant] Default> Run Prompt (Test)← Back+ Create New VariantTestVar✖ De7
+› Enter number 0-1008? Adjust Volume: › Slider[Variant] Default> Run Prompt (Test)← Back+ Create New VariantTestVar✖ Del7
+› Enter number 0-1008? Adjust Volume: › Slider[Variant] Default> Run Prompt (Test)← Back+ Create New VariantTestVar✖ Dele7
+› Enter number 0-1008? Adjust Volume: › Slider[Variant] Default> Run Prompt (Test)← Back+ Create New VariantTestVar✖ Delet7
+› Enter number 0-1008? Adjust Volume: › Slider[Variant] Default> Run Prompt (Test)← Back+ Create New VariantTestVar✖ Delete7
+› Enter number 0-1008? Adjust Volume: › Slider[Variant] Default> Run Prompt (Test)← Back+ Create New VariantTestVar✖ Delete 7
+› Enter number 0-1008? Adjust Volume: › Slider[Variant] Default> Run Prompt (Test)← Back+ Create New VariantTestVar✖ Delete V7
+› Enter number 0-1008? Adjust Volume: › Slider[Variant] Default> Run Prompt (Test)← Back+ Create New VariantTestVar✖ Delete Va7
+› Enter number 0-1008? Adjust Volume: › Slider[Variant] Default> Run Prompt (Test)← Back+ Create New VariantTestVar✖ Delete Var7
+› Enter number 0-1008? Adjust Volume: › Slider[Variant] Default> Run Prompt (Test)← Back+ Create New VariantTestVar✖ Delete Vari7
+› Enter number 0-1008? Adjust Volume: › Slider[Variant] Default> Run Prompt (Test)← Back+ Create New VariantTestVar✖ Delete Varia7
+› Enter number 0-1008? Adjust Volume: › Slider[Variant] Default> Run Prompt (Test)← Back+ Create New VariantTestVar✖ Delete Varian7
 › Enter number 0-1008? Adjust Volume: › Slider[Variant] Default> Run Prompt (Test)← Back+ Create New VariantTestVar✖ Delete Variant7
 › Enter number 0-1008? Adjust Volume: › Slider[Variant] Default> Run Prompt (Test)← Back+ Create New VariantTestVar✖ Delete Variant7
 › Enter number 0-1008? Adjust Volume: › Slider[Variant] Default> Run Prompt (Test)← Back+ Create New VariantTestVar✖ Delete Variant←7
@@ -1116,12 +1525,48 @@ Variant Options:
 › Enter number 0-1008
 ```
 
-> **💬 Коментарі щодо Slider Lifecycle:**
+> **💬 Коментарі щодо Slider Lifecycle En:**
 > *(напишіть тут що змінити: кольори, відступи, тексти, логіку)*
 
 ---
 
-## 🖥 Екран: `Sortable Lifecycle` (`sortable/lifecycle.snap`)
+## 🖥 Екран: `Slider Lifecycle Uk` (`slider/lifecycle.uk.snap`)
+
+```text
+🧱 UI-CLI Sandbox 
+Select a component to test:
+ 1) Alert
+ 2) Badge
+ 3) Toast
+ 4) Table
+ 5) Tabs
+ 6) Breadcrumbs
+ 7) Steps
+ 8) Input
+ 9) Password
+ 10) Toggle
+ 11) Confirm
+ 12) Select
+ 13) Multiselect
+ 14) Slider
+ 15) DateTime
+  ↓ (3 more)
+✔  Slider
+Sandbox > Slider. Choose variation:
+ 1) [Variant] Default
+ 2) + Create New Variant
+ 3) ← Back to Components
+✔  [Варіант] Default
+--- STDERR ---
+TypeError: Cannot read properties of undefined (reading 'props')
+```
+
+> **💬 Коментарі щодо Slider Lifecycle Uk:**
+> *(напишіть тут що змінити: кольори, відступи, тексти, логіку)*
+
+---
+
+## 🖥 Екран: `Sortable Lifecycle En` (`sortable/lifecycle.en.snap`)
 
 ```text
 🧱 UI-CLI Sandbox 
@@ -1147,12 +1592,43 @@ Select a component to test:
 TypeError: Cannot read properties of undefined (reading 'map')
 ```
 
-> **💬 Коментарі щодо Sortable Lifecycle:**
+> **💬 Коментарі щодо Sortable Lifecycle En:**
 > *(напишіть тут що змінити: кольори, відступи, тексти, логіку)*
 
 ---
 
-## 🖥 Екран: `Spinner Lifecycle` (`spinner/lifecycle.snap`)
+## 🖥 Екран: `Sortable Lifecycle Uk` (`sortable/lifecycle.uk.snap`)
+
+```text
+🧱 UI-CLI Sandbox 
+Select a component to test:
+ 1) Alert
+ 2) Badge
+ 3) Toast
+ 4) Table
+ 5) Tabs
+ 6) Breadcrumbs
+ 7) Steps
+ 8) Input
+ 9) Password
+ 10) Toggle
+ 11) Confirm
+ 12) Select
+ 13) Multiselect
+ 14) Slider
+ 15) DateTime
+  ↓ (3 more)
+✔  Sortable
+--- STDERR ---
+TypeError: Cannot read properties of undefined (reading 'map')
+```
+
+> **💬 Коментарі щодо Sortable Lifecycle Uk:**
+> *(напишіть тут що змінити: кольори, відступи, тексти, логіку)*
+
+---
+
+## 🖥 Екран: `Spinner Lifecycle En` (`spinner/lifecycle.en.snap`)
 
 ```text
 🧱 UI-CLI Sandbox 
@@ -1269,12 +1745,48 @@ Select a component to test:
 Exiting Sandbox. 👋
 ```
 
-> **💬 Коментарі щодо Spinner Lifecycle:**
+> **💬 Коментарі щодо Spinner Lifecycle En:**
 > *(напишіть тут що змінити: кольори, відступи, тексти, логіку)*
 
 ---
 
-## 🖥 Екран: `Steps Lifecycle` (`steps/lifecycle.snap`)
+## 🖥 Екран: `Spinner Lifecycle Uk` (`spinner/lifecycle.uk.snap`)
+
+```text
+🧱 UI-CLI Sandbox 
+Select a component to test:
+ 1) Alert
+ 2) Badge
+ 3) Toast
+ 4) Table
+ 5) Tabs
+ 6) Breadcrumbs
+ 7) Steps
+ 8) Input
+ 9) Password
+ 10) Toggle
+ 11) Confirm
+ 12) Select
+ 13) Multiselect
+ 14) Slider
+ 15) DateTime
+  ↓ (3 more)
+✔  Spinner
+Sandbox > Spinner. Choose variation:
+ 1) [Variant] Default
+ 2) + Create New Variant
+ 3) ← Back to Components
+✔  [Варіант] Default
+--- STDERR ---
+TypeError: Cannot read properties of undefined (reading 'props')
+```
+
+> **💬 Коментарі щодо Spinner Lifecycle Uk:**
+> *(напишіть тут що змінити: кольори, відступи, тексти, логіку)*
+
+---
+
+## 🖥 Екран: `Steps Lifecycle En` (`steps/lifecycle.en.snap`)
 
 ```text
 🧱 UI-CLI Sandbox 
@@ -1368,12 +1880,48 @@ Select a component to test:
 Exiting Sandbox. 👋
 ```
 
-> **💬 Коментарі щодо Steps Lifecycle:**
+> **💬 Коментарі щодо Steps Lifecycle En:**
 > *(напишіть тут що змінити: кольори, відступи, тексти, логіку)*
 
 ---
 
-## 🖥 Екран: `Table Lifecycle` (`table/lifecycle.snap`)
+## 🖥 Екран: `Steps Lifecycle Uk` (`steps/lifecycle.uk.snap`)
+
+```text
+🧱 UI-CLI Sandbox 
+Select a component to test:
+ 1) Alert
+ 2) Badge
+ 3) Toast
+ 4) Table
+ 5) Tabs
+ 6) Breadcrumbs
+ 7) Steps
+ 8) Input
+ 9) Password
+ 10) Toggle
+ 11) Confirm
+ 12) Select
+ 13) Multiselect
+ 14) Slider
+ 15) DateTime
+  ↓ (3 more)
+✔  Steps
+Sandbox > Steps. Choose variation:
+ 1) [Variant] Default
+ 2) + Create New Variant
+ 3) ← Back to Components
+✔  [Варіант] Default
+--- STDERR ---
+TypeError: Cannot read properties of undefined (reading 'props')
+```
+
+> **💬 Коментарі щодо Steps Lifecycle Uk:**
+> *(напишіть тут що змінити: кольори, відступи, тексти, логіку)*
+
+---
+
+## 🖥 Екран: `Table Lifecycle En` (`table/lifecycle.en.snap`)
 
 ```text
 🧱 UI-CLI Sandbox 
@@ -1476,12 +2024,48 @@ Select a component to test:
 Exiting Sandbox. 👋
 ```
 
-> **💬 Коментарі щодо Table Lifecycle:**
+> **💬 Коментарі щодо Table Lifecycle En:**
 > *(напишіть тут що змінити: кольори, відступи, тексти, логіку)*
 
 ---
 
-## 🖥 Екран: `Tabs Lifecycle` (`tabs/lifecycle.snap`)
+## 🖥 Екран: `Table Lifecycle Uk` (`table/lifecycle.uk.snap`)
+
+```text
+🧱 UI-CLI Sandbox 
+Select a component to test:
+ 1) Alert
+ 2) Badge
+ 3) Toast
+ 4) Table
+ 5) Tabs
+ 6) Breadcrumbs
+ 7) Steps
+ 8) Input
+ 9) Password
+ 10) Toggle
+ 11) Confirm
+ 12) Select
+ 13) Multiselect
+ 14) Slider
+ 15) DateTime
+  ↓ (3 more)
+✔  Table
+Sandbox > Table. Choose variation:
+ 1) [Variant] Default
+ 2) + Create New Variant
+ 3) ← Back to Components
+✔  [Варіант] Default
+--- STDERR ---
+TypeError: Cannot read properties of undefined (reading 'props')
+```
+
+> **💬 Коментарі щодо Table Lifecycle Uk:**
+> *(напишіть тут що змінити: кольори, відступи, тексти, логіку)*
+
+---
+
+## 🖥 Екран: `Tabs Lifecycle En` (`tabs/lifecycle.en.snap`)
 
 ```text
 🧱 UI-CLI Sandbox 
@@ -1575,12 +2159,48 @@ Select a component to test:
 Exiting Sandbox. 👋
 ```
 
-> **💬 Коментарі щодо Tabs Lifecycle:**
+> **💬 Коментарі щодо Tabs Lifecycle En:**
 > *(напишіть тут що змінити: кольори, відступи, тексти, логіку)*
 
 ---
 
-## 🖥 Екран: `Toast Lifecycle` (`toast/lifecycle.snap`)
+## 🖥 Екран: `Tabs Lifecycle Uk` (`tabs/lifecycle.uk.snap`)
+
+```text
+🧱 UI-CLI Sandbox 
+Select a component to test:
+ 1) Alert
+ 2) Badge
+ 3) Toast
+ 4) Table
+ 5) Tabs
+ 6) Breadcrumbs
+ 7) Steps
+ 8) Input
+ 9) Password
+ 10) Toggle
+ 11) Confirm
+ 12) Select
+ 13) Multiselect
+ 14) Slider
+ 15) DateTime
+  ↓ (3 more)
+✔  Tabs
+Sandbox > Tabs. Choose variation:
+ 1) [Variant] Default
+ 2) + Create New Variant
+ 3) ← Back to Components
+✔  [Варіант] Default
+--- STDERR ---
+TypeError: Cannot read properties of undefined (reading 'props')
+```
+
+> **💬 Коментарі щодо Tabs Lifecycle Uk:**
+> *(напишіть тут що змінити: кольори, відступи, тексти, логіку)*
+
+---
+
+## 🖥 Екран: `Toast Lifecycle En` (`toast/lifecycle.en.snap`)
 
 ```text
 🧱 UI-CLI Sandbox 
@@ -1677,12 +2297,48 @@ Select a component to test:
 Exiting Sandbox. 👋
 ```
 
-> **💬 Коментарі щодо Toast Lifecycle:**
+> **💬 Коментарі щодо Toast Lifecycle En:**
 > *(напишіть тут що змінити: кольори, відступи, тексти, логіку)*
 
 ---
 
-## 🖥 Екран: `Toggle Lifecycle` (`toggle/lifecycle.snap`)
+## 🖥 Екран: `Toast Lifecycle Uk` (`toast/lifecycle.uk.snap`)
+
+```text
+🧱 UI-CLI Sandbox 
+Select a component to test:
+ 1) Alert
+ 2) Badge
+ 3) Toast
+ 4) Table
+ 5) Tabs
+ 6) Breadcrumbs
+ 7) Steps
+ 8) Input
+ 9) Password
+ 10) Toggle
+ 11) Confirm
+ 12) Select
+ 13) Multiselect
+ 14) Slider
+ 15) DateTime
+  ↓ (3 more)
+✔  Toast
+Sandbox > Toast. Choose variation:
+ 1) [Variant] Default
+ 2) + Create New Variant
+ 3) ← Back to Components
+✔  [Варіант] Default
+--- STDERR ---
+TypeError: Cannot read properties of undefined (reading 'props')
+```
+
+> **💬 Коментарі щодо Toast Lifecycle Uk:**
+> *(напишіть тут що змінити: кольори, відступи, тексти, логіку)*
+
+---
+
+## 🖥 Екран: `Toggle Lifecycle En` (`toggle/lifecycle.en.snap`)
 
 ```text
 🧱 UI-CLI Sandbox 
@@ -1778,12 +2434,48 @@ Select a component to test:
 Exiting Sandbox. 👋
 ```
 
-> **💬 Коментарі щодо Toggle Lifecycle:**
+> **💬 Коментарі щодо Toggle Lifecycle En:**
 > *(напишіть тут що змінити: кольори, відступи, тексти, логіку)*
 
 ---
 
-## 🖥 Екран: `Tree Lifecycle` (`tree/lifecycle.snap`)
+## 🖥 Екран: `Toggle Lifecycle Uk` (`toggle/lifecycle.uk.snap`)
+
+```text
+🧱 UI-CLI Sandbox 
+Select a component to test:
+ 1) Alert
+ 2) Badge
+ 3) Toast
+ 4) Table
+ 5) Tabs
+ 6) Breadcrumbs
+ 7) Steps
+ 8) Input
+ 9) Password
+ 10) Toggle
+ 11) Confirm
+ 12) Select
+ 13) Multiselect
+ 14) Slider
+ 15) DateTime
+  ↓ (3 more)
+✔  Toggle
+Sandbox > Toggle. Choose variation:
+ 1) [Variant] Default
+ 2) + Create New Variant
+ 3) ← Back to Components
+✔  [Варіант] Default
+--- STDERR ---
+TypeError: Cannot read properties of undefined (reading 'props')
+```
+
+> **💬 Коментарі щодо Toggle Lifecycle Uk:**
+> *(напишіть тут що змінити: кольори, відступи, тексти, логіку)*
+
+---
+
+## 🖥 Екран: `Tree Lifecycle En` (`tree/lifecycle.en.snap`)
 
 ```text
 🧱 UI-CLI Sandbox 
@@ -1809,7 +2501,38 @@ Select a component to test:
 TypeError: Cannot read properties of undefined (reading 'map')
 ```
 
-> **💬 Коментарі щодо Tree Lifecycle:**
+> **💬 Коментарі щодо Tree Lifecycle En:**
+> *(напишіть тут що змінити: кольори, відступи, тексти, логіку)*
+
+---
+
+## 🖥 Екран: `Tree Lifecycle Uk` (`tree/lifecycle.uk.snap`)
+
+```text
+🧱 UI-CLI Sandbox 
+Select a component to test:
+ 1) Alert
+ 2) Badge
+ 3) Toast
+ 4) Table
+ 5) Tabs
+ 6) Breadcrumbs
+ 7) Steps
+ 8) Input
+ 9) Password
+ 10) Toggle
+ 11) Confirm
+ 12) Select
+ 13) Multiselect
+ 14) Slider
+ 15) DateTime
+  ↓ (3 more)
+✔  Tree
+--- STDERR ---
+TypeError: Cannot read properties of undefined (reading 'map')
+```
+
+> **💬 Коментарі щодо Tree Lifecycle Uk:**
 > *(напишіть тут що змінити: кольори, відступи, тексти, логіку)*
 
 ---
