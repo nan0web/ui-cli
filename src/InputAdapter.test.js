@@ -37,7 +37,7 @@ describe('CLiInputAdapter', () => {
 
 		assert.equal(result.cancelled, false)
 		assert.equal(result.form.state.name, 'John Doe')
-		assert.equal(result.form.state.age, '30')
+		assert.equal(result.form.state.age, '30') // Values remain strings without schema parser
 	})
 
 	it('should handle form cancellation', { timeout: 2000 }, async () => {
@@ -102,40 +102,46 @@ describe('CLiInputAdapter', () => {
 	})
 
 	it('should handle validation errors in form', { timeout: 2000 }, async () => {
-		const form = {
+		const form = new UiForm({
 			title: 'Test Form',
-			fields: [{ name: 'name', label: 'Name', required: true }],
-			validateValue: (name, val) => {
-				if (val === 'invalid') return { isValid: false, errors: { name: 'Incorrect' } }
-				return { isValid: true, errors: {} }
-			},
-			setData: (data) => ({ ...form, state: data }),
-			validate: () => ({ size: 0 }),
+			fields: [
+				new FormInput({
+					name: 'name',
+					label: 'Name',
+					required: true,
+					validation: (val) => {
+						if (val === 'invalid') return '\nIncorrect'
+						return true
+					},
+				}),
+			],
 			state: {},
-		}
+		})
 
 		prompts.inject(['invalid', 'valid'])
-		await adapter.requestForm(form, { silent: true })
+		const result = await adapter.requestForm(form, { silent: true })
 
-		// output[0] = "Name: invalid" (echo from requestInput)
-		// output[1] = warn "\nIncorrect"
-		// output[2] = "Name: valid" (echo from requestInput)
-		const warns = adapter.console.output().filter((o) => o[0] === 'warn')
-		assert.equal(warns[0][1], '\nIncorrect')
+		assert.equal(result.cancelled, false)
+		assert.equal(result.form.state.name, 'valid') // The invalid value was rejected by prompts
 	})
 
 	it('should trigger infinite loop detection', { timeout: 2000 }, async () => {
 		const smallAdapter = new CLiInputAdapter({ maxRetries: 2, console: new NoConsole() })
-		const form = {
+		const form = new UiForm({
 			title: 'Loop Form',
-			fields: [{ name: 'email', label: 'Email', required: true }],
-			validateValue: () => ({ isValid: false, errors: { email: 'Always invalid' } }),
-			setData: (data) => ({ ...form, state: data }),
-			validate: () => ({ size: 0 }),
+			fields: [
+				new FormInput({
+					name: 'email',
+					label: 'Email',
+					required: true,
+					validation: () => 'Always invalid',
+				}),
+			],
 			state: {},
-		}
+		})
 
 		prompts.inject(['a', 'b', 'c', 'd'])
+
 		const result = await smallAdapter.requestForm(form, { silent: true })
 		assert.equal(result.cancelled, true)
 		assert.equal(result.body.error, 'Infinite loop detected')

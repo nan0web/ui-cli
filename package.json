@@ -31,11 +31,14 @@
 		"test:release": "node --test --test-timeout=3333 \"releases/**/*.test.js\"",
 		"test:status": "nan0test status --hide-name --debug",
 		"test:play": "node --test --test-timeout=10000 play/main.test.js",
-		"test:snapshot": "node --test --test-timeout=10000 play/snapshot.test.js",
+		"test:snapshot": "node --test --test-timeout=30000 play/snapshot.test.js play/sandbox.test.js && npm run gallery",
 		"test:i18n": "node scripts/check-i18n.js",
 		"test:all": "npm run test && npm run test:docs && npm run test:play && npm run test:snapshot && npm run test:i18n && npm run build && npm run knip",
 		"test:all1": "npm run test && npm run test:docs && npm run test:status && npm run test:play && npm run build",
 		"knip": "knip --production",
+		"gallery": "npm run gallery:play && npm run gallery:sandbox",
+		"gallery:play": "node scripts/gallery.mjs --dir=snapshots/play --out=snapshots/play/index.md",
+		"gallery:sandbox": "node scripts/gallery.mjs --dir=snapshots/sandbox --out=snapshots/sandbox/index.md",
 		"play": "node play/main.js --demo=v2",
 		"play:v1": "node play/main.js",
 		"play:v2": "node play/main.js --demo=v2",
@@ -43,9 +46,9 @@
 		"play:all": "node play/main.js",
 		"play:sortable": "node play/main.js --demo=sortable",
 		"precommit": "npm run format && npm test && npm run test:i18n",
-		"prepush": "npm test",
+		"prepush": "npm run test:all",
 		"prepare": "husky",
-		"release": "nan0release publish",
+		"release": "npm run test:snapshot && nan0release publish",
 		"format": "prettier --write \"src/**/*.js\"",
 		"clean": "rm -rf .cache/ && rm -rf dist/",
 		"clean:modules": "rm -rf node_modules"
@@ -59,21 +62,22 @@
 	"author": "ЯRаСлав (YaRaSLove) <support@yaro.page>",
 	"license": "ISC",
 	"devDependencies": {
-		"@nan0web/i18n": "^1.0.1",
-		"@nan0web/test": "1.1.0",
+		"@nan0web/i18n": "*",
+		"@nan0web/test": "*",
 		"@types/node": "^24.10.1",
 		"knip": "^5.83.0",
 		"prettier": "^3.8.1"
 	},
 	"bin": {
-		"nan0cli": "./bin/nan0cli.js"
+		"nan0cli": "./bin/nan0cli.js",
+		"nan0gallery": "./scripts/gallery.mjs"
 	},
 	"dependencies": {
-		"@nan0web/db-fs": "^1.1.2",
-		"@nan0web/event": "^1.0.0",
-		"@nan0web/log": "1.1.1",
-		"@nan0web/icons": "^1.0.0",
-		"@nan0web/ui": "^1.3.0",
+		"@nan0web/db-fs": "*",
+		"@nan0web/event": "*",
+		"@nan0web/log": "*",
+		"@nan0web/icons": "*",
+		"@nan0web/ui": "*",
 		"prompts": "^2.4.2"
 	}
 }

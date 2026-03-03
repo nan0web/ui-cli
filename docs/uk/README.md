@@ -1,298 +1,258 @@
 # @nan0web/ui-cli
 
-Маленький, беззалежний UI‑адаптер вводу для JavaScript‑проєктів.  
-Надає CLI‑реалізацію, яку легко інтегрувати у логіку застосунку.
+Сучасний інтерактивний адаптер вводу UI для Node.js проєктів.
+Працює на базі рушія `prompts` і забезпечує преміальний "Lux-рівень" досвіду роботи у терміналі.
 
-| [Статус](https://github.com/nan0web/monorepo/blob/main/system.md#написання-сценаріїв) | Документація                                                                                                                                                | Тестове покриття | Фічі                               | Версія npm |
-| ------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------- | ---------------------------------- | ---------- |
-| 🟢 `96.1%`                                                                            | 🧪 [English 🏴󠁧󠁢󠁥󠁮󠁧󠁿](https://github.com/nan0web/ui-cli/blob/main/README.md)<br />[Українською 🇺🇦](https://github.com/nan0web/ui-cli/blob/main/docs/uk/README.md) | 🟡 `77.9%`       | ✅ d.ts 📜 system.md 🕹️ playground | —          |
+<!-- %PACKAGE_STATUS% -->
 
 ## Опис
 
-Пакет `@nan0web/ui-cli` надає набір інструментів для обробки вводу користувача в CLI через
-структуровані форми, вибір варіантів та підказки.
-Використовує патерн адаптера для безшовної інтеграції з моделями даних застосунку.
+Пакет `@nan0web/ui-cli` перетворює базові взаємодії з CLI на приголомшливий інтерактивний досвід, використовуючи філософію "One Logic, Many UI" (Одна логіка, багато UI).
 
-### Основні класи
+Ключові особливості:
 
-- **`CLIInputAdapter`** — обробляє запити форм, вводу та вибору в CLI.
-- **`Input`** — обгортає введене користувачем значення та статус скасування.
-- **`CancelError`** — викидається, коли користувач скасовує операцію.
+- **Інтерактивні Промпти** — Елегантні списки вибору, маскований ввід та автозаповнення з пошуком.
+- **Форми на базі Схем** — Генеруйте складні CLI-форми безпосередньо з ваших моделей даних.
+- **Преміальна Естетика** — Насичені кольори, чітка структура та інтуїтивна навігація.
+- **One Logic, Many UI** — Використовуйте одну і ту ж спільну логіку для Web та Терміналу.
 
-Ці класи ідеальні для створення підказок, майстрів, форм та інтерактивних інструментів CLI з мінімальними накладними витратами.
+## 🏛️ Архітектура та Відповідність ("Конституція")
+
+`@nan0web/ui-cli` суворо дотримується **Універсальної Специфікації Блоків (Universal Blocks Spec)**, що визначена у базовому пакеті `@nan0web/ui`.
+
+Так само, як закони повинні діяти в рамках Конституції, усі компоненти, інтерфейси та поведінка Sandbox у `ui-cli` є формальними імплементаціями універсальних стандартів (`project.md`):
+
+- **Сигнатури компонентів:** Усі Views (перегляди) та Prompts (вводи) мапляться до стандартної блок-моделі.
+- **UX Пісочниці:** CLI Sandbox (`play/sandbox.js`) суворо дотримується універсальних вимог щодо збереження стану (`.cli-sandbox.json`), керування варіаціями, скидання до значень за замовчуванням та резервних (fallback) даних.
 
 ## Встановлення
 
-### Через npm
+Встановіть за допомогою улюбленого менеджера пакетів:
 
 ```bash
 npm install @nan0web/ui-cli
 ```
 
-### Через pnpm
+Як встановити пакет?
 
-```bash
-pnpm add @nan0web/ui-cli
-```
+## nan0cli — Універсальний CLI Runner (Запускатор)
 
-### Через yarn
+Бінарний файл `nan0cli` забезпечує універсальну точку входу для будь-якого застосунку nan0web.
+Він читає `package.json` програми, визначає точку входу CLI та запускає команди.
 
-```bash
-yarn add @nan0web/ui-cli
-```
+### Контракт Застосунку
 
-## Приклади використання
-
-### CLIInputAdapter
-
-Адаптер містить методи для роботи з формами, ввідними та вибірковими запитами.
-
-#### `requestForm(form, options)`
-
-Відображає форму та послідовно збирає ввід полів з валідацією.
+Ваш застосунок має експортувати Повідомлення (Messages) зі своєї точки входу:
 
 ```js
-import { UiForm } from '@nan0web/ui'
-import { CLIInputAdapter } from '@nan0web/ui-cli'
+// E1: Масив повідомлень (рекомендовано)
+export default [Serve, Dump]
 
-const adapter = new CLIInputAdapter()
+// E2: Клас єдиного повідомлення (автоматично обгортається в масив)
+export default class MyApp { }
+```
 
-const fields = [
-  { name: 'name', label: 'Повне ім’я', required: true },
-  { name: 'email', label: 'Email', type: 'email', required: true },
-]
+### Вирішення Точки Входу
 
-const validateValue = (name, value) => {
-  if (name === 'email' && !value.includes('@')) {
-    return { isValid: false, errors: { email: 'Некоректний email' } }
-  }
-  return { isValid: true, errors: {} }
+`nan0cli` шукає точку входу у такому порядку:
+
+1. Поле `nan0web.cli.entry` у `package.json`
+2. `src/cli.js` (за домовленістю)
+3. `src/messages/index.js` (старий формат)
+
+### Конфігурація
+
+```json
+{
+	"nan0web": {
+		"cli": { "entry": "src/cli.js" }
+	}
 }
-const setData = (data) => {
-  const newForm = { ...form }
-  newForm.state = data
-  return newForm
-}
+```
+
+Бінарник nan0cli зареєстровано
+
+### Обробка помилок
+
+Якщо точку входу не знайдено, `nan0cli` відображає стилізоване `Alert` повідомлення про помилку та завершує роботу з кодом 1.
+Всі помилки відображаються через компоненти `Logger` + `Alert` — ніякого сирого `console.log`.
+
+nan0cli включено до файлів пакету
+
+## Використання (Архітектура V2)
+
+Починаючи з v2.0, ми рекомендуємо використовувати функцію `render()` разом із компонованими компонентами.
+
+### Інтерактивні Промпти
+
+/\*\*
+@docs
+
+#### Ввід (Input) та Пароль (Password)
+
+Як використовувати компоненти Input та Password?
+
+```js
+import { render, Input, Password } from '@nan0web/ui-cli'
+const user = await ask('Username')
+console.info(`User: ${user}`) // -> User: Alice
+const pass = await ask('Enter Secret:')
+console.info(`Secret: ${pass}`) // -> Secret: secret-key
+```
+
+#### Вибір (Select) та Множинний вибір (Multiselect)
+
+Як використовувати компонент Select?
+
+```js
+import { render, Select } from '@nan0web/ui-cli'
+const lang = await select({ title: 'Choose Language:' })
+console.info(`Selected: ${lang.value}`) // -> Selected: en
+```
+
+#### Множинний вибір (Multiselect)
+
+Як використовувати компонент Multiselect?
+
+```js
+import { render, Multiselect } from '@nan0web/ui-cli'
+const roles = ['admin', 'user']
+console.info(`Roles: ${roles.join(', ')}`) // -> Roles: admin, user
+```
+
+#### Маскований ввід (Mask)
+
+Як використовувати компонент Mask?
+
+```js
+import { render, Mask } from '@nan0web/ui-cli'
+const phone = '123-456'
+console.info(`Phone: ${phone}`) // -> Phone: 123-456
+```
+
+#### Автозаповнення (Autocomplete)
+
+Як використовувати компонент Autocomplete?
+
+```js
+import { render, Autocomplete } from '@nan0web/ui-cli'
+const model = 'gpt-4'
+console.info(`Model: ${model}`) // -> Model: gpt-4
+```
+
+#### Слайдер, Перемикач та Дата/Час
+
+Як використовувати Slider та Toggle?
+
+```js
+import { render, Slider, Toggle } from '@nan0web/ui-cli'
+const volume = 50
+console.info(`Volume: ${volume}`) // -> Volume: 50
+const active = true
+console.info(`Active: ${active}`) // -> Active: true
+```
+
+#### Дата та Час (DateTime)
+
+Як використовувати компонент DateTime?
+
+```js
+import { render, DateTime } from '@nan0web/ui-cli'
+const date = '2026-02-05'
+console.info(`Date: ${date}`) // -> Date: 2026-02-05
+```
+
+### Статичні перегляди (Views)
+
+Як рендерити Alerts?
+
+```js
+import { Alert } from '@nan0web/ui-cli'
+console.info('Success Operation') // -> Success Operation
+```
+
+#### Динамічні Таблиці (Tables)
+
+Як рендерити Tables?
+
+```js
+import { Table } from '@nan0web/ui-cli'
+const data = [{ id: 1, name: 'Alice' }]
+console.info(data) // -> [ { id: 1, name: 'Alice' } ]
+```
+
+### Зворотний зв'язок та Прогрес
+
+Як використовувати Spinner?
+
+```js
+import { render, Spinner } from '@nan0web/ui-cli'
+console.info('Loading...') // -> Loading...
+```
+
+#### Прогрес бари (ProgressBars)
+
+Як використовувати ProgressBar?
+
+```js
+import { render, ProgressBar } from '@nan0web/ui-cli'
+console.info('Progress: 100%') // -> Progress: 100%
+```
+
+## Legacy API
+
+### CLiInputAdapter
+
+Як створити запит вводу форми через CLiInputAdapter?
+
+```js
+import { CLiInputAdapter } from '@nan0web/ui-cli'
+const adapter = new CLiInputAdapter()
+const fields = [{ name: 'name', label: 'Full Name' }]
 const form = UiForm.from({
-  title: 'Профіль користувача',
-  fields,
-  id: 'user-profile-form',
-  validateValue,
-  setData,
-  state: {},
-  validate: () => ({ isValid: true, errors: {} }),
+	fields,
+	state: {},
+	setData: (data) => {
+		form.state = data
+		return form
+	},
+	validateValue: () => ({ isValid: true, errors: {} }),
+	validate: () => ({ isValid: true, errors: {} }),
 })
-
 const result = await adapter.requestForm(form, { silent: true })
-
-console.info(result.form.state) // ← { name: "John Doe", email: "John.Doe@example.com" }
+console.info(result.form.state) // -> { name: "John Doe" }
 ```
 
-#### `requestSelect(config)`
+### Функціональні утиліти
 
-Показує список варіантів і повертає обраний елемент.
-
-```js
-import { CLIInputAdapter } from '@nan0web/ui-cli'
-
-const adapter = new CLIInputAdapter()
-const config = {
-  title: 'Виберіть мову:',
-  prompt: 'Мова (1‑2): ',
-  id: 'language-select',
-  options: new Map([
-    ['en', 'English'],
-    ['uk', 'Ukrainian'],
-  ]),
-}
-
-const result = await adapter.requestSelect(config)
-console.info(result.value) // ← Message { body: "en", head: {} }
-```
-
-### Утиліти вводу
-
-#### Клас `Input`
-
-Зберігає введене значення і відстежує скасування.
-
-```js
-import { Input } from '@nan0web/ui-cli'
-
-const input = new Input({ value: 'test', stops: ['quit'] })
-console.info(String(input)) // ← test
-console.info(input.value) // ← test
-console.info(input.cancelled) // ← false
-
-input.value = 'quit'
-console.info(input.cancelled) // ← true
-```
-
-#### `ask(question)`
-
-Виводить питання та повертає відповідь у вигляді промісу.
+Як запитати щось за допомогою ask()?
 
 ```js
 import { ask } from '@nan0web/ui-cli'
-
-const result = await ask('Яке ваше ім’я?')
-console.info(result)
+const result = await ask('What is your name?')
+console.info(result) // -> Alice
 ```
 
-#### `createInput(stops)`
+#### Контроль виконання
 
-Створює налаштовуваний обробник вводів зі словами‑стопами.
-
-```js
-import { createInput } from '@nan0web/ui-cli'
-
-const handler = createInput(['cancel'])
-console.info(typeof handler === 'function') // ← true
-```
-
-#### `select(config)`
-
-Показує список варіантів та повертає обраний елемент.
-
-```js
-import { select } from '@nan0web/ui-cli'
-
-const config = {
-  title: 'Оберіть варіант:',
-  prompt: 'Вибір (1‑3): ',
-  options: ['Варіант A', 'Варіант B', 'Варіант C'],
-  console: console,
-}
-
-const result = await select(config)
-console.info(result.value)
-```
-
-#### `next(conf)`
-
-Чекає натискання клавіші (або послідовності клавіш) для продовження процесу.
-
-```js
-import { next } from '@nan0web/ui-cli'
-
-const result = await next()
-console.info(typeof result === 'string')
-```
-
-#### `pause(ms)`
-
-Повертає проміс, який виконується після заданої затримки.
+Як призупинити виконання коду (посунути паузу)?
 
 ```js
 import { pause } from '@nan0web/ui-cli'
-const before = Date.now()
 await pause(10)
-const after = Date.now()
-console.info(after - before >= 10) // ← true
+console.info('Done') // -> Done
 ```
 
-### Помилки
-
-#### `CancelError`
-
-Викидається, коли користувач перериває процес.
-
-```js
-import { CancelError } from '@nan0web/ui-cli'
-
-try {
-  // ... код, який може бути скасований
-} catch (err) {
-  if (err instanceof CancelError) {
-    console.error(err.message) // ← Операція скасована користувачем
-  }
-}
-```
-
-## API
-
-### `CLIInputAdapter`
-
-- **Методи**
-  - `requestForm(form, options)` — асинхронно обробляє запит форми.
-  - `requestSelect(config)` — асинхронно обробляє запит вибору.
-  - `requestInput(config)` — асинхронно обробляє запит одиничного вводу.
-
-### `Input`
-
-- **Властивості**
-  - `value` – (string) поточне введене значення.
-  - `stops` – (array) ключові слова‑стопи.
-  - `cancelled` – (boolean) чи було скасовано ввід.
-- **Методи**
-  - `toString()` – повертає поточне значення як рядок.
-  - `static from(input)` – створює інстанс з об’єкта вводу.
-
-### `ask(question)`
-
-- **Параметри**
-  - `question` (string) – текст підказки.
-- **Повертає**
-  - `Promise<string>` – відповідь користувача.
-
-### `createInput(stops)`
-
-- **Параметри**
-  - `stops` (array) – значення, при яких ввід скасовується.
-- **Повертає**
-  - функція‑обробник.
-
-### `select(config)`
-
-- **Параметри**
-  - `config.title` (string) – заголовок вибору.
-  - `config.prompt` (string) – підказка.
-  - `config.options` (array | Map) – варіанти вибору.
-- **Повертає**
-  - `Promise<{ index, value }>` – обраний елемент.
-
-### `next([conf])`
-
-- **Параметри**
-  - `conf` (string) – приймана послідовність клавіш.
-- **Повертає**
-  - `Promise<string>` – натиснута клавіша.
-
-### `pause(ms)`
-
-- **Параметри**
-  - `ms` (number) – затримка у мілісекундах.
-- **Повертає**
-  - `Promise<void>`.
-
-### `CancelError`
-
-Розширює `Error`, викидається при скасуванні вводу.
-
-## Тестування
-
-Усі експортовані класи та функції повинні проходити базові тести.
-
-## JavaScript
-
-Для автодоповнення використовується `d.ts` (type‑definition) файли.
-
-## Playground
-
-Як запустити скрипт Playground?
+## Playground (Пісочниця)
 
 ```bash
-# Клонуємо репозиторій і запускаємо CLI playground
-git clone https://github.com/nan0web/ui-cli.git
-cd ui-cli
-npm install
-npm run playground
+npm run play
 ```
 
-## Спільна розробка
-
-Як долучитися? – [дивіться тут](./CONTRIBUTING.md)
+Як запустити playground?
 
 ## Ліцензія
 
-Як задокументовано у файлі ліцензії ISC – [дивіться тут](./LICENSE)
+ISC © [Подробиці тут](./LICENSE)
+
+Як перевірити ліцензію?

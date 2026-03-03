@@ -98,6 +98,17 @@ function testRender() {
 	 * - **Premium Aesthetics** — Rich colors, clear structure, and intuitive navigation.
 	 * - **One Logic, Many UI** — Use the same shared logic across Web and Terminal.
 	 *
+	 * ## 🏛️ Architecture & Compliance (The "Constitution")
+	 *
+	 * `@nan0web/ui-cli` strictly adheres to the **Universal Blocks Spec** defined in the core `@nan0web/ui` package.
+	 *
+	 * > 📜 **Implementation Spec:** [`project.md`](./project.md) (Compliance with [`ui/project.md`](../ui/project.md))
+	 *
+	 * Just as laws must act within the framework of a Constitution, all components, interfaces, and Sandbox behaviors in `ui-cli` are formal implementations of the universal standards:
+	 *
+	 * - **Component Signatures:** All Views and Prompts map to the standard block model.
+	 * - **Sandbox UX:** The CLI Sandbox (`play/sandbox.js`) strictly follows the universal requirements for State Persistence (`.cli-sandbox.json`), Variation Management, Default Resets, and Data Fallbacks.
+	 *
 	 * ## Installation
 	 *
 	 * Install using your preferred package manager:

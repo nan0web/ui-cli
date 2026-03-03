@@ -178,6 +178,7 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 		return async (question, loop = false, nextQuestion = undefined) => {
 			const predefined = self.#nextAnswer()
 			if (predefined !== null) {
+				if (predefined === '_cancel') return { value: undefined, cancelled: true }
 				this.stdout.write(`${question}${predefined}\n`)
 				const input = new Input({ value: predefined, stops })
 				if (input.cancelled) {
@@ -199,6 +200,7 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 		return async (config) => {
 			const predefined = self.#nextAnswer()
 			if (predefined !== null) {
+				if (predefined === '_cancel') return { value: undefined, cancelled: true }
 				// Normalize options to find value
 				let choices = []
 				const options = config.options || []
@@ -238,6 +240,7 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 		const predefined = this.#nextAnswer()
 		if (message) this.console.info(message)
 		if (predefined !== null) {
+			if (predefined === '_cancel') return { value: undefined, cancelled: true }
 			// Automated mode: proceed immediately
 			return
 		}
@@ -395,8 +398,9 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 				validation: (val) => {
 					if (!field.validation) return true
 					const result = field.validation(val)
-					if (result !== true) beep()
-					return result
+					if (result === true || result == null) return true // Treat undefined/null as valid
+					beep()
+					return result || 'Invalid input'
 				},
 			})
 
@@ -433,6 +437,16 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 
 			const schema = field.constructor
 			const { isValid, errors } = form.validateValue(field.name, trimmed, schema)
+
+			if (field.validation) {
+				const v = field.validation(trimmed)
+				if (v !== true && v != null) {
+					this.console.warn('\n' + (typeof v === 'string' ? v : 'Invalid input'))
+					retries++
+					continue
+				}
+			}
+
 			if (!isValid) {
 				this.console.warn('\n' + Object.values(errors).join('\n'))
 				retries++
@@ -516,6 +530,7 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 			if (!config.console) config.console = this.#console
 
 			if (predefined !== null) {
+				if (predefined === '_cancel') return { value: undefined, cancelled: true }
 				// Normalize options to find value
 				let choices = []
 				const options = config.options || []
@@ -590,6 +605,7 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 			config.prompt ?? config.message ?? `${config.label ?? config.name ?? 'Input'}: `
 		const prompt = this.#t(promptOrig)
 		if (predefined !== null) {
+			if (predefined === '_cancel') return { value: undefined, cancelled: true }
 			if (config.type !== 'password' && config.type !== 'secret') {
 				this.console.info(`✔ ${prompt} ${predefined}`)
 			} else {
@@ -625,6 +641,45 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 		const predefined = this.#nextAnswer()
 		const prompt = config.message || config.title || 'Search: '
 		if (predefined !== null) {
+			if (predefined === '_cancel') return { value: undefined, cancelled: true }
+
+			if (process.env.UI_SNAPSHOT && config.options) {
+				const frames = []
+				const p = String(predefined)
+				if (p.length > 1) frames.push(p.charAt(0))
+				if (p.length > 2) frames.push(p.slice(0, 2))
+				frames.push(p)
+
+				for (let i = 0; i < frames.length; i++) {
+					const text = frames[i]
+					this.console.info(`${prompt} ${text}`)
+					try {
+						let results = []
+						if (typeof config.options === 'function') {
+							results = await config.options(text)
+						} else if (Array.isArray(config.options)) {
+							results = config.options.filter((el) => {
+								const label = typeof el === 'string' ? el : el.title || el.label || ''
+								return label.toLowerCase().includes(text.toLowerCase())
+							})
+						}
+
+						const list = Array.isArray(results) ? results : []
+						list.slice(0, config.limit).forEach((item) => {
+							this.console.info(
+								`  ${typeof item === 'string' ? item : item.title || item.label || item.value}`
+							)
+						})
+					} catch (e) {}
+
+					if (i < frames.length - 1) {
+						this.console.info('\n[SNAPSHOT_FRAME]\n')
+						await new Promise((r) => setTimeout(r, 200))
+					}
+				}
+				return { value: predefined, cancelled: false }
+			}
+
 			this.console.info(`${prompt} ${predefined}`)
 			return { value: predefined, cancelled: false }
 		}
@@ -646,6 +701,7 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 		const predefined = this.#nextAnswer()
 		const prompt = config.message || 'Confirm: '
 		if (predefined !== null) {
+			if (predefined === '_cancel') return { value: undefined, cancelled: true }
 			const val = ['y', 'yes', 'true', '1', 'так', '+'].includes(predefined.toLowerCase())
 			const display = val ? config.active || this.#t('yes') : config.inactive || this.#t('no')
 			this.console.info(`✔ ${prompt} ${display}`)
@@ -690,6 +746,7 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 		const predefined = this.#nextAnswer()
 		const prompt = config.message || 'Select: '
 		if (predefined !== null) {
+			if (predefined === '_cancel') return { value: undefined, cancelled: true }
 			this.console.info(`${prompt} ${predefined}`)
 			return { value: predefined.split(',').map((v) => v.trim()), cancelled: false }
 		}
@@ -722,6 +779,7 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 		const predefined = this.#nextAnswer()
 		const prompt = config.message || 'Input: '
 		if (predefined !== null) {
+			if (predefined === '_cancel') return { value: undefined, cancelled: true }
 			const display = this.#applyMask(predefined, config.mask)
 			this.console.info(`✔ ${prompt} ${display}`)
 			return { value: predefined, cancelled: false }
@@ -760,6 +818,7 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 		const predefined = this.#nextAnswer()
 		const prompt = config.message || 'Confirm: '
 		if (predefined !== null) {
+			if (predefined === '_cancel') return { value: undefined, cancelled: true }
 			this.console.info(`✔ ${prompt} ${predefined}`)
 			return {
 				value: ['y', 'yes', 'true', '1', 'так'].includes(predefined.toLowerCase()),
@@ -783,6 +842,7 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 		const predefined = this.#nextAnswer()
 		const prompt = config.message || 'Value: '
 		if (predefined !== null) {
+			if (predefined === '_cancel') return { value: undefined, cancelled: true }
 			this.console.info(`${prompt} ${predefined}`)
 			return { value: Number(predefined), cancelled: false }
 		}
@@ -821,6 +881,7 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 	async requestTree(config) {
 		const predefined = this.#nextAnswer()
 		if (predefined !== null) {
+			if (predefined === '_cancel') return { value: undefined, cancelled: true }
 			const prompt = config.message || 'Select: '
 			this.console.info(`${prompt} ${predefined}`)
 			return { value: predefined, cancelled: false }
@@ -852,6 +913,7 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 		const predefined = this.#nextAnswer()
 		const prompt = config.message || 'Reorder: '
 		if (predefined !== null) {
+			if (predefined === '_cancel') return { value: undefined, cancelled: true }
 			// Normalise items to {label, value}
 			const normalised = (config.items || []).map((el) =>
 				typeof el === 'string' ? { label: el, value: el } : el
@@ -891,6 +953,7 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 		const promptOrig = config.message || config.label || config.name || 'Date: '
 		const prompt = this.#t(promptOrig)
 		if (predefined !== null) {
+			if (predefined === '_cancel') return { value: undefined, cancelled: true }
 			this.console.info(`${prompt} ${predefined}`)
 			let val = new Date(predefined)
 			if (isNaN(val.getTime())) {
@@ -922,6 +985,7 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 		}
 		const predefined = this.#nextAnswer()
 		if (predefined !== null) {
+			if (predefined === '_cancel') return { value: undefined, cancelled: true }
 			this.stdout.write(`${question}${predefined}\n`)
 			prompts.inject([predefined])
 		}
@@ -933,6 +997,7 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 	async select(cfg) {
 		const predefined = this.#nextAnswer()
 		if (predefined !== null) {
+			if (predefined === '_cancel') return { value: undefined, cancelled: true }
 			const prompt = cfg.message || cfg.title || 'Select: '
 
 			// Find human label

@@ -1,5 +1,6 @@
 import PlaygroundTest from './PlaygroundTest.js'
+import { setupSnapshots } from './snapshots.js'
 
-export { PlaygroundTest }
+export { PlaygroundTest, setupSnapshots }
 
 export default PlaygroundTest

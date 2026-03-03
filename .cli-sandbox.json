@@ -1,0 +1,209 @@
+{
+  "Alert": [
+    {
+      "id": "default",
+      "title": "Default",
+      "props": {
+        "title": "Attention",
+        "message": "This is a sandbox alert preview.",
+        "variant": "success"
+      }
+    }
+  ],
+  "Badge": [
+    {
+      "id": "default",
+      "title": "Default",
+      "props": {
+        "label": "feature",
+        "variant": "neutral"
+      }
+    },
+    {
+      "id": "1772485506030",
+      "title": "pass",
+      "props": {
+        "label": "pass",
+        "variant": "success"
+      }
+    },
+    {
+      "id": "1772485517581",
+      "title": "fail",
+      "props": {
+        "label": "fail",
+        "variant": "error"
+      }
+    },
+    {
+      "id": "1772485536961",
+      "title": "warn",
+      "props": {
+        "label": "! warn",
+        "variant": "warning"
+      }
+    }
+  ],
+  "Toast": [
+    {
+      "id": "default",
+      "title": "Default",
+      "props": {
+        "message": "Settings saved successfully.",
+        "variant": "warning"
+      }
+    }
+  ],
+  "Input": [
+    {
+      "id": "default",
+      "title": "Default",
+      "props": {
+        "message": "Enter your name:",
+        "initial": "I"
+      }
+    }
+  ],
+  "Toggle": [
+    {
+      "id": "default",
+      "title": "Default",
+      "props": {
+        "message": "Enable feature?"
+      }
+    },
+    {
+      "id": "1772485675084",
+      "title": "What?",
+      "props": {
+        "message": "Is this good?"
+      }
+    }
+  ],
+  "Table": [
+    {
+      "id": "default",
+      "title": "Default",
+      "props": {
+        "interactive": false,
+        "title": "Users Table"
+      }
+    },
+    {
+      "id": "1772488080519",
+      "title": "Countries",
+      "props": {
+        "interactive": false,
+        "title": "Countries"
+      }
+    }
+  ],
+  "Tabs": [
+    {
+      "id": "default",
+      "title": "Default",
+      "props": {
+        "active": "Users"
+      }
+    }
+  ],
+  "Breadcrumbs": [
+    {
+      "id": "default",
+      "title": "Default",
+      "props": {}
+    }
+  ],
+  "Steps": [
+    {
+      "id": "default",
+      "title": "Default",
+      "props": {
+        "current": "1"
+      }
+    }
+  ],
+  "Password": [
+    {
+      "id": "default",
+      "title": "Default",
+      "props": {
+        "message": "Enter your password:"
+      }
+    }
+  ],
+  "Confirm": [
+    {
+      "id": "default",
+      "title": "Default",
+      "props": {
+        "message": "Are you sure?"
+      }
+    },
+    {
+      "id": "1772490232578",
+      "title": "I?",
+      "props": {
+        "message": "Me?"
+      }
+    }
+  ],
+  "Select": [
+    {
+      "id": "default",
+      "title": "Default",
+      "props": {
+        "title": "Select a fruit:"
+      }
+    }
+  ],
+  "Multiselect": [
+    {
+      "id": "default",
+      "title": "Default",
+      "props": {
+        "message": "Select colors:"
+      }
+    }
+  ],
+  "Slider": [
+    {
+      "id": "default",
+      "title": "Default",
+      "props": {
+        "message": "Adjust Volume:",
+        "min": 0,
+        "max": 100,
+        "initial": 50
+      }
+    }
+  ],
+  "DateTime": [
+    {
+      "id": "default",
+      "title": "Default",
+      "props": {
+        "message": "Pick a date:"
+      }
+    }
+  ],
+  "Spinner": [
+    {
+      "id": "default",
+      "title": "Default",
+      "props": {
+        "message": "Loading resources..."
+      }
+    }
+  ],
+  "ProgressBar": [
+    {
+      "id": "default",
+      "title": "Default",
+      "props": {
+        "title": "Downloading file:",
+        "total": 100
+      }
+    }
+  ]
+}

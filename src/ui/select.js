@@ -53,7 +53,11 @@ export async function select(input) {
 		if (typeof el === 'string') {
 			return { title: el, value: el }
 		}
-		return { title: el.label || el.title, value: el.value }
+		return {
+			title: el.label || el.title || el.name, // Support 'name' too as it's common
+			value: el.value,
+			description: el.description || el.desc || el.help,
+		}
 	})
 
 	const response = await prompts(

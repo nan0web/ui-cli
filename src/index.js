@@ -65,6 +65,8 @@ export {
 
 	// Components
 	Alert,
+	Alert as Message,
+	Select as Init, // SANE FALLBACK
 	Badge,
 	Table,
 	Breadcrumbs,

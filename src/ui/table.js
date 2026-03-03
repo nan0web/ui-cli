@@ -65,14 +65,14 @@ export async function table(input) {
 						String(val).toLowerCase().includes(query.toLowerCase())
 					)
 				})
+				const displayColumns = columns.map((c) => highlight(c, query))
 				const displayData = filteredData.map((row) => {
 					const highlightedRow = {}
-					for (const key in row) {
-						highlightedRow[key] = highlight(row[key], query)
-					}
+					columns.forEach((col, i) => {
+						highlightedRow[displayColumns[i]] = highlight(row[col], query)
+					})
 					return highlightedRow
 				})
-				const displayColumns = columns.map((c) => highlight(c, query))
 
 				logger.clear()
 				const infoMsg = title
@@ -131,14 +131,14 @@ export async function table(input) {
 			)
 		})
 
+		const displayColumns = columns.map((c) => highlight(c, query))
 		const displayData = filteredData.map((row) => {
 			const highlightedRow = {}
-			for (const key in row) {
-				highlightedRow[key] = highlight(row[key], query)
-			}
+			columns.forEach((col, i) => {
+				highlightedRow[displayColumns[i]] = highlight(row[col], query)
+			})
 			return highlightedRow
 		})
-		const displayColumns = columns.map((c) => highlight(c, query))
 
 		logger.clear()
 		if (title) logger.info(`${title} (${t('filter')}: "${query || t('none')}")`)

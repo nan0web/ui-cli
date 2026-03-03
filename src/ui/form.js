@@ -8,6 +8,12 @@ import { CancelError } from '@nan0web/ui/core'
 import { createInput, Input } from './input.js'
 import { select } from './select.js'
 import { autocomplete } from './autocomplete.js'
+import { mask } from './mask.js'
+import { multiselect } from './multiselect.js'
+import { datetime } from './date-time.js'
+import { toggle } from './toggle.js'
+import { slider } from './slider.js'
+import { confirm } from './confirm.js'
 import { UiForm, FormInput } from '@nan0web/ui'
 
 /**
@@ -18,10 +24,6 @@ import { UiForm, FormInput } from '@nan0web/ui'
  * @param {Object} [options.initialState={}] Initial values for the form fields.
  * @param {Function} [options.t] Optional translation function.
  * @returns {UiForm} UiForm populated with fields derived from the schema.
- *
- * The function inspects static properties of `BodyClass` (e.g., `static username = { … }`)
- * and maps each to a {@link FormInput}. The generated {@link UiForm} title defaults
- * to `BodyClass.name` unless overridden via the schema.
  */
 export function generateForm(BodyClass, options = {}) {
 	const { initialState = {}, t } = options
@@ -135,7 +137,11 @@ export default class Form {
 				: () => true
 
 			const rawType = schema.type || typeof (schema.defaultValue ?? 'string')
-			const type = rawType === 'boolean' ? 'toggle' : rawType
+			let type = rawType === 'boolean' ? 'toggle' : rawType
+
+			// Normalization for common types
+			if (type === 'secret') type = 'password'
+			if (type === 'date') type = 'datetime'
 
 			fields.push({
 				name,
@@ -146,11 +152,15 @@ export default class Form {
 				min: schema.min,
 				max: schema.max,
 				step: schema.step,
+				mask: schema.mask,
+				initial: schema.defaultValue,
 				options: options.map((opt) => {
 					if (typeof opt === 'string') return { label: this.t(opt), value: opt }
 					return { ...opt, label: this.t(opt.label) }
 				}),
 				validation,
+				schema,
+				item: schema.item,
 			})
 		}
 		return fields
@@ -163,9 +173,6 @@ export default class Form {
 	 * @param {Object} [initialModel={}] Optional initial model data.
 	 * @param {Object} [options={}] Same options as the constructor.
 	 * @returns {Form} New Form instance.
-	 *
-	 * @example
-	 *   const form = Form.createFromBodySchema(UserBody, { username: "bob" })
 	 */
 	static createFromBodySchema(BodyClass, initialModel = {}, options = {}) {
 		const model = new BodyClass(initialModel)
@@ -188,104 +195,307 @@ export default class Form {
 
 	/**
 	 * Prompts for input, validates, and updates the model.
-	 * Uses `ask` for text fields and `select` for option-based fields.
-	 * Supports cancellation via stop words.
+	 * Supports linear navigation (::prev/::next) and all advanced CLI types.
 	 *
 	 * @returns {Promise<{cancelled:boolean}>} Result indicating if cancelled.
 	 * @throws {Error} Propagates non-cancellation errors.
 	 */
 	async requireInput() {
 		let idx = 0
+		let retries = 0
+		const MAX_RETRIES = 100
+
+		const selectFn = this.select
+		const autocompleteFn = this.options.autocompleteFn || autocomplete
+		const maskFn = this.options.maskFn || mask
+		const multiselectFn = this.options.multiselectFn || multiselect
+		const datetimeFn = this.options.datetimeFn || datetime
+		const toggleFn = this.options.toggleFn || toggle
+		const sliderFn = this.options.sliderFn || slider
+		const confirmFn = this.options.confirmFn || confirm
+
 		while (idx < this.#fields.length) {
 			const field = this.#fields[idx]
-			const currentValue = this.#model[field.name] ?? field.placeholder
-			const prompt = `${field.label}${field.required ? ' *' : ''} [${currentValue}]: `
+			const currentValue = this.#model[field.name] ?? field.placeholder ?? ''
+
+			if (retries > MAX_RETRIES) {
+				throw new Error('Infinite loop detected during form input')
+			}
+
+			const label = field.label || field.name
+			const hasPunctuation = label.trim().endsWith('?') || label.trim().endsWith(':')
+			const promptMsg = `${label}${field.required ? ' *' : ''}${hasPunctuation ? '' : ':'}`
+
 			try {
-				if (field.options.length > 0 || field.type === 'autocomplete') {
+				let result
+
+				if (field.type === 'select' || field.options.length > 0) {
 					const selConfig = {
 						title: field.label,
 						message: field.label,
 						prompt: `${this.t('Select')}: `,
 						options: field.options,
-						console: /** @type {any} */ (this.options).console || {
-							info: (msg) => process.stdout.write(msg + '\n'),
-						},
+						initial: currentValue,
+						console: this.options.console,
 						ask: this.handler,
+						t: this.t,
 					}
-					let val
-					if (field.type === 'autocomplete') {
-						const autoResult = await autocomplete(selConfig)
-						val = autoResult.value
-					} else {
-						const selResult = await this.select(selConfig)
-						val = selResult.value
-					}
-
-					const validRes = field.validation(val)
-					if (validRes !== true) {
-						console.error(`\n${validRes}`)
-						continue
-					}
-					this.#model[field.name] = this.convertValue(field, val)
-					idx++
+					result = await selectFn(selConfig)
+				} else if (field.type === 'autocomplete') {
+					result = await autocompleteFn({
+						message: promptMsg,
+						options: field.options,
+						initial: currentValue,
+						t: this.t,
+					})
+				} else if (field.type === 'multiselect') {
+					result = await multiselectFn({
+						message: promptMsg,
+						options: field.options,
+						initial: Array.isArray(currentValue) ? currentValue : [],
+						t: this.t,
+					})
+				} else if (field.type === 'mask') {
+					result = await maskFn({
+						message: promptMsg,
+						mask: field.mask,
+						initial: currentValue,
+						t: this.t,
+					})
+				} else if (field.type === 'datetime' || field.type === 'date') {
+					result = await datetimeFn({
+						message: promptMsg,
+						initial: currentValue instanceof Date ? currentValue : new Date(),
+						t: this.t,
+					})
+				} else if (field.type === 'toggle' || field.type === 'boolean') {
+					result = await toggleFn({
+						message: promptMsg,
+						initial: currentValue === true || currentValue === 'true',
+						t: this.t,
+					})
+				} else if (field.type === 'confirm') {
+					result = await confirmFn({
+						message: promptMsg,
+						initial: currentValue === true || currentValue === 'true',
+						t: this.t,
+					})
 				} else if (
-					field.type === 'number' &&
-					field.min !== undefined &&
-					field.max !== undefined &&
-					/** @type {any} */ (this.options).sliderFn
+					field.type === 'slider' ||
+					(field.type === 'number' && field.min !== undefined)
 				) {
-					// Use slider for number fields with range
-					const sliderConfig = {
-						message: field.label,
-						min: field.min,
-						max: field.max,
-						step: field.step || 1,
-						initial: Number(currentValue) || field.min,
+					result = await sliderFn({
+						message: promptMsg,
+						min: field.min ?? 0,
+						max: field.max ?? 100,
+						step: field.step ?? 1,
+						initial: Number(currentValue) || field.min || 0,
+						t: this.t,
+					})
+				} else if (field.type === 'array') {
+					let arr = Array.isArray(currentValue) ? [...currentValue] : []
+					let done = false
+					while (!done && retries <= MAX_RETRIES) {
+						const options = arr.map((item, i) => {
+							const lbl =
+								typeof item === 'object' && item !== null ? JSON.stringify(item) : String(item)
+							return {
+								label: `[${i}] ${lbl.length > 50 ? lbl.slice(0, 47) + '...' : lbl}`,
+								value: i,
+							}
+						})
+						options.push({ label: `+ ${this.t('Add new item')}`, value: 'add' })
+						options.push({ label: `✔ ${this.t('Done')}`, value: 'done' })
+
+						const sel = await selectFn({
+							title: promptMsg,
+							message: `${promptMsg} (${arr.length} items)`,
+							prompt: this.t('Action: '),
+							options,
+							t: this.t,
+							console: this.options.console,
+						})
+
+						if (sel.cancelled) {
+							result = { cancelled: true }
+							break
+						}
+						if (sel.value === 'done') {
+							result = { value: arr, cancelled: false }
+							done = true
+						} else if (sel.value === 'add') {
+							let template = ''
+							if (field.item && typeof field.item === 'object') {
+								template = Object.keys(field.item).reduce((acc, k) => {
+									const fieldSchema = field.item[k]
+									const def =
+										fieldSchema.default !== undefined
+											? fieldSchema.default
+											: fieldSchema.defaultValue !== undefined
+												? fieldSchema.defaultValue
+												: ''
+									return { ...acc, [k]: def }
+								}, {})
+							} else if (arr.length > 0 && arr[0] && typeof arr[0] === 'object') {
+								template = Object.keys(arr[0]).reduce((acc, k) => ({ ...acc, [k]: '' }), {})
+							}
+
+							if (typeof template === 'object') {
+								class ArrayElement {
+									constructor(data) {
+										Object.assign(this, data)
+									}
+								}
+								const itemSchema = field.item || (arr.length > 0 ? arr[0] : null)
+								for (const k of Object.keys(template)) {
+									const fieldSchema =
+										itemSchema && typeof itemSchema === 'object' && itemSchema[k]
+											? itemSchema[k]
+											: {}
+									const valSample = arr.length > 0 && typeof arr[0] === 'object' ? arr[0][k] : null
+
+									ArrayElement[k] = {
+										...fieldSchema,
+										type:
+											fieldSchema.type ||
+											(typeof valSample === 'boolean'
+												? 'boolean'
+												: typeof valSample === 'number'
+													? 'number'
+													: 'text'),
+									}
+								}
+								const subForm = Form.createFromBodySchema(ArrayElement, {}, this.options)
+								const subRes = await subForm.requireInput()
+								if (!subRes.cancelled) arr.push({ ...subForm.body })
+							} else {
+								const inputObj = await this.input(`${this.t('Value')}: `)
+								if (!inputObj.cancelled) {
+									if (
+										inputObj.value === '' &&
+										arr.length === 0 &&
+										(!field.item || typeof field.item !== 'object')
+									) {
+										if (this.options.console)
+											this.options.console.error(
+												this.t(
+													'Error: Cannot determine the structure of a new item for an empty array without a schema.'
+												)
+											)
+									} else {
+										arr.push(
+											this.convertValue(
+												{ name: 'value', type: field.itemsType || 'text' },
+												inputObj.value
+											)
+										)
+									}
+								}
+							}
+						} else {
+							const idxToEdit = sel.value
+							const itemToEdit = arr[idxToEdit]
+							const actionSel = await selectFn({
+								title: `Edit Item [${idxToEdit}]`,
+								options: [
+									{ label: this.t('Edit'), value: 'edit' },
+									{ label: this.t('Delete'), value: 'delete' },
+									{ label: this.t('Back'), value: 'cancel' },
+								],
+								t: this.t,
+								console: this.options.console,
+							})
+							if (!actionSel.cancelled) {
+								if (actionSel.value === 'delete') {
+									arr.splice(idxToEdit, 1)
+								} else if (actionSel.value === 'edit') {
+									if (itemToEdit && typeof itemToEdit === 'object') {
+										class ArrayElement {
+											constructor(data) {
+												Object.assign(this, data)
+											}
+										}
+										const itemSchema = field.item || {}
+										for (const [k, v] of Object.entries(itemToEdit)) {
+											const fieldSchema =
+												itemSchema && typeof itemSchema === 'object' && itemSchema[k]
+													? itemSchema[k]
+													: {}
+											ArrayElement[k] = {
+												...fieldSchema,
+												type:
+													fieldSchema.type ||
+													(typeof v === 'boolean'
+														? 'boolean'
+														: typeof v === 'number'
+															? 'number'
+															: 'text'),
+											}
+										}
+										const subForm = Form.createFromBodySchema(
+											ArrayElement,
+											itemToEdit,
+											this.options
+										)
+										const subRes = await subForm.requireInput()
+										if (!subRes.cancelled) arr[idxToEdit] = { ...subForm.body }
+									} else {
+										const inputObj = await this.input(
+											`[${idxToEdit}] ${this.t('Value')} (${itemToEdit}): `
+										)
+										if (!inputObj.cancelled && inputObj.value !== '') {
+											arr[idxToEdit] = this.convertValue(
+												{ name: 'value', type: field.itemsType || 'text' },
+												inputObj.value
+											)
+										}
+									}
+								}
+							}
+						}
 					}
-					const sliderResult = await /** @type {any} */ (this.options).sliderFn(sliderConfig)
-					if (sliderResult && sliderResult.cancelled) {
-						return { cancelled: true }
-					}
-					const val = sliderResult ? sliderResult.value : currentValue
-					const validRes = field.validation(val)
-					if (validRes !== true) {
-						console.error(`\n${validRes}`)
-						continue
-					}
-					this.#model[field.name] = this.convertValue(field, val)
-					idx++
-				} else if (field.type === 'toggle' && /** @type {any} */ (this.options).toggleFn) {
-					// Use toggle for boolean fields
-					const toggleConfig = {
-						message: field.label,
-						initial: currentValue === 'true' || currentValue === true,
-					}
-					const toggleResult = await /** @type {any} */ (this.options).toggleFn(toggleConfig)
-					if (toggleResult && toggleResult.cancelled) {
-						return { cancelled: true }
-					}
-					const val = toggleResult ? toggleResult.value : currentValue
-					idx++ // Toggles don't fail validation usually
-					this.#model[field.name] = val
 				} else {
-					const inputObj = await this.input(prompt)
-					if (inputObj.cancelled) {
-						return { cancelled: true }
-					}
-					let answer = inputObj.value.trim()
-					if (answer === '' && !field.required) {
-						this.#model[field.name] = ''
-						idx++
-						continue
-					}
-					const validRes = field.validation(answer)
-					if (validRes !== true) {
-						console.error(`\n${validRes}`)
-						continue
-					}
-					this.#model[field.name] = this.convertValue(field, answer)
-					idx++
+					const inputObj = await this.input(`${promptMsg} `)
+					result = { value: inputObj.value, cancelled: inputObj.cancelled }
 				}
+
+				if (result && result.cancelled) {
+					return { cancelled: true }
+				}
+
+				let val = result ? result.value : currentValue
+				if (typeof val === 'string') {
+					const trimmed = val.trim()
+					if (trimmed === '::prev' || trimmed === '::back') {
+						idx = Math.max(0, idx - 1)
+						retries = 0
+						continue
+					}
+					if (trimmed === '::next' || trimmed === '::skip') {
+						idx++
+						retries = 0
+						continue
+					}
+					if (trimmed === '' && field.required) {
+						if (this.options.console) this.options.console.info(`\n${this.t('Field is required.')}`)
+						else console.info(`\n${this.t('Field is required.')}`)
+						retries++
+						continue
+					}
+				}
+
+				const validRes = field.validation(val)
+				if (validRes !== true) {
+					const errMsg = typeof validRes === 'string' ? validRes : `Invalid ${field.name}`
+					if (this.options.console) this.options.console.error(`\n${errMsg}`)
+					else console.error(`\n${errMsg}`)
+					retries++
+					continue
+				}
+
+				this.#model[field.name] = this.convertValue(field, val)
+				idx++
+				retries = 0
 			} catch (e) {
 				if (e instanceof CancelError) {
 					return { cancelled: true }

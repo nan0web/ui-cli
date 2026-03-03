@@ -19,5 +19,8 @@ node_modules/
 # VSCode
 .vscode/
 
+# Snapshots (rendered into index.md galleries)
+*.snap
+
 # Temporary
 /apps/

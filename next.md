@@ -1,5 +1,12 @@
 # План дій
 
+## 📊 Статус (2026-03-01)
+
+- ✅ Snapshot Automation: Додано утиліту `setupSnapshots` в `@nan0web/ui-cli/test` для автоматичної генерації TDD Snapshots доказу роботи CLI у Markdown.
+- ✅ Deterministic TDD: Всі інтерактивні промпти в `InputAdapter` тепер коректно обробляють скасування (`_cancel`) через `PLAY_DEMO_SEQUENCE`, симулюючи скасування без зависань.
+- ✅ Playwright UI-CLI Testing: Компонент `Table` передає `adapter`, що дозволяє `_cancel` уникнути блокування TDD.
+- ✅ i18n & Type Safety: Запущено форматування та перевірку типів.
+
 ## 📊 Статус (2026-02-16)
 
 - ✅ Unit Tests: 133/133 passed
@@ -55,9 +62,15 @@
 - **Problem**: Два паралельні шляхи обробки форм — `Form` клас (інтерактивний CLI-обхідник) та `InputAdapter.requestForm()` — дублюють логіку обходу полів, select/toggle/text, скасування.
 - **Solution**: `Form` стає єдиним CLI-рендерером. `InputAdapter.requestForm()` делегує до `Form`. `UiForm` залишається чистою моделлю (One Logic), `Form` — єдиний CLI-рендерер (Many UI).
 
+### 2. TDD Snapshot Validation Integration (VS Code Plugin)
+
+- **Problem**: Згенеровані `docs/snapshots.md` артефакти зараз статичні. Розробнику доводиться візуально зчитувати лог консолі.
+- **Solution**: У VS Code плагіні `nan•web` створити інтерактивний UI для цих артефактів. Відкриваючи `snapshots.md`, CodeLens кнопки (Approve/Reject) дозволятимуть фіксувати еталонні снепшоти. Це перетворить CI/CD артефакт на інтерактивний руль управління розробкою агента.
+
 ## 🎯 Пріоритети
 
-1. **Medium**: Уніфікація Form-рендерера.
+1. **High**: VS Code інтеграція для TDD Snapshots.
+2. **Medium**: Уніфікація Form-рендерера.
 
 ## 🚀 Roadmap (з system.md)
 

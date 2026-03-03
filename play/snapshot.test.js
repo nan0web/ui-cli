@@ -43,7 +43,7 @@ function normalizeOutput(str) {
 	)
 }
 
-const SNAPSHOT_DIR = path.join(process.cwd(), 'play', 'snapshots')
+const SNAPSHOT_DIR = path.join(process.cwd(), 'snapshots', 'play')
 
 async function verifySnapshot(name, demo, lang, env) {
 	const pt = new PlaygroundTest(
@@ -56,27 +56,61 @@ async function verifySnapshot(name, demo, lang, env) {
 	// Include stderr for validation errors
 	const combined = stdout + (stderr ? '\n--- STDERR ---\n' + stderr : '')
 	const actual = normalizeOutput(combined)
-	const snapshotPath = path.join(SNAPSHOT_DIR, `${name}.snap`)
 
-	if (process.env.UPDATE_SNAPSHOTS) {
-		fs.writeFileSync(snapshotPath, actual, 'utf8')
-		console.log(`Updated snapshot: ${name}`)
-		return
-	}
+	const demoDir = path.join(SNAPSHOT_DIR, demo)
+	if (!fs.existsSync(demoDir)) fs.mkdirSync(demoDir, { recursive: true })
 
-	if (!fs.existsSync(snapshotPath)) {
-		console.warn(`WARN: Snapshot not found: ${name}. Creating it...`)
-		fs.writeFileSync(snapshotPath, actual, 'utf8')
-		return
-	}
+	const frames = actual
+		.split(/\[SNAPSHOT_FRAME\]/g)
+		.map((f) => f.trim())
+		.filter(Boolean)
 
-	const expected = fs.readFileSync(snapshotPath, 'utf8')
+	if (frames.length <= 1) {
+		const snapshotPath = path.join(demoDir, `${name}.snap`)
+		const text = frames[0] || actual
+		if (process.env.UPDATE_SNAPSHOTS) {
+			fs.writeFileSync(snapshotPath, text, 'utf8')
+			console.log(`Updated snapshot: play/${demo}/${name}.snap`)
+			return
+		}
+		if (!fs.existsSync(snapshotPath)) {
+			console.warn(`WARN: Snapshot not found: play/${demo}/${name}.snap. Creating it...`)
+			fs.writeFileSync(snapshotPath, text, 'utf8')
+			return
+		}
+		const expected = fs.readFileSync(snapshotPath, 'utf8')
+		try {
+			assert.strictEqual(text, expected)
+		} catch (e) {
+			console.error(`\nSnapshot mismatch for ${name}!`)
+			throw e
+		}
+	} else {
+		for (let i = 0; i < frames.length; i++) {
+			const frameName = `${name}.${i + 1}`
+			const snapshotPath = path.join(demoDir, `${frameName}.snap`)
+			const text = frames[i]
 
-	try {
-		assert.strictEqual(actual, expected)
-	} catch (e) {
-		console.error(`\nSnapshot mismatch for ${name}!`)
-		throw e
+			if (process.env.UPDATE_SNAPSHOTS) {
+				fs.writeFileSync(snapshotPath, text, 'utf8')
+				console.log(`Updated snapshot frame ${i + 1}: play/${demo}/${frameName}.snap`)
+				continue
+			}
+			if (!fs.existsSync(snapshotPath)) {
+				console.warn(
+					`WARN: Snapshot frame not found: play/${demo}/${frameName}.snap. Creating it...`
+				)
+				fs.writeFileSync(snapshotPath, text, 'utf8')
+				continue
+			}
+			const expected = fs.readFileSync(snapshotPath, 'utf8')
+			try {
+				assert.strictEqual(text, expected)
+			} catch (e) {
+				console.error(`\nSnapshot frame mismatch for ${frameName}!`)
+				throw e
+			}
+		}
 	}
 }
 
