@@ -37,7 +37,7 @@ describe('CLiInputAdapter', () => {
 
 		assert.equal(result.cancelled, false)
 		assert.equal(result.form.state.name, 'John Doe')
-		assert.equal(result.form.state.age, '30') // Values remain strings without schema parser
+		assert.equal(result.form.state.age, 30) // Values are now properly casted using Form renderer
 	})
 
 	it('should handle form cancellation', { timeout: 2000 }, async () => {

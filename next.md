@@ -35,6 +35,15 @@
 - **Проблема**: Нестабільний снепшот `tree_view` через race condition — `a` від multi-select витікав у autocomplete (200ms stdin feed delay).
 - **Рішення**: Перенесено multi-select (Scenario 3) під `!isTestMode`. Знято `a` з послідовності.
 
+## ✅ Виконано (2026-03-08)
+
+### Refactoring: Уніфікація Form-рендерера
+
+- **Опис**: `Form` клас тепер є єдиним CLI-рендерером.
+- **Problem**: Два паралельні шляхи обробки форм — `Form` клас (інтерактивний CLI-обхідник) та `InputAdapter.requestForm()` — дублювали логіку обходу полів, select/toggle/text, скасування тощо.
+- **Solution**: `Form` клас оновлено для роботи безпосередньо з чистими моделями `UiForm`. `InputAdapter.requestForm()` делегує весь процес вводу до `Form`.
+- **i18n & Snapshot Tests**: Додатково оновлено `assert.equal(result.form.state.age, 30)` оскільки `Form` забезпечує строгу типізацію чисел. Всі 133/133 тести успішно пройдено.
+
 ## ✅ Виконано (2026-02-16)
 
 ### Feature: Sortable Component (`@nan0web/ui@1.3.0`)
@@ -57,12 +66,7 @@
 
 ## 📋 Наступні кроки
 
-### 1. Уніфікація Form-рендерера
-
-- **Problem**: Два паралельні шляхи обробки форм — `Form` клас (інтерактивний CLI-обхідник) та `InputAdapter.requestForm()` — дублюють логіку обходу полів, select/toggle/text, скасування.
-- **Solution**: `Form` стає єдиним CLI-рендерером. `InputAdapter.requestForm()` делегує до `Form`. `UiForm` залишається чистою моделлю (One Logic), `Form` — єдиний CLI-рендерер (Many UI).
-
-### 2. TDD Snapshot Validation Integration (VS Code Plugin)
+### 1. TDD Snapshot Validation Integration (VS Code Plugin)
 
 - **Problem**: Згенеровані `docs/snapshots.md` артефакти зараз статичні. Розробнику доводиться візуально зчитувати лог консолі.
 - **Solution**: У VS Code плагіні `nan•web` створити інтерактивний UI для цих артефактів. Відкриваючи `snapshots.md`, CodeLens кнопки (Approve/Reject) дозволятимуть фіксувати еталонні снепшоти. Це перетворить CI/CD артефакт на інтерактивний руль управління розробкою агента.
@@ -70,7 +74,6 @@
 ## 🎯 Пріоритети
 
 1. **High**: VS Code інтеграція для TDD Snapshots.
-2. **Medium**: Уніфікація Form-рендерера.
 
 ## 🚀 Roadmap (з system.md)
 

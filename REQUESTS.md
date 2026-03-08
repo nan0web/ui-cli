@@ -75,8 +75,8 @@ nan0cli signup
 ## Universal Documentation Blocks (Phase 8 MVP)
 
 **Target**: `src/BlockRenderers/*`
-**Status**: 🔲 PLANNED
-**Date**: 2026-02-22
+**Status**: ✅ DONE
+**Date**: 2026-03-08
 
 **Problem**:
 CLI UI does not currently support the new `Layout.*` or `Control.*` namespaces defined in `UNIVERSAL_BLOCKS_SPEC.md` (e.g. `Layout.Page`, `Layout.Sidebar`, `Control.ThemeToggle`).
@@ -87,6 +87,12 @@ Implement text-based log/terminal fallbacks in `ui-cli`:
 - `Layout.Page`, `Layout.Nav` could act as section boundaries or headers in CLI.
 - `Layout.Sidebar` could render as an indented tree list in the terminal.
 - `Control.*` blocks can either be gracefully ignored or represent a CLI interactive prompt if necessary.
+
+**Changes Made**:
+
+1. Created `src/BlockRenderers/Layout.js` with terminal fallback implementations for `Page`, `Nav`, and `Sidebar` that output structured CLI text sections.
+2. Created `src/BlockRenderers/Control.js` to gracefully ignore `ThemeToggle` without throwing errors.
+3. Exported both `Layout` and `Control` namespaces from `src/index.js` to align with the Universal Blocks specification.
 
 ---
 

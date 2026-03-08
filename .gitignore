@@ -24,3 +24,6 @@ node_modules/
 
 # Temporary
 /apps/
+
+# Private agent under LICENSE
+.agent/

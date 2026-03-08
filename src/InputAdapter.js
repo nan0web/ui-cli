@@ -260,204 +260,44 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 		const { silent = true } = options
 		if (!silent) this.console.info(`\n${this.#t(form.title)}\n`)
 
-		let formData = { ...form.state }
-		let idx = 0
-		let retries = 0
+		const cliForm = new Form(form, {
+			t: this.t,
+			inputFn: (p) => /** @type {any} */ (this.requestInput({ message: p, prompt: p })),
+			selectFn: (cfg) => this.requestSelect(cfg),
+			autocompleteFn: (cfg) => this.requestAutocomplete(cfg),
+			multiselectFn: (cfg) => this.requestMultiselect(cfg),
+			maskFn: (cfg) => this.requestMask(cfg),
+			datetimeFn: (cfg) => this.requestDateTime(cfg),
+			toggleFn: (cfg) => this.requestToggle(cfg),
+			sliderFn: (cfg) => this.requestSlider(cfg),
+			confirmFn: (cfg) => this.requestConfirm(cfg),
+			console: this.console,
+			maxRetries: this.#maxRetries,
+		})
 
-		while (idx < form.fields.length) {
-			const field = /** @type {any} */ (form.fields[idx])
-			if (retries > this.#maxRetries) {
+		let result
+		try {
+			result = await cliForm.requireInput()
+		} catch (e) {
+			if (e.message.includes('Infinite loop detected')) {
 				return {
 					body: { action: 'form-cancel', cancelled: true, error: 'Infinite loop detected' },
 					cancelled: true,
 					action: 'form-cancel',
 				}
 			}
-			const label = this.#t(field.label || field.name)
-			const hasPunctuation = label.trim().endsWith('?') || label.trim().endsWith(':')
-			const promptMsg = `${label}${field.required ? ' *' : ''}${hasPunctuation ? '' : ':'}`
-
-			// ---- Handle select fields (options) ----------------------------------------
-			if (
-				field.type === 'select' ||
-				(Array.isArray(field.options ?? 0) &&
-					field.options.length &&
-					field.type !== 'multiselect' &&
-					field.type !== 'autocomplete')
-			) {
-				const options = /** @type {any[]} */ (field.options)
-
-				const selConfig = {
-					title: this.#t(field.label),
-					prompt: this.#t('Choose (number): '),
-					options: options.map((opt) =>
-						typeof opt === 'string'
-							? { label: this.#t(opt), value: opt }
-							: { ...opt, label: this.#t(opt.label) }
-					),
-					console: { info: this.console.info.bind(this.console) },
-				}
-				const chosen = await this.requestSelect(selConfig)
-				if (!chosen || chosen.cancelled) {
-					return {
-						body: { action: 'form-cancel', cancelled: true },
-						cancelled: true,
-						action: 'form-cancel',
-					}
-				}
-
-				const values = options.map((o) => (typeof o === 'string' ? o : o.value))
-				if (!values.includes(chosen.value)) {
-					this.console.error('\nEnumeration must have one value')
-					retries++
-					continue
-				}
-				formData[field.name] = String(chosen.value)
-				idx++
-				retries = 0
-				continue
-			}
-			// ---- Handle confirm / toggle fields --------------------------------------
-			if (field.type === 'confirm' || field.type === 'toggle') {
-				const res = await this.requestConfirm({ message: promptMsg })
-				if (!res || res.cancelled) {
-					return {
-						body: { action: 'form-cancel', cancelled: true },
-						cancelled: true,
-						action: 'form-cancel',
-					}
-				}
-				formData[field.name] = res.value
-				idx++
-				continue
-			}
-
-			// ---- Handle multiselect fields -------------------------------------------
-			if (field.type === 'multiselect') {
-				const res = await this.requestMultiselect({
-					message: promptMsg,
-					options: Array.isArray(field.options) ? field.options : [],
-					initial: [],
-				})
-				if (!res || res.cancelled) {
-					return {
-						body: { action: 'form-cancel', cancelled: true },
-						cancelled: true,
-						action: 'form-cancel',
-					}
-				}
-				formData[field.name] = res.value
-				idx++
-				continue
-			}
-
-			// ---- Handle mask fields --------------------------------------------------
-			if (field.type === 'mask') {
-				const res = await this.requestMask({
-					message: promptMsg,
-					mask: field.mask || '',
-					placeholder: field.placeholder || '',
-				})
-				if (!res || res.cancelled) {
-					return {
-						body: { action: 'form-cancel', cancelled: true },
-						cancelled: true,
-						action: 'form-cancel',
-					}
-				}
-				formData[field.name] = res.value
-				idx++
-				continue
-			}
-
-			// ---- Handle date / datetime fields ---------------------------------------
-			if (field.type === 'date' || field.type === 'datetime') {
-				const res = await this.requestDateTime({
-					message: promptMsg,
-					initial: field.value instanceof Date ? field.value : new Date(),
-					mask: field.mask,
-				})
-				if (!res || res.cancelled) {
-					return {
-						body: { action: 'form-cancel', cancelled: true },
-						cancelled: true,
-						action: 'form-cancel',
-					}
-				}
-				formData[field.name] = res.value
-				idx++
-				continue
-			}
-
-			// ---- Handle text / password / number fields ------------------------------
-
-			const res = await this.requestInput({
-				prompt: promptMsg,
-				initial: field.placeholder,
-				type: field.type === 'password' || field.type === 'secret' ? 'password' : 'text',
-				validation: (val) => {
-					if (!field.validation) return true
-					const result = field.validation(val)
-					if (result === true || result == null) return true // Treat undefined/null as valid
-					beep()
-					return result || 'Invalid input'
-				},
-			})
-
-			if (!res || res.cancelled) {
-				return {
-					body: { action: 'form-cancel', cancelled: true },
-					cancelled: true,
-					action: 'form-cancel',
-				}
-			}
-
-			const trimmed = String(res.value || '').trim()
-
-			if (trimmed === '::prev' || trimmed === '::back') {
-				idx = Math.max(0, idx - 1)
-				retries = 0
-				continue
-			}
-			if (trimmed === '::next' || trimmed === '::skip') {
-				idx++
-				retries = 0
-				continue
-			}
-			if (trimmed === '' && !field.required) {
-				idx++
-				retries = 0
-				continue
-			}
-			if (field.required && trimmed === '') {
-				this.console.info(`\n${this.#t('Field is required.')}`)
-				retries++
-				continue
-			}
-
-			const schema = field.constructor
-			const { isValid, errors } = form.validateValue(field.name, trimmed, schema)
-
-			if (field.validation) {
-				const v = field.validation(trimmed)
-				if (v !== true && v != null) {
-					this.console.warn('\n' + (typeof v === 'string' ? v : 'Invalid input'))
-					retries++
-					continue
-				}
-			}
-
-			if (!isValid) {
-				this.console.warn('\n' + Object.values(errors).join('\n'))
-				retries++
-				continue
-			}
-			formData[field.name] = trimmed
-			idx++
-			retries = 0
+			throw e
 		}
 
-		const finalForm = form.setData(formData)
+		if (result.cancelled) {
+			return {
+				body: { action: 'form-cancel', cancelled: true },
+				cancelled: true,
+				action: 'form-cancel',
+			}
+		}
+
+		const finalForm = form.setData(cliForm.body)
 		const errors = finalForm.validate()
 		if (errors.size) {
 			this.console.warn('\n' + Object.values(errors).join('\n'))

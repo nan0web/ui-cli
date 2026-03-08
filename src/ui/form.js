@@ -93,16 +93,62 @@ export default class Form {
 	 * @throws {TypeError} If model is not an object with a constructor.
 	 */
 	constructor(model, options = {}) {
-		if (!model || typeof model !== 'object' || !model.constructor) {
-			throw new TypeError('Form requires a model instance with a constructor')
+		if (!model || typeof model !== 'object') {
+			throw new TypeError('Form requires a model instance or UiForm')
 		}
-		this.#model = model
 		this.options = options
 		const { stops = ['quit', 'cancel', 'exit'], inputFn, selectFn, t = (k) => k } = options
 		this.t = t
 		this.handler = inputFn || createInput(stops)
 		this.select = selectFn || select
-		this.#fields = this.#generateFields()
+
+		if (model instanceof UiForm) {
+			this.#model = { ...model.state }
+			this.#fields = model.fields.map((f) => {
+				const required = Boolean(f.required)
+				let type = f.type === 'boolean' ? 'toggle' : f.type
+				if (type === 'secret') type = 'password'
+				if (type === 'date') type = 'datetime'
+				return {
+					name: f.name,
+					label: this.t(f.label || f.name),
+					type,
+					required,
+					placeholder: this.t(String(f.placeholder || '')),
+					min: f.min,
+					max: f.max,
+					step: f.step,
+					options: f.options
+						? f.options.map((opt) => {
+								if (typeof opt === 'string') return { label: this.t(opt), value: opt }
+								return { ...opt, label: this.t(opt.label) }
+							})
+						: [],
+					validation: f.validation
+						? (val) => {
+								try {
+									const res = f.validation(val)
+									if (res === true || res == null) return true // Treat undefined/null as valid
+									if (res === false) return `${this.t('validate.error')} ${f.name}`
+									return typeof res === 'string'
+										? this.t(res)
+										: `${this.t('validate.error')} ${f.name}`
+								} catch (error) {
+									return error.message || `${this.t('validate.error')} ${f.name}`
+								}
+							}
+						: () => true,
+					schema: f,
+					mask: f.mask,
+				}
+			})
+		} else {
+			if (!model.constructor) {
+				throw new TypeError('Form requires a model instance with a constructor')
+			}
+			this.#model = model
+			this.#fields = this.#generateFields()
+		}
 	}
 
 	/**
@@ -203,7 +249,7 @@ export default class Form {
 	async requireInput() {
 		let idx = 0
 		let retries = 0
-		const MAX_RETRIES = 100
+		const MAX_RETRIES = this.options.maxRetries ?? 100
 
 		const selectFn = this.select
 		const autocompleteFn = this.options.autocompleteFn || autocomplete
@@ -514,7 +560,7 @@ export default class Form {
 	 * @returns {string|number|boolean} Typed value.
 	 */
 	convertValue(field, value) {
-		const schema = this.#model.constructor[field.name]
+		const schema = field.schema || this.#model.constructor[field.name]
 		const type = schema?.type || typeof (schema?.defaultValue ?? 'string')
 		switch (type) {
 			case 'number':
