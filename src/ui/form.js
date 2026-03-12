@@ -41,7 +41,7 @@ export function generateForm(BodyClass, options = {}) {
 				type: schema.type || 'text',
 				required: Boolean(schema.required),
 				placeholder: translate(schema.placeholder || schema.defaultValue || ''),
-				options: schema.options
+				options: Array.isArray(schema.options)
 					? schema.options.map((opt) =>
 							typeof opt === 'string'
 								? opt
@@ -121,30 +121,36 @@ export default class Form {
 					type,
 					required,
 					placeholder: this.t(String(f.placeholder || '')),
+					// @ts-ignore - min/max/step are dynamically attached to FormInput in some cases
 					min: f.min,
+					// @ts-ignore
 					max: f.max,
+					// @ts-ignore
 					step: f.step,
-					options: f.options
+					options: Array.isArray(f.options)
 						? f.options.map((opt) => {
 								if (typeof opt === 'string') return { label: this.t(opt), value: opt }
-								return { ...opt, label: this.t(opt.label) }
+								const o = /** @type {{label: string, value: any}} */ (opt)
+								return { ...o, label: this.t(o.label) }
 							})
 						: [],
 					validation: f.validation
 						? (val) => {
 								try {
-									const res = f.validation(val)
+									const res = /** @type {Function} */ (f.validation)(val)
 									if (res === true || res == null) return true // Treat undefined/null as valid
 									if (res === false) return `${this.t('validate.error')} ${f.name}`
 									return typeof res === 'string'
 										? this.t(res)
 										: `${this.t('validate.error')} ${f.name}`
 								} catch (error) {
-									return error.message || `${this.t('validate.error')} ${f.name}`
+									const err = /** @type {Error} */ (error)
+									return err.message || `${this.t('validate.error')} ${f.name}`
 								}
 							}
 						: () => true,
 					schema: f,
+					// @ts-ignore
 					mask: f.mask,
 				}
 			})
@@ -297,6 +303,7 @@ export default class Form {
 					result = await autocompleteFn({
 						message: promptMsg,
 						options: field.options,
+						// @ts-ignore
 						initial: currentValue,
 						t: this.t,
 					})
@@ -304,6 +311,7 @@ export default class Form {
 					result = await multiselectFn({
 						message: promptMsg,
 						options: field.options,
+						// @ts-ignore
 						initial: Array.isArray(currentValue) ? currentValue : [],
 						t: this.t,
 					})
@@ -324,12 +332,14 @@ export default class Form {
 					result = await toggleFn({
 						message: promptMsg,
 						initial: currentValue === true || currentValue === 'true',
+						// @ts-ignore
 						t: this.t,
 					})
 				} else if (field.type === 'confirm') {
 					result = await confirmFn({
 						message: promptMsg,
 						initial: currentValue === true || currentValue === 'true',
+						// @ts-ignore
 						t: this.t,
 					})
 				} else if (
@@ -348,6 +358,7 @@ export default class Form {
 					let arr = Array.isArray(currentValue) ? [...currentValue] : []
 					let done = false
 					while (!done && retries <= MAX_RETRIES) {
+						/** @type {Array<{label: string, value: number|string}>} */
 						const options = arr.map((item, i) => {
 							const lbl =
 								typeof item === 'object' && item !== null ? JSON.stringify(item) : String(item)
@@ -376,6 +387,7 @@ export default class Form {
 							result = { value: arr, cancelled: false }
 							done = true
 						} else if (sel.value === 'add') {
+							/** @type {any} */
 							let template = ''
 							if (field.item && typeof field.item === 'object') {
 								template = Object.keys(field.item).reduce((acc, k) => {
@@ -387,13 +399,14 @@ export default class Form {
 												? fieldSchema.defaultValue
 												: ''
 									return { ...acc, [k]: def }
-								}, {})
+								}, /** @type {Record<string, any>} */ ({}))
 							} else if (arr.length > 0 && arr[0] && typeof arr[0] === 'object') {
-								template = Object.keys(arr[0]).reduce((acc, k) => ({ ...acc, [k]: '' }), {})
+								template = Object.keys(arr[0]).reduce((acc, k) => ({ ...acc, [k]: '' }), /** @type {Record<string, any>} */ ({}))
 							}
 
 							if (typeof template === 'object') {
 								class ArrayElement {
+									/** @param {any} data */
 									constructor(data) {
 										Object.assign(this, data)
 									}
@@ -406,6 +419,7 @@ export default class Form {
 											: {}
 									const valSample = arr.length > 0 && typeof arr[0] === 'object' ? arr[0][k] : null
 
+									// @ts-ignore - dynamic construction
 									ArrayElement[k] = {
 										...fieldSchema,
 										type:
@@ -417,6 +431,7 @@ export default class Form {
 													: 'text'),
 									}
 								}
+								// @ts-ignore - dynamic class
 								const subForm = Form.createFromBodySchema(ArrayElement, {}, this.options)
 								const subRes = await subForm.requireInput()
 								if (!subRes.cancelled) arr.push({ ...subForm.body })
@@ -463,6 +478,7 @@ export default class Form {
 								} else if (actionSel.value === 'edit') {
 									if (itemToEdit && typeof itemToEdit === 'object') {
 										class ArrayElement {
+											/** @param {any} data */
 											constructor(data) {
 												Object.assign(this, data)
 											}
@@ -473,6 +489,7 @@ export default class Form {
 												itemSchema && typeof itemSchema === 'object' && itemSchema[k]
 													? itemSchema[k]
 													: {}
+											// @ts-ignore
 											ArrayElement[k] = {
 												...fieldSchema,
 												type:
@@ -484,8 +501,9 @@ export default class Form {
 															: 'text'),
 											}
 										}
+										// @ts-ignore
 										const subForm = Form.createFromBodySchema(
-											ArrayElement,
+											/** @type {any} */ (ArrayElement),
 											itemToEdit,
 											this.options
 										)

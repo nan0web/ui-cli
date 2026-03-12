@@ -168,14 +168,15 @@ export default class PlaygroundTest {
 		let stdout = ''
 		let stderr = ''
 
-		const stdoutPromise = new Promise((resolve, reject) => {
+		const stdoutPromise = new Promise((/** @type {(value?: void) => void} */ resolve, reject) => {
 			const promises = []
 			child.stdout.on('data', (chunk) => {
 				const p = (async () => {
 					try {
 						const str = chunk.toString()
-						stdout += str
-						await this.emit('stdout', { chunk })
+						const clean = this.filterDebugger(str)
+						stdout += clean
+						await this.emit('stdout', { chunk, clean })
 					} catch (e) {
 						reject(e)
 					}
@@ -192,7 +193,7 @@ export default class PlaygroundTest {
 			})
 		})
 
-		const stderrPromise = new Promise((resolve, reject) => {
+		const stderrPromise = new Promise((/** @type {(value?: void) => void} */ resolve, reject) => {
 			const promises = []
 			child.stderr.on('data', (chunk) => {
 				const p = (async () => {

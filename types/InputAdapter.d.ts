@@ -40,9 +40,12 @@ export default class CLiInputAdapter extends BaseInputAdapter {
      * Pause execution and wait for user input (Press any key).
      *
      * @param {string} [message] - Message to display.
-     * @returns {Promise<void>}
+     * @returns {Promise<void|{value: undefined, cancelled: boolean}>}
      */
-    pause(message?: string): Promise<void>;
+    pause(message?: string): Promise<void | {
+        value: undefined;
+        cancelled: boolean;
+    }>;
     /**
      * Prompt the user for a full form, handling navigation and validation.
      *
@@ -230,9 +233,9 @@ export default class CLiInputAdapter extends BaseInputAdapter {
         value: any;
         cancelled: boolean;
     } | {
-        value: undefined;
-        cancelled: boolean;
-        index?: undefined;
+        value: null;
+        index: number;
+        cancelled?: undefined;
     } | {
         index: any;
         value: string;

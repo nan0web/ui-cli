@@ -235,7 +235,7 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 	 * Pause execution and wait for user input (Press any key).
 	 *
 	 * @param {string} [message] - Message to display.
-	 * @returns {Promise<void>}
+	 * @returns {Promise<void|{value: undefined, cancelled: boolean}>}
 	 */
 	async pause(message) {
 		const predefined = this.#nextAnswer()
@@ -371,7 +371,7 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 			if (!config.console) config.console = this.#console
 
 			if (predefined !== null) {
-				if (predefined === '_cancel') return { value: undefined, cancelled: true }
+				if (predefined === '_cancel') return { value: undefined, cancelled: true, index: -1 }
 				// Normalize options to find value
 				let choices = []
 				const options = config.options || []
@@ -838,7 +838,7 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 	async select(cfg) {
 		const predefined = this.#nextAnswer()
 		if (predefined !== null) {
-			if (predefined === '_cancel') return { value: undefined, cancelled: true }
+			if (predefined === '_cancel') return { value: null, index: -1 }
 			const prompt = cfg.message || cfg.title || 'Select: '
 
 			// Find human label
