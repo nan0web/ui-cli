@@ -7,6 +7,7 @@ import { describe, it, after } from 'node:test'
 import assert from 'node:assert'
 import fs from 'node:fs'
 import path from 'node:path'
+import crypto from 'node:crypto'
 import { PlaygroundTest } from '../src/test/index.js'
 
 function normalizeOutput(str) {
@@ -93,8 +94,6 @@ const COMPONENTS = {
 }
 
 describe('Sandbox E2E Snapshots', () => {
-	// Clean up config before all tests
-	if (fs.existsSync(TEST_CONFIG)) fs.unlinkSync(TEST_CONFIG)
 	if (!fs.existsSync(SNAPSHOT_DIR)) fs.mkdirSync(SNAPSHOT_DIR, { recursive: true })
 
 	const locales = ['en', 'uk']
@@ -102,6 +101,9 @@ describe('Sandbox E2E Snapshots', () => {
 	for (const locale of locales) {
 		for (const comp of COMPONENTS.view) {
 			it(`matches snapshot for View Component: ${comp} (${locale})`, async () => {
+				const testConfig = `.cli-sandbox.${comp.toLowerCase()}-lifecycle-${locale}-${crypto.randomUUID()}.json`
+				if (fs.existsSync(testConfig)) fs.unlinkSync(testConfig)
+				
 				// Sequence:
 				// 1. Select Component
 				// 2. Select Default Variant
@@ -120,21 +122,28 @@ describe('Sandbox E2E Snapshots', () => {
 					seq = `${comp}|[Variant] Default|← Back|+ Create New Variant|TestVar|↺ Reset to Defaults|✖ Delete Variant|← Back to Components|← Exit`
 				}
 
-				await verifySandboxSnapshot(
-					'lifecycle',
-					comp,
-					{
-						CLI_SANDBOX_CONFIG: TEST_CONFIG,
-						PLAY_DEMO_SEQUENCE: seq,
-						PLAY_DEMO_DIVIDER: divider,
-					},
-					locale
-				)
+				try {
+					await verifySandboxSnapshot(
+						'lifecycle',
+						comp,
+						{
+							CLI_SANDBOX_CONFIG: testConfig,
+							PLAY_DEMO_SEQUENCE: seq,
+							PLAY_DEMO_DIVIDER: divider,
+						},
+						locale
+					)
+				} finally {
+					if (fs.existsSync(testConfig)) fs.unlinkSync(testConfig)
+				}
 			})
 		}
 
 		for (const p of COMPONENTS.prompt) {
 			it(`matches snapshot for Prompt Component: ${p.name} (${locale})`, async () => {
+				const testConfig = `.cli-sandbox.${p.name.toLowerCase()}-lifecycle-${locale}-${crypto.randomUUID()}.json`
+				if (fs.existsSync(testConfig)) fs.unlinkSync(testConfig)
+				
 				const divider = '|'
 				let seqParams
 
@@ -154,16 +163,20 @@ describe('Sandbox E2E Snapshots', () => {
 					seqParams += `${divider}← Back${divider}+ Create New Variant${divider}TestVar${divider}✖ Delete Variant${divider}← Back to Components${divider}← Exit`
 				}
 
-				await verifySandboxSnapshot(
-					'lifecycle',
-					p.name,
-					{
-						CLI_SANDBOX_CONFIG: TEST_CONFIG,
-						PLAY_DEMO_SEQUENCE: seqParams,
-						PLAY_DEMO_DIVIDER: divider,
-					},
-					locale
-				)
+				try {
+					await verifySandboxSnapshot(
+						'lifecycle',
+						p.name,
+						{
+							CLI_SANDBOX_CONFIG: testConfig,
+							PLAY_DEMO_SEQUENCE: seqParams,
+							PLAY_DEMO_DIVIDER: divider,
+						},
+						locale
+					)
+				} finally {
+					if (fs.existsSync(testConfig)) fs.unlinkSync(testConfig)
+				}
 			})
 		}
 	}
