@@ -74,7 +74,6 @@
 		"nan0gallery": "./scripts/gallery.mjs"
 	},
 	"dependencies": {
-		"@nan0web/db-browser": "workspace:*",
 		"@nan0web/db-fs": "^1.1.4",
 		"@nan0web/event": "^1.0.1",
 		"@nan0web/icons": "^1.1.0",
