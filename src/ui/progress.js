@@ -86,3 +86,9 @@ export class ProgressBar {
 export function progress(options) {
 	return new ProgressBar(options)
 }
+
+/** @type {Array<{pattern: RegExp, replacement: string}>} */
+ProgressBar.snapshotReplacements = [
+	{ pattern: /\[=*>?-*\] \d+% \[\d{2}:\d{2}( < \d{2}:\d{2})?\]/g, replacement: '[PROGRESS]' },
+]
+

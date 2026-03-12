@@ -41,3 +41,9 @@ export class ProgressBar {
     render(): void;
     formatTime(seconds: any): string;
 }
+export namespace ProgressBar {
+    let snapshotReplacements: Array<{
+        pattern: RegExp;
+        replacement: string;
+    }>;
+}

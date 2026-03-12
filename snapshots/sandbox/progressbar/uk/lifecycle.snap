@@ -1,0 +1,91 @@
+🧱 UI-CLI Sandbox 
+Оберіть компонент для тестування:
+ 1) Alert
+ 2) Badge
+ 3) Toast
+ 4) Table
+ 5) Tabs
+ 6) Breadcrumbs
+ 7) Steps
+ 8) Input
+ 9) Пароль
+ 10) Перемикач
+ 11) Підтвердити
+ 12) Виберіть
+ 13) Multiselect
+ 14) Повзунок
+ 15) DateTime
+  ↓ (5 ще)
+✔  ProgressBar
+Пісочниця > ProgressBar. Оберіть варіацію:
+ 1) [Варіант] Default
+ 2) + Створити новий варіант
+ 3) ← Назад до компонентів
+✔  [Variant] Default
+==================================================
+ Sandbox: > ProgressBar > Default < 
+==================================================
+⚡ Це компонент Prompt.
+==================================================
+Опції варіанта:
+ 1) > Редагувати title (поточн: Downloading file:)
+ 2) > Запустити Prompt (Тест)
+ 3) ↺ Скинути до значень за замовчуванням
+ 4) ← Назад
+✔  > Run Prompt (Test)
+Downloading file: [PROGRESS_BAR]==================================================
+ Sandbox: > ProgressBar > Default < 
+==================================================
+⚡ Це компонент Prompt.
+==================================================
+Опції варіанта:
+ 1) > Редагувати title (поточн: Downloading file:)
+ 2) > Запустити Prompt (Тест)
+ 3) ↺ Скинути до значень за замовчуванням
+ 4) ← Назад
+✔  ← Back
+Пісочниця > ProgressBar. Оберіть варіацію:
+ 1) [Варіант] Default
+ 2) + Створити новий варіант
+ 3) ← Назад до компонентів
+✔  + Create New Variant
+✔ Введіть назву нового варіанта: TestVar
+==================================================
+ Sandbox: > ProgressBar > TestVar < 
+==================================================
+⚡ Це компонент Prompt.
+==================================================
+Опції варіанта:
+ 1) > Редагувати title (поточн: Downloading file:)
+ 2) > Запустити Prompt (Тест)
+ 3) ↺ Скинути до значень за замовчуванням
+ 4) ✖ Видалити варіант
+ 5) ← Назад
+✔  ✖ Delete Variant
+Пісочниця > ProgressBar. Оберіть варіацію:
+ 1) [Варіант] Default
+ 2) + Створити новий варіант
+ 3) ← Назад до компонентів
+✔  ← Back to Components
+Оберіть компонент для тестування:
+ 1) Alert
+ 2) Badge
+ 3) Toast
+ 4) Table
+ 5) Tabs
+ 6) Breadcrumbs
+ 7) Steps
+ 8) Input
+ 9) Пароль
+ 10) Перемикач
+ 11) Підтвердити
+ 12) Виберіть
+ 13) Multiselect
+ 14) Повзунок
+ 15) DateTime
+  ↓ (5 ще)
+✔  ← Exit
+Exiting Sandbox. 👋
+Downloading file: [PROGRESS_BAR]Downloading file: [PROGRESS_BAR]Downloading file: [PROGRESS_BAR]Downloading file: [PROGRESS_BAR]Downloading file: [PROGRESS_BAR]Downloading file: [PROGRESS_BAR]Downloading file: [PROGRESS_BAR]Downloading file: [PROGRESS_BAR]Downloading file: [PROGRESS_BAR]Downloading file: [PROGRESS_BAR]
+--- STDERR ---
+Component is not an interactive Prompt.

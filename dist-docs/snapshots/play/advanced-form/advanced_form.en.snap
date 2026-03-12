@@ -1,0 +1,15 @@
+__   _ _______ __   _     _  _  _ _______ ______ 
+| \  | |_____| | \  |     |  |  | |______ |_____] 
+|  \_| |     | |  \_|  •  |__|__| |______ |_____] 
+Advanced Form Demo
+Testing password masking and boolean fields.
+✔ Login *: adv_user
+✔ Password *: ****
+✔ Phone *: (123) 456-7890
+✔ User age *: 25
+✔ Subscribe to newsletter: Yes
+✔ Remember me? No
+Select your roles: Admin
+Form submitted!
+Form data (password is hidden here):
+{"username":"adv_user","password":"********","phone":"1234567890","age":"25","newsletter":true,"rememberMe":false,"roles":["Admin"]}

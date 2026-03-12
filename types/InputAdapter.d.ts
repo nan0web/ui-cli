@@ -230,6 +230,10 @@ export default class CLiInputAdapter extends BaseInputAdapter {
         value: any;
         cancelled: boolean;
     } | {
+        value: undefined;
+        cancelled: boolean;
+        index?: undefined;
+    } | {
         index: any;
         value: string;
         cancelled: boolean;

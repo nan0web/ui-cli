@@ -63,3 +63,11 @@ export function spinner(message) {
 	s.start()
 	return s
 }
+
+/** @type {Array<{pattern: RegExp, replacement: string}>} */
+Spinner.snapshotReplacements = [
+	{ pattern: /^[⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏].*$/gm, replacement: '[SPINNER]' },
+	{ pattern: /(\[SPINNER\]\n?)+/g, replacement: '[SPINNER]\n' },
+	{ pattern: /\[\d{2}:\d{2}\]/g, replacement: '[XX:XX]' },
+]
+

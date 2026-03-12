@@ -1,0 +1,23 @@
+__   _ _______ __   _     _  _  _ _______ ______ 
+| \  | |_____| | \  |     |  |  | |______ |_____] 
+|  \_| |     | |  \_|  •  |__|__| |______ |_____] 
+Object Map Form Demo – Premium UX
+Entering Object Map interface...
+? 📝 Edit: Branch › (Use arrow keys. Return to submit)
+❯   Адреса: []
+    Місто: []
+    На чергуванні: []
+    Тип: []
+    ──────────────────────────
+    ✅ Save and exit
+    ❌ Cancel changes
+✔ 📝 Edit: Branch › Адреса: []
+? Адреса › вул. Київська, 178? Адреса › _78? Адреса › _s78? Адреса › _sa78? Адреса › _sav78? Адреса › _save78✔ Адреса … _save78
+? 📝 Edit: Branch › (Use arrow keys. Return to submit)
+❯   Адреса: [_save]
+    Місто: []
+    На чергуванні: []
+    Тип: []
+    ──────────────────────────
+    ✅ Save and exit
+    ❌ Cancel changes

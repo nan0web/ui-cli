@@ -30,6 +30,8 @@ export default class PlaygroundTest {
     includeDebugger: boolean;
     incldeEmptyLines: boolean;
     feedStdin: boolean;
+    /** @type {any} */
+    recentResult: any;
     /**
      * Subscribe to an event.
      */
@@ -55,16 +57,7 @@ export default class PlaygroundTest {
      *
      * @param {string[]} [args=["play/main.js"]] Arguments passed to the node process.
      */
-    run(args?: string[]): Promise<{
-        stdout: any;
-        stderr: any;
-        exitCode: any;
-    }>;
-    recentResult: {
-        stdout: any;
-        stderr: any;
-        exitCode: any;
-    } | undefined;
+    run(args?: string[]): Promise<any>;
     #private;
 }
 export type PlaygroundTestConfig = {

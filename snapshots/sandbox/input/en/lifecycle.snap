@@ -1,0 +1,95 @@
+🧱 UI-CLI Sandbox 
+Select a component to test:
+ 1) Alert
+ 2) Badge
+ 3) Toast
+ 4) Table
+ 5) Tabs
+ 6) Breadcrumbs
+ 7) Steps
+ 8) Input
+ 9) Password
+ 10) Toggle
+ 11) Confirm
+ 12) Select
+ 13) Multiselect
+ 14) Slider
+ 15) DateTime
+  ↓ (5 more)
+✔  Input
+Sandbox > Input. Choose variation:
+ 1) [Variant] Default
+ 2) + Create New Variant
+ 3) ← Back to Components
+✔  [Variant] Default
+==================================================
+ Sandbox: > Input > Default < 
+==================================================
+⚡ This is a Prompt Component.
+==================================================
+Variant Options:
+ 1) > Edit message (curr: Enter your name:)
+ 2) > Edit initial (curr: )
+ 3) > Run Prompt (Test)
+ 4) ↺ Reset to Defaults
+ 5) ← Back
+✔  > Run Prompt (Test)
+==================================================
+ Sandbox: > Input > Default < 
+==================================================
+⚡ This is a Prompt Component.
+==================================================
+Variant Options:
+ 1) > Edit message (curr: Enter your name:)
+ 2) > Edit initial (curr: )
+ 3) > Run Prompt (Test)
+ 4) ↺ Reset to Defaults
+ 5) ← Back
+✔  test input
+Result: {"cancelled":true}
+Press any key to continue...
+Sandbox > Input. Choose variation:
+ 1) [Variant] Default
+ 2) + Create New Variant
+ 3) ← Back to Components
+✔  + Create New Variant
+✔ Enter new variant name: TestVar
+==================================================
+ Sandbox: > Input > TestVar < 
+==================================================
+⚡ This is a Prompt Component.
+==================================================
+Variant Options:
+ 1) > Edit message (curr: Enter your name:)
+ 2) > Edit initial (curr: )
+ 3) > Run Prompt (Test)
+ 4) ↺ Reset to Defaults
+ 5) ✖ Delete Variant
+ 6) ← Back
+✔  ✖ Delete Variant
+Sandbox > Input. Choose variation:
+ 1) [Variant] Default
+ 2) + Create New Variant
+ 3) ← Back to Components
+✔  ← Back to Components
+Select a component to test:
+ 1) Alert
+ 2) Badge
+ 3) Toast
+ 4) Table
+ 5) Tabs
+ 6) Breadcrumbs
+ 7) Steps
+ 8) Input
+ 9) Password
+ 10) Toggle
+ 11) Confirm
+ 12) Select
+ 13) Multiselect
+ 14) Slider
+ 15) DateTime
+  ↓ (5 more)
+✔  ← Exit
+Exiting Sandbox. 👋
+--- STDERR ---
+Component is not an interactive Prompt.

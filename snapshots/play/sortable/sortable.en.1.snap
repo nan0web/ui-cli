@@ -1,0 +1,11 @@
+__   _ _______ __   _     _  _  _ _______ ______ 
+| \  | |_____| | \  |     |  |  | |______ |_____] 
+|  \_| |     | |  \_|  •  |__|__| |______ |_____] 
+Sortable Demo
+Reorder items using ↑/↓ to navigate, Space to grab, then ↑/↓ to move.
+Scenario 1: Reorder priorities
+? Set priority order: (↑/↓ to navigate, Space to grab, Enter to confirm)
+  ❯ 🔴 Critical
+    🟠 High
+    🟡 Medium
+    🟢 Low

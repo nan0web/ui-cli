@@ -26,3 +26,9 @@ export class Spinner {
     success(msg: any): void;
     error(msg: any): void;
 }
+export namespace Spinner {
+    let snapshotReplacements: Array<{
+        pattern: RegExp;
+        replacement: string;
+    }>;
+}

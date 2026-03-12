@@ -85,11 +85,17 @@ export default class Form {
 	 * @param {Object} [options={}] - Options.
 	 * @param {string[]} [options.stops=["quit", "cancel", "exit"]] - Stop words.
 	 * @param {(prompt: string) => Promise<Input>} [options.inputFn] - Custom input function.
-	 * @param {(config: object) => Promise<{index:number, value:any}>} [options.selectFn] - Custom select function.
-	 * @param {(config: object) => Promise<{value: number|undefined, cancelled: boolean}>} [options.sliderFn] - Custom slider function.
-	 * @param {(config: object) => Promise<{value: boolean|undefined, cancelled: boolean}>} [options.toggleFn] - Custom toggle function.
+	 * @param {(config: any) => Promise<{index:number, value:any, cancelled?: boolean}>} [options.selectFn] - Custom select function.
+	 * @param {(config: any) => Promise<any>} [options.autocompleteFn] - Custom autocomplete function.
+	 * @param {(config: any) => Promise<any>} [options.maskFn] - Custom mask function.
+	 * @param {(config: any) => Promise<any>} [options.multiselectFn] - Custom multiselect function.
+	 * @param {(config: any) => Promise<any>} [options.datetimeFn] - Custom datetime function.
+	 * @param {(config: any) => Promise<any>} [options.confirmFn] - Custom confirm function.
+	 * @param {(config: any) => Promise<{value: number|undefined, cancelled: boolean}>} [options.sliderFn] - Custom slider function.
+	 * @param {(config: any) => Promise<{value: boolean|undefined, cancelled: boolean}>} [options.toggleFn] - Custom toggle function.
 	 * @param {Object} [options.console] - Optional console for logging.
 	 * @param {Function} [options.t] - Optional translation function.
+	 * @param {number} [options.maxRetries] - Max retries before infinite loop detection.
 	 * @throws {TypeError} If model is not an object with a constructor.
 	 */
 	constructor(model, options = {}) {

@@ -1,0 +1,9 @@
+__   _ _______ __   _     _  _  _ _______ ______ 
+| \  | |_____| | \  |     |  |  | |______ |_____] 
+|  \_| |     | |  \_|  •  |__|__| |______ |_____] 
+Form Demo – Using Custom Form Class
+Filling user form... (uses predefined sequence if set)
+Unique user name: snap_user
+User age *: 25
+Form completed successfully!
+User: snap_user, Age: 25, Color: Green

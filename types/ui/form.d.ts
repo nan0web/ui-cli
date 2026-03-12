@@ -6,10 +6,6 @@
  * @param {Object} [options.initialState={}] Initial values for the form fields.
  * @param {Function} [options.t] Optional translation function.
  * @returns {UiForm} UiForm populated with fields derived from the schema.
- *
- * The function inspects static properties of `BodyClass` (e.g., `static username = { … }`)
- * and maps each to a {@link FormInput}. The generated {@link UiForm} title defaults
- * to `BodyClass.name` unless overridden via the schema.
  */
 export function generateForm(BodyClass: Function, options?: {
     initialState?: any;
@@ -28,9 +24,6 @@ export default class Form {
      * @param {Object} [initialModel={}] Optional initial model data.
      * @param {Object} [options={}] Same options as the constructor.
      * @returns {Form} New Form instance.
-     *
-     * @example
-     *   const form = Form.createFromBodySchema(UserBody, { username: "bob" })
      */
     static createFromBodySchema(BodyClass: typeof Object, initialModel?: any, options?: any): Form;
     /**
@@ -38,55 +31,76 @@ export default class Form {
      * @param {Object} [options={}] - Options.
      * @param {string[]} [options.stops=["quit", "cancel", "exit"]] - Stop words.
      * @param {(prompt: string) => Promise<Input>} [options.inputFn] - Custom input function.
-     * @param {(config: object) => Promise<{index:number, value:any}>} [options.selectFn] - Custom select function.
-     * @param {(config: object) => Promise<{value: number|undefined, cancelled: boolean}>} [options.sliderFn] - Custom slider function.
-     * @param {(config: object) => Promise<{value: boolean|undefined, cancelled: boolean}>} [options.toggleFn] - Custom toggle function.
+     * @param {(config: any) => Promise<{index:number, value:any, cancelled?: boolean}>} [options.selectFn] - Custom select function.
+     * @param {(config: any) => Promise<any>} [options.autocompleteFn] - Custom autocomplete function.
+     * @param {(config: any) => Promise<any>} [options.maskFn] - Custom mask function.
+     * @param {(config: any) => Promise<any>} [options.multiselectFn] - Custom multiselect function.
+     * @param {(config: any) => Promise<any>} [options.datetimeFn] - Custom datetime function.
+     * @param {(config: any) => Promise<any>} [options.confirmFn] - Custom confirm function.
+     * @param {(config: any) => Promise<{value: number|undefined, cancelled: boolean}>} [options.sliderFn] - Custom slider function.
+     * @param {(config: any) => Promise<{value: boolean|undefined, cancelled: boolean}>} [options.toggleFn] - Custom toggle function.
      * @param {Object} [options.console] - Optional console for logging.
      * @param {Function} [options.t] - Optional translation function.
+     * @param {number} [options.maxRetries] - Max retries before infinite loop detection.
      * @throws {TypeError} If model is not an object with a constructor.
      */
     constructor(model: any, options?: {
         stops?: string[] | undefined;
         inputFn?: ((prompt: string) => Promise<Input>) | undefined;
-        selectFn?: ((config: object) => Promise<{
+        selectFn?: ((config: any) => Promise<{
             index: number;
             value: any;
+            cancelled?: boolean;
         }>) | undefined;
-        sliderFn?: ((config: object) => Promise<{
+        autocompleteFn?: ((config: any) => Promise<any>) | undefined;
+        maskFn?: ((config: any) => Promise<any>) | undefined;
+        multiselectFn?: ((config: any) => Promise<any>) | undefined;
+        datetimeFn?: ((config: any) => Promise<any>) | undefined;
+        confirmFn?: ((config: any) => Promise<any>) | undefined;
+        sliderFn?: ((config: any) => Promise<{
             value: number | undefined;
             cancelled: boolean;
         }>) | undefined;
-        toggleFn?: ((config: object) => Promise<{
+        toggleFn?: ((config: any) => Promise<{
             value: boolean | undefined;
             cancelled: boolean;
         }>) | undefined;
         console?: any;
         t?: Function | undefined;
+        maxRetries?: number | undefined;
     });
     /** @type {Function} Input handler with cancellation support. */
     handler: Function;
     options: {
         stops?: string[] | undefined;
         inputFn?: ((prompt: string) => Promise<Input>) | undefined;
-        selectFn?: ((config: object) => Promise<{
+        selectFn?: ((config: any) => Promise<{
             index: number;
             value: any;
+            cancelled?: boolean;
         }>) | undefined;
-        sliderFn?: ((config: object) => Promise<{
+        autocompleteFn?: ((config: any) => Promise<any>) | undefined;
+        maskFn?: ((config: any) => Promise<any>) | undefined;
+        multiselectFn?: ((config: any) => Promise<any>) | undefined;
+        datetimeFn?: ((config: any) => Promise<any>) | undefined;
+        confirmFn?: ((config: any) => Promise<any>) | undefined;
+        sliderFn?: ((config: any) => Promise<{
             value: number | undefined;
             cancelled: boolean;
         }>) | undefined;
-        toggleFn?: ((config: object) => Promise<{
+        toggleFn?: ((config: any) => Promise<{
             value: boolean | undefined;
             cancelled: boolean;
         }>) | undefined;
         console?: any;
         t?: Function | undefined;
+        maxRetries?: number | undefined;
     };
     t: Function;
-    select: typeof select | ((config: object) => Promise<{
+    select: typeof select | ((config: any) => Promise<{
         index: number;
         value: any;
+        cancelled?: boolean;
     }>);
     get fields(): any[];
     /**
@@ -98,8 +112,7 @@ export default class Form {
     input(prompt: string): Promise<Input>;
     /**
      * Prompts for input, validates, and updates the model.
-     * Uses `ask` for text fields and `select` for option-based fields.
-     * Supports cancellation via stop words.
+     * Supports linear navigation (::prev/::next) and all advanced CLI types.
      *
      * @returns {Promise<{cancelled:boolean}>} Result indicating if cancelled.
      * @throws {Error} Propagates non-cancellation errors.

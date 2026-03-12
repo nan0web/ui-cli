@@ -270,3 +270,92 @@ Certain interactive CLI components (like `Autocomplete`, `Spinner`, `ProgressBar
 2. **Snapshot Test Splitter**: Updated `verifySnapshot` in `play/snapshot.test.js` to split execution output by `[SNAPSHOT_FRAME]` and save chronological `file.N.snap` files.
 3. **Gallery Enhancements**: Upgraded `getFiles` in `gallery.mjs` to ignore `index.md`. Improved title generation to cleanly format frame numbers like `Autocomplete En (Крок 1)`.
 4. **Git Hygiene**: Added `*.snap` to `.gitignore` and removed 34 redundant `.snap` files from the git index, as the generated `index.md` galleries act as the true canonical reference.
+
+---
+
+## Feature: Universal Snapshot Output Normalizer
+
+**Target**: `src/test/normalize.js`, компоненти (`Spinner`, `ProgressBar`, тощо)
+**Status**: ✅ DONE
+**Date**: 2026-03-12
+
+**Problem**:
+Кожен проєкт, що використовує CLI snapshot тести, дублює логіку нормалізації виводу: ANSI strip, spinner frames, progress bars, duration timestamps. Наприклад, `@industrialbank/currencies` має локальну `normalizeOutput()` з 8+ regex-замінами, які ідентичні тим, що потрібні і в інших проєктах.
+
+**Required Action**:
+Створити загальну утиліту `normalize(str, replacements=[])` у `src/test/normalize.js` та додати `snapshotReplacements` як статичну властивість до компонентів, що створюють нестабільний вивід.
+
+**Architecture**:
+
+### 1. `src/test/normalize.js`
+
+```js
+/** Базові ANSI-заміни — завжди застосовуються */
+const ANSI = [
+	{ pattern: /\x1B\[[0-9;?]*[a-zA-Z]/g, replacement: '' },
+	{ pattern: /^\s+/, replacement: '' },
+]
+
+/**
+ * Нормалізує CLI вивід для snapshot порівняння.
+ * @param {string} str — сирий stdout/stderr
+ * @param {Array<{pattern: RegExp, replacement?: string}>} replacements
+ */
+export function normalize(str, replacements = []) {
+	let result = str
+	for (const { pattern, replacement } of [...ANSI, ...replacements]) {
+		result = result.replace(pattern, replacement ?? '')
+	}
+	return result.trim()
+}
+
+/** Збирає snapshotReplacements з усіх компонентів */
+export function collectReplacements(...components) {
+	return components
+		.filter(c => c.snapshotReplacements)
+		.flatMap(c => c.snapshotReplacements)
+}
+```
+
+### 2. Per-component `snapshotReplacements`
+
+```js
+// Spinner.js
+Spinner.snapshotReplacements = [
+	{ pattern: /^[⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏].*$/gm, replacement: '[SPINNER]' },
+	{ pattern: /(\[SPINNER\]\n?)+/g, replacement: '[SPINNER]\n' },
+	{ pattern: /\[\d{2}:\d{2}\]/g, replacement: '[XX:XX]' },
+]
+
+// ProgressBar.js
+ProgressBar.snapshotReplacements = [
+	{ pattern: /\[=*>?-*\] \d+% \[\d{2}:\d{2}( < \d{2}:\d{2})?\]/g, replacement: '[PROGRESS]' },
+]
+```
+
+### 3. Споживач
+
+```js
+import { normalize, collectReplacements } from '@nan0web/ui-cli/test'
+import { Spinner, ProgressBar } from '@nan0web/ui-cli'
+
+// Вибірково
+const output = normalize(raw, Spinner.snapshotReplacements)
+
+// Або всі
+const output = normalize(raw, collectReplacements(Spinner, ProgressBar))
+```
+
+**Principle**: Якщо компонент не має `snapshotReplacements` — пропускаємо. Кожен компонент відповідає за знання своїх артефактів.
+
+**Changes Made**:
+
+1. **`src/test/normalize.js`** — Створено модуль з `normalize(str, replacements=[])`, `collectReplacements(...components)`, та `TREE_REPLACEMENTS` constant. Базове ANSI-стрипання завжди застосовується автоматично.
+2. **`Spinner.snapshotReplacements`** — Додана статична властивість до класу `Spinner` з 3 правилами: braille frame → `[SPINNER]`, дедуплікація, `[XX:XX]` для таймерів.
+3. **`ProgressBar.snapshotReplacements`** — Додана статична властивість до класу `ProgressBar` з 1 правилом: bar pattern → `[PROGRESS]`.
+4. **`src/test/index.js`** — Оновлено sub-path export `@nan0web/ui-cli/test` для включення `normalize`, `collectReplacements`, `TREE_REPLACEMENTS`.
+5. **`play/snapshot.test.js`** — Рефакторинг: локальна `normalizeOutput()` замінена на compose з `normalize()` + `collectReplacements()` + `TREE_REPLACEMENTS`. Видалено 25 рядків дубльованих regex.
+6. **`play/main.test.js`** — Виправлено pre-existing баг: тест `runs select demo then exits` падав через `UI_SNAPSHOT=1`, яке блокувало predefined answers у `#nextAnswer()`. Додано `UI_SNAPSHOT: ''` для цього тесту.
+7. **Types** — `types/test/normalize.d.ts` та `types/test/index.d.ts` auto-generated, покривають повний API.
+
+

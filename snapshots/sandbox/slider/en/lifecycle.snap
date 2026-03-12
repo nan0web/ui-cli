@@ -1,0 +1,95 @@
+🧱 UI-CLI Sandbox 
+Select a component to test:
+ 1) Alert
+ 2) Badge
+ 3) Toast
+ 4) Table
+ 5) Tabs
+ 6) Breadcrumbs
+ 7) Steps
+ 8) Input
+ 9) Password
+ 10) Toggle
+ 11) Confirm
+ 12) Select
+ 13) Multiselect
+ 14) Slider
+ 15) DateTime
+  ↓ (5 more)
+✔  Slider
+Sandbox > Slider. Choose variation:
+ 1) [Variant] Default
+ 2) + Create New Variant
+ 3) ← Back to Components
+✔  [Variant] Default
+==================================================
+ Sandbox: > Slider > Default < 
+==================================================
+⚡ This is a Prompt Component.
+==================================================
+Variant Options:
+ 1) > Edit message (curr: Adjust Volume:)
+ 2) > Edit min (curr: 0)
+ 3) > Edit max (curr: 100)
+ 4) > Edit initial (curr: 50)
+ 5) > Run Prompt (Test)
+ 6) ↺ Reset to Defaults
+ 7) ← Back
+✔  > Run Prompt (Test)
+==================================================
+ Sandbox: > Slider > Default < 
+==================================================
+⚡ This is a Prompt Component.
+==================================================
+Variant Options:
+ 1) > Edit message (curr: Adjust Volume:)
+ 2) > Edit min (curr: 0)
+ 3) > Edit max (curr: 100)
+ 4) > Edit initial (curr: 50)
+ 5) > Run Prompt (Test)
+ 6) ↺ Reset to Defaults
+ 7) ← Back
+✔  
+Result: 50
+Press any key to continue...
+✔ Enter slider message: + Create New Variant
+==================================================
+ Sandbox: > Slider > Default < 
+==================================================
+⚡ This is a Prompt Component.
+==================================================
+Variant Options:
+ 1) > Edit message (curr: + Create New Variant)
+ 2) > Edit min (curr: 0)
+ 3) > Edit max (curr: 100)
+ 4) > Edit initial (curr: 50)
+ 5) > Run Prompt (Test)
+ 6) ↺ Reset to Defaults
+ 7) ← Back
+✔  TestVar
+Sandbox > Slider. Choose variation:
+ 1) [Variant] Default
+ 2) + Create New Variant
+ 3) ← Back to Components
+✔  ✖ Delete Variant
+Select a component to test:
+ 1) Alert
+ 2) Badge
+ 3) Toast
+ 4) Table
+ 5) Tabs
+ 6) Breadcrumbs
+ 7) Steps
+ 8) Input
+ 9) Password
+ 10) Toggle
+ 11) Confirm
+ 12) Select
+ 13) Multiselect
+ 14) Slider
+ 15) DateTime
+  ↓ (5 more)
+✔  ← Back to Components
+Exiting Sandbox. 👋
+--- STDERR ---
+Component is not an interactive Prompt.

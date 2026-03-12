@@ -1,6 +1,6 @@
 import { describe, it } from 'node:test'
 import assert from 'node:assert'
-import { PlaygroundTest } from '../test/index.js'
+import { PlaygroundTest } from '../src/test/index.js'
 
 describe('Mask Visual Formatting', () => {
 	it('outputs formatted value in success line', async () => {

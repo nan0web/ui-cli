@@ -116,6 +116,7 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 	}
 
 	#nextAnswer() {
+		if (process.env.UI_SNAPSHOT) return null // Use real UI (stdin) in snapshots
 		if (this.#cursor < this.#answers.length) {
 			const val = this.#answers[this.#cursor]
 			this.#cursor++
@@ -278,8 +279,8 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 		let result
 		try {
 			result = await cliForm.requireInput()
-		} catch (e) {
-			if (e.message.includes('Infinite loop detected')) {
+		} catch (/** @type {any} */ e) {
+			if (e?.message?.includes('Infinite loop detected')) {
 				return {
 					body: { action: 'form-cancel', cancelled: true, error: 'Infinite loop detected' },
 					cancelled: true,

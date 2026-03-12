@@ -44,6 +44,9 @@ export default class PlaygroundTest {
 		this.feedStdin = config.feedStdin ?? true
 	}
 
+	/** @type {any} */
+	recentResult
+
 	/**
 	 * Subscribe to an event.
 	 */
@@ -81,44 +84,75 @@ export default class PlaygroundTest {
 		return txt.split('\n').slice(start, end)
 	}
 	/**
-	 * Write the answer sequence to the child process **asynchronously**,
+	 * Write the answer sequence to the child process,
 	 * waiting a short period after each prompt appears.
 	 *
 	 * @param {any} child – ChildProcess instance.
 	 */
 	async #feedSequence(child) {
-		const raw = this.env.PLAY_DEMO_SEQUENCE
+		const raw =
+			this.env.PLAY_STDIN_SEQUENCE !== undefined
+				? this.env.PLAY_STDIN_SEQUENCE
+				: this.env.PLAY_DEMO_SEQUENCE
 		if (!raw) return
 
 		const divider = this.env.PLAY_DEMO_DIVIDER || ','
-		const sequence = raw.split(divider).map((s) => s.trim())
-		// Allow empty strings to signify "Enter" (default)
+		const sequence = raw.length > 0 ? raw.split(divider).map((s) => s.trim()) : []
 		if (sequence.length === 0) return
 
-		if (child.stdin) child.stdin.setDefaultEncoding('utf-8')
-		// Silently handle EPIPE when child exits before all writes complete
-		if (child.stdin) child.stdin.on('error', () => {})
-
-		const writeNext = (idx) => {
-			if (idx >= sequence.length) {
-				try {
-					child.stdin?.end()
-				} catch (_) {}
-				return
-			}
-			// Use 200ms delay for rock-solid stability across all platforms.
-			setTimeout(() => {
-				try {
-					if (!child.killed && child.stdin?.writable) {
-						child.stdin.write(`${sequence[idx]}\n`)
-						writeNext(idx + 1)
-					}
-				} catch (_) {
-					// Silently swallow EPIPE
-				}
-			}, 200)
+		if (child.stdin) {
+			child.stdin.setDefaultEncoding('utf-8')
+			// Silently handle EPIPE when child exits before all writes complete
+			child.stdin.on('error', () => {})
 		}
-		writeNext(0)
+
+		// Event-driven speedup: Instead of waiting full delayMs indiscriminately,
+		// we listen to stdout and wait for CLI prompt markers indicating it's ready for input.
+		let stdoutBuffer = ''
+		const onData = (chunk) => { stdoutBuffer += chunk.toString() }
+		child.stdout.on('data', onData)
+
+		const waitForPrompt = async () => {
+			let totalWaited = 0
+			// Increased polling rate for much faster execution, max wait 200ms
+			while (totalWaited < 200) {
+				if (child.killed || !child.stdin?.writable) return
+				// Look for typical prompt markers: '?', '›', ']:', '[D]', '[F]', '▶', '▼', etc.
+				// In @nan0web/ui-cli: 
+				// - Prompts end with '? ... › ' or ': '
+				// - Tree outputs '> 📁' or '> 📄'
+				// - Sortable outputs '✔ Reorder: ' or instruction hints
+				// If the buffer ends in a space, or is a known end frame, we are probably ready.
+				if (stdoutBuffer.trim().length > 0) {
+					// We've received some stdout, we can break slightly earlier
+					// We just wait a tiny bit to ensure the frame is fully painted.
+					await new Promise((resolve) => setTimeout(resolve, process.env.UI_SNAPSHOT ? 15 : 2))
+					break
+				}
+				await new Promise((resolve) => setTimeout(resolve, 5))
+				totalWaited += 5
+			}
+			stdoutBuffer = ''
+		}
+
+		for (let i = 0; i < sequence.length; i++) {
+			if (child.killed || !child.stdin?.writable) break
+			await waitForPrompt()
+			if (child.killed || !child.stdin?.writable) break
+			try {
+				child.stdin.write(`${sequence[i]}\n`)
+			} catch (_) {
+				break
+			}
+		}
+
+		try {
+			if (child.stdin?.writable) {
+				child.stdin.end()
+			}
+		} catch (_) {}
+		
+		child.stdout.removeListener('data', onData)
 	}
 	/**
 	 * Executes the playground script.
@@ -126,31 +160,69 @@ export default class PlaygroundTest {
 	 * @param {string[]} [args=["play/main.js"]] Arguments passed to the node process.
 	 */
 	async run(args = ['play/main.js']) {
-		// Optimization: if we have --demo or --lang in env equivalent, let's use them directly
-		// But for now, we follow the args passed.
 		const child = spawn(process.execPath, args, {
 			env: this.env,
 			stdio: ['pipe', 'pipe', 'pipe'],
 		})
 
-		if (this.feedStdin) {
-			this.#feedSequence(child)
-		}
-
 		let stdout = ''
-		for await (const chunk of child.stdout) {
-			stdout += chunk.toString()
-			await this.emit('stdout', { chunk })
-		}
-
 		let stderr = ''
-		for await (const chunk of child.stderr) {
-			const clean = this.filterDebugger(chunk.toString())
-			stderr += clean
-			this.emit('stderr', { chunk, clean })
-		}
 
-		const exitCode = await new Promise((resolve) => child.on('close', resolve))
+		const stdoutPromise = new Promise((resolve, reject) => {
+			const promises = []
+			child.stdout.on('data', (chunk) => {
+				const p = (async () => {
+					try {
+						const str = chunk.toString()
+						stdout += str
+						await this.emit('stdout', { chunk })
+					} catch (e) {
+						reject(e)
+					}
+				})()
+				promises.push(p)
+			})
+			child.stdout.on('end', async () => {
+				try {
+					await Promise.all(promises)
+					resolve()
+				} catch (e) {
+					reject(e)
+				}
+			})
+		})
+
+		const stderrPromise = new Promise((resolve, reject) => {
+			const promises = []
+			child.stderr.on('data', (chunk) => {
+				const p = (async () => {
+					try {
+						const str = chunk.toString()
+						const clean = this.filterDebugger(str)
+						stderr += clean
+						await this.emit('stderr', { chunk, clean })
+					} catch (e) {
+						reject(e)
+					}
+				})()
+				promises.push(p)
+			})
+			child.stderr.on('end', async () => {
+				try {
+					await Promise.all(promises)
+					resolve()
+				} catch (e) {
+					reject(e)
+				}
+			})
+		})
+
+		const [exitCode] = await Promise.all([
+			new Promise((resolve) => child.on('close', resolve)),
+			stdoutPromise,
+			stderrPromise,
+			this.feedStdin ? this.#feedSequence(child) : Promise.resolve(),
+		])
 
 		// Trim leading whitespace from every line – the test suite expects raw
 		// output without logger prefixes or indentation.

@@ -73,6 +73,7 @@ describe('playground demo flow', () => {
 	it('runs select demo then exits', async () => {
 		const { stdout, stderr, exitCode } = await runPlayground('select', 'en', {
 			PLAY_DEMO_SEQUENCE: '3',
+			UI_SNAPSHOT: '', // Disable snapshot mode so predefined answers work via adapter queue
 		})
 
 		assert.strictEqual(exitCode, 0, `Process exited with ${exitCode}`)
@@ -102,6 +103,7 @@ describe('playground demo flow', () => {
 	it('runs form demo with predefined answers then exits', async () => {
 		const { stdout, exitCode } = await runPlayground('form', 'en', {
 			PLAY_DEMO_SEQUENCE: 'validuser,25,2',
+			UI_SNAPSHOT: '',
 		})
 
 		assert.strictEqual(exitCode, 0)
@@ -119,6 +121,7 @@ describe('playground demo flow', () => {
 	it('runs ui‑message demo with predefined answers then exits', async () => {
 		const { stdout, exitCode } = await runPlayground('ui-message', 'en', {
 			PLAY_DEMO_SEQUENCE: 'alice,30,2',
+			UI_SNAPSHOT: '',
 		})
 
 		assert.strictEqual(exitCode, 0)
@@ -195,6 +198,7 @@ describe('playground demo flow', () => {
 	it('runs advanced form demo then exits', async () => {
 		const { stdout, exitCode } = await runPlayground('advanced-form', 'en', {
 			PLAY_DEMO_SEQUENCE: 'user,pass,1234567890,30,y,y,1',
+			UI_SNAPSHOT: '',
 		})
 
 		assert.strictEqual(exitCode, 0)

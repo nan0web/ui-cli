@@ -1,6 +1,7 @@
 # System files
 .DS_Store
 /.datasets/
+.cli-sandbox-test.json
 
 # Coverage
 coverage/
@@ -20,7 +21,7 @@ node_modules/
 .vscode/
 
 # Snapshots (rendered into index.md galleries)
-*.snap
+# *.snap
 
 # Temporary
 /apps/
