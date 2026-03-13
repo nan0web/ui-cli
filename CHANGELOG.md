@@ -4,6 +4,57 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+## [2.5.0] - 2026-03-12
+
+### Changed
+
+- **Event-Driven PlaygroundTest**: Replaced hard-coded `delayMs = 120` timer in `PlaygroundTest#feedSequence` with event-driven `stdoutBuffer` analysis for CLI render markers. Snapshot tests now run ~3x faster (~16s vs ~45-60s) with 100% process isolation preserved.
+- **Sandbox Test Isolation**: Each sandbox test uses unique `.cli-sandbox.*.json` config files with UUID to prevent race conditions between parallel runs.
+
+### Fixed
+
+- **Release Migration**: Migrated v2.4.0 contract spec to regression test suite (`src/test/releases/`).
+
+## [2.4.0] - 2026-03-09
+
+### Added
+
+- **Universal Snapshot Output Normalizer**: New `normalize()` and `collectReplacements()` utilities in `@nan0web/ui-cli/test` for deterministic CLI output comparison.
+- **Component Snapshot Replacements**: `Spinner.snapshotReplacements` and `ProgressBar.snapshotReplacements` static properties for automatic normalization of spinner frames, progress bars, and time durations.
+- **Tree Normalizer**: `TREE_REPLACEMENTS` for normalizing file/folder icons and expand/collapse arrows.
+
+## [2.3.0] - 2026-03-01
+
+### Added
+
+- **Semantic Snapshots**: Snapshot tests now produce semantically meaningful output files.
+- **Tree Incremental Search**: TAB-search/incremental jump navigation in Tree component.
+- **Stabilized Types**: Resolved strict TypeScript compilation across the package.
+
+## [2.2.2] - 2026-02-28
+
+### Fixed
+
+- **Form Export**: Fixed `Form` export and async render handling in `nan0cli` runner.
+
+## [2.2.1] - 2026-02-27
+
+### Fixed
+
+- **CommandHelp Export**: Added missing `CommandHelp` export.
+- **Table Column Inference**: Fixed automatic column detection from data arrays.
+
+## [2.2.0] - 2026-02-25
+
+### Added
+
+- **Unified Form Renderer**: `Form` class is now the single CLI renderer for schema-driven forms. `InputAdapter.requestForm()` delegates to `Form` directly.
+- **Snapshot Mandate**: Established UI Engineering Protocols for snapshot-based verification.
+
+### Changed
+
+- **Form Type Safety**: `Form` enforces strict numeric typing for number fields.
+
 
 ## [2.1.0] - 2026-02-13
 
