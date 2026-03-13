@@ -8,8 +8,11 @@
 	"files": [
 		"src/**/*.js",
 		"!src/**/*.test.js",
+		"!src/README.md.js",
 		"types/**/*.d.ts",
-		"bin/**/*.js"
+		"!types/README.md.d.ts",
+		"bin/**/*.js",
+		"scripts/gallery.mjs"
 	],
 	"exports": {
 		".": {
@@ -70,8 +73,8 @@
 		"prettier": "^3.8.1"
 	},
 	"bin": {
-		"nan0cli": "./bin/nan0cli.js",
-		"nan0gallery": "./scripts/gallery.mjs"
+		"nan0cli": "bin/nan0cli.js",
+		"nan0gallery": "scripts/gallery.mjs"
 	},
 	"dependencies": {
 		"@nan0web/db-fs": "^1.1.4",
