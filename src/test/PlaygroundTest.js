@@ -109,7 +109,9 @@ export default class PlaygroundTest {
 		// Event-driven speedup: Instead of waiting full delayMs indiscriminately,
 		// we listen to stdout and wait for CLI prompt markers indicating it's ready for input.
 		let stdoutBuffer = ''
-		const onData = (chunk) => { stdoutBuffer += chunk.toString() }
+		const onData = (chunk) => {
+			stdoutBuffer += chunk.toString()
+		}
 		child.stdout.on('data', onData)
 
 		const waitForPrompt = async () => {
@@ -118,7 +120,7 @@ export default class PlaygroundTest {
 			while (totalWaited < 200) {
 				if (child.killed || !child.stdin?.writable) return
 				// Look for typical prompt markers: '?', '›', ']:', '[D]', '[F]', '▶', '▼', etc.
-				// In @nan0web/ui-cli: 
+				// In @nan0web/ui-cli:
 				// - Prompts end with '? ... › ' or ': '
 				// - Tree outputs '> 📁' or '> 📄'
 				// - Sortable outputs '✔ Reorder: ' or instruction hints
@@ -151,7 +153,7 @@ export default class PlaygroundTest {
 				child.stdin.end()
 			}
 		} catch (_) {}
-		
+
 		child.stdout.removeListener('data', onData)
 	}
 	/**

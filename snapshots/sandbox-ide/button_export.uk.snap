@@ -1,0 +1,55 @@
+=======================================
+🏖  NaN0Web UI-CLI Sandbox IDE
+=======================================
+? Select a component to inspect and theme › - Use arrow-keys. Return to submit.
+❯   Autocomplete
+    Button
+    Confirm
+    Input
+    Select
+    Spinner
+    Table
+    Toast
+    Tree
+✔ Select a component to inspect and theme › Autocomplete
+renderForm: Fields found: content, options
+────────────────────────────────────────
+👀 Live Preview of <Autocomplete>:
+────────────────────────────────────────
+────────────────────────────────────────
+? 📝 Edit: AutocompleteModel › - Use arrow-keys. Return to submit.
+❯   Current search text: []
+    List of suggestions based on input: [[]]
+    ──────────────────────────
+    ✅ Save and exit
+    ❌ Cancel changes
+✔ 📝 Edit: AutocompleteModel › Current search text: []
+? Current search text › 78? Current search text › Т78? Current search text › Те78? Current search text › Тес78? Current search text › Тест78? Current search text › Тесто78? Current search text › Тестов78? Current search text › Тестова78? Current search text › Тестова 78? Current search text › Тестова К78? Current search text › Тестова Кн78? Current search text › Тестова Кно78? Current search text › Тестова Кноп78? Current search text › Тестова Кнопк78? Current search text › Тестова Кнопка78✔ Current search text … Тестова Кнопка78
+
+────────────────────────────────────────
+👀 Live Preview of <Autocomplete>:
+────────────────────────────────────────
+────────────────────────────────────────
+? 📝 Edit: AutocompleteModel › - Use arrow-keys. Return to submit.
+❯   Current search text: [Тестова Кнопка]
+    List of suggestions based on input: [[]]
+    ──────────────────────────
+    ✅ Save and exit
+    ❌ Cancel changes
+✔ 📝 Edit: AutocompleteModel › Current search text: [Тестова Кнопка]
+? Current search text › Тестова Кнопка78? Current search text › y78? Current search text › ya78? Current search text › yam78? Current search text › yaml78✔ Current search text … yaml78
+
+────────────────────────────────────────
+👀 Live Preview of <Autocomplete>:
+────────────────────────────────────────
+────────────────────────────────────────
+? 📝 Edit: AutocompleteModel › - Use arrow-keys. Return to submit.
+❯   Current search text: [yaml]
+    List of suggestions based on input: [[]]
+    ──────────────────────────
+    ✅ Save and exit
+    ❌ Cancel changes
+--- STDERR ---
+[Preview not available yet: Private method '#nextAnswer' is not writable]
+[Preview not available yet: Private method '#nextAnswer' is not writable]
+[Preview not available yet: Private method '#nextAnswer' is not writable]

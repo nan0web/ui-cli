@@ -70,4 +70,3 @@ Spinner.snapshotReplacements = [
 	{ pattern: /(\[SPINNER\]\n?)+/g, replacement: '[SPINNER]\n' },
 	{ pattern: /\[\d{2}:\d{2}\]/g, replacement: '[XX:XX]' },
 ]
-

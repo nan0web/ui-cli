@@ -96,7 +96,8 @@ export async function autocomplete(input) {
 			message: message || title,
 			limit,
 			choices: choices,
-			suggest: (input, choices) => (typeof initOptions === 'function' ? fetch(input) : fetchSync(input)),
+			suggest: (input, choices) =>
+				typeof initOptions === 'function' ? fetch(input) : fetchSync(input),
 		},
 		{
 			onCancel: () => {

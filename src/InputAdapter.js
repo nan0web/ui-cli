@@ -834,6 +834,81 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 		return result
 	}
 
+	/**
+	 * Map an OLMUI Intent to the corresponding CLI interaction.
+	 *
+	 * @param {import('@nan0web/ui').AskIntent} intent
+	 * @returns {Promise<{value: any, cancelled: boolean}>}
+	 */
+	async askIntent(intent) {
+		const config = { ...intent.schema, message: intent.schema?.help || intent.field }
+		switch (intent.component) {
+			case 'Select':
+				return await this.requestSelect(config)
+			case 'Input':
+				return await this.requestInput(config)
+			case 'Autocomplete':
+				return await this.requestAutocomplete(config)
+			case 'Confirm':
+				return await this.requestConfirm(config)
+			case 'SandboxWrapper': {
+				if (intent.model || intent.instance) {
+					// Special handling for Sandbox Component: renders standard form tuning
+					const targetInstance = intent.instance || intent.model
+					const formController = this.renderForm(targetInstance, targetInstance.constructor)
+					const result = await formController.fill()
+					return { value: result.value, cancelled: result.cancelled }
+				}
+				return { value: undefined, cancelled: true }
+			}
+			case 'Table':
+				return await this.requestTable(config)
+			case 'Tree':
+				return await this.requestTree(config)
+			case 'Multiselect':
+				return await this.requestMultiselect(config)
+			case 'Toggle':
+				return await this.requestToggle(config)
+			case 'Slider':
+				return await this.requestSlider(config)
+			case 'Mask':
+				return await this.requestMask(config)
+			case 'Sortable':
+				return await this.requestSortable(config)
+			case 'DateTime':
+				return await this.requestDateTime(config)
+			default:
+				throw new Error(`Unsupported intent component mapping in CLI: ${intent.component}`)
+		}
+	}
+
+	/**
+	 * Handle OLMUI Log intents.
+	 *
+	 * @param {import('@nan0web/ui').LogIntent} intent
+	 */
+	async logIntent(intent) {
+		if (intent.level === 'error') this.console.error(`🚨 ${intent.message}`)
+		else if (intent.level === 'warn') this.console.warn(`⚠️ ${intent.message}`)
+		else if (intent.level === 'success') this.console.info(`✅ ${intent.message}`)
+		else this.console.info(`ℹ️ ${intent.message}`)
+	}
+
+	/**
+	 * Handle OLMUI Progress intents via Spinner/ProgressBar.
+	 *
+	 * @param {import('@nan0web/ui').ProgressIntent} intent
+	 */
+	async progressIntent(intent) {
+		const spinner = this.requestSpinner(intent.message)
+		spinner.start()
+		// Fake delay for demo purposes if not automated
+		if (!this.#nextAnswer()) {
+			await new Promise((r) => setTimeout(r, 800))
+		}
+		spinner.stop()
+	}
+
 	/** @inheritDoc */
 	async select(cfg) {
 		const predefined = this.#nextAnswer()
@@ -948,6 +1023,53 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 			fill: async () => {
 				let lastIndex = 0
 				while (true) {
+					// 1. Mock Render the Component live for visual feedback (Only if it's a Component Schema)
+					const isComponent =
+						data.constructor.name.endsWith('Model') && data.constructor.name !== 'SandboxModel'
+					if (isComponent) {
+						const componentName = data.constructor.name.replace('Model', '')
+						this.console.info('\n' + '─'.repeat(40))
+						this.console.info(`👀 Live Preview of <${componentName}>:`)
+						this.console.info('─'.repeat(40))
+						try {
+							const intent = {
+								type: 'ask',
+								component: componentName,
+								schema: { message: 'Preview' },
+								model: data,
+								options: data.options || ['a', 'b'],
+							}
+							// Provide mock options for tests or components that require them
+							if (componentName === 'Autocomplete')
+								intent.schema.options = ['Apple', 'Banana', 'Cherry']
+
+							// Mock predefined input to bypass interactive prompts automatically for the preview
+							const originAsk = this.ask
+							this.ask = async () => ({ value: null, cancelled: true })
+							const originNextAnswer = this.#nextAnswer
+							this.#nextAnswer = () => null // Prevent consuming the real play sequence buffer
+
+							// Simulate an aborted signal so `prompts` doesn't hang
+							globalThis.__IS_SANDBOX_PREVIEW__ = true
+							const previewPromise = this.askIntent(intent)
+
+							// We still want to timeout just in case it's a completely custom blocking component
+							setTimeout(() => {
+								if (typeof this.stop === 'function') this.stop()
+							}, 100)
+
+							await previewPromise.catch(() => {})
+
+							this.ask = originAsk
+							this.#nextAnswer = originNextAnswer
+							globalThis.__IS_SANDBOX_PREVIEW__ = false
+						} catch (e) {
+							// If it requires strict inputs and throws, fallback safely
+							this.console.warn(`[Preview not available yet: ${e.message}]`)
+						}
+						this.console.info('─'.repeat(40) + '\n')
+					}
+
 					// Prepare choices: Field [Value]
 					const choices = [
 						...fields.map((f) => {
@@ -1000,7 +1122,15 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 					const currentValue = data[field.name]
 
 					let result
-					if (field.type === 'toggle') {
+					if (field.options && field.options.length) {
+						// Always use SelectBox if options are explicitly defined (e.g. variants, sizes)
+						result = await this.requestSelect({
+							message: field.label,
+							options: field.options,
+							initial: currentValue,
+						})
+					} else if (field.type === 'toggle' || field.type === 'boolean') {
+						// Toggle (Yes/No) is better UX for booleans
 						result = await this.requestToggle({
 							message: field.label,
 							initial: currentValue === true,

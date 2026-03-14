@@ -401,7 +401,10 @@ export default class Form {
 									return { ...acc, [k]: def }
 								}, /** @type {Record<string, any>} */ ({}))
 							} else if (arr.length > 0 && arr[0] && typeof arr[0] === 'object') {
-								template = Object.keys(arr[0]).reduce((acc, k) => ({ ...acc, [k]: '' }), /** @type {Record<string, any>} */ ({}))
+								template = Object.keys(arr[0]).reduce(
+									(acc, k) => ({ ...acc, [k]: '' }),
+									/** @type {Record<string, any>} */ ({})
+								)
 							}
 
 							if (typeof template === 'object') {

@@ -91,4 +91,3 @@ export function progress(options) {
 ProgressBar.snapshotReplacements = [
 	{ pattern: /\[=*>?-*\] \d+% \[\d{2}:\d{2}( < \d{2}:\d{2})?\]/g, replacement: '[PROGRESS]' },
 ]
-

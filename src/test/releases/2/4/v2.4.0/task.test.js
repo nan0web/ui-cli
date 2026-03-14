@@ -81,10 +81,7 @@ describe('v2.4.0 — Universal Snapshot Output Normalizer', () => {
 			Array.isArray(ProgressBar.snapshotReplacements),
 			'snapshotReplacements must be an array'
 		)
-		assert.ok(
-			ProgressBar.snapshotReplacements.length > 0,
-			'snapshotReplacements must not be empty'
-		)
+		assert.ok(ProgressBar.snapshotReplacements.length > 0, 'snapshotReplacements must not be empty')
 	})
 
 	it('ProgressBar.snapshotReplacements normalizes progress bar output', async () => {
@@ -106,7 +103,8 @@ describe('v2.4.0 — Universal Snapshot Output Normalizer', () => {
 		const result = collectReplacements(Spinner, ProgressBar)
 		assert.ok(Array.isArray(result))
 		assert.ok(
-			result.length >= Spinner.snapshotReplacements.length + ProgressBar.snapshotReplacements.length,
+			result.length >=
+				Spinner.snapshotReplacements.length + ProgressBar.snapshotReplacements.length,
 			`Expected at least ${Spinner.snapshotReplacements.length + ProgressBar.snapshotReplacements.length} rules, got ${result.length}`
 		)
 	})

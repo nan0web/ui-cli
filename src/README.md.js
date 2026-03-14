@@ -159,7 +159,7 @@ function testRender() {
 	 */
 	it('nan0cli binary is registered', () => {
 		assert.ok(pkg.bin?.nan0cli, 'bin.nan0cli must be defined')
-		assert.equal(pkg.bin.nan0cli, './bin/nan0cli.js')
+		assert.equal(pkg.bin.nan0cli, 'bin/nan0cli.js')
 	})
 
 	/**
