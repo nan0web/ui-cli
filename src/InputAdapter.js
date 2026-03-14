@@ -1103,30 +1103,14 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 										const sizeStyle = sz === 'lg' ? B : sz === 'sm' ? '' : ''
 										
 										const colorCode = isOutline ? (fgMap[v] || fgMap.primary) : (bgMap[v] || bgMap.primary)
-										const disabledStyle = isDisabled ? D : ''
+										const innerDim = isDisabled ? D : ''
+										const resetDim = isDisabled ? '\x1b[22m' : '' // reset dim logic, leave colors
 										
 										if (isLoading && !isDisabled) {
-											const isTestMode = process.env.UI_SNAPSHOT || process.env.PLAY_DEMO_SEQUENCE
-											if (!isTestMode && process.stdout.isTTY) {
-												// Animated spinner: 6 braille frames at ~100ms
-												const frames = ['⠋', '⠙', '⠸', '⠴', '⠦', '⠇']
-												const totalFrames = 12 // ~1.2 sec animation
-												const save = '\x1b7'
-												const restore = '\x1b8'
-												
-												process.stdout.write(save)
-												for (let i = 0; i < totalFrames; i++) {
-													const frame = frames[i % frames.length]
-													const line = `${colorCode}${sizeStyle}[${pad}${frame} loading...${pad}]${R}`
-													process.stdout.write(restore + '\x1b[K' + line)
-													await new Promise(r => setTimeout(r, 100))
-												}
-												process.stdout.write(restore + '\x1b[K')
-											}
 											this.console.info(`${colorCode}${sizeStyle}[${pad}⟲ loading...${pad}]${R}`)
 										} else {
 											const label = isDisabled ? `${text} ✗` : text
-											this.console.info(`${colorCode}${disabledStyle}${sizeStyle}[${pad}${label}${pad}]${R}`)
+											this.console.info(`${colorCode}${sizeStyle}[${pad}${innerDim}${label}${resetDim}${pad}]${R}`)
 										}
 									} else {
 										const variant = data.variant ? `${data.variant} ` : ''
