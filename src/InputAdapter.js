@@ -117,6 +117,7 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 
 	#nextAnswer() {
 		if (process.env.UI_SNAPSHOT) return null // Use real UI (stdin) in snapshots
+		if (this._disableNextAnswerLookup) return null 
 		if (this.#cursor < this.#answers.length) {
 			const val = this.#answers[this.#cursor]
 			this.#cursor++
@@ -837,7 +838,7 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 	/**
 	 * Map an OLMUI Intent to the corresponding CLI interaction.
 	 *
-	 * @param {import('@nan0web/ui').AskIntent} intent
+	 * @param {Object} intent
 	 * @returns {Promise<{value: any, cancelled: boolean}>}
 	 */
 	async askIntent(intent) {
@@ -885,7 +886,7 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 	/**
 	 * Handle OLMUI Log intents.
 	 *
-	 * @param {import('@nan0web/ui').LogIntent} intent
+	 * @param {Object} intent
 	 */
 	async logIntent(intent) {
 		if (intent.level === 'error') this.console.error(`🚨 ${intent.message}`)
@@ -897,7 +898,7 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 	/**
 	 * Handle OLMUI Progress intents via Spinner/ProgressBar.
 	 *
-	 * @param {import('@nan0web/ui').ProgressIntent} intent
+	 * @param {Object} intent
 	 */
 	async progressIntent(intent) {
 		const spinner = this.requestSpinner(intent.message)
@@ -1046,8 +1047,9 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 							// Mock predefined input to bypass interactive prompts automatically for the preview
 							const originAsk = this.ask
 							this.ask = async () => ({ value: null, cancelled: true })
-							const originNextAnswer = this.#nextAnswer
-							this.#nextAnswer = () => null // Prevent consuming the real play sequence buffer
+							
+							// Setting a flag to disable pre-defined answers during preview
+							this._disableNextAnswerLookup = true
 
 							// Simulate an aborted signal so `prompts` doesn't hang
 							globalThis.__IS_SANDBOX_PREVIEW__ = true
@@ -1061,11 +1063,11 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 							await previewPromise.catch(() => {})
 
 							this.ask = originAsk
-							this.#nextAnswer = originNextAnswer
+							this._disableNextAnswerLookup = false
 							globalThis.__IS_SANDBOX_PREVIEW__ = false
 						} catch (e) {
 							// If it requires strict inputs and throws, fallback safely
-							this.console.warn(`[Preview not available yet: ${e.message}]`)
+							this.console.warn(`[Preview not available yet: ${String(e)}]`)
 						}
 						this.console.info('─'.repeat(40) + '\n')
 					}

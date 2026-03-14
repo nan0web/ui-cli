@@ -227,6 +227,28 @@ export default class CLiInputAdapter extends BaseInputAdapter {
      *
      */
     ask(question: string | UiForm, options?: object): Promise<any>;
+    /**
+     * Map an OLMUI Intent to the corresponding CLI interaction.
+     *
+     * @param {Object} intent
+     * @returns {Promise<{value: any, cancelled: boolean}>}
+     */
+    askIntent(intent: any): Promise<{
+        value: any;
+        cancelled: boolean;
+    }>;
+    /**
+     * Handle OLMUI Log intents.
+     *
+     * @param {Object} intent
+     */
+    logIntent(intent: any): Promise<void>;
+    /**
+     * Handle OLMUI Progress intents via Spinner/ProgressBar.
+     *
+     * @param {Object} intent
+     */
+    progressIntent(intent: any): Promise<void>;
     /** @inheritDoc */
     select(cfg: any): Promise<{
         index: number;
@@ -264,6 +286,7 @@ export default class CLiInputAdapter extends BaseInputAdapter {
     renderForm(data: any, SchemaClass: Function): {
         fill: () => Promise<any>;
     };
+    _disableNextAnswerLookup: boolean | undefined;
     #private;
 }
 export type ConsoleLike = {
