@@ -1063,7 +1063,13 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 							try {
 								await previewPromise
 							} catch (e) {
-								if (String(e).includes('Unsupported intent component mapping in CLI')) {
+								const errStr = String(e)
+								const errObj = /** @type {any} */ (e)
+								if (
+									errStr.includes('Unsupported intent component mapping in CLI') ||
+									(errObj && errObj.fields && errObj.fields.unhandled_intent) ||
+									(errObj && errObj.message && errObj.message.includes('unhandled_intent'))
+								) {
 									if (componentName === 'Button') {
 										// ANSI escape codes
 										const R = '\x1b[0m'  // reset
