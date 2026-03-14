@@ -1,7 +1,7 @@
 import { describe, it } from 'node:test'
 import assert from 'node:assert/strict'
 import { Confirm } from './Confirm.js'
-import prompts from 'prompts'
+import prompts from '../../ui/prompts.js'
 
 describe('Confirm Component', () => {
 	it('renders and returns boolean', async () => {

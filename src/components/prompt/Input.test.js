@@ -1,7 +1,7 @@
 import { describe, it } from 'node:test'
 import assert from 'node:assert/strict'
 import { Input } from './Input.js'
-import prompts from 'prompts'
+import prompts from '../../ui/prompts.js'
 
 describe('Input Component', () => {
 	it('renders and returns text value', async () => {

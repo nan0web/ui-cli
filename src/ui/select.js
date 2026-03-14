@@ -4,7 +4,7 @@
  * @module ui/select
  */
 
-import prompts from 'prompts'
+import prompts from './prompts.js'
 import { CancelError } from '@nan0web/ui/core'
 import { validateString, validateFunction, validateNumber } from '../core/PropValidation.js'
 

@@ -1,7 +1,7 @@
 import { describe, it } from 'node:test'
 import assert from 'node:assert/strict'
 import { Select } from './Select.js'
-import prompts from 'prompts'
+import prompts from '../../ui/prompts.js'
 
 describe('Select Component', () => {
 	it('renders and returns selection', async () => {

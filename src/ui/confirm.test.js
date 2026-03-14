@@ -1,7 +1,7 @@
 import { describe, it } from 'node:test'
 import assert from 'node:assert/strict'
 import { confirm } from './confirm.js'
-import prompts from 'prompts'
+import prompts from './prompts.js'
 
 describe('Confirm utility', () => {
 	it('returns true when user confirms', async () => {

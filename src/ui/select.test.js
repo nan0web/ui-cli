@@ -2,7 +2,7 @@ import { describe, it } from 'node:test'
 import assert from 'node:assert/strict'
 import { select } from './select.js'
 import { CancelError } from '@nan0web/ui/core'
-import prompts from 'prompts'
+import prompts from './prompts.js'
 
 describe('Select utility', () => {
 	it('throws on empty options', async () => {

@@ -10,7 +10,7 @@
 import { describe, it } from 'node:test'
 import assert from 'node:assert'
 import { slider } from './slider.js'
-import prompts from 'prompts'
+import prompts from './prompts.js'
 
 describe('slider component', () => {
 	it('returns a value within the specified range', async () => {

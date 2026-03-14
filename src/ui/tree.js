@@ -7,7 +7,7 @@
 import process from 'node:process'
 import readline from 'node:readline'
 import Logger from '@nan0web/log'
-import prompts from 'prompts'
+import prompts from './prompts.js'
 import { iconBraille } from '@nan0web/icons/adapters/cli'
 import { CancelError } from '@nan0web/ui/core'
 import { beep } from './input.js'

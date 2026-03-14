@@ -6,7 +6,7 @@
 
 import { UiForm, InputAdapter as BaseInputAdapter, UiMessage } from '@nan0web/ui'
 import { CancelError } from '@nan0web/ui/core'
-import prompts from 'prompts'
+import prompts from './ui/prompts.js'
 import readline from 'node:readline'
 
 import {
@@ -1060,14 +1060,60 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 								if (typeof this.stop === 'function') this.stop()
 							}, 100)
 
-							await previewPromise.catch(() => {})
+							try {
+								await previewPromise
+							} catch (e) {
+								if (String(e).includes('Unsupported intent component mapping in CLI')) {
+									const variant = data.variant ? `${data.variant} ` : ''
+									let content = data.content || data.title || data.label || componentName
+									const disabled = data.disabled ? ' (disabled)' : ''
+									
+									if (componentName === 'Button') {
+										const bgMap = {
+											primary: '\x1b[44m\x1b[37m', // bgBlue, fgWhite
+											secondary: '\x1b[45m\x1b[37m', // bgMagenta, fgWhite
+											success: '\x1b[42m\x1b[30m', // bgGreen, fgBlack
+											danger: '\x1b[41m\x1b[37m', // bgRed, fgWhite
+											warning: '\x1b[43m\x1b[30m', // bgYellow, fgBlack
+											info: '\x1b[46m\x1b[30m', // bgCyan, fgBlack
+											light: '\x1b[47m\x1b[30m', // bgWhite, fgBlack
+											dark: '\x1b[40m\x1b[37m' // bgBlack, fgWhite
+										}
+										const fgMap = {
+											primary: '\x1b[34m', // fgBlue
+											secondary: '\x1b[35m', // fgMagenta
+											success: '\x1b[32m', // fgGreen
+											danger: '\x1b[31m', // fgRed
+											warning: '\x1b[33m', // fgYellow
+											info: '\x1b[36m', // fgCyan
+											light: '\x1b[37m', // fgWhite
+											dark: '\x1b[30m' // fgBlack
+										}
+										const reset = '\x1b[0m'
+										const dim = '\x1b[2m'
+										
+										const v = data.variant || 'primary'
+										const isOutline = data.outline || false
+										const isLoading = data.loading || false
+										
+										const baseColor = isOutline ? (fgMap[v] || fgMap.primary) : (bgMap[v] || bgMap.primary)
+										const style = baseColor + (data.disabled ? dim : '')
+										const innerText = isLoading ? `⟲ loading...` : content
+										
+										this.console.info(`${style}[ ${innerText} ]${reset}`)
+									} else {
+										this.console.info(`[ ${variant}${content}${disabled} ]`)
+									}
+								} else {
+									this.console.warn(`[Preview not available yet: ${String(e)}]`)
+								}
+							}
 
 							this.ask = originAsk
 							this._disableNextAnswerLookup = false
 							globalThis.__IS_SANDBOX_PREVIEW__ = false
 						} catch (e) {
-							// If it requires strict inputs and throws, fallback safely
-							this.console.warn(`[Preview not available yet: ${String(e)}]`)
+							this.console.warn(`[Preview wrapper failed: ${String(e)}]`)
 						}
 						this.console.info('─'.repeat(40) + '\n')
 					}

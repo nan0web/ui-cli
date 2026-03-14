@@ -5,7 +5,7 @@ import { CancelError } from '@nan0web/ui/core'
 import { Input } from './ui/input.js'
 import CLiInputAdapter from './InputAdapter.js'
 import { NoConsole } from '@nan0web/log'
-import prompts from 'prompts'
+import prompts from './ui/prompts.js'
 
 describe('CLiInputAdapter', () => {
 	let adapter

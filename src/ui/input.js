@@ -4,7 +4,7 @@
  * @module ui/input
  */
 
-import prompts from 'prompts'
+import prompts from './prompts.js'
 import { CancelError } from '@nan0web/ui/core'
 import process from 'node:process'
 import { validateString, validateFunction } from '../core/PropValidation.js'

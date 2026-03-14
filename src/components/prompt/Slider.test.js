@@ -1,7 +1,7 @@
 import { describe, it } from 'node:test'
 import assert from 'node:assert/strict'
 
-import prompts from 'prompts'
+import prompts from '../../ui/prompts.js'
 
 import { Slider } from './Slider.js'
 

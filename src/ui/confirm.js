@@ -2,7 +2,7 @@
  * Confirm module – simple Yes/No prompt.
  * @module ui/confirm
  */
-import prompts from 'prompts'
+import prompts from './prompts.js'
 import { CancelError } from '@nan0web/ui/core'
 import { validateString, validateBoolean, validateFunction } from '../core/PropValidation.js'
 

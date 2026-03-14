@@ -2,7 +2,7 @@
  * Toggle module – a more visual boolean switch.
  * @module ui/toggle
  */
-import prompts from 'prompts'
+import prompts from './prompts.js'
 import { CancelError } from '@nan0web/ui/core'
 
 /**

@@ -3,7 +3,7 @@
  * @module ui/slider
  */
 import NumberPrompt from 'prompts/lib/elements/number.js'
-import prompts from 'prompts'
+import prompts from './prompts.js'
 import { CancelError } from '@nan0web/ui/core'
 import { validateString, validateNumber, validateFunction } from '../core/PropValidation.js'
 
