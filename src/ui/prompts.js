@@ -6,6 +6,12 @@ import { CancelError } from '@nan0web/ui/core'
  * while allowing Escape to just throw CancelError (return to previous menu).
  */
 const prompts = async function(questions, options = {}) {
+	// In automated test/snapshot mode, bypass the wrapper entirely.
+	// The keypress listener and onCancel modifications interfere with inject() behavior.
+	if (process.env.UI_SNAPSHOT || process.env.PLAY_DEMO_SEQUENCE) {
+		return basePrompts(questions, options)
+	}
+
 	let wasAborted = false
 
 	const qArray = Array.isArray(questions) ? questions : [questions]
@@ -30,7 +36,10 @@ const prompts = async function(questions, options = {}) {
 			escapePressed = false
 		}
 	}
-	process.stdin.on('keypress', listener)
+	// Only attach keypress listener in interactive TTY mode
+	// In piped/test mode, stdin may produce spurious keypress events from ANSI sequences
+	const isTTY = process.stdin.isTTY
+	if (isTTY) process.stdin.on('keypress', listener)
 
 	const origOnCancel = options.onCancel
 	const modifiedOptions = {
@@ -49,7 +58,7 @@ const prompts = async function(questions, options = {}) {
 	try {
 		return await basePrompts(modifiedQuestions, modifiedOptions)
 	} finally {
-		process.stdin.removeListener('keypress', listener)
+		if (isTTY) process.stdin.removeListener('keypress', listener)
 	}
 }
 

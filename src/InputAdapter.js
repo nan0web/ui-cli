@@ -1064,44 +1064,74 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 								await previewPromise
 							} catch (e) {
 								if (String(e).includes('Unsupported intent component mapping in CLI')) {
-									const variant = data.variant ? `${data.variant} ` : ''
-									let content = data.content || data.title || data.label || componentName
-									const disabled = data.disabled ? ' (disabled)' : ''
-									
 									if (componentName === 'Button') {
+										// ANSI escape codes
+										const R = '\x1b[0m'  // reset
+										const B = '\x1b[1m'  // bold
+										const D = '\x1b[2m'  // dim
+										const U = '\x1b[4m'  // underline
+										
+										// Color maps matching ButtonModel variants
 										const bgMap = {
-											primary: '\x1b[44m\x1b[37m', // bgBlue, fgWhite
-											secondary: '\x1b[45m\x1b[37m', // bgMagenta, fgWhite
-											success: '\x1b[42m\x1b[30m', // bgGreen, fgBlack
-											danger: '\x1b[41m\x1b[37m', // bgRed, fgWhite
-											warning: '\x1b[43m\x1b[30m', // bgYellow, fgBlack
-											info: '\x1b[46m\x1b[30m', // bgCyan, fgBlack
-											light: '\x1b[47m\x1b[30m', // bgWhite, fgBlack
-											dark: '\x1b[40m\x1b[37m' // bgBlack, fgWhite
+											primary:   '\x1b[44m\x1b[97m',  // bgBlue, brightWhite
+											secondary: '\x1b[100m\x1b[97m', // bgBrightBlack(gray), brightWhite
+											info:      '\x1b[46m\x1b[30m',  // bgCyan, fgBlack
+											ok:        '\x1b[42m\x1b[30m',  // bgGreen, fgBlack
+											warn:      '\x1b[43m\x1b[30m',  // bgYellow, fgBlack
+											err:       '\x1b[41m\x1b[97m',  // bgRed, brightWhite
+											ghost:     '\x1b[2m',           // dim only (transparent)
 										}
 										const fgMap = {
-											primary: '\x1b[34m', // fgBlue
-											secondary: '\x1b[35m', // fgMagenta
-											success: '\x1b[32m', // fgGreen
-											danger: '\x1b[31m', // fgRed
-											warning: '\x1b[33m', // fgYellow
-											info: '\x1b[36m', // fgCyan
-											light: '\x1b[37m', // fgWhite
-											dark: '\x1b[30m' // fgBlack
+											primary:   '\x1b[34m',  // fgBlue
+											secondary: '\x1b[90m',  // fgBrightBlack(gray)
+											info:      '\x1b[36m',  // fgCyan
+											ok:        '\x1b[32m',  // fgGreen
+											warn:      '\x1b[33m',  // fgYellow
+											err:       '\x1b[31m',  // fgRed
+											ghost:     '\x1b[2m',   // dim
 										}
-										const reset = '\x1b[0m'
-										const dim = '\x1b[2m'
 										
 										const v = data.variant || 'primary'
+										const sz = data.size || 'md'
 										const isOutline = data.outline || false
+										const isDisabled = data.disabled || false
 										const isLoading = data.loading || false
+										const text = data.content || data.title || data.label || 'Button'
 										
-										const baseColor = isOutline ? (fgMap[v] || fgMap.primary) : (bgMap[v] || bgMap.primary)
-										const style = baseColor + (data.disabled ? dim : '')
-										const innerText = isLoading ? `⟲ loading...` : content
+										// Size-based styling
+										const pad = sz === 'sm' ? '' : sz === 'lg' ? '  ' : ' '
+										const sizeStyle = sz === 'lg' ? B : sz === 'sm' ? '' : ''
 										
-										this.console.info(`${style}[ ${innerText} ]${reset}`)
+										const colorCode = isOutline ? (fgMap[v] || fgMap.primary) : (bgMap[v] || bgMap.primary)
+										const disabledStyle = isDisabled ? D : ''
+										
+										if (isLoading && !isDisabled) {
+											const isTestMode = process.env.UI_SNAPSHOT || process.env.PLAY_DEMO_SEQUENCE
+											if (!isTestMode && process.stdout.isTTY) {
+												// Animated spinner: 6 braille frames at ~100ms
+												const frames = ['⠋', '⠙', '⠸', '⠴', '⠦', '⠇']
+												const totalFrames = 12 // ~1.2 sec animation
+												const save = '\x1b7'
+												const restore = '\x1b8'
+												
+												process.stdout.write(save)
+												for (let i = 0; i < totalFrames; i++) {
+													const frame = frames[i % frames.length]
+													const line = `${colorCode}${sizeStyle}[${pad}${frame} loading...${pad}]${R}`
+													process.stdout.write(restore + '\x1b[K' + line)
+													await new Promise(r => setTimeout(r, 100))
+												}
+												process.stdout.write(restore + '\x1b[K')
+											}
+											this.console.info(`${colorCode}${sizeStyle}[${pad}⟲ loading...${pad}]${R}`)
+										} else {
+											const label = isDisabled ? `${text} ✗` : text
+											this.console.info(`${colorCode}${disabledStyle}${sizeStyle}[${pad}${label}${pad}]${R}`)
+										}
 									} else {
+										const variant = data.variant ? `${data.variant} ` : ''
+										const content = data.content || data.title || data.label || componentName
+										const disabled = data.disabled ? ' (disabled)' : ''
 										this.console.info(`[ ${variant}${content}${disabled} ]`)
 									}
 								} else {
