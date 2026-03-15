@@ -160,25 +160,7 @@ Exiting Sandbox. 👋
     ↺ Reset to Defaults
     ← Back
 ✔ Variant Options: › > Edit title (curr: Attention)
-? Enter alert title: › Attention78? Enter alert title: › +78? Enter alert title: › + 78? Enter alert title: › + C78? Enter alert title: › + Cr78? Enter alert title: › + Cre78? Enter alert title: › + Crea78? Enter alert title: › + Creat78? Enter alert title: › + Create78? Enter alert title: › + Create 78? Enter alert title: › + Create N78? Enter alert title: › + Create Ne78? Enter alert title: › + Create New78? Enter alert title: › + Create New 78? Enter alert title: › + Create New V78? Enter alert title: › + Create New Va78? Enter alert title: › + Create New Var78? Enter alert title: › + Create New Vari78? Enter alert title: › + Create New Varia78? Enter alert title: › + Create New Varian78? Enter alert title: › + Create New Variant78✔ Enter alert title: … + Create New Variant78
-==================================================
- Sandbox: > Alert > Default < 
-==================================================
-👀 LIVE PREVIEW:
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- ℹ + Create New Variant  
-────────────────────────────────────────────────────────────
-   This is a sandbox alert preview.
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-==================================================
-? Variant Options: › - Use arrow-keys. Return to submit.
-❯   > Edit title (curr: + Create New Variant)
-    > Edit message (curr: This is a sandbox...)
-    > Edit variant (curr: info)
-    ↺ Reset to Defaults
-    ← Back
-✔ Variant Options: › > Edit title (curr: + Create New Variant)
-? Enter alert title: › + Create New Variant78? Enter alert title: › ↺78? Enter alert title: › ↺ 78? Enter alert title: › ↺ R78? Enter alert title: › ↺ Re78? Enter alert title: › ↺ Res78? Enter alert title: › ↺ Rese78? Enter alert title: › ↺ Reset78? Enter alert title: › ↺ Reset 78? Enter alert title: › ↺ Reset t78? Enter alert title: › ↺ Reset to78? Enter alert title: › ↺ Reset to 78? Enter alert title: › ↺ Reset to D78? Enter alert title: › ↺ Reset to De78? Enter alert title: › ↺ Reset to Def78? Enter alert title: › ↺ Reset to Defa78? Enter alert title: › ↺ Reset to Defau78? Enter alert title: › ↺ Reset to Defaul78? Enter alert title: › ↺ Reset to Default78? Enter alert title: › ↺ Reset to Defaults78✔ Enter alert title: … ↺ Reset to Defaults78
+? Enter alert title: › Attention78? Enter alert title: › ↺78? Enter alert title: › ↺ 78? Enter alert title: › ↺ R78? Enter alert title: › ↺ Re78? Enter alert title: › ↺ Res78? Enter alert title: › ↺ Rese78? Enter alert title: › ↺ Reset78? Enter alert title: › ↺ Reset 78? Enter alert title: › ↺ Reset t78? Enter alert title: › ↺ Reset to78? Enter alert title: › ↺ Reset to 78? Enter alert title: › ↺ Reset to D78? Enter alert title: › ↺ Reset to De78? Enter alert title: › ↺ Reset to Def78? Enter alert title: › ↺ Reset to Defa78? Enter alert title: › ↺ Reset to Defau78? Enter alert title: › ↺ Reset to Defaul78? Enter alert title: › ↺ Reset to Default78? Enter alert title: › ↺ Reset to Defaults78✔ Enter alert title: … ↺ Reset to Defaults78
 ==================================================
  Sandbox: > Alert > Default < 
 ==================================================
@@ -2659,6 +2641,24 @@ Component is not an interactive Prompt.
     ↺ Reset to Defaults
     ← Back
 ✔ Variant Options: › > Edit title (curr: Attention)
+? Enter alert title: › Attention78✔ Enter alert title: … Attention78
+==================================================
+ Sandbox: > Alert > Default < 
+==================================================
+👀 LIVE PREVIEW:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ ℹ Attention  
+────────────────────────────────────────────────────────────
+   This is a sandbox alert preview.
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+==================================================
+? Variant Options: › - Use arrow-keys. Return to submit.
+❯   > Edit title (curr: Attention)
+    > Edit message (curr: This is a sandbox...)
+    > Edit variant (curr: info)
+    ↺ Reset to Defaults
+    ← Back
+✔ Variant Options: › > Edit title (curr: Attention)
 ? Enter alert title: › Attention78? Enter alert title: › +78? Enter alert title: › + 78? Enter alert title: › + C78? Enter alert title: › + Cr78? Enter alert title: › + Cre78? Enter alert title: › + Crea78? Enter alert title: › + Creat78? Enter alert title: › + Create78? Enter alert title: › + Create 78? Enter alert title: › + Create N78? Enter alert title: › + Create Ne78? Enter alert title: › + Create New78? Enter alert title: › + Create New 78? Enter alert title: › + Create New V78? Enter alert title: › + Create New Va78? Enter alert title: › + Create New Var78? Enter alert title: › + Create New Vari78? Enter alert title: › + Create New Varia78? Enter alert title: › + Create New Varian78? Enter alert title: › + Create New Variant78✔ Enter alert title: … + Create New Variant78
 ==================================================
  Sandbox: > Alert > Default < 
@@ -2793,25 +2793,7 @@ Component is not an interactive Prompt.
     ↺ Reset to Defaults
     ← Back
 ✔ Variant Options: › > Edit title (curr: + Створити Новий ...)
-? Enter alert title: › + Створити Новий Варіант78? Enter alert title: › ✖78? Enter alert title: › ✖ 78? Enter alert title: › ✖ В78? Enter alert title: › ✖ Ви78? Enter alert title: › ✖ Вид78? Enter alert title: › ✖ Вида78? Enter alert title: › ✖ Видал78? Enter alert title: › ✖ Видали78? Enter alert title: › ✖ Видалит78? Enter alert title: › ✖ Видалити78? Enter alert title: › ✖ Видалити 78? Enter alert title: › ✖ Видалити В78? Enter alert title: › ✖ Видалити Ва78? Enter alert title: › ✖ Видалити Вар78? Enter alert title: › ✖ Видалити Варі78? Enter alert title: › ✖ Видалити Варіа78? Enter alert title: › ✖ Видалити Варіан78? Enter alert title: › ✖ Видалити Варіант78✔ Enter alert title: … ✖ Видалити Варіант78
-==================================================
- Sandbox: > Alert > Default < 
-==================================================
-👀 LIVE PREVIEW:
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- ℹ ✖ Видалити Варіант  
-────────────────────────────────────────────────────────────
-   This is a sandbox alert preview.
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-==================================================
-? Variant Options: › - Use arrow-keys. Return to submit.
-❯   > Edit title (curr: ✖ Видалити Варіант)
-    > Edit message (curr: This is a sandbox...)
-    > Edit variant (curr: info)
-    ↺ Reset to Defaults
-    ← Back
-✔ Variant Options: › > Edit title (curr: ✖ Видалити Варіант)
-? Enter alert title: › ✖ Видалити Варіант78? Enter alert title: › ←78? Enter alert title: › ← 78? Enter alert title: › ← В78? Enter alert title: › ← Ви78? Enter alert title: › ← Вий78? Enter alert title: › ← Вийт78? Enter alert title: › ← Вийти78✔ Enter alert title: … ← Вийти78
+? Enter alert title: › + Створити Новий Варіант78? Enter alert title: › ←78? Enter alert title: › ← 78? Enter alert title: › ← В78? Enter alert title: › ← Ви78? Enter alert title: › ← Вий78? Enter alert title: › ← Вийт78? Enter alert title: › ← Вийти78✔ Enter alert title: … ← Вийти78
 ==================================================
  Sandbox: > Alert > Default < 
 ==================================================
@@ -6878,61 +6860,59 @@ Exiting Sandbox. 👋
     ↺ Reset to Defaults
     ← Back
 ✔ Variant Options: › > Edit title (curr: Attention)
-? Enter alert title: › Attention78? Enter alert title: › +78? Enter alert title: › + 78? Enter alert title: › + C78? Enter alert title: › + Cr78? Enter alert title: › + Cre78? Enter alert title: › + Crea78? Enter alert title: › + Creat78? Enter alert title: › + Create78? Enter alert title: › + Create 78? Enter alert title: › + Create N78? Enter alert title: › + Create Ne78? Enter alert title: › + Create New78? Enter alert title: › + Create New 78? Enter alert title: › + Create New V78? Enter alert title: › + Create New Va78? Enter alert title: › + Create New Var78? Enter alert title: › + Create New Vari78? Enter alert title: › + Create New Varia78? Enter alert title: › + Create New Varian78? Enter alert title: › + Create New Variant78✔ Enter alert title: … + Create New Variant78
+? Enter alert title: › Attention78? Enter alert title: › T78? Enter alert title: › Te78? Enter alert title: › Tes78? Enter alert title: › Test78? Enter alert title: › TestV78? Enter alert title: › TestVa78? Enter alert title: › TestVar78✔ Enter alert title: … TestVar78
 ==================================================
  Sandbox: > Alert > Default < 
 ==================================================
 👀 LIVE PREVIEW:
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- ℹ + Create New Variant  
+ ℹ TestVar  
 ────────────────────────────────────────────────────────────
    This is a sandbox alert preview.
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ==================================================
 ? Variant Options: › - Use arrow-keys. Return to submit.
-❯   > Edit title (curr: + Create New Variant)
+❯   > Edit title (curr: TestVar)
     > Edit message (curr: This is a sandbox...)
     > Edit variant (curr: info)
     ↺ Reset to Defaults
     ← Back
-✔ Variant Options: › > Edit title (curr: + Create New Variant)
-? Enter alert title: › + Create New Variant78? Enter alert title: › ↺78? Enter alert title: › ↺ 78? Enter alert title: › ↺ R78? Enter alert title: › ↺ Re78? Enter alert title: › ↺ Res78? Enter alert title: › ↺ Rese78? Enter alert title: › ↺ Reset78? Enter alert title: › ↺ Reset 78? Enter alert title: › ↺ Reset t78? Enter alert title: › ↺ Reset to78? Enter alert title: › ↺ Reset to 78? Enter alert title: › ↺ Reset to D78? Enter alert title: › ↺ Reset to De78? Enter alert title: › ↺ Reset to Def78? Enter alert title: › ↺ Reset to Defa78? Enter alert title: › ↺ Reset to Defau78? Enter alert title: › ↺ Reset to Defaul78? Enter alert title: › ↺ Reset to Default78? Enter alert title: › ↺ Reset to Defaults78✔ Enter alert title: … ↺ Reset to Defaults78
+✔ Variant Options: › > Edit title (curr: TestVar)
+? Enter alert title: › TestVar78? Enter alert title: › ✖78? Enter alert title: › ✖ 78? Enter alert title: › ✖ D78? Enter alert title: › ✖ De78? Enter alert title: › ✖ Del78? Enter alert title: › ✖ Dele78? Enter alert title: › ✖ Delet78? Enter alert title: › ✖ Delete78? Enter alert title: › ✖ Delete 78? Enter alert title: › ✖ Delete V78? Enter alert title: › ✖ Delete Va78? Enter alert title: › ✖ Delete Var78? Enter alert title: › ✖ Delete Vari78? Enter alert title: › ✖ Delete Varia78? Enter alert title: › ✖ Delete Varian78? Enter alert title: › ✖ Delete Variant78✔ Enter alert title: … ✖ Delete Variant78
 ==================================================
  Sandbox: > Alert > Default < 
 ==================================================
 👀 LIVE PREVIEW:
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- ℹ ↺ Reset to Defaults  
+ ℹ ✖ Delete Variant  
 ────────────────────────────────────────────────────────────
    This is a sandbox alert preview.
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ==================================================
 ? Variant Options: › - Use arrow-keys. Return to submit.
-❯   > Edit title (curr: ↺ Reset to Defaults)
+❯   > Edit title (curr: ✖ Delete Variant)
     > Edit message (curr: This is a sandbox...)
     > Edit variant (curr: info)
     ↺ Reset to Defaults
     ← Back
-✔ Variant Options: › > Edit title (curr: ↺ Reset to Defaults)
-? Enter alert title: › ↺ Reset to Defaults78? Enter alert title: › ←78? Enter alert title: › ← 78? Enter alert title: › ← B78? Enter alert title: › ← Ba78? Enter alert title: › ← Bac78? Enter alert title: › ← Back78? Enter alert title: › ← Back 78? Enter alert title: › ← Back t78? Enter alert title: › ← Back to78? Enter alert title: › ← Back to 78? Enter alert title: › ← Back to C78? Enter alert title: › ← Back to Co78? Enter alert title: › ← Back to Com78? Enter alert title: › ← Back to Comp78? Enter alert title: › ← Back to Compo78? Enter alert title: › ← Back to Compon78? Enter alert title: › ← Back to Compone78? Enter alert title: › ← Back to Componen78? Enter alert title: › ← Back to Component78? Enter alert title: › ← Back to Components78✔ Enter alert title: … ← Back to Components78
+✔ Variant Options: › > Edit title (curr: ✖ Delete Variant)
+? Enter alert title: › ✖ Delete Variant78? Enter alert title: › ←78? Enter alert title: › ← 78? Enter alert title: › ← E78? Enter alert title: › ← Ex78? Enter alert title: › ← Exi78? Enter alert title: › ← Exit78✔ Enter alert title: … ← Exit78
 ==================================================
  Sandbox: > Alert > Default < 
 ==================================================
 👀 LIVE PREVIEW:
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- ℹ ← Back to Components  
+ ℹ ← Exit  
 ────────────────────────────────────────────────────────────
    This is a sandbox alert preview.
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ==================================================
 ? Variant Options: › - Use arrow-keys. Return to submit.
-❯   > Edit title (curr: ← Back to Components)
+❯   > Edit title (curr: ← Exit)
     > Edit message (curr: This is a sandbox...)
     > Edit variant (curr: info)
     ↺ Reset to Defaults
     ← Back
-✔ Variant Options: › > Edit title (curr: ← Back to Components)
-? Enter alert title: › ← Back to Components78
 ```
 
 > **💬 Коментарі щодо Toast Lifecycle En:**
