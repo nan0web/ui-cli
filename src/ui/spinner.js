@@ -20,6 +20,7 @@ export class Spinner {
 	}
 
 	start() {
+		if (this.interval) clearInterval(this.interval) // Prevent leaked intervals on repeated start()
 		this.startTime = Date.now()
 		this.interval = setInterval(() => {
 			const frame = Spinner.FRAMES[this.frameIndex]

@@ -1,7 +1,42 @@
 # План дій
 
-## 📊 Статус (2026-03-12) - Розв'язання проблеми повільних Sandbox Snapshots
+## 📦 Патч v2.5.3 (2026-03-15) — Model-as-Schema Form Support в askIntent
 
+### 🐛 Fix: `progressIntent` з'їдав predefined answer з черги
+
+- **Проблема**: `progressIntent` викликав `this.#nextAnswer()` для перевірки автоматичного режиму. Це **споживало** відповідь із черги `predefined`, зсуваючи всі наступні відповіді. В результаті при `PLAY_DEMO_SEQUENCE="my-app,1"` перша відповідь (`my-app`) з'їдалась progress-інтентом, а `_name` поле отримувало `"1"`.
+- **Рішення**: Замінено `this.#nextAnswer()` на `this.getRemainingAnswers().length > 0` — перевірка без споживання.
+- **Файл**: `src/InputAdapter.js` → `progressIntent()`
+
+### ✨ Feature: Model-as-Schema підтримка в `askIntent`
+
+- **Проблема**: `askIntent` підтримував тільки маппінг `intent.component` → конкретний UI-компонент (Select, Input, тощо). Коли OLMUI-генератор віддавав `ask('blueprint', BlueprintModel)` з `intent.model === true` без `intent.component`, адаптер кидав `"Unsupported intent component mapping in CLI: undefined"`.
+- **Рішення**: Додано перевірку `intent.model && !intent.component` на початку `askIntent()`. В цьому випадку автоматично генерується `UiForm` через `generateForm(SchemaClass, { t })` і показується через `requestForm()`.
+- **Файл**: `src/InputAdapter.js` → `askIntent()`
+
+### 🛠️ Fix: `generateForm` — нормалізація типів та фільтрація
+
+**3 виправлення у `src/ui/form.js`:**
+
+1. **Нормалізація `type: 'string'` → `'text'`**: `FormInput` не підтримує тип `'string'`, що призводило до `TypeError: FormInput.type is invalid!`. Додано маппінг `'string'` → `'text'` та `'boolean'` → `'toggle'` в обох місцях — `generateForm()` і `Form.#generateFields()`.
+
+2. **Фільтрація не-схемних статичних об'єктів**: Моделі типу `BlueprintModel` мають `static UI = { greeting: '...', ... }` — словник локалізації, який не є полем форми. Додано фільтр: `if (!schema.type && !schema.help && !schema.options && schema.defaultValue === undefined && schema.default === undefined) continue`.
+
+3. **Підтримка `schema.default`**: Стандарт 0HCnAI використовує `default` замість `defaultValue`. Додано підтримку обох варіантів у фільтрі та placeholder.
+
+### 🛠️ Fix: `generateForm` — витяг `ModelError.message` у валідації
+
+- **Проблема**: Валідатори моделей повертають `new ModelError(...)` при помилці. Обгортка `generateForm` перевіряла `res === true` та `typeof res === 'string'`, але `ModelError` — це об'єкт, тому fallback повертав неінформативне `"Invalid _name"`.
+- **Рішення**: Додано перевірку `if (res && typeof res === 'object' && res.message) return res.message` перед fallback.
+- **Файл**: `src/ui/form.js` → `generateForm()`
+
+### 📊 Тестування
+
+- ✅ 146/146 тестів `@nan0web/ui-cli` — пройшли
+- ✅ 7/7 тестів `@nan0web/blueprint` — пройшли
+- ✅ E2E: `PLAY_DEMO_SEQUENCE="my-app,1" npm run play:cli -- --lang=uk` — повний потік виконується коректно
+
+## 📊 Статус (2026-03-12) - Розв'язання проблеми повільних Sandbox Snapshots
 - **Проблема**: Запуск дочірніх процесів (`spawn`) та використання жорстких затримок (120ms) між кожним натисканням клавіші роблять E2E тести (`test:snapshot`) дуже повільними (близько 1 хвилини), а конкурентість (`--test-concurrency=1`) обмежує паралелізацію заради стабільності.
 
 ### 🚀 Архітектурні пропозиції для прискорення (Action Plan)

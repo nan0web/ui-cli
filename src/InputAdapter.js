@@ -913,7 +913,7 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 	 */
 	async progressIntent(intent) {
 		const spinner = this.requestSpinner(intent.message)
-		spinner.start()
+		// Note: baseSpinner() already calls start() internally
 		// Fake delay for demo purposes if not automated
 		// Check if we have predefined answers (automated) WITHOUT consuming one
 		const isAutomated = this.getRemainingAnswers().length > 0
