@@ -843,6 +843,17 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 	 */
 	async askIntent(intent) {
 		const config = { ...intent.schema, message: intent.schema?.help || intent.field }
+
+		if (intent.model && !intent.component) {
+			const SchemaClass = typeof intent.schema === 'function' ? intent.schema : intent.schema.constructor
+			const form = generateForm(SchemaClass, { t: this.t })
+			const result = await this.requestForm(form, { silent: false }) // ensure the title is printed
+			if (result.cancelled) {
+				return { value: undefined, cancelled: true }
+			}
+			return { value: result.form.state, cancelled: false }
+		}
+
 		switch (intent.component) {
 			case 'Select':
 				return await this.requestSelect(config)
@@ -904,7 +915,9 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 		const spinner = this.requestSpinner(intent.message)
 		spinner.start()
 		// Fake delay for demo purposes if not automated
-		if (!this.#nextAnswer()) {
+		// Check if we have predefined answers (automated) WITHOUT consuming one
+		const isAutomated = this.getRemainingAnswers().length > 0
+		if (!isAutomated) {
 			await new Promise((r) => setTimeout(r, 800))
 		}
 		spinner.stop()

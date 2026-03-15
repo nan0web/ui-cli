@@ -31,16 +31,21 @@ export function generateForm(BodyClass, options = {}) {
 
 	for (const [name, schema] of Object.entries(BodyClass)) {
 		if (typeof schema !== 'object' || schema === null) continue
+		if (!schema.type && !schema.help && !schema.options && schema.defaultValue === undefined && schema.default === undefined) continue // Skip non-schema statics like UI dicts
 
 		const translate = (value) => (typeof t === 'function' ? t(value) : value)
+
+		let type = schema.type || 'text'
+		if (type === 'string') type = 'text'
+		if (type === 'boolean') type = 'toggle'
 
 		fields.push(
 			new FormInput({
 				name,
 				label: translate(schema.help || name),
-				type: schema.type || 'text',
+				type,
 				required: Boolean(schema.required),
-				placeholder: translate(schema.placeholder || schema.defaultValue || ''),
+				placeholder: translate(schema.placeholder || schema.defaultValue || schema.default || ''),
 				options: Array.isArray(schema.options)
 					? schema.options.map((opt) =>
 							typeof opt === 'string'
@@ -53,7 +58,10 @@ export function generateForm(BodyClass, options = {}) {
 				validation: schema.validate
 					? (value) => {
 							const res = schema.validate(value)
-							return res === true ? true : typeof res === 'string' ? res : `Invalid ${name}`
+							if (res === true) return true
+							if (typeof res === 'string') return res
+							if (res && typeof res === 'object' && res.message) return res.message
+							return `Invalid ${name}`
 						}
 					: () => true,
 			})
@@ -173,6 +181,7 @@ export default class Form {
 		const fields = []
 		for (const [name, schema] of Object.entries(Class)) {
 			if (typeof schema !== 'object' || schema === null) continue
+			if (!schema.type && !schema.help && !schema.options && schema.defaultValue === undefined && schema.default === undefined) continue // Skip non-schema statics like UI dicts
 			const isRequired = schema.required === true || schema.defaultValue === undefined
 			const placeholder = this.t(String(schema.placeholder || schema.defaultValue || ''))
 			const options = schema.options || []
@@ -196,6 +205,7 @@ export default class Form {
 
 			const rawType = schema.type || typeof (schema.defaultValue ?? 'string')
 			let type = rawType === 'boolean' ? 'toggle' : rawType
+			if (type === 'string') type = 'text'
 
 			// Normalization for common types
 			if (type === 'secret') type = 'password'
