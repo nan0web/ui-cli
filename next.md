@@ -1,6 +1,40 @@
 # План дій
 
-## 📦 Патч v2.5.3 (2026-03-15) — Model-as-Schema Form Support в askIntent
+## 📦 Патч v2.5.3 (2026-03-15) — Sandbox IDE Navigation & BreadcrumbModel
+
+### ✨ Feature: Breadcrumb Navigation Stack
+
+- **Проблема**: Sandbox IDE не мав формальної системи навігації. ESC/Cancel поведінка була ad-hoc, без візуалізації поточного рівня.
+- **Рішення**: `SandboxModel` тепер використовує `BreadcrumbModel` з `@nan0web/ui` — універсальний навігаційний стек, де кожен елемент має `label` (display) + `path` (URL segment). ESC = `pop()` одного рівня, порожній стек = вихід. Ctrl+C = `process.exit(0)` завжди.
+- **Візуалізація**: Перед кожним prompt виводиться breadcrumb: `🏖 Sandbox › Button › Export`
+- **URL маппінг**: `nav.path` → `/sandbox/button/export`, `nav.toURI()` → `sandbox/button/export/index` (DBFS), `nav.toDataPath()` → `sandbox/button/export/index.yaml` (відносно `db.root`)
+
+### ✨ Feature: Model-as-Schema підтримка в `askIntent`
+
+- **Проблема**: `askIntent` підтримував тільки маппінг `intent.component` → конкретний UI-компонент (Select, Input, тощо). Коли OLMUI-генератор віддавав `ask('blueprint', BlueprintModel)` з `intent.model === true` без `intent.component`, адаптер кидав `"Unsupported intent component mapping in CLI: undefined"`.
+- **Рішення**: Додано перевірку `intent.model && !intent.component` на початку `askIntent()`. В цьому випадку автоматично генерується `UiForm` через `generateForm(SchemaClass, { t })` і показується через `requestForm()`.
+- **Файл**: `src/InputAdapter.js` → `askIntent()`
+
+### 🐛 Fix: Button CLI Preview — Escape Sequences
+
+- **Dim effect**: Виправлено застосування `dim` ефекту для `disabled` кнопок — тепер dim впливає тільки на текст, не на border/background.
+- **Loading state**: Замість анімованого спінера (який блокував CLI) — статичний `⟲ loading...`.
+- **Color codes**: Коректні ANSI escape sequences для всіх variant/size комбінацій.
+
+### 🐛 Fix: ESC & Ctrl+C Handling
+
+- **`prompts.js` wrapper**: Розрізняє ESC (throw `CancelError` → back navigation) та Ctrl+C (`process.exit(0)` → вихід).
+- **`GeneratorRunner`**: CancelError injection через `generator.throw()` — модель ловить і обробляє ESC на кожному рівні.
+- **Robust error catch**: Широкий catch для `unhandled_intent` помилок при preview rendering — перевіряє string, `ModelError.fields`, `ModelError.message`.
+
+### 📊 Тестування
+
+- ✅ 54/54 snapshot tests (play + sandbox, en + uk)
+- ✅ 12/12 playground tests
+- ✅ build (tsc) — 0 errors
+- ✅ knip — no unused exports
+
+---
 
 ### 🐛 Fix: `progressIntent` з'їдав predefined answer з черги
 
@@ -30,11 +64,18 @@
 - **Рішення**: Додано перевірку `if (res && typeof res === 'object' && res.message) return res.message` перед fallback.
 - **Файл**: `src/ui/form.js` → `generateForm()`
 
+### 🐛 Fix: Spinner подвійний `start()` — CLI зависав після progress
+
+- **Проблема**: `baseSpinner(message)` вже викликає `start()` всередині. `progressIntent` робив ще один `spinner.start()`, що перезаписувало `this.interval` — старий `setInterval` продовжував крутитись нескінченно і блокував термінал (спінер не зупинявся після `stop()`).
+- **Рішення**: Прибрано зайвий `spinner.start()` з `progressIntent`. Додано guard у `Spinner.start()` — `if (this.interval) clearInterval(this.interval)` на випадок повторного виклику.
+- **Файли**: `src/InputAdapter.js` → `progressIntent()`, `src/ui/spinner.js` → `Spinner.start()`
+
 ### 📊 Тестування
 
 - ✅ 146/146 тестів `@nan0web/ui-cli` — пройшли
 - ✅ 7/7 тестів `@nan0web/blueprint` — пройшли
 - ✅ E2E: `PLAY_DEMO_SEQUENCE="my-app,1" npm run play:cli -- --lang=uk` — повний потік виконується коректно
+- ✅ E2E інтерактивний: `pnpm play:cli` з `templates/blueprint/` — введення `my-test-app` + вибір Library → JSON результат
 
 ## 📊 Статус (2026-03-12) - Розв'язання проблеми повільних Sandbox Snapshots
 - **Проблема**: Запуск дочірніх процесів (`spawn`) та використання жорстких затримок (120ms) між кожним натисканням клавіші роблять E2E тести (`test:snapshot`) дуже повільними (близько 1 хвилини), а конкурентість (`--test-concurrency=1`) обмежує паралелізацію заради стабільності.
