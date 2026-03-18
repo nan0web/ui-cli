@@ -76,11 +76,13 @@
 		"nan0gallery": "bin/gallery.js"
 	},
 	"dependencies": {
-		"@nan0web/core": "workspace:*",
 		"@nan0web/event": "^1.0.1",
 		"@nan0web/icons": "^1.1.0",
 		"@nan0web/log": "^1.1.1",
-		"@nan0web/ui": "workspace:*",
 		"prompts": "^2.4.2"
+	},
+	"peerDependencies": {
+		"@nan0web/core": "workspace:*",
+		"@nan0web/ui": "workspace:*"
 	}
 }
