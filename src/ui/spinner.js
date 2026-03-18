@@ -31,7 +31,15 @@ export class Spinner {
 				.toString()
 				.padStart(2, '0')}:${(elapsed % 60).toString().padStart(2, '0')}`
 
-			process.stdout.write(`\r${frame} ${this.message} [${timeStr}]`)
+			// Truncate message to avoid terminal line wrapping which breaks \r spinners
+			const cols = process.stdout.columns || 80
+			const maxLen = cols - timeStr.length - 6 // -6 for frames, spaces, brackets
+			let displayMsg = this.message.replace(/\r?\n/g, ' ')
+			if (displayMsg.length > maxLen) {
+				displayMsg = displayMsg.substring(0, maxLen - 3) + '...'
+			}
+
+			process.stdout.write(`\r\x1b[2K${frame} ${displayMsg} [${timeStr}]`)
 		}, 80)
 	}
 
@@ -39,7 +47,16 @@ export class Spinner {
 		if (this.interval) {
 			clearInterval(this.interval)
 			this.interval = null
-			process.stdout.write(`\r${status} ${this.message}\x1b[K\n`)
+			const displayMsg = this.message.replace(/\r?\n/g, ' ')
+			process.stdout.write(`\r\x1b[2K${status} ${displayMsg}\n`)
+		}
+	}
+
+	clear() {
+		if (this.interval) {
+			clearInterval(this.interval)
+			this.interval = null
+			process.stdout.write(`\r\x1b[2K`)
 		}
 	}
 

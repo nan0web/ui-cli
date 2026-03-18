@@ -69,6 +69,16 @@ export async function tree(config) {
 		roots = res || []
 	}
 
+	if (process.env.UI_SNAPSHOT || process.env.PLAY_DEMO_SEQUENCE) {
+		if (prompts._injected && prompts._injected.length > 0) {
+			const predefined = prompts._injected.shift()
+			if (predefined instanceof Error) throw new CancelError()
+			// For multiselect, we normally return array, let's treat predefined as CSV for multi, string for single
+			const val = multiselect ? (predefined ? predefined.split(',') : []) : predefined
+			return { value: val, cancelled: false }
+		}
+	}
+
 	// Internal State
 	const state = {
 		roots,

@@ -6,12 +6,14 @@
 		"play/main.js",
 		"play/main.test.js",
 		"play/*.js",
-		"src/README.md.js"
+		"src/README.md.js",
+		"src/blueprint/**/*.js"
 	],
 	"project": ["src/**/*.js", "play/**/*.js", "types/**/*.d.ts"],
 	"ignore": ["**/*.test.js"],
 	"ignoreExportsUsedInFile": true,
 	"ignoreDependencies": [
+		"@nan0web/core",
 		"@nan0web/event",
 		"@nan0web/ui",
 		"@nan0web/i18n",

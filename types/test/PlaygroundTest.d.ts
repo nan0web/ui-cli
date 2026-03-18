@@ -30,6 +30,8 @@ export default class PlaygroundTest {
     includeDebugger: boolean;
     incldeEmptyLines: boolean;
     feedStdin: boolean;
+    /** @type {import('node:child_process').ChildProcess | null} */
+    child: import("node:child_process").ChildProcess | null;
     /** @type {any} */
     recentResult: any;
     /**
@@ -58,6 +60,15 @@ export default class PlaygroundTest {
      * @param {string[]} [args=["play/main.js"]] Arguments passed to the node process.
      */
     run(args?: string[]): Promise<any>;
+    /**
+     * Feed data to the child's stdin.
+     * @param {string} data
+     */
+    feed(data: string): Promise<void>;
+    /**
+     * Stop the child process.
+     */
+    stop(): Promise<void>;
     #private;
 }
 export type PlaygroundTestConfig = {

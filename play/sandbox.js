@@ -264,6 +264,20 @@ async function runSandbox() {
 	console.clear()
 	console.info(Logger.style(' 🧱 UI-CLI Sandbox ', { bg: Logger.BG_MAGENTA, color: Logger.BLACK }))
 
+	const args = process.argv.slice(2)
+	let targetComp = null
+	for (const arg of args) {
+		if (arg.startsWith('--comp=')) targetComp = arg.split('=')[1]
+	}
+
+	if (targetComp) {
+		const realComp = Object.keys(catalog).find(k => k.toLowerCase() === targetComp.toLowerCase())
+		if (realComp) {
+			await editVariant(realComp, 0, true)
+			return
+		}
+	}
+
 	while (true) {
 		const compNames = Object.keys(catalog)
 		const { value: selectedComp } = await inputAdapter.requestSelect({
@@ -281,7 +295,7 @@ async function runSandbox() {
 	}
 }
 
-async function manageComponent(compName) {
+async function manageComponent(compName, isDirect = false) {
 	const compDef = catalog[compName]
 
 	while (true) {
@@ -290,7 +304,7 @@ async function manageComponent(compName) {
 
 		const options = variants.map((v) => `[Variant] ${v.title}`)
 		options.push('+ Create New Variant')
-		options.push('← Back to Components')
+		options.push(isDirect ? '← Exit Sandbox' : '← Back to Components')
 
 		const { value: selAction } = await inputAdapter.requestSelect({
 			title: `Sandbox > ${compName}. Choose variation:`,
@@ -298,7 +312,8 @@ async function manageComponent(compName) {
 			limit: 15,
 		})
 
-		if (!selAction || selAction === '← Back to Components') {
+		if (!selAction || selAction === '← Back to Components' || selAction === '← Exit Sandbox') {
+			if (isDirect) process.exit(0)
 			break
 		}
 
@@ -316,7 +331,7 @@ async function manageComponent(compName) {
 				saveConfig(store)
 
 				// UX Fix: Navigate directly to the newly created variant
-				await editVariant(compName, store[compName].length - 1)
+				await editVariant(compName, store[compName].length - 1, isDirect)
 			}
 			continue
 		}
@@ -324,11 +339,11 @@ async function manageComponent(compName) {
 		// Selected a variant
 		const varTitle = selAction.replace('[Variant] ', '')
 		const variantIndex = variants.findIndex((v) => v.title === varTitle)
-		await editVariant(compName, variantIndex)
+		await editVariant(compName, variantIndex, isDirect)
 	}
 }
 
-async function editVariant(compName, variantIndex) {
+async function editVariant(compName, variantIndex, isDirect = false) {
 	const compDef = catalog[compName]
 
 	while (true) {
@@ -381,7 +396,7 @@ async function editVariant(compName, variantIndex) {
 			actions.push('✖ Delete Variant')
 		}
 
-		actions.push('← Back')
+		actions.push(isDirect ? '← Exit Sandbox' : '← Back')
 
 		const { value: action } = await inputAdapter.requestSelect({
 			title: 'Variant Options:',
@@ -389,7 +404,8 @@ async function editVariant(compName, variantIndex) {
 			limit: 15,
 		})
 
-		if (!action || action === '← Back') {
+		if (!action || action === '← Back' || action === '← Exit Sandbox') {
+			if (action === '← Exit Sandbox') process.exit(0)
 			break
 		}
 

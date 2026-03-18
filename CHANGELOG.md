@@ -4,6 +4,34 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [2.7.0] - 2026-03-17
+
+### Added
+
+- **Positional Args Resolution (`resolvePositionalArgs`)**: New universal utility for mapping CLI positional arguments to Model-as-Schema fields. Models declare `positional: true` in their static field descriptors; the framework resolves them by declaration order, with named options taking priority.
+  ```js
+  import { resolvePositionalArgs } from '@nan0web/ui-cli'
+  const data = resolvePositionalArgs(MyModel, positionals, namedOptions)
+  ```
+- **`positional: true` Metadata Convention**: New Model-as-Schema standard property. Fields marked `positional: true` are automatically eligible for positional CLI argument resolution. The order follows JavaScript's property declaration order (guaranteed for non-integer keys).
+- **Model-from-Argv (`modelFromArgv`)**: Universal CLI-to-Model bridge. Auto-generates `parseArgs` config from Model static field descriptors, resolves positionals, and returns a fully constructed Model instance. Reduces CLI wrappers to a single line:
+  ```js
+  import { modelFromArgv } from '@nan0web/ui-cli'
+  const model = modelFromArgv(MyModel, process.argv.slice(2))
+  ```
+
+## [2.6.0] - 2026-03-17
+
+### Added
+
+- **Blueprint Project Generator**: `blueprint/project.js` now generates real `project.md` and `project.yaml` files with 9-phase structure, YAML frontmatter, and Definition of Done checklist.
+- **Array Type Mapping**: `generateForm` now safely maps `string[]`, `array`, `object` schema types to `text` inputs instead of crashing with `FormInput.type is invalid!`.
+
+### Fixed
+
+- **Model-as-Schema Form Filtering**: `generateForm` and `Form.#generateFields()` now ignore internal Model properties (`head`, `id`, `type`, `data`, `schema`, `fields`, `state`, `title`, `meta`) preventing them from appearing as CLI prompts.
+
 ## [2.5.1] - 2026-03-13
 
 ### Fixed

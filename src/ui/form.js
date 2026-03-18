@@ -29,23 +29,40 @@ export function generateForm(BodyClass, options = {}) {
 	const { initialState = {}, t } = options
 	const fields = []
 
+	const ignoreKeys = ['head', 'id', 'type', 'data', 'schema', 'fields', 'state', 'title', 'meta']
+
 	for (const [name, schema] of Object.entries(BodyClass)) {
+		if (ignoreKeys.includes(name)) continue
 		if (typeof schema !== 'object' || schema === null) continue
 		if (!schema.type && !schema.help && !schema.options && schema.defaultValue === undefined && schema.default === undefined) continue // Skip non-schema statics like UI dicts
+		if (schema.hidden) {
+			if (options.initialState && options.initialState[name] === undefined && schema.default !== undefined) {
+				options.initialState[name] = schema.default
+			}
+			continue
+		}
 
 		const translate = (value) => (typeof t === 'function' ? t(value) : value)
 
-		let type = schema.type || 'text'
-		if (type === 'string') type = 'text'
+		let type = schema.hint || schema.type || 'text'
+		if (type === 'string' || type === 'object') type = 'text'
+		if ((type === 'string[]' || type === 'array') && schema.options) type = 'multiselect'
+		else if (type === 'string[]' || type === 'array') type = 'text'
 		if (type === 'boolean') type = 'toggle'
+
+		let ph = schema.placeholder || schema.defaultValue || schema.default || ''
+		if (typeof ph === 'object') {
+			ph = Array.isArray(ph) ? ph.join(', ') : ''
+		}
 
 		fields.push(
 			new FormInput({
+				...schema, 
 				name,
 				label: translate(schema.help || name),
 				type,
 				required: Boolean(schema.required),
-				placeholder: translate(schema.placeholder || schema.defaultValue || schema.default || ''),
+				placeholder: translate(ph),
 				options: Array.isArray(schema.options)
 					? schema.options.map((opt) =>
 							typeof opt === 'string'
@@ -63,13 +80,17 @@ export function generateForm(BodyClass, options = {}) {
 							if (res && typeof res === 'object' && res.message) return res.message
 							return `Invalid ${name}`
 						}
-					: () => true,
+					: type === 'email' ? (value) => {
+							if (!value && !schema.required) return true
+							if (/^\S+@\S+\.\S+$/.test(value)) return true
+							return `Invalid email`
+						} : () => true,
 			})
 		)
 	}
 
 	return new UiForm({
-		title: t ? t(BodyClass.name) : BodyClass.name,
+		title: t ? t(BodyClass['UI']?.title || BodyClass.name) : (BodyClass['UI']?.title || BodyClass.name),
 		fields,
 		state: { ...initialState },
 	})
@@ -92,7 +113,7 @@ export default class Form {
 	 * @param {Object} model - Model instance (e.g., new User({ username: argv[3] })).
 	 * @param {Object} [options={}] - Options.
 	 * @param {string[]} [options.stops=["quit", "cancel", "exit"]] - Stop words.
-	 * @param {(prompt: string) => Promise<Input>} [options.inputFn] - Custom input function.
+	 * @param {(config: any) => Promise<any>} [options.inputFn] - Custom input function (supports config object).
 	 * @param {(config: any) => Promise<{index:number, value:any, cancelled?: boolean}>} [options.selectFn] - Custom select function.
 	 * @param {(config: any) => Promise<any>} [options.autocompleteFn] - Custom autocomplete function.
 	 * @param {(config: any) => Promise<any>} [options.maskFn] - Custom mask function.
@@ -179,7 +200,10 @@ export default class Form {
 	#generateFields() {
 		const Class = this.#model.constructor
 		const fields = []
+		const ignoreKeys = ['head', 'id', 'type', 'data', 'schema', 'fields', 'state', 'title', 'meta']
+
 		for (const [name, schema] of Object.entries(Class)) {
+			if (ignoreKeys.includes(name)) continue
 			if (typeof schema !== 'object' || schema === null) continue
 			if (!schema.type && !schema.help && !schema.options && schema.defaultValue === undefined && schema.default === undefined) continue // Skip non-schema statics like UI dicts
 			const isRequired = schema.required === true || schema.defaultValue === undefined
@@ -257,8 +281,11 @@ export default class Form {
 	 * @param {string} prompt - Input prompt.
 	 * @returns {Promise<Input>} Input result.
 	 */
-	async input(prompt) {
-		return this.handler(prompt)
+	async input(prompt, field = {}) {
+		/** @type {any} */
+		const p = prompt
+		const message = typeof p === 'object' ? (p.message || '') : p
+		return this.handler({ message, prompt: message, initial: field.placeholder || '' })
 	}
 
 	/**
@@ -329,6 +356,7 @@ export default class Form {
 					result = await maskFn({
 						message: promptMsg,
 						mask: field.mask,
+						// @ts-ignore
 						initial: currentValue,
 						t: this.t,
 					})
@@ -538,8 +566,7 @@ export default class Form {
 						}
 					}
 				} else {
-					const inputObj = await this.input(`${promptMsg} `)
-					result = { value: inputObj.value, cancelled: inputObj.cancelled }
+					result = await this.input(promptMsg, field)
 				}
 
 				if (result && result.cancelled) {

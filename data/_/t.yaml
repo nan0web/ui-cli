@@ -1,0 +1,26 @@
+Models:
+  ExampleApp:
+    UI:
+      title: "UI-CLI Example App"
+      description: "Interactive showcase of all OLMUI intent types"
+    action:
+      help: "Choose an action"
+      options:
+        greet: "👋 Greeting Demo"
+        survey: "📋 Mini Survey"
+        progress: "⏳ Progress Demo"
+        sandbox: "🧱 Component Sandbox"
+        quit: "🚪 Exit"
+    name_field:
+      help: "What is your name?"
+    age:
+      help: "How old are you?"
+    color:
+      help: "Favourite colour"
+      options:
+        red: "🔴 Red"
+        green: "🟢 Green"
+        blue: "🔵 Blue"
+        purple: "🟣 Purple"
+    confirm_exit:
+      help: "Really exit?"

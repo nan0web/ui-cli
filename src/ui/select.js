@@ -24,6 +24,7 @@ import { validateString, validateFunction, validateNumber } from '../core/PropVa
  * @param {number} [input.limit=10] - Max visible items.
  * @param {any} [input.initial] - Initial value or index.
  * @param {string} [input.hint] - Hint text.
+ * @param {boolean} [input.hotkeys=false] - Support entering single chars directly.
  * @param {Function} [input.t] - Translation function.
  * @returns {Promise<{index:number,value:any,cancelled:boolean}>} Resolves with the selected index and its value.
  *
@@ -48,54 +49,82 @@ export async function select(input) {
 	if (!Array.isArray(options) || options.length === 0) {
 		throw new Error('Options array is required and must not be empty')
 	}
-	// Prepare options for prompts
+	const t = input.t || ((k) => k)
 	const choices = options.map((el) => {
 		if (typeof el === 'string') {
-			return { title: el, value: el }
+			return { title: t(el), value: el }
 		}
+		const titleStr = el.label || el.title || el.name
+		const descStr = el.description || el.desc || el.help
 		return {
-			title: el.label || el.title || el.name, // Support 'name' too as it's common
+			title: titleStr ? t(titleStr) : '',
 			value: el.value,
-			description: el.description || el.desc || el.help,
+			description: descStr ? t(descStr) : undefined,
 		}
 	})
 
-	const response = await prompts(
-		{
-			type: 'select',
-			name: 'value',
-			message: displayTitle,
-			choices: choices,
-			initial: (() => {
-				const idx =
-					typeof initial === 'number' ? initial : choices.findIndex((c) => c.value === initial)
-				return idx >= 0 && idx < choices.length ? idx : 0
-			})(),
-			hint:
-				input.hint ||
-				(input.t
-					? input.t('hint.select') !== 'hint.select'
-						? input.t('hint.select')
-						: undefined
-					: undefined),
-			instructions: false,
-			limit,
-		},
-		{
-			onCancel: () => {
-				throw new CancelError()
-			},
+	// If hotkeys enabled, return immediately on matching key
+	let handler
+	if (input.hotkeys) {
+		handler = (str, key) => {
+			if (!str || key.ctrl || key.meta) return
+			const k = str.toLowerCase()
+			const match = choices.find((c) => {
+				const label = String(c.title).toLowerCase()
+				// Match [X] pattern or first letter
+				const bracketMatch = label.match(/\[([a-z0-9])\]/)
+				if (bracketMatch && bracketMatch[1] === k) return true
+				return label.startsWith(k)
+			})
+			if (match) {
+				prompts.inject([match.value])
+			}
 		}
-	)
-
-	let index = choices.findIndex((c) => c.value === response.value)
-
-	// If prompts returned an index (like 0) instead of the value, or value not found
-	if (index === -1) {
-		return { index: -1, value: undefined, cancelled: true }
+		process.stdin.on('keypress', handler)
 	}
 
-	return { index, value: response.value, cancelled: false }
+	try {
+		const response = await prompts(
+			{
+				type: 'select',
+				name: 'value',
+				message: displayTitle,
+				choices: choices,
+				initial: (() => {
+					const idx =
+						typeof initial === 'number' ? initial : choices.findIndex((c) => c.value === initial)
+					return idx >= 0 && idx < choices.length ? idx : 0
+				})(),
+				hint:
+					input.hint ||
+					(input.t
+						? input.t('hint.select') !== 'hint.select'
+							? input.t('hint.select')
+							: undefined
+						: undefined),
+				instructions: false,
+				limit,
+			},
+			{
+				onCancel: () => {
+					throw new CancelError()
+				},
+			}
+		)
+
+		let index = choices.findIndex((c) => c.value === response.value)
+
+		// If prompts returned an index (like 0) instead of the value, or value not found
+		if (index === -1) {
+			return { index: -1, value: undefined, cancelled: true }
+		}
+
+		return { index, value: response.value, cancelled: false }
+	} finally {
+		if (handler) {
+			process.stdin.removeListener('keypress', handler)
+		}
+	}
 }
 
 /**

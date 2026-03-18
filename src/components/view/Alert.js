@@ -20,7 +20,7 @@ export function Alert(props) {
 	const safeProps =
 		typeof props === 'string' ? { ...defaults, children: props } : { ...defaults, ...props }
 
-	const { title, children, message = children, variant } = safeProps
+	const { title, children, message = children, variant = safeProps['type'] || 'info' } = safeProps
 
 	return createView('Alert', props, () => {
 		// Logic extracted from old alert.js

@@ -4,6 +4,8 @@
  * @module play/slider-demo
  */
 
+import { CancelError } from '../src/index.js'
+
 /**
  * Run the slider demo.
  *
@@ -23,6 +25,7 @@ export async function runSliderDemo(console, adapter, t) {
         step: 1,
         initial: 50
     })
+    if (volumeResult.cancelled) throw new CancelError()
     const volume = volumeResult.value
     console.info(`${t('Selected:')} ${volume}`)
 
@@ -34,6 +37,7 @@ export async function runSliderDemo(console, adapter, t) {
         step: 10,
         initial: 500
     })
+    if (speedResult.cancelled) throw new CancelError()
     const speed = speedResult.value
     console.info(`${t('Selected:')} ${speed}`)
 
@@ -45,6 +49,7 @@ export async function runSliderDemo(console, adapter, t) {
         step: 1000,
         initial: 50000
     })
+    if (rewardResult.cancelled) throw new CancelError()
     const reward = rewardResult.value
     console.info(`${t('Selected:')} ${reward}`)
 
@@ -57,6 +62,7 @@ export async function runSliderDemo(console, adapter, t) {
         step: 1,
         initial: 100
     })
+    if (diskResult.cancelled) throw new CancelError()
     const disk = diskResult.value
     console.info(`${t('Selected:')} ${disk}`)
 }

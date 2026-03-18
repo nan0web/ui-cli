@@ -47,6 +47,12 @@ Our "Iron Registry" includes 19 active components:
 - **Views (7):** Alert, Badge, Toast, Table, Tabs, Breadcrumbs, Steps.
 - **Prompts (12):** Input, Password, Toggle, Confirm, Select, Multiselect, Slider, DateTime, Tree, Spinner, ProgressBar, Sortable.
 
+### 🔧 Core Utilities
+
+- **`resolvePositionalArgs(Model, args, named)`** — Universal mapper from CLI positional arguments to Model-as-Schema fields. Scans static field descriptors for `positional: true` and resolves by declaration order. Named options take priority over positionals.
+- **`runGenerator(model, adapter)`** — OLMUI Generator Runner connecting `async *run()` models to `CLiInputAdapter`.
+- **`runApp(EntryModel, adapter)`** — App-level loop for multi-command OLMUI applications.
+
 ---
 
 ## 🧪 Phase 5-6: Verification & Gallery

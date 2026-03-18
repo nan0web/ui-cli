@@ -199,6 +199,69 @@ import { render, ProgressBar } from '@nan0web/ui-cli'
 console.info('Progress: 100%') // -> Progress: 100%
 ```
 
+## Позиційні Аргументи CLI (`resolvePositionalArgs`)
+
+Утиліта `resolvePositionalArgs` автоматично маплить позиційні аргументи CLI  на поля моделі, позначені `positional: true`.
+
+Порядок визначається порядком оголошення `static` полів у класі (гарантується специфікацією JavaScript для нечислових ключів).
+
+### Оголошення в Моделі
+
+Як оголосити позиційні аргументи в Model-as-Schema?
+
+```js
+export class TranslateModel {
+	static source = {
+		help: 'Source glob',
+		default: 'docs/uk/**/*.md',
+		positional: true,  // → args[0]
+	}
+
+	static target = {
+		help: 'Target dir',
+		default: 'docs/en',
+		positional: true,  // → args[1]
+	}
+
+	static quiet = {
+		help: 'Quiet mode',
+		default: false,
+		type: 'boolean',
+		// без positional → тільки через --quiet
+	}
+}
+```
+
+### Використання в CLI
+
+Як маплити позиційні аргументи на модель?
+
+```js
+import { resolvePositionalArgs } from '@nan0web/ui-cli'
+import { parseArgs } from 'node:util'
+
+const { positionals, values } = parseArgs({ ... })
+const data = resolvePositionalArgs(TranslateModel, positionals, values)
+const model = new TranslateModel(data)
+// model.source = positionals[0] || values.source || default
+// model.target = positionals[1] || values.target || default
+```
+
+### Пріоритет
+
+Іменовані опції (`--source`, `--target`) мають **пріоритет** над позиційними аргументами.
+
+```bash
+# Позиційні:
+my-cli "glob" dir
+
+# Іменовані (мають пріоритет):
+my-cli --source "glob" --target dir
+
+# Мікс (--source перезаписує args[0]):
+my-cli "ignored" dir --source "real.md"
+```
+
 ## Legacy API
 
 ### CLiInputAdapter

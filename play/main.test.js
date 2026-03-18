@@ -187,6 +187,7 @@ describe('playground demo flow', () => {
 	it('runs autocomplete demo then exits', async () => {
 		const { stdout, exitCode } = await runPlayground('autocomplete', 'en', {
 			PLAY_DEMO_SEQUENCE: 'Ukraine',
+			UI_SNAPSHOT: '',
 		})
 
 		assert.strictEqual(exitCode, 0)
@@ -210,12 +211,14 @@ describe('playground demo flow', () => {
 	it('runs v2 components demo', async () => {
 		const { stdout, exitCode } = await runPlayground('v2', 'en', {
 			PLAY_DEMO_SEQUENCE: 'UserV2,12345,y,y,1,,Ukraine,75,0671234567,2026-02-07,package.json,',
+			PLAY_STDIN_SEQUENCE: '',
+			UI_SNAPSHOT: '',
 		})
 
 		assert.strictEqual(exitCode, 0)
 		const clean = stripAnsi(stdout).toLowerCase()
 		assert.ok(clean.includes('v2'), 'Output should contain demo title')
-		assert.ok(clean.includes('setup complete'), 'Output should confirm completion')
+		console.log(clean); assert.ok(clean.includes('setup complete'), 'Output should confirm completion')
 	})
 })
 

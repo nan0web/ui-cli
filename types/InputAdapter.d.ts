@@ -14,6 +14,8 @@
  */
 export default class CLiInputAdapter extends BaseInputAdapter {
     constructor(options?: {});
+    answerQueue: AnswerQueue;
+    dispatcher: IntentDispatcher;
     /** @returns {ConsoleLike} */
     get console(): ConsoleLike;
     /** @param {Function} val */
@@ -22,6 +24,11 @@ export default class CLiInputAdapter extends BaseInputAdapter {
     get t(): Function;
     /** @returns {NodeJS.WriteStream} */
     get stdout(): NodeJS.WriteStream;
+    /**
+     * Proxy to set disabled state for testing previews
+     */
+    set _disableNextAnswerLookup(val: boolean);
+    get _disableNextAnswerLookup(): boolean;
     /** @returns {string[]} */
     getRemainingAnswers(): string[];
     /**
@@ -170,12 +177,7 @@ export default class CLiInputAdapter extends BaseInputAdapter {
      * @returns {import('./ui/progress.js').ProgressBar}
      */
     requestProgress(options: any): import("./ui/progress.js").ProgressBar;
-    /**
-     * Create and start a spinner.
-     * @param {string} message
-     * @returns {import('./ui/spinner.js').Spinner}
-     */
-    requestSpinner(message: string): import("./ui/spinner.js").Spinner;
+    requestSpinner(message: any): import("./ui/spinner.js").Spinner;
     /**
      * Request a selection from a tree view.
      * @param {Object} config
@@ -244,11 +246,20 @@ export default class CLiInputAdapter extends BaseInputAdapter {
      */
     logIntent(intent: any): Promise<void>;
     /**
+     * Handle OLMUI Result intents.
+     *
+     * @param {Object} intent
+     */
+    resultIntent(intent: any): Promise<void>;
+    /**
      * Handle OLMUI Progress intents via Spinner/ProgressBar.
      *
      * @param {Object} intent
      */
-    progressIntent(intent: any): Promise<void>;
+    progressIntent(intent: any): Promise<{
+        onData: (chunk: any) => void;
+        onEnd: () => void;
+    } | undefined>;
     /** @inheritDoc */
     select(cfg: any): Promise<{
         index: number;
@@ -266,10 +277,8 @@ export default class CLiInputAdapter extends BaseInputAdapter {
     /**
      * **New API** – Require input for a {@link UiMessage} instance.
      *
-     * This method mirrors the previous `UiMessage.requireInput` logic, but is now
-     * owned by the UI adapter. It validates the message according to its static
-     * {@link UiMessage.Body} schema, presents a generated {@link UiForm} and
-     * returns the updated body.  Cancellation results in a {@link CancelError}.
+     * Validates the message according to its static Body schema, presents a
+     * generated form and returns the updated body.
      *
      * @param {UiMessage} msg - Message instance needing input.
      * @returns {Promise<any>} Updated message body.
@@ -286,7 +295,6 @@ export default class CLiInputAdapter extends BaseInputAdapter {
     renderForm(data: any, SchemaClass: Function): {
         fill: () => Promise<any>;
     };
-    _disableNextAnswerLookup: boolean | undefined;
     #private;
 }
 export type ConsoleLike = {
@@ -297,5 +305,7 @@ export type ConsoleLike = {
     error: (...args: any[]) => void;
 };
 import { InputAdapter as BaseInputAdapter } from '@nan0web/ui';
+import AnswerQueue from './core/AnswerQueue.js';
+import IntentDispatcher from './core/IntentDispatcher.js';
 import { UiForm } from '@nan0web/ui';
 import { UiMessage } from '@nan0web/ui';

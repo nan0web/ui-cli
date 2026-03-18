@@ -1,6 +1,6 @@
 {
 	"name": "@nan0web/ui-cli",
-	"version": "2.5.2",
+	"version": "2.8.0",
 	"description": "NaN•Web UI CLI. Command line interface for One application logic (algorithm) and many UI.",
 	"main": "src/index.js",
 	"types": "types/index.d.ts",
@@ -11,8 +11,7 @@
 		"!src/README.md.js",
 		"types/**/*.d.ts",
 		"!types/README.md.d.ts",
-		"bin/**/*.js",
-		"scripts/gallery.mjs"
+		"bin/**/*.js"
 	],
 	"exports": {
 		".": {
@@ -22,11 +21,12 @@
 		"./test": {
 			"import": "./src/test/index.js",
 			"types": "./types/test/index.d.ts"
-		}
+		},
+		"./ui/cli": "./play/examples/ExampleApp.js"
 	},
 	"scripts": {
 		"build": "tsc",
-		"build:docs": "node scripts/build-docs.mjs",
+		"build:docs": "node bin/build-docs.mjs",
 		"test": "node --test --test-timeout=3333 \"src/**/*.test.js\"",
 		"test:nan0test": "node --test --test-timeout=3333 \"src/**/*.test.js\" | nan0test parse --fail",
 		"test:coverage": "node --experimental-test-coverage --test-timeout=3333 --test-coverage-include=\"src/**/*.js\" --test-coverage-exclude=\"src/**/*.test.js\" --test \"src/**/*.test.js\"",
@@ -35,14 +35,10 @@
 		"test:release": "node --test --test-timeout=3333 \"releases/**/*.test.js\"",
 		"test:status": "nan0test status --hide-name --debug",
 		"test:play": "UI_SNAPSHOT=1 node --test --test-concurrency=1 --test-timeout=15000 play/main.test.js",
-		"test:snapshot": "UI_SNAPSHOT=1 node --test --test-concurrency=1 --test-timeout=60000 play/snapshot.test.js play/sandbox.test.js && npm run gallery",
-		"test:i18n": "node scripts/check-i18n.js",
-		"test:all": "npm run test && npm run test:docs && npm run test:play && npm run test:snapshot && npm run test:i18n && npm run build && npm run knip",
+		"test:i18n": "node bin/check-i18n.js",
+		"test:all": "npm run test && npm run test:docs && npm run test:play && npm run test:i18n && npm run build && npm run knip",
 		"test:all1": "npm run test && npm run test:docs && npm run test:status && npm run test:play && npm run build",
 		"knip": "knip --production",
-		"gallery": "npm run gallery:play && npm run gallery:sandbox",
-		"gallery:play": "node scripts/gallery.mjs --dir=snapshots/play --out=snapshots/play/index.md",
-		"gallery:sandbox": "node scripts/gallery.mjs --dir=snapshots/sandbox --out=snapshots/sandbox/index.md",
 		"play": "node play/main.js --demo=v2",
 		"play:v1": "node play/main.js",
 		"play:v2": "node play/main.js --demo=v2",
@@ -52,7 +48,7 @@
 		"precommit": "npm run format && npm test && npm run test:i18n",
 		"prepush": "npm run test:all",
 		"prepare": "husky",
-		"release": "npm run test:snapshot && nan0release publish",
+		"release": "nan0release publish",
 		"format": "prettier --write \"src/**/*.js\"",
 		"clean": "rm -rf .cache/ && rm -rf dist/",
 		"clean:modules": "rm -rf node_modules"
@@ -66,7 +62,7 @@
 	"author": "ЯRаСлав (YaRaSLove) <support@yaro.page>",
 	"license": "ISC",
 	"devDependencies": {
-		"@nan0web/db": "^1.3.1",
+		"@nan0web/db": "workspace:*",
 		"@nan0web/db-fs": "^1.1.2",
 		"@nan0web/i18n": "^1.1.0",
 		"@nan0web/release": "^1.0.2",
@@ -77,13 +73,14 @@
 	},
 	"bin": {
 		"nan0cli": "bin/nan0cli.js",
-		"nan0gallery": "scripts/gallery.mjs"
+		"nan0gallery": "bin/gallery.js"
 	},
 	"dependencies": {
+		"@nan0web/core": "workspace:*",
 		"@nan0web/event": "^1.0.1",
 		"@nan0web/icons": "^1.1.0",
 		"@nan0web/log": "^1.1.1",
-		"@nan0web/ui": "^1.6.2",
+		"@nan0web/ui": "workspace:*",
 		"prompts": "^2.4.2"
 	}
 }

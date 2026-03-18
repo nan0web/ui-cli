@@ -118,7 +118,7 @@ export function createInput(stops = [], predef = undefined, console = undefined,
 		}
 
 		const result = await text({
-			message: question,
+			message: typeof question === 'object' ? (question.message || '') : question,
 			validate: validationFn,
 		})
 

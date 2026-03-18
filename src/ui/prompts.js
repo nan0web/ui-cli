@@ -64,6 +64,10 @@ const prompts = async function(questions, options = {}) {
 
 // Inherit any static properties/methods like inject
 Object.assign(prompts, basePrompts)
+Object.defineProperty(prompts, '_injected', {
+	get: () => basePrompts._injected,
+	set: (v) => { basePrompts._injected = v }
+})
 
 /** @type {import('prompts') & { inject: (answers: any[]) => void }} */
 const exportedPrompts = /** @type {any} */ (prompts)

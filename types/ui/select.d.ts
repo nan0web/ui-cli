@@ -14,6 +14,7 @@
  * @param {number} [input.limit=10] - Max visible items.
  * @param {any} [input.initial] - Initial value or index.
  * @param {string} [input.hint] - Hint text.
+ * @param {boolean} [input.hotkeys=false] - Support entering single chars directly.
  * @param {Function} [input.t] - Translation function.
  * @returns {Promise<{index:number,value:any,cancelled:boolean}>} Resolves with the selected index and its value.
  *
@@ -32,6 +33,7 @@ export function select(input: {
     limit?: number | undefined;
     initial?: any;
     hint?: string | undefined;
+    hotkeys?: boolean | undefined;
     t?: Function | undefined;
 }): Promise<{
     index: number;

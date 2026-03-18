@@ -8,6 +8,9 @@ import Form, { generateForm } from './ui/form.js'
 
 // V2 Component Exports
 import { render } from './core/render.js'
+import { runGenerator, runApp } from './core/GeneratorRunner.js'
+import { resolvePositionalArgs } from './core/resolvePositionalArgs.js'
+import { modelFromArgv } from './core/modelFromArgv.js'
 
 // Universal Blocks
 import { Layout } from './BlockRenderers/Layout.js'
@@ -64,6 +67,10 @@ export { sortable } from './ui/sortable.js'
 export {
 	// Core
 	render,
+	runGenerator,
+	runApp,
+	resolvePositionalArgs,
+	modelFromArgv,
 	CLiInputAdapter,
 	CancelError,
 	Layout,

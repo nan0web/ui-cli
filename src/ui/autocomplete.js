@@ -40,6 +40,19 @@ export async function autocomplete(input) {
 	const { message, title, options: initOptions, limit = 30 } = input
 
 	let choices = []
+
+	// In test mode with PLAY_DEMO_SEQUENCE, simulate input
+	const isTest = process.env.NODE_TEST_CONTEXT || process.env.PLAY_DEMO_SEQUENCE
+	const isSnapshot = !!process.env.UI_SNAPSHOT
+
+	if (isTest || isSnapshot) {
+		if (prompts._injected && prompts._injected.length > 0) {
+			const predefined = prompts._injected.shift()
+			if (predefined instanceof Error) throw new CancelError()
+			return { value: predefined, index: 0, cancelled: false } // naive mock
+		}
+	}
+
 	const fetchSync = (query = '') => {
 		let currentOptions = typeof initOptions === 'function' ? [] : initOptions
 

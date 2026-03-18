@@ -42,6 +42,8 @@ export default class PlaygroundTest {
 		this.includeDebugger = config.includeDebugger ?? false
 		this.incldeEmptyLines = config.includeEmptyLines ?? false
 		this.feedStdin = config.feedStdin ?? true
+		/** @type {import('node:child_process').ChildProcess | null} */
+		this.child = null
 	}
 
 	/** @type {any} */
@@ -124,11 +126,20 @@ export default class PlaygroundTest {
 				// - Prompts end with '? ... › ' or ': '
 				// - Tree outputs '> 📁' or '> 📄'
 				// - Sortable outputs '✔ Reorder: ' or instruction hints
-				// If the buffer ends in a space, or is a known end frame, we are probably ready.
-				if (stdoutBuffer.trim().length > 0) {
-					// We've received some stdout, we can break slightly earlier
+				const trimmed = stdoutBuffer.trimEnd()
+				if (
+					trimmed.endsWith('›') ||
+					trimmed.endsWith(':') ||
+					trimmed.endsWith(']') ||
+					trimmed.endsWith('?') ||
+					trimmed.endsWith('› ') ||
+					trimmed.endsWith(': ') ||
+					trimmed.endsWith('] ') ||
+					trimmed.endsWith('? ')
+				) {
+					// We've received a prompt marker, we can break slightly earlier
 					// We just wait a tiny bit to ensure the frame is fully painted.
-					await new Promise((resolve) => setTimeout(resolve, process.env.UI_SNAPSHOT ? 15 : 2))
+					await new Promise((resolve) => setTimeout(resolve, process.env.UI_SNAPSHOT ? 15 : 10))
 					break
 				}
 				await new Promise((resolve) => setTimeout(resolve, 5))
@@ -220,12 +231,16 @@ export default class PlaygroundTest {
 			})
 		})
 
+		this.child = child
+
 		const [exitCode] = await Promise.all([
 			new Promise((resolve) => child.on('close', resolve)),
 			stdoutPromise,
 			stderrPromise,
 			this.feedStdin ? this.#feedSequence(child) : Promise.resolve(),
 		])
+
+		this.child = null
 
 		// Trim leading whitespace from every line – the test suite expects raw
 		// output without logger prefixes or indentation.
@@ -243,5 +258,28 @@ export default class PlaygroundTest {
 			exitCode,
 		}
 		return this.recentResult
+	}
+
+	/**
+	 * Feed data to the child's stdin.
+	 * @param {string} data
+	 */
+	async feed(data) {
+		if (this.child && this.child.stdin && this.child.stdin.writable) {
+			this.child.stdin.write(data)
+			// Wait a bit for the process to handle the input and render
+			await new Promise((resolve) => setTimeout(resolve, 50))
+		}
+	}
+
+	/**
+	 * Stop the child process.
+	 */
+	async stop() {
+		if (this.child) {
+			this.child.kill()
+			await new Promise((resolve) => this.child?.on('close', resolve))
+			this.child = null
+		}
 	}
 }

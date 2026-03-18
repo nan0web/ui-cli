@@ -23,6 +23,7 @@ export class Spinner {
     startTime: number;
     start(): void;
     stop(status?: string): void;
+    clear(): void;
     success(msg: any): void;
     error(msg: any): void;
 }

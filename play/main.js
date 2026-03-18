@@ -309,6 +309,7 @@ async function main() {
 			console.info(
 				Logger.style('\n' + t('Error occurred. Returning to menu...'), { color: Logger.RED })
 			)
+			if (firstRun && args.demo) break
 		}
 	}
 }

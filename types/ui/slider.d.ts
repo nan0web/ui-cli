@@ -21,3 +21,25 @@ export function slider(config: {
     value: number;
     cancelled: boolean;
 }>;
+/**
+ * Custom SliderPrompt that adds visual bar and Shift+Up/Down jumps.
+ */
+export class SliderPrompt {
+    /** @param {any} opts */
+    constructor(opts: any);
+    jump: any;
+    /** @type {boolean} */
+    shift: boolean;
+    value: number;
+    up(): void;
+    down(): void;
+    left(): void;
+    right(): void;
+    /**
+     * @param {string} key
+     * @param {any} keypress
+     */
+    _(key: string, keypress: any): void;
+    render(): void;
+    #private;
+}

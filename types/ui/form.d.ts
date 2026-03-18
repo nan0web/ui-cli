@@ -30,7 +30,7 @@ export default class Form {
      * @param {Object} model - Model instance (e.g., new User({ username: argv[3] })).
      * @param {Object} [options={}] - Options.
      * @param {string[]} [options.stops=["quit", "cancel", "exit"]] - Stop words.
-     * @param {(prompt: string) => Promise<Input>} [options.inputFn] - Custom input function.
+     * @param {(config: any) => Promise<any>} [options.inputFn] - Custom input function (supports config object).
      * @param {(config: any) => Promise<{index:number, value:any, cancelled?: boolean}>} [options.selectFn] - Custom select function.
      * @param {(config: any) => Promise<any>} [options.autocompleteFn] - Custom autocomplete function.
      * @param {(config: any) => Promise<any>} [options.maskFn] - Custom mask function.
@@ -46,7 +46,7 @@ export default class Form {
      */
     constructor(model: any, options?: {
         stops?: string[] | undefined;
-        inputFn?: ((prompt: string) => Promise<Input>) | undefined;
+        inputFn?: ((config: any) => Promise<any>) | undefined;
         selectFn?: ((config: any) => Promise<{
             index: number;
             value: any;
@@ -73,7 +73,7 @@ export default class Form {
     handler: Function;
     options: {
         stops?: string[] | undefined;
-        inputFn?: ((prompt: string) => Promise<Input>) | undefined;
+        inputFn?: ((config: any) => Promise<any>) | undefined;
         selectFn?: ((config: any) => Promise<{
             index: number;
             value: any;
@@ -109,7 +109,7 @@ export default class Form {
      * @param {string} prompt - Input prompt.
      * @returns {Promise<Input>} Input result.
      */
-    input(prompt: string): Promise<Input>;
+    input(prompt: string, field?: {}): Promise<Input>;
     /**
      * Prompts for input, validates, and updates the model.
      * Supports linear navigation (::prev/::next) and all advanced CLI types.
@@ -133,5 +133,5 @@ export default class Form {
     #private;
 }
 import { UiForm } from '@nan0web/ui';
-import { Input } from './input.js';
 import { select } from './select.js';
+import { Input } from './input.js';

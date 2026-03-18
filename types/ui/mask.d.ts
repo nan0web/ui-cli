@@ -1,29 +1,22 @@
 /**
- * Validates and optionally formats user input based on a pattern.
- * Pattern uses '#' for numbers and 'A' for letters.
- * Example: '(###) ###-####'
+ * Interactive formatted mask input.
+ *
+ * NOTE: Predefined/test answers are handled upstream by InputAdapter.requestMask
+ * via answerQueue. This function only runs in interactive TTY mode.
  *
  * @param {Object} config
  * @param {string} config.message - Prompt question
- * @param {string} config.mask - Mask pattern (e.g., '###-###')
- * @param {string} [config.placeholder] - Hint for the user
+ * @param {string} config.mask - Mask pattern (e.g., '+38 (099) 999 9999')
+ * @param {string} [config.placeholder] - Character or string placeholder
  * @param {Function} [config.t] - Translation function
  * @returns {Promise<{value: string, cancelled: boolean}>}
  */
-/**
- * Cleans the input value by stripping non-alphanumerics and smart prefix.
- */
-export function cleanMaskInput(value: any, mask: any): any;
-/**
- * Formats a value according to the given mask.
- * pattern: # = digit, A = letter, 0 = digit.
- *
- * @param {string} value
- * @param {string} mask
- * @returns {string}
- */
-export function formatMask(value: string, mask: string): string;
-export function mask(config: any): Promise<{
+export function mask(config: {
+    message: string;
+    mask: string;
+    placeholder?: string | undefined;
+    t?: Function | undefined;
+}): Promise<{
     value: string;
     cancelled: boolean;
 }>;

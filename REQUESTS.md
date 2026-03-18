@@ -359,3 +359,24 @@ const output = normalize(raw, collectReplacements(Spinner, ProgressBar))
 7. **Types** — `types/test/normalize.d.ts` та `types/test/index.d.ts` auto-generated, покривають повний API.
 
 
+
+## Bugfix: Dynamic Localization via I18nDb in nan0cli runner
+
+**Target**: `bin/nan0cli.js`, `src/InputAdapter.js`, `src/core/IntentDispatcher.js`, `src/ui/slider.js`
+**Status**: ✅ DONE
+**Date**: 2026-03-17
+
+**Problem**:
+1. Switching languages in runtime did not stick because `options.t` was strictly overridden with older `t` function on generator restart.
+2. CLI output strings like `actionProduct` schema properties and `spinner` events weren't mapped tightly to `InputAdapter.t()` rendering them in English constantly.
+3. `Slider` component was glitching (cursor wrap issue) on narrow terminal windows when the prefix and limits took too much space.
+
+**Required Action**:
+Fix `options.t` persistence across run loops. Pass `schema.help` through translation deeply inside `IntentDispatcher`. Enable responsive width constraint in `slider.js`.
+
+**Changes Made**:
+1. **nan0cli.js**: Added `options.t = newT` after a `set_locale` intent triggers a restart, ensuring the subsequent `CreditFlowModel.run()` uses the new locale dictionary mapping.
+2. **IntentDispatcher.js**: Passed nested `options[].label` text values and `schema.help` text through `this.adapter.t()` string localization prior to spawning `InputAdapter` components.
+3. **InputAdapter.js**: Fixed `requestSpinner()` omitting the translation wrapper.
+4. **slider.js**: Integrated dynamic `process.stdout.columns` awareness, mathematically shrinking the slider bar (min 10 chars) if the overall question formatting exceeds 1 line. Prevents infinite Phantom lines in narrow terminal views.
+

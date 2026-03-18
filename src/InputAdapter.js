@@ -5,7 +5,7 @@
  */
 
 import { UiForm, InputAdapter as BaseInputAdapter, UiMessage } from '@nan0web/ui'
-import { CancelError } from '@nan0web/ui/core'
+import { CancelError, MaskHandler } from '@nan0web/ui/core'
 import prompts from './ui/prompts.js'
 import readline from 'node:readline'
 
@@ -32,6 +32,11 @@ import { tree as baseTree } from './ui/tree.js'
 import { datetime as baseDateTime } from './ui/date-time.js'
 import { sortable as baseSortable } from './ui/sortable.js'
 import { generateForm, Form } from './ui/form.js'
+import IntentDispatcher from './core/IntentDispatcher.js'
+import AnswerQueue from './core/AnswerQueue.js'
+import PreviewRenderer from './core/PreviewRenderer.js'
+import ObjectMapEditor from './core/ObjectMapEditor.js'
+import MessageHandler from './core/MessageHandler.js'
 
 const DEFAULT_MAX_RETRIES = 100
 
@@ -51,10 +56,6 @@ const DEFAULT_MAX_RETRIES = 100
  * @extends BaseInputAdapter
  */
 export default class CLiInputAdapter extends BaseInputAdapter {
-	/** @type {string[]} Queue of predefined answers. */
-	#answers = []
-	/** @type {number} Current position in the answers queue. */
-	#cursor = 0
 	/** @type {ConsoleLike} */
 	#console
 	#stdout
@@ -89,13 +90,8 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 		this.#maxRetries = Number(maxRetries)
 		this.#t = t
 
-		if (Array.isArray(predefined)) {
-			this.#answers = predefined.map((v) => String(v))
-		} else if (typeof predefined === 'string') {
-			this.#answers = predefined.split(divider).map((v) => v.trim())
-		} else {
-			this.#answers = []
-		}
+		this.answerQueue = new AnswerQueue({ predefined, divider })
+		this.dispatcher = new IntentDispatcher(this)
 	}
 
 	/** @returns {ConsoleLike} */
@@ -115,20 +111,20 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 		return this.#stdout
 	}
 
-	#nextAnswer() {
-		if (process.env.UI_SNAPSHOT) return null // Use real UI (stdin) in snapshots
-		if (this._disableNextAnswerLookup) return null 
-		if (this.#cursor < this.#answers.length) {
-			const val = this.#answers[this.#cursor]
-			this.#cursor++
-			return val
-		}
-		return null
+	/**
+	 * Proxy to set disabled state for testing previews
+	 */
+	set _disableNextAnswerLookup(val) {
+		this.answerQueue.setDisabled(val)
+	}
+
+	get _disableNextAnswerLookup() {
+		return this.answerQueue._disableNextAnswerLookup
 	}
 
 	/** @returns {string[]} */
 	getRemainingAnswers() {
-		return this.#answers.slice(this.#cursor)
+		return this.answerQueue.getRemaining()
 	}
 
 	/**
@@ -178,7 +174,7 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 	createHandler(stops = []) {
 		const self = this
 		return async (question, loop = false, nextQuestion = undefined) => {
-			const predefined = self.#nextAnswer()
+			const predefined = self.answerQueue.next()
 			if (predefined !== null) {
 				if (predefined === '_cancel') return { value: undefined, cancelled: true }
 				this.stdout.write(`${question}${predefined}\n`)
@@ -200,7 +196,7 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 	createSelectHandler() {
 		const self = this
 		return async (config) => {
-			const predefined = self.#nextAnswer()
+			const predefined = self.answerQueue.next()
 			if (predefined !== null) {
 				if (predefined === '_cancel') return { value: undefined, cancelled: true }
 				// Normalize options to find value
@@ -239,7 +235,7 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 	 * @returns {Promise<void|{value: undefined, cancelled: boolean}>}
 	 */
 	async pause(message) {
-		const predefined = this.#nextAnswer()
+		const predefined = this.answerQueue.next()
 		if (message) this.console.info(message)
 		if (predefined !== null) {
 			if (predefined === '_cancel') return { value: undefined, cancelled: true }
@@ -264,7 +260,7 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 
 		const cliForm = new Form(form, {
 			t: this.t,
-			inputFn: (p) => /** @type {any} */ (this.requestInput({ message: p, prompt: p })),
+			inputFn: (cfg) => this.requestInput(cfg),
 			selectFn: (cfg) => this.requestSelect(cfg),
 			autocompleteFn: (cfg) => this.requestAutocomplete(cfg),
 			multiselectFn: (cfg) => this.requestMultiselect(cfg),
@@ -368,7 +364,7 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 	async requestSelect(config) {
 		config.limit = config.limit ?? Math.max(5, (this.stdout.rows || 24) - 4)
 		try {
-			const predefined = this.#nextAnswer()
+			const predefined = this.answerQueue.next()
 			if (!config.console) config.console = this.#console
 
 			if (predefined !== null) {
@@ -427,6 +423,16 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 				return { value: valToInject, index: matchedIdx, cancelled: false }
 			}
 			config.t = this.t
+			if (config.title) config.title = this.t(config.title)
+			if (config.message) config.message = this.t(config.message)
+			if (config.prompt) config.prompt = this.t(config.prompt)
+			if (config.label) config.label = this.t(config.label)
+			if (Array.isArray(config.options)) {
+				config.options = config.options.map((el) => {
+					if (typeof el === 'string') return { label: this.t(el), value: el }
+					return { ...el, label: this.t(el.label || el.title || el.name) }
+				})
+			}
 			const res = await baseSelect(config)
 			return { value: res.value, index: res.index, cancelled: res.cancelled ?? false }
 		} catch (e) {
@@ -442,7 +448,7 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 	 * @returns {Promise<{value: string|undefined, cancelled: boolean}>} User response string or undefined on cancel.
 	 */
 	async requestInput(config) {
-		const predefined = this.#nextAnswer()
+		const predefined = this.answerQueue.next()
 		const promptOrig =
 			config.prompt ?? config.message ?? `${config.label ?? config.name ?? 'Input'}: `
 		const prompt = this.#t(promptOrig)
@@ -480,7 +486,7 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 	 */
 	async requestAutocomplete(config) {
 		config.limit = config.limit ?? Math.max(5, (this.stdout.rows || 24) - 4)
-		const predefined = this.#nextAnswer()
+		const predefined = this.answerQueue.next()
 		const prompt = config.message || config.title || 'Search: '
 		if (predefined !== null) {
 			if (predefined === '_cancel') return { value: undefined, cancelled: true }
@@ -540,7 +546,7 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 	 * @returns {Promise<{value: boolean|undefined, cancelled: boolean}>} User confirmation.
 	 */
 	async requestConfirm(config) {
-		const predefined = this.#nextAnswer()
+		const predefined = this.answerQueue.next()
 		const prompt = config.message || 'Confirm: '
 		if (predefined !== null) {
 			if (predefined === '_cancel') return { value: undefined, cancelled: true }
@@ -585,7 +591,7 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 	 * @returns {Promise<{value: any[]|undefined, cancelled: boolean}>} Selected values.
 	 */
 	async requestMultiselect(config) {
-		const predefined = this.#nextAnswer()
+		const predefined = this.answerQueue.next()
 		const prompt = config.message || 'Select: '
 		if (predefined !== null) {
 			if (predefined === '_cancel') return { value: undefined, cancelled: true }
@@ -618,13 +624,16 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 	 * @returns {Promise<{value: string|undefined, cancelled: boolean}>} Masked value.
 	 */
 	async requestMask(config) {
-		const predefined = this.#nextAnswer()
+		const predefined = this.answerQueue.next()
 		const prompt = config.message || 'Input: '
 		if (predefined !== null) {
 			if (predefined === '_cancel') return { value: undefined, cancelled: true }
-			const display = this.#applyMask(predefined, config.mask)
+			// Use MaskHandler to format the predefined value correctly
+			const mh = new MaskHandler(config.mask)
+			mh.setValue(predefined)
+			const display = mh.formatted
 			this.console.info(`✔ ${prompt} ${display}`)
-			return { value: predefined, cancelled: false }
+			return { value: display, cancelled: false }
 		}
 		try {
 			const maskImpl = this.#components.get('mask') || baseMask
@@ -657,7 +666,7 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 	 * @returns {Promise<{value: boolean|undefined, cancelled: boolean}>}
 	 */
 	async requestToggle(config) {
-		const predefined = this.#nextAnswer()
+		const predefined = this.answerQueue.next()
 		const prompt = config.message || 'Confirm: '
 		if (predefined !== null) {
 			if (predefined === '_cancel') return { value: undefined, cancelled: true }
@@ -681,7 +690,7 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 	 * @returns {Promise<{value: number|undefined, cancelled: boolean}>}
 	 */
 	async requestSlider(config) {
-		const predefined = this.#nextAnswer()
+		const predefined = this.answerQueue.next()
 		const prompt = config.message || 'Value: '
 		if (predefined !== null) {
 			if (predefined === '_cancel') return { value: undefined, cancelled: true }
@@ -706,13 +715,8 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 		return baseProgress(options)
 	}
 
-	/**
-	 * Create and start a spinner.
-	 * @param {string} message
-	 * @returns {import('./ui/spinner.js').Spinner}
-	 */
 	requestSpinner(message) {
-		return baseSpinner(message)
+		return baseSpinner(this.t(message))
 	}
 
 	/**
@@ -721,7 +725,7 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 	 * @returns {Promise<{value: any, cancelled: boolean}>} Selected node(s).
 	 */
 	async requestTree(config) {
-		const predefined = this.#nextAnswer()
+		const predefined = this.answerQueue.next()
 		if (predefined !== null) {
 			if (predefined === '_cancel') return { value: undefined, cancelled: true }
 			const prompt = config.message || 'Select: '
@@ -752,7 +756,7 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 	 * @returns {Promise<{value: any[]|undefined, cancelled: boolean}>}
 	 */
 	async requestSortable(config) {
-		const predefined = this.#nextAnswer()
+		const predefined = this.answerQueue.next()
 		const prompt = config.message || 'Reorder: '
 		if (predefined !== null) {
 			if (predefined === '_cancel') return { value: undefined, cancelled: true }
@@ -791,7 +795,7 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 	 * @returns {Promise<{value: Date|undefined, cancelled: boolean}>}
 	 */
 	async requestDateTime(config) {
-		const predefined = this.#nextAnswer()
+		const predefined = this.answerQueue.next()
 		const promptOrig = config.message || config.label || config.name || 'Date: '
 		const prompt = this.#t(promptOrig)
 		if (predefined !== null) {
@@ -825,7 +829,7 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 		if (question instanceof UiForm) {
 			return await this.requestForm(question, options)
 		}
-		const predefined = this.#nextAnswer()
+		const predefined = this.answerQueue.next()
 		if (predefined !== null) {
 			if (predefined === '_cancel') return { value: undefined, cancelled: true }
 			this.stdout.write(`${question}${predefined}\n`)
@@ -842,56 +846,7 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 	 * @returns {Promise<{value: any, cancelled: boolean}>}
 	 */
 	async askIntent(intent) {
-		const config = { ...intent.schema, message: intent.schema?.help || intent.field }
-
-		if (intent.model && !intent.component) {
-			const SchemaClass = typeof intent.schema === 'function' ? intent.schema : intent.schema.constructor
-			const form = generateForm(SchemaClass, { t: this.t })
-			const result = await this.requestForm(form, { silent: false }) // ensure the title is printed
-			if (result.cancelled) {
-				return { value: undefined, cancelled: true }
-			}
-			return { value: result.form.state, cancelled: false }
-		}
-
-		switch (intent.component) {
-			case 'Select':
-				return await this.requestSelect(config)
-			case 'Input':
-				return await this.requestInput(config)
-			case 'Autocomplete':
-				return await this.requestAutocomplete(config)
-			case 'Confirm':
-				return await this.requestConfirm(config)
-			case 'SandboxWrapper': {
-				if (intent.model || intent.instance) {
-					// Special handling for Sandbox Component: renders standard form tuning
-					const targetInstance = intent.instance || intent.model
-					const formController = this.renderForm(targetInstance, targetInstance.constructor)
-					const result = await formController.fill()
-					return { value: result.value, cancelled: result.cancelled }
-				}
-				return { value: undefined, cancelled: true }
-			}
-			case 'Table':
-				return await this.requestTable(config)
-			case 'Tree':
-				return await this.requestTree(config)
-			case 'Multiselect':
-				return await this.requestMultiselect(config)
-			case 'Toggle':
-				return await this.requestToggle(config)
-			case 'Slider':
-				return await this.requestSlider(config)
-			case 'Mask':
-				return await this.requestMask(config)
-			case 'Sortable':
-				return await this.requestSortable(config)
-			case 'DateTime':
-				return await this.requestDateTime(config)
-			default:
-				throw new Error(`Unsupported intent component mapping in CLI: ${intent.component}`)
-		}
+		return this.dispatcher.askIntent(intent)
 	}
 
 	/**
@@ -900,10 +855,16 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 	 * @param {Object} intent
 	 */
 	async logIntent(intent) {
-		if (intent.level === 'error') this.console.error(`🚨 ${intent.message}`)
-		else if (intent.level === 'warn') this.console.warn(`⚠️ ${intent.message}`)
-		else if (intent.level === 'success') this.console.info(`✅ ${intent.message}`)
-		else this.console.info(`ℹ️ ${intent.message}`)
+		return this.dispatcher.logIntent(intent)
+	}
+
+	/**
+	 * Handle OLMUI Result intents.
+	 *
+	 * @param {Object} intent
+	 */
+	async resultIntent(intent) {
+		return this.dispatcher.resultIntent(intent)
 	}
 
 	/**
@@ -912,20 +873,12 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 	 * @param {Object} intent
 	 */
 	async progressIntent(intent) {
-		const spinner = this.requestSpinner(intent.message)
-		// Note: baseSpinner() already calls start() internally
-		// Fake delay for demo purposes if not automated
-		// Check if we have predefined answers (automated) WITHOUT consuming one
-		const isAutomated = this.getRemainingAnswers().length > 0
-		if (!isAutomated) {
-			await new Promise((r) => setTimeout(r, 800))
-		}
-		spinner.stop()
+		return this.dispatcher.progressIntent(intent)
 	}
 
 	/** @inheritDoc */
 	async select(cfg) {
-		const predefined = this.#nextAnswer()
+		const predefined = this.answerQueue.next()
 		if (predefined !== null) {
 			if (predefined === '_cancel') return { value: null, index: -1 }
 			const prompt = cfg.message || cfg.title || 'Select: '
@@ -961,53 +914,15 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 	/**
 	 * **New API** – Require input for a {@link UiMessage} instance.
 	 *
-	 * This method mirrors the previous `UiMessage.requireInput` logic, but is now
-	 * owned by the UI adapter. It validates the message according to its static
-	 * {@link UiMessage.Body} schema, presents a generated {@link UiForm} and
-	 * returns the updated body.  Cancellation results in a {@link CancelError}.
+	 * Validates the message according to its static Body schema, presents a
+	 * generated form and returns the updated body.
 	 *
 	 * @param {UiMessage} msg - Message instance needing input.
 	 * @returns {Promise<any>} Updated message body.
 	 * @throws {CancelError} When user cancels the input process.
 	 */
 	async requireInput(msg) {
-		if (!msg || typeof msg !== 'object') {
-			throw new Error('Message instance is required')
-		}
-		// Use duck typing instead of instanceof to avoid monorepo duplicate module issues
-		if (
-			typeof msg.validate !== 'function' ||
-			!msg.constructor ||
-			!(/** @type {any} */ (msg.constructor).Body)
-		) {
-			throw new TypeError(
-				'Message must be an instance of UiMessage (implementing static Body and validate())'
-			)
-		}
-		/** @type {Map<string,string>} */
-		let errors = msg.validate()
-		while (errors.size > 0) {
-			const form = generateForm(/** @type {any} */ (msg.constructor).Body, {
-				initialState: msg.body,
-				t: this.#t,
-			})
-
-			const formResult = await this.processForm(form, msg.body)
-			if (formResult.cancelled) {
-				throw new CancelError('User cancelled form')
-			}
-
-			const updatedBody = { ...msg.body, ...formResult.form.state }
-			const updatedErrors = msg.validate(updatedBody)
-
-			if (updatedErrors.size > 0) {
-				errors = updatedErrors
-				continue
-			}
-			msg.body = updatedBody
-			break
-		}
-		return /** @type {any} */ (msg.body)
+		return MessageHandler.requireInput(this, msg)
 	}
 
 	/**
@@ -1018,242 +933,6 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 	 * @returns {{fill: () => Promise<any>}} Form object with fill method.
 	 */
 	renderForm(data, SchemaClass) {
-		const form = new Form(data, {
-			t: this.t,
-			inputFn: (p) => /** @type {any} */ (this.requestInput({ message: p })),
-			selectFn: (cfg) => this.requestSelect(cfg),
-			toggleFn: (cfg) => this.requestToggle(cfg),
-			sliderFn: (cfg) => this.requestSlider(cfg),
-			console: this.console,
-		})
-
-		const fields = form.fields
-		this.console.debug('renderForm: Fields found:', fields.map((f) => f.name).join(', '))
-		if (fields.length === 0) {
-			this.console.debug('renderForm: No fields found in schema', SchemaClass.name)
-		}
-
-		return {
-			fill: async () => {
-				let lastIndex = 0
-				while (true) {
-					// 1. Mock Render the Component live for visual feedback (Only if it's a Component Schema)
-					const isComponent =
-						data.constructor.name.endsWith('Model') && data.constructor.name !== 'SandboxModel'
-					if (isComponent) {
-						const componentName = data.constructor.name.replace('Model', '')
-						this.console.info('\n' + '─'.repeat(40))
-						this.console.info(`👀 Live Preview of <${componentName}>:`)
-						this.console.info('─'.repeat(40))
-						try {
-							const intent = {
-								type: 'ask',
-								component: componentName,
-								schema: { message: 'Preview' },
-								model: data,
-								options: data.options || ['a', 'b'],
-							}
-							// Provide mock options for tests or components that require them
-							if (componentName === 'Autocomplete')
-								intent.schema.options = ['Apple', 'Banana', 'Cherry']
-
-							// Mock predefined input to bypass interactive prompts automatically for the preview
-							const originAsk = this.ask
-							this.ask = async () => ({ value: null, cancelled: true })
-							
-							// Setting a flag to disable pre-defined answers during preview
-							this._disableNextAnswerLookup = true
-
-							// Simulate an aborted signal so `prompts` doesn't hang
-							globalThis.__IS_SANDBOX_PREVIEW__ = true
-							const previewPromise = this.askIntent(intent)
-
-							// We still want to timeout just in case it's a completely custom blocking component
-							setTimeout(() => {
-								if (typeof this.stop === 'function') this.stop()
-							}, 100)
-
-							try {
-								await previewPromise
-							} catch (e) {
-								const errStr = String(e)
-								const errObj = /** @type {any} */ (e)
-								if (
-									errStr.includes('Unsupported intent component mapping in CLI') ||
-									(errObj && errObj.fields && errObj.fields.unhandled_intent) ||
-									(errObj && errObj.message && errObj.message.includes('unhandled_intent'))
-								) {
-									if (componentName === 'Button') {
-										// ANSI escape codes
-										const R = '\x1b[0m'  // reset
-										const B = '\x1b[1m'  // bold
-										const D = '\x1b[2m'  // dim
-										const U = '\x1b[4m'  // underline
-										
-										// Color maps matching ButtonModel variants
-										const bgMap = {
-											primary:   '\x1b[44m\x1b[97m',  // bgBlue, brightWhite
-											secondary: '\x1b[100m\x1b[97m', // bgBrightBlack(gray), brightWhite
-											info:      '\x1b[46m\x1b[30m',  // bgCyan, fgBlack
-											ok:        '\x1b[42m\x1b[30m',  // bgGreen, fgBlack
-											warn:      '\x1b[43m\x1b[30m',  // bgYellow, fgBlack
-											err:       '\x1b[41m\x1b[97m',  // bgRed, brightWhite
-											ghost:     '\x1b[2m',           // dim only (transparent)
-										}
-										const fgMap = {
-											primary:   '\x1b[34m',  // fgBlue
-											secondary: '\x1b[90m',  // fgBrightBlack(gray)
-											info:      '\x1b[36m',  // fgCyan
-											ok:        '\x1b[32m',  // fgGreen
-											warn:      '\x1b[33m',  // fgYellow
-											err:       '\x1b[31m',  // fgRed
-											ghost:     '\x1b[2m',   // dim
-										}
-										
-										const v = data.variant || 'primary'
-										const sz = data.size || 'md'
-										const isOutline = data.outline || false
-										const isDisabled = data.disabled || false
-										const isLoading = data.loading || false
-										const text = data.content || data.title || data.label || 'Button'
-										
-										// Size-based styling
-										const pad = sz === 'sm' ? '' : sz === 'lg' ? '  ' : ' '
-										const sizeStyle = sz === 'lg' ? B : sz === 'sm' ? '' : ''
-										
-										const colorCode = isOutline ? (fgMap[v] || fgMap.primary) : (bgMap[v] || bgMap.primary)
-										const innerDim = isDisabled ? D : ''
-										const resetDim = isDisabled ? '\x1b[22m' : '' // reset dim logic, leave colors
-										
-										if (isLoading && !isDisabled) {
-											this.console.info(`${colorCode}${sizeStyle}[${pad}⟲ loading...${pad}]${R}`)
-										} else {
-											const label = isDisabled ? `${text} ✗` : text
-											this.console.info(`${colorCode}${sizeStyle}[${pad}${innerDim}${label}${resetDim}${pad}]${R}`)
-										}
-									} else {
-										const variant = data.variant ? `${data.variant} ` : ''
-										const content = data.content || data.title || data.label || componentName
-										const disabled = data.disabled ? ' (disabled)' : ''
-										this.console.info(`[ ${variant}${content}${disabled} ]`)
-									}
-								} else {
-									this.console.warn(`[Preview not available yet: ${String(e)}]`)
-								}
-							}
-
-							this.ask = originAsk
-							this._disableNextAnswerLookup = false
-							globalThis.__IS_SANDBOX_PREVIEW__ = false
-						} catch (e) {
-							this.console.warn(`[Preview wrapper failed: ${String(e)}]`)
-						}
-						this.console.info('─'.repeat(40) + '\n')
-					}
-
-					// Prepare choices: Field [Value]
-					const choices = [
-						...fields.map((f) => {
-							const val = data[f.name] ?? ''
-							let displayVal = val
-
-							if (typeof val === 'boolean') {
-								displayVal = val ? this.t('Yes') : this.t('No')
-							} else if (typeof val === 'object' && val !== null) {
-								displayVal = JSON.stringify(val)
-							}
-
-							if (typeof displayVal === 'string' && displayVal.length > 50) {
-								displayVal = displayVal.slice(0, 47) + '...'
-							}
-
-							return {
-								label: `${f.label}: [${displayVal}]`,
-								value: f.name,
-							}
-						}),
-						{ label: '──────────────────────────', value: 'sep', disabled: true },
-						{ label: `✅ ${this.t('Save and exit')}`, value: '_save' },
-						{ label: `❌ ${this.t('Cancel changes')}`, value: '_cancel' },
-					]
-
-					const selectedField = await this.requestSelect({
-						title: `📝 ${this.t('Edit:')} ${this.t(SchemaClass.name)}`,
-						message: this.t('Select field to edit:'),
-						options: choices,
-						limit: 15,
-						initial: lastIndex,
-					})
-
-					if (selectedField.cancelled || selectedField.value === '_cancel') {
-						return { value: data, cancelled: true }
-					}
-
-					if (selectedField.value === '_save') {
-						return { value: data, cancelled: false }
-					}
-
-					if (typeof selectedField.index === 'number' && selectedField.index >= 0) {
-						lastIndex = selectedField.index
-					}
-					const field = fields.find((f) => f.name === selectedField.value)
-					if (!field) continue
-
-					// Determine current value for initial
-					const currentValue = data[field.name]
-
-					let result
-					if (field.options && field.options.length) {
-						// Always use SelectBox if options are explicitly defined (e.g. variants, sizes)
-						result = await this.requestSelect({
-							message: field.label,
-							options: field.options,
-							initial: currentValue,
-						})
-					} else if (field.type === 'toggle' || field.type === 'boolean') {
-						// Toggle (Yes/No) is better UX for booleans
-						result = await this.requestToggle({
-							message: field.label,
-							initial: currentValue === true,
-							active: field.active || this.t('Yes'),
-							inactive: field.inactive || this.t('No'),
-						})
-					} else if (field.type === 'select') {
-						result = await this.requestSelect({
-							message: field.label,
-							options: field.options,
-							initial: currentValue,
-						})
-					} else if (field.type === 'mask') {
-						result = await this.requestMask({
-							message: field.label,
-							mask: field.mask,
-							initial: currentValue,
-						})
-					} else if (field.type === 'slider') {
-						result = await this.requestSlider({
-							message: field.label,
-							min: field.min,
-							max: field.max,
-							step: field.step,
-							initial: currentValue,
-						})
-					} else {
-						result = await this.requestInput({
-							message: field.label,
-							initial:
-								typeof currentValue === 'object' && currentValue !== null
-									? JSON.stringify(currentValue)
-									: (currentValue ?? field.placeholder),
-							validate: field.validation,
-						})
-					}
-
-					if (!result.cancelled && result.value !== undefined) {
-						data[field.name] = form.convertValue(field, /** @type {any} */ (result.value))
-					}
-				}
-			},
-		}
+		return ObjectMapEditor.create(this, data, SchemaClass)
 	}
 }
