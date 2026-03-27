@@ -1,6 +1,6 @@
 import Logger from '@nan0web/log'
-import Form from '../src/ui/form.js'
-import CLiInputAdapter from '../src/InputAdapter.js'
+import Form from '../src/ui/impl/form.js'
+import CLiInputAdapter from '../src/ui/core/InputAdapter.js'
 
 export async function runObjectFormDemo(console, adapter, t) {
 	console.clear()

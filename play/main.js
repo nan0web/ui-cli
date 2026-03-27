@@ -7,7 +7,7 @@ import { runBasicDemo } from './basic-demo.js'
 import SelectDemo, { SelectBody, runSelectDemo } from './select-demo.js'
 import { runUiCliDemo } from './ui-cli-demo.js'
 import { runFormDemo } from './form-demo.js'
-import CLiInputAdapter from '../src/InputAdapter.js'
+import CLiInputAdapter from '../src/ui/core/InputAdapter.js'
 import { runUiMessageDemo } from './ui-message-demo.js'
 import { runTableDemo, runInstantTableDemo } from './table-demo.js'
 import { runAutocompleteDemo } from './autocomplete-demo.js'
@@ -22,6 +22,7 @@ import { runMaskDemo } from './mask-demo.js'
 import { runV2Demo } from './v2_demo.js'
 import { runSortableDemo } from './sortable-demo.js'
 import { runObjectFormDemo } from './object-form-demo.js'
+import { runDomainViewsDemo } from './domain-views-demo.js'
 import { CancelError } from '../src/index.js'
 import getT, { localesMap } from './vocabs/index.js'
 
@@ -176,6 +177,7 @@ async function main() {
 				{ name: t('V2 Components'), value: 'v2' },
 				{ name: t('Sortable'), value: 'sortable' },
 				{ name: t('Object Form'), value: 'object-form' },
+				{ name: t('Domain Views'), value: 'domain-views' },
 				{ name: `← ${t('Exit')}`, value: 'exit' },
 			]
 
@@ -284,6 +286,9 @@ async function main() {
 					break
 				case 'object-form':
 					await runObjectFormDemo(console, inputAdapter, t)
+					break
+				case 'domain-views':
+					await runDomainViewsDemo(console, inputAdapter, t)
 					break
 				case 'exit':
 					console.success(t('Thanks for exploring UI‑CLI demos! 🚀'))

@@ -4,7 +4,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 import process from 'node:process'
 import Logger from '@nan0web/log'
-import CLiInputAdapter from '../src/InputAdapter.js'
+import CLiInputAdapter from '../src/ui/core/InputAdapter.js'
 
 // Import components
 import {
@@ -21,11 +21,24 @@ import {
 	Confirm,
 	Select,
 	Multiselect,
+	Autocomplete,
 	Slider,
+	Mask,
 	DateTime,
 	Tree,
 	Spinner,
 	ProgressBar,
+	Banner,
+	Hero,
+	Pricing,
+	Stats,
+	Timeline,
+	Testimonials,
+	Accordion,
+	Gallery,
+	EmptyState,
+	Header,
+	Footer,
 } from '../src/index.js'
 
 const console = new Logger({ level: 'info' })
@@ -185,6 +198,13 @@ const catalog = {
 		defaultProps: { message: 'Select colors:' },
 		schema: [{ name: 'message', type: 'text', message: 'Enter multiselect message:' }],
 	},
+	Autocomplete: {
+		render: async (props) =>
+			runPrompt(Autocomplete, { ...props, options: ['Ukraine', 'Germany', 'USA', 'France', 'Japan'] }),
+		type: 'prompt',
+		defaultProps: { message: 'Enter country:', initial: 'Ukraine' },
+		schema: [{ name: 'message', type: 'text', message: 'Enter autocomplete message:' }],
+	},
 	Slider: {
 		render: async (props) =>
 			runPrompt(Slider, {
@@ -200,6 +220,16 @@ const catalog = {
 			{ name: 'min', type: 'text', message: 'Enter min value:' },
 			{ name: 'max', type: 'text', message: 'Enter max value:' },
 			{ name: 'initial', type: 'text', message: 'Enter initial value:' },
+		],
+	},
+	Mask: {
+		render: async (props) => runPrompt(Mask, props),
+		type: 'prompt',
+		defaultProps: { message: 'Contact Phone:', mask: '+38 (###) ###-##-##', placeholder: '0671234567' },
+		schema: [
+			{ name: 'message', type: 'text', message: 'Enter mask message:' },
+			{ name: 'mask', type: 'text', message: 'Enter mask pattern:' },
+			{ name: 'placeholder', type: 'text', message: 'Enter placeholder:' },
 		],
 	},
 	DateTime: {
@@ -230,6 +260,117 @@ const catalog = {
 		type: 'prompt',
 		defaultProps: { title: 'Downloading file:', total: 100 },
 		schema: [{ name: 'title', type: 'text', message: 'Enter progress bar title:' }],
+	},
+
+	// --- DOMAIN VIEWS ---
+	Banner: {
+		render: (props) => Banner(props),
+		type: 'view',
+		defaultProps: { text: 'New Release Available!' },
+		schema: [{ name: 'text', type: 'text', message: 'Enter banner text:' }],
+	},
+	Hero: {
+		render: (props) => Hero(props),
+		type: 'view',
+		defaultProps: { title: 'Welcome', description: 'One Logic — Many UIs' },
+		schema: [
+			{ name: 'title', type: 'text', message: 'Enter hero title:' },
+			{ name: 'description', type: 'text', message: 'Enter hero description:' },
+		],
+	},
+	Pricing: {
+		render: (props) => Pricing({
+			...props,
+			items: [
+				{ title: 'Free', price: '$0', features: ['1 Project', 'Basic Support'] },
+				{ title: 'Pro', price: '$29', popular: true, features: ['Unlimited', 'Priority Support'] },
+			],
+		}),
+		type: 'view',
+		defaultProps: {},
+		schema: [],
+	},
+	Stats: {
+		render: (props) => Stats({
+			...props,
+			items: [
+				{ label: 'Users', value: '12,450', trend: 1 },
+				{ label: 'Revenue', value: '$84,200', trend: 1 },
+				{ label: 'Errors', value: '3', trend: -1 },
+			],
+		}),
+		type: 'view',
+		defaultProps: { title: 'Dashboard Metrics' },
+		schema: [{ name: 'title', type: 'text', message: 'Enter stats title:' }],
+	},
+	Timeline: {
+		render: (props) => Timeline({
+			...props,
+			items: [
+				{ date: '2026-01-15', title: 'Project Started', description: 'Initial commit' },
+				{ date: '2026-03-27', title: 'v1.0 Launch', description: 'Production-ready' },
+			],
+		}),
+		type: 'view',
+		defaultProps: {},
+		schema: [],
+	},
+	Testimonials: {
+		render: (props) => Testimonials({
+			...props,
+			items: [
+				{ text: 'Amazing framework!', author: 'Alice', rating: 5 },
+				{ text: 'CLI-first is brilliant.', author: 'Bob', rating: 4 },
+			],
+		}),
+		type: 'view',
+		defaultProps: {},
+		schema: [],
+	},
+	Accordion: {
+		render: (props) => Accordion({
+			...props,
+			items: [
+				{ title: 'What is OLMUI?', answer: 'One Logic — Many UIs.' },
+				{ title: 'Is it open source?', answer: 'Yes, ISC license.' },
+			],
+		}),
+		type: 'view',
+		defaultProps: {},
+		schema: [],
+	},
+	Gallery: {
+		render: (props) => Gallery({
+			...props,
+			items: ['https://example.com/img1.webp', 'https://example.com/img2.webp'],
+		}),
+		type: 'view',
+		defaultProps: {},
+		schema: [],
+	},
+	EmptyState: {
+		render: (props) => EmptyState(props),
+		type: 'view',
+		defaultProps: { title: 'No Results', description: 'Try adjusting your criteria.' },
+		schema: [
+			{ name: 'title', type: 'text', message: 'Enter empty state title:' },
+			{ name: 'description', type: 'text', message: 'Enter empty state description:' },
+		],
+	},
+	Header: {
+		render: (props) => Header({ ...props, links: [{ label: 'Home' }, { label: 'About' }] }),
+		type: 'view',
+		defaultProps: { title: 'My App' },
+		schema: [{ name: 'title', type: 'text', message: 'Enter header title:' }],
+	},
+	Footer: {
+		render: (props) => Footer({ ...props, links: [{ label: 'Privacy' }, { label: 'Terms' }] }),
+		type: 'view',
+		defaultProps: { title: 'NaN•Web', text: '© 2026' },
+		schema: [
+			{ name: 'title', type: 'text', message: 'Enter footer title:' },
+			{ name: 'text', type: 'text', message: 'Enter footer text:' },
+		],
 	},
 }
 

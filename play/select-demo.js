@@ -6,7 +6,7 @@
 
 import Logger from '@nan0web/log'
 import { Message } from '@nan0web/co'
-import CLIInputAdapter from '../src/InputAdapter.js'
+import CLIInputAdapter from '../src/ui/core/InputAdapter.js'
 import { OutputMessage } from '@nan0web/ui'
 
 export class SelectBody {

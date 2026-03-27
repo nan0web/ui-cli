@@ -1,7 +1,7 @@
 
 import { describe, it } from 'node:test'
 import assert from 'node:assert'
-import { PlaygroundTest } from '../src/test/index.js'
+import { PlaygroundTest } from '../src/ui/test/index.js'
 
 describe('terminal height adaptation', () => {
     it('sets dynamic limit and translates long list', async () => {

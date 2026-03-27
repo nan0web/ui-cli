@@ -1,5 +1,5 @@
 
-import CLiInputAdapter from '../src/InputAdapter.js'
+import CLiInputAdapter from '../src/ui/core/InputAdapter.js'
 
 export async function runMaskDemo(console, adapter, t) {
     // console.info(t('Mask Demo'))

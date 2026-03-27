@@ -198,9 +198,13 @@ const showError = async (title, textOrError) => {
 			}
 				
 				const lang = process.env.LANG ? process.env.LANG.split('_')[0].split('-')[0] : 'uk';
+				const targetLocalUrl = (targetUrl && !/^https?:\/\//.test(targetUrl)) ? targetUrl : undefined;
+				// Extract locale from URL path: /uk/order → uk, /en/restore_pin → en
+				const urlLocale = targetLocalUrl?.match(/^\/([a-z]{2})(\/|$)/)?.[1]
+				const effectiveLang = urlLocale || lang
 				const { I18nDb } = await import('@nan0web/i18n')
-				const i18nDb = new I18nDb({ db, locale: lang, tPath: '_/t', dataDir: '' })
-				const t = await i18nDb.createT(lang)
+				const i18nDb = new I18nDb({ db, locale: effectiveLang, tPath: '_/t.yaml', dataDir: '' })
+				const t = await i18nDb.createT(effectiveLang)
 				
 				if (process.env.UI_SNAPSHOT) {
 					// Interleave stderr with stdout for correct sequence in snapshots
@@ -209,7 +213,7 @@ const showError = async (title, textOrError) => {
 				}
 				
 				const adapter = new CLiInputAdapter({ console, t })
-				const options = { db, locale: lang, t }
+				const options = { db, locale: effectiveLang, t, targetUrl: targetLocalUrl }
 				
 				// App-as-a-Model: if class has run() generator, drive it directly
 				if (AppModel.prototype && typeof AppModel.prototype.run === 'function') {
@@ -223,13 +227,14 @@ const showError = async (title, textOrError) => {
 
 						if (res.data?.type === 'result' && res.data?.data?.action === 'set_locale') {
 							const newLang = res.data.data.locale;
-							const i18nDbReload = new I18nDb({ db, locale: newLang, tPath: '_/t', dataDir: '' })
+							const i18nDbReload = new I18nDb({ db, locale: newLang, tPath: '_/t.yaml', dataDir: '' })
 							const newT = await i18nDbReload.createT(newLang)
 
 							adapter.t = newT
 							options.t = newT
 							options.locale = newLang
 							options.t = newT
+							if (res.data.data.url) options.targetUrl = res.data.data.url
 							app = new AppModel({}, options)
 							continue
 						}

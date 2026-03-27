@@ -1,0 +1,65 @@
+(empty): (empty)
+(loading...): (loading...)
+Action: Action
+Add new item: Add new item
+Animated activity indicator.: Animated activity indicator.
+Are you sure?: Are you sure?
+Back: Back
+Choose: Choose
+Complete answer: Complete answer
+Confirm: Confirm
+Continue: Continue
+Data Table: Data Table
+Delete: Delete
+Done: Done
+Duration to pause execution in milliseconds.: Duration to pause execution in milliseconds.
+Edit: Edit
+Enter password: Enter password
+Enter text to filter or type exit to quit: Enter text to filter or type exit to quit
+Enter value: Enter value
+Error: Error
+Field is required: Field is required
+Format must be: Format must be
+Grab: Grab
+Highlight option: Highlight option
+Input field with fixed formatting mask (e.g. phone number).: Input field with fixed formatting mask (e.g. phone number).
+Instructions: Instructions
+Interactive date and time picker.: Interactive date and time picker.
+Interactive drag-and-drop item reordering.: Interactive drag-and-drop item reordering.
+Interactive number range selector.: Interactive number range selector.
+Interactive table with filtering and sorting.: Interactive table with filtering and sorting.
+Navigate: Navigate
+Pick a date: Pick a date
+Processing...: Processing...
+Progress: Progress
+Question or label for the input fields.: Question or label for the input fields.
+Question to be confirmed by user.: Question to be confirmed by user.
+Recursive file or object tree selection.: Recursive file or object tree selection.
+Reorder items: Reorder items
+Scrollable markdown content viewer.: Scrollable markdown content viewer.
+Searchable input with real-time completion suggestions.: Searchable input with real-time completion suggestions.
+Secure mask for the password input field.: Secure mask for the password input field.
+Select: Select
+Select a file: Select a file
+Select an option: Select an option
+Select options: Select options
+Standard boolean switch (classic Yes/No toggle).: Standard boolean switch (classic Yes/No toggle).
+Standard multi-selection checkboxes.: Standard multi-selection checkboxes.
+Standard radio-button selection list.: Standard radio-button selection list.
+Text to display before waiting for user action.: Text to display before waiting for user action.
+Tip Type to filter the list: Tip Type to filter the list
+Toggle: Toggle
+Toggle all: Toggle all
+Toggle selection: Toggle selection
+Use arrow-keys. Enter to select. TAB for search.: Use arrow-keys. Enter to select. TAB for search.
+Use arrow-keys. Space to toggle. Enter to submit. TAB for search.: Use arrow-keys. Space to toggle. Enter to submit. TAB for search.
+Use arrows to move. Space to grab or drop. Enter to confirm.: Use arrows to move. Space to grab or drop. Enter to confirm.
+Validation error: Validation error
+Value: Value
+Viewer: Viewer
+Visual task completion indicator.: Visual task completion indicator.
+filter: filter
+no: no
+none: none
+selected: selected
+yes: yes

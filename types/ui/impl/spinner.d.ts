@@ -1,0 +1,36 @@
+/**
+ * Functional helper for spinner.
+ * @param {string} message
+ * @returns {Spinner}
+ */
+export function spinner(message: string): Spinner;
+/**
+ * Spinner module – loading indicators.
+ * @module ui/spinner
+ */
+/**
+ * Visual spinner for async operations.
+ */
+export class Spinner {
+    static FRAMES: string[];
+    /**
+     * @param {string|Object} [config]
+     */
+    constructor(config?: string | any);
+    config: any;
+    message: any;
+    frameIndex: number;
+    interval: NodeJS.Timeout | null;
+    startTime: number;
+    start(): void;
+    stop(status?: string): void;
+    clear(): void;
+    success(msg: any): void;
+    error(msg: any): void;
+}
+export namespace Spinner {
+    let snapshotReplacements: Array<{
+        pattern: RegExp;
+        replacement: string;
+    }>;
+}

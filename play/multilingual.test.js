@@ -10,7 +10,7 @@
 
 import { describe, it } from 'node:test'
 import assert from 'node:assert'
-import { PlaygroundTest } from '../src/test/index.js'
+import { PlaygroundTest } from '../src/ui/test/index.js'
 
 /**
  * Run playground with specified language and sequence.

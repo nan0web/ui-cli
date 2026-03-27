@@ -7,9 +7,9 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import process from 'node:process'
-import { render } from '../src/core/render.js'
-import { Tree } from '../src/components/prompt/Tree.js'
-import { Pause } from '../src/components/prompt/Pause.js'
+import { render } from '../src/ui/core/render.js'
+import { Tree } from '../src/ui/prompt/Tree.js'
+import { Pause } from '../src/ui/prompt/Pause.js'
 
 /**
  * Run the tree view demo.

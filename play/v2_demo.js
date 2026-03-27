@@ -1,27 +1,27 @@
 
-import { render } from '../src/core/render.js';
+import { render } from '../src/ui/core/render.js';
 import getT from './vocabs/index.js';
-import { Alert } from '../src/components/view/Alert.js';
-import { Badge } from '../src/components/view/Badge.js';
-import { Toast } from '../src/components/view/Toast.js';
-import { Table } from '../src/components/view/Table.js';
-import { Breadcrumbs, Tabs, Steps } from '../src/components/view/Nav.js';
+import { Alert } from '../src/ui/view/Alert.js';
+import { Badge } from '../src/ui/view/Badge.js';
+import { Toast } from '../src/ui/view/Toast.js';
+import { Table } from '../src/ui/view/Table.js';
+import { Breadcrumbs, Tabs, Steps } from '../src/ui/view/Nav.js';
 
-import { Input } from '../src/components/prompt/Input.js';
-import { Password } from '../src/components/prompt/Password.js';
-import { Confirm } from '../src/components/prompt/Confirm.js';
-import { Toggle } from '../src/components/prompt/Toggle.js';
-import { Select } from '../src/components/prompt/Select.js';
-import { Multiselect } from '../src/components/prompt/Multiselect.js';
-import { Autocomplete } from '../src/components/prompt/Autocomplete.js';
-import { Slider } from '../src/components/prompt/Slider.js';
-import { Mask } from '../src/components/prompt/Mask.js';
-import { DateTime } from '../src/components/prompt/DateTime.js';
-import { Tree } from '../src/components/prompt/Tree.js';
-import { ProgressBar } from '../src/components/prompt/ProgressBar.js';
-import { Spinner } from '../src/components/prompt/Spinner.js';
-import { Pause } from '../src/components/prompt/Pause.js';
-import { Next } from '../src/components/prompt/Next.js';
+import { Input } from '../src/ui/prompt/Input.js';
+import { Password } from '../src/ui/prompt/Password.js';
+import { Confirm } from '../src/ui/prompt/Confirm.js';
+import { Toggle } from '../src/ui/prompt/Toggle.js';
+import { Select } from '../src/ui/prompt/Select.js';
+import { Multiselect } from '../src/ui/prompt/Multiselect.js';
+import { Autocomplete } from '../src/ui/prompt/Autocomplete.js';
+import { Slider } from '../src/ui/prompt/Slider.js';
+import { Mask } from '../src/ui/prompt/Mask.js';
+import { DateTime } from '../src/ui/prompt/DateTime.js';
+import { Tree } from '../src/ui/prompt/Tree.js';
+import { ProgressBar } from '../src/ui/prompt/ProgressBar.js';
+import { Spinner } from '../src/ui/prompt/Spinner.js';
+import { Pause } from '../src/ui/prompt/Pause.js';
+import { Next } from '../src/ui/prompt/Next.js';
 
 /**
  * Runs the Comprehensive V2 Component Demo.

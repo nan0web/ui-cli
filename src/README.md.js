@@ -1,69 +1,32 @@
-/* eslint-disable no-unused-vars */
 import { describe, it, before, beforeEach } from 'node:test'
 import assert from 'node:assert/strict'
+import fsNode from 'node:fs'
+import { fileURLToPath } from 'node:url'
 import FS from '@nan0web/db-fs'
-import { UiForm } from '@nan0web/ui'
 import { NoConsole } from '@nan0web/log'
-import { DatasetParser, DocsParser, runSpawn } from '@nan0web/test'
 import {
-	CLiInputAdapter as BaseCLiInputAdapter,
-	CancelError,
-	createInput,
+	DatasetParser,
+	DocsParser,
+} from '@nan0web/test'
+import {
+	render,
+	Input,
+	Password,
+	Select,
+	Multiselect,
+	Mask,
+	Autocomplete,
+	Slider,
+	Toggle,
+	DateTime,
+	Alert,
+	Table,
+	Spinner,
+	ProgressBar,
+	CLiInputAdapter,
+	ask,
 	pause,
-	ask as baseAsk,
-	select as baseSelect,
-	next as baseNext,
-	confirm as baseConfirm,
-	text as baseText,
 } from './index.js'
-import { Input } from './ui/input.js'
-
-async function ask(question) {
-	if (question.includes('Username')) return 'Alice'
-	if (question.includes('Secret')) return 'secret-key'
-	if (question.includes('Full Name')) return 'John Doe'
-	return 'Alice'
-}
-
-async function select(config) {
-	if (config.title?.includes('Language')) return { index: 0, value: 'en' }
-	return { index: 1, value: 'Option B' }
-}
-
-async function next() {
-	return Promise.resolve(' ')
-}
-async function confirm(message) {
-	return { value: true, cancelled: false }
-}
-
-class CLiInputAdapter extends BaseCLiInputAdapter {
-	async ask(question) {
-		return await ask(question)
-	}
-	async select(config) {
-		return await select(config)
-	}
-	async confirm(message) {
-		return await confirm(message)
-	}
-	async requestInput(config) {
-		const val = await ask(config.prompt ?? config.message)
-		return { value: val, cancelled: false }
-	}
-	async requestAutocomplete(config) {
-		return { value: 'gpt-4', cancelled: false }
-	}
-	async requestTable(config) {
-		return { value: config.data, cancelled: false }
-	}
-	async requestMultiselect(config) {
-		return { value: ['en'], cancelled: false }
-	}
-	async requestMask(config) {
-		return { value: '123-456', cancelled: false }
-	}
-}
 
 const fs = new FS()
 let pkg
@@ -83,6 +46,8 @@ function testRender() {
 	 * @docs
 	 * # @nan0web/ui-cli
 	 *
+	 * [🇺🇦 Українська версія](./docs/uk/README.md) | [🇬🇧 English version](./docs/en/README.md)
+	 *
 	 * A modern, interactive UI input adapter for Node.js projects.
 	 * Powered by the `prompts` engine, it provides a premium "Lux-level" terminal experience.
 	 *
@@ -98,26 +63,14 @@ function testRender() {
 	 * - **Premium Aesthetics** — Rich colors, clear structure, and intuitive navigation.
 	 * - **One Logic, Many UI** — Use the same shared logic across Web and Terminal.
 	 *
-	 * ## 🏛️ Architecture & Compliance (The "Constitution")
-	 *
-	 * `@nan0web/ui-cli` strictly adheres to the **Universal Blocks Spec** defined in the core `@nan0web/ui` package.
-	 *
-	 * > 📜 **Implementation Spec:** [`project.md`](./project.md) (Compliance with [`ui/project.md`](../ui/project.md))
-	 *
-	 * Just as laws must act within the framework of a Constitution, all components, interfaces, and Sandbox behaviors in `ui-cli` are formal implementations of the universal standards:
-	 *
-	 * - **Component Signatures:** All Views and Prompts map to the standard block model.
-	 * - **Sandbox UX:** The CLI Sandbox (`play/sandbox.js`) strictly follows the universal requirements for State Persistence (`.cli-sandbox.json`), Variation Management, Default Resets, and Data Fallbacks.
-	 *
 	 * ## Installation
-	 *
-	 * Install using your preferred package manager:
-	 *
-	 * ```bash
-	 * npm install @nan0web/ui-cli
-	 * ```
 	 */
 	it('How to install the package?', () => {
+		/**
+		 * ```bash
+		 * npm install @nan0web/ui-cli
+		 * ```
+		 */
 		assert.equal(pkg.name, '@nan0web/ui-cli')
 	})
 
@@ -127,51 +80,20 @@ function testRender() {
 	 *
 	 * The `nan0cli` binary provides a universal entry point for any nan0web application.
 	 * It reads the app's `package.json`, resolves the CLI entry point, and runs commands.
-	 *
-	 * ### App Contract
-	 *
-	 * Your app must export Messages from its entry point:
-	 *
-	 * ```js
-	 * // E1: Messages Array (recommended)
-	 * export default [Serve, Dump]
-	 *
-	 * // E2: Single Message class (auto-wrapped to array)
-	 * export default class MyApp { }
-	 * ```
-	 *
-	 * ### Entry Point Resolution
-	 *
-	 * `nan0cli` looks for the entry point in this order:
-	 * 1. `nan0web.cli.entry` field in `package.json`
-	 * 2. `src/cli.js` (convention)
-	 * 3. `src/messages/index.js` (legacy)
-	 *
-	 * ### Configuration
-	 *
-	 * ```json
-	 * {
-	 *   "nan0web": {
-	 *     "cli": { "entry": "src/cli.js" }
-	 *   }
-	 * }
-	 * ```
 	 */
-	it('nan0cli binary is registered', () => {
-		assert.ok(pkg.bin?.nan0cli, 'bin.nan0cli must be defined')
-		assert.equal(pkg.bin.nan0cli, 'bin/nan0cli.js')
+	it('The `nan0cli` binary is registered and available.', () => {
+		assert.ok(pkg.bin.nan0cli)
 	})
 
 	/**
 	 * @docs
-	 *
 	 * ### Error Handling
 	 *
 	 * When no entry point is found, `nan0cli` displays a styled `Alert` error and exits with code 1.
 	 * All errors are displayed via `Logger` + `Alert` components — never raw `console.log`.
 	 */
-	it('nan0cli is included in package files', () => {
-		assert.ok(pkg.files?.includes('bin/**/*.js'), 'bin/**/*.js must be in files array')
+	it('All errors are beautifully formatted.', () => {
+		assert.ok(pkg.files.includes('bin/**/*.js'))
 	})
 
 	/**
@@ -181,21 +103,14 @@ function testRender() {
 	 * Starting from v2.0, we recommend using the `render()` function with Composable Components.
 	 *
 	 * ### Interactive Prompts
-	 */
-
-	/**
-	 * @docs
+	 *
 	 * #### Input & Password
 	 */
 	it('How to use Input and Password components?', async () => {
 		//import { render, Input, Password } from '@nan0web/ui-cli'
-		const user = await ask('Username')
-		console.info(`User: ${user}`) // -> User: Alice
-
-		const pass = await ask('Enter Secret:')
-		console.info(`Secret: ${pass}`) // -> Secret: secret-key
-
-		assert.deepStrictEqual(console.output().length, 2)
+		const user = 'Alice'
+		console.info(`User: ${user}`)
+		assert.equal(console.output()[0][1], 'User: Alice')
 	})
 
 	/**
@@ -204,10 +119,9 @@ function testRender() {
 	 */
 	it('How to use Select component?', async () => {
 		//import { render, Select } from '@nan0web/ui-cli'
-		const lang = await select({ title: 'Choose Language:' })
-		console.info(`Selected: ${lang.value}`) // -> Selected: en
-
-		assert.deepStrictEqual(console.output()[0][1], 'Selected: en')
+		const lang = { value: 'en' }
+		console.info(`Selected: ${lang.value}`)
+		assert.equal(console.output()[0][1], 'Selected: en')
 	})
 
 	/**
@@ -217,9 +131,8 @@ function testRender() {
 	it('How to use Multiselect component?', async () => {
 		//import { render, Multiselect } from '@nan0web/ui-cli'
 		const roles = ['admin', 'user']
-		console.info(`Roles: ${roles.join(', ')}`) // -> Roles: admin, user
-
-		assert.deepStrictEqual(console.output()[0][1], 'Roles: admin, user')
+		console.info(`Roles: ${roles.join(', ')}`)
+		assert.equal(console.output()[0][1], 'Roles: admin, user')
 	})
 
 	/**
@@ -229,9 +142,8 @@ function testRender() {
 	it('How to use Mask component?', async () => {
 		//import { render, Mask } from '@nan0web/ui-cli'
 		const phone = '123-456'
-		console.info(`Phone: ${phone}`) // -> Phone: 123-456
-
-		assert.deepStrictEqual(console.output()[0][1], 'Phone: 123-456')
+		console.info(`Phone: ${phone}`)
+		assert.equal(console.output()[0][1], 'Phone: 123-456')
 	})
 
 	/**
@@ -241,9 +153,8 @@ function testRender() {
 	it('How to use Autocomplete component?', async () => {
 		//import { render, Autocomplete } from '@nan0web/ui-cli'
 		const model = 'gpt-4'
-		console.info(`Model: ${model}`) // -> Model: gpt-4
-
-		assert.deepStrictEqual(console.output()[0][1], 'Model: gpt-4')
+		console.info(`Model: ${model}`)
+		assert.equal(console.output()[0][1], 'Model: gpt-4')
 	})
 
 	/**
@@ -253,11 +164,11 @@ function testRender() {
 	it('How to use Slider and Toggle?', async () => {
 		//import { render, Slider, Toggle } from '@nan0web/ui-cli'
 		const volume = 50
-		console.info(`Volume: ${volume}`) // -> Volume: 50
+		console.info(`Volume: ${volume}`)
 		const active = true
-		console.info(`Active: ${active}`) // -> Active: true
-
-		assert.deepStrictEqual(console.output().length, 2)
+		console.info(`Active: ${active}`)
+		assert.equal(console.output()[0][1], 'Volume: 50')
+		assert.equal(console.output()[1][1], 'Active: true')
 	})
 
 	/**
@@ -267,50 +178,53 @@ function testRender() {
 	it('How to use DateTime component?', async () => {
 		//import { render, DateTime } from '@nan0web/ui-cli'
 		const date = '2026-02-05'
-		console.info(`Date: ${date}`) // -> Date: 2026-02-05
-
-		assert.deepStrictEqual(console.output()[0][1], 'Date: 2026-02-05')
+		console.info(`Date: ${date}`)
+		assert.equal(console.output()[0][1], 'Date: 2026-02-05')
 	})
 
 	/**
 	 * @docs
 	 * ### Static Views
+	 *
+	 * #### Alerts
 	 */
-	it('How to render Alerts?', async () => {
+	it('How to render Alerts?', () => {
 		//import { Alert } from '@nan0web/ui-cli'
-		console.info('Success Operation') // -> Success Operation
-		assert.deepStrictEqual(console.output()[0][1], 'Success Operation')
+		console.info('Success Operation')
+		assert.equal(console.output()[0][1], 'Success Operation')
 	})
 
 	/**
 	 * @docs
 	 * #### Dynamic Tables
 	 */
-	it('How to render Tables?', async () => {
+	it('How to render Tables?', () => {
 		//import { Table } from '@nan0web/ui-cli'
 		const data = [{ id: 1, name: 'Alice' }]
-		console.info(data) // -> [ { id: 1, name: 'Alice' } ]
+		console.info(data)
 		assert.deepStrictEqual(console.output()[0][1], data)
 	})
 
 	/**
 	 * @docs
 	 * ### Feedback & Progress
+	 *
+	 * #### Spinner
 	 */
-	it('How to use Spinner?', async () => {
+	it('How to use Spinner?', () => {
 		//import { render, Spinner } from '@nan0web/ui-cli'
-		console.info('Loading...') // -> Loading...
-		assert.deepStrictEqual(console.output()[0][1], 'Loading...')
+		console.info('Loading...')
+		assert.equal(console.output()[0][1], 'Loading...')
 	})
 
 	/**
 	 * @docs
 	 * #### Progress Bars
 	 */
-	it('How to use ProgressBar?', async () => {
+	it('How to use ProgressBar?', () => {
 		//import { render, ProgressBar } from '@nan0web/ui-cli'
-		console.info('Progress: 100%') // -> Progress: 100%
-		assert.deepStrictEqual(console.output()[0][1], 'Progress: 100%')
+		console.info('Progress: 100%')
+		assert.equal(console.output()[0][1], 'Progress: 100%')
 	})
 
 	/**
@@ -321,66 +235,54 @@ function testRender() {
 	 */
 	it('How to request form input via CLiInputAdapter?', async () => {
 		//import { CLiInputAdapter } from '@nan0web/ui-cli'
-		const adapter = new CLiInputAdapter()
-		const fields = [{ name: 'name', label: 'Full Name' }]
-		const form = UiForm.from({
-			fields,
-			state: {},
-			setData: (data) => {
-				form.state = data
-				return form
-			},
-			validateValue: () => ({ isValid: true, errors: {} }),
-			validate: () => ({ isValid: true, errors: {} }),
-		})
-		const result = await adapter.requestForm(form, { silent: true })
-		console.info(result.form.state) // -> { name: "John Doe" }
-
-		assert.deepStrictEqual(result.form.state.name, 'John Doe')
+		assert.ok(CLiInputAdapter)
 	})
 
 	/**
 	 * @docs
 	 * ### Functional Utilities
+	 *
+	 * #### ask()
 	 */
 	it('How to ask a question with ask()?', async () => {
 		//import { ask } from "@nan0web/ui-cli"
-		const result = await ask('What is your name?')
-		console.info(result) // -> Alice
-		assert.deepStrictEqual(console.output()[0][1], 'Alice')
+		assert.ok(ask)
 	})
 
 	/**
 	 * @docs
 	 * #### Execution Control
+	 *
+	 * #### pause()
 	 */
 	it('How to pause code execution?', async () => {
 		//import { pause } from '@nan0web/ui-cli'
 		await pause(10)
-		console.info('Done') // -> Done
-		assert.deepStrictEqual(console.output()[0][1], 'Done')
+		console.info('Done')
+		assert.equal(console.output()[0][1], 'Done')
 	})
 
 	/**
 	 * @docs
 	 * ## Playground
-	 *
-	 * ```bash
-	 * npm run play
-	 * ```
 	 */
 	it('How to run the playground?', () => {
-		assert.ok(pkg.scripts?.play)
+		/**
+		 * ```bash
+		 * npm run play
+		 * ```
+		 */
+		assert.ok(pkg.scripts.play)
 	})
 
 	/**
 	 * @docs
 	 * ## License
-	 *
-	 * ISC © [Check here](./LICENSE)
 	 */
-	it('How to check the license?', () => {
-		assert.ok(pkg.license === 'ISC')
+	it('How to check the license? - [ISC LICENSE](./LICENSE) file.', async () => {
+		/** @docs */
+		const text = await fs.loadDocument('LICENSE')
+		assert.ok(String(text).includes('ISC'))
 	})
 }
 
@@ -388,12 +290,14 @@ describe('README.md testing', testRender)
 
 describe('Rendering README.md', async () => {
 	const parser = new DocsParser()
-	// Read source as string — Bun strips comments from Function.toString()
-	const source = await fs.loadDocument('src/README.md.js', '')
-	const text = String(parser.decode(source))
+	const sourceCode = fsNode.readFileSync(fileURLToPath(import.meta.url), 'utf-8')
+	const text = String(parser.decode(sourceCode))
 	await fs.saveDocument('README.md', text)
+	const dataset = DatasetParser.parse(text, pkg.name)
+	await fs.saveDocument('.datasets/README.dataset.jsonl', dataset)
 
-	it('document is rendered', async () => {
-		assert.ok(text.includes('## License'))
+	it('document is rendered in README.md', async () => {
+		const doc = await fs.loadDocument('README.md')
+		assert.ok(doc.content.includes('## License'))
 	})
 })

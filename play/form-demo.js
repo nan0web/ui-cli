@@ -5,7 +5,7 @@
  */
 
 import Logger from '@nan0web/log'
-import Form from '../src/ui/form.js'
+import Form from '../src/ui/impl/form.js'
 
 /**
  * Simple User model with static schema for Form.
@@ -55,7 +55,7 @@ class User {
  * Run the form demo using CLIInputAdapter for input.
  *
  * @param {Logger} console - Logger instance.
- * @param {import("../src/InputAdapter.js").default} adapter - Input adapter for prompts.
+ * @param {import("../src/ui/core/InputAdapter.js").default} adapter - Input adapter for prompts.
  * @param {Function} t - Translation function.
  */
 export async function runFormDemo(console, adapter, t) {

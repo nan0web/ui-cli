@@ -7,7 +7,7 @@
 import { describe, it } from 'node:test'
 import assert from 'node:assert'
 import Logger from '@nan0web/log'
-import { PlaygroundTest } from '../src/test/index.js'
+import { PlaygroundTest } from '../src/ui/test/index.js'
 
 /**
  * Executes the main playground script with a given environment.
@@ -219,6 +219,27 @@ describe('playground demo flow', () => {
 		const clean = stripAnsi(stdout).toLowerCase()
 		assert.ok(clean.includes('v2'), 'Output should contain demo title')
 		console.log(clean); assert.ok(clean.includes('setup complete'), 'Output should confirm completion')
+	})
+
+	it('runs domain views demo then exits', async () => {
+		const { stdout, exitCode } = await runPlayground('domain-views', 'en', {
+			PLAY_DEMO_SEQUENCE: 'a',
+		})
+
+		assert.strictEqual(exitCode, 0)
+		const lines = cleanLines(stdout)
+		assert.ok(
+			lines.some((l) => l.includes('Domain Views Demo')),
+			'Output should contain demo title'
+		)
+		assert.ok(
+			lines.some((l) => l.includes('HERO')),
+			'Output should contain HERO section'
+		)
+		assert.ok(
+			lines.some((l) => l.includes('PRICING')),
+			'Output should contain PRICING section'
+		)
 	})
 })
 

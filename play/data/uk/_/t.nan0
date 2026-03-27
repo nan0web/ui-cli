@@ -1,0 +1,68 @@
+(empty): порожньо
+(loading...): завантаження...
+Action: Дія
+Add new item: Додати новий елемент
+Animated activity indicator.: Анімований індикатор активності
+Are you sure?: Ви впевнені?
+Back: Назад
+Choose: Обрати
+Complete answer: Завершити відповідь
+Confirm: Підтвердити
+Continue: Продовжити
+Data Table: Таблиця даних
+Delete: Видалити
+Done: Готово
+Duration to pause execution in milliseconds.: Тривалість паузи в мілісекундах.
+Edit: Редагувати
+Enter password: Введіть пароль
+Enter text to filter or type exit to quit: Введіть текст для фільтрації або exit для виходу
+Enter value: Введіть значення
+Error: Помилка
+Field is required: Поле обов'язкове для заповнення
+Format must be: Формат має бути
+Grab: Схопити
+Highlight option: Виділити варіант
+Input field with fixed formatting mask (e.g. phone number).: Поле вводу з фіксованою маскою форматування (наприклад, номер телефону).
+Instructions: Інструкції
+Interactive date and time picker.: Інтерактивний вибір дати та часу.
+Interactive drag-and-drop item reordering.: Інтерактивне перевпорядкування елементів.
+Interactive number range selector.: Інтерактивний вибір діапазону чисел.
+Interactive table with filtering and sorting.: Інтерактивна таблиця з фільтрацією та сортуванням.
+Navigate: Навігація
+Pick a date: Оберіть дату
+Processing...: Обробка...
+more: ще
+Progress: Прогрес
+Question or label for the input fields.: Питання або мітка для полів вводу.
+Question to be confirmed by user.: Питання для підтвердження користувачем.
+Recursive file or object tree selection.: Рекурсивний вибір у дереві файлів або об'єктів.
+Result: Результат
+Reorder items: Перевпорядкувати елементи
+Scrollable markdown content viewer.: Прокручувальний перегляд markdown контенту.
+Searchable input with real-time completion suggestions.: Ввід з пошуком та підказками в реальному часі.
+Secure mask for the password input field.: Захищена маска для поля вводу пароля.
+Select: Обрати
+Select a file: Оберіть файл
+Select an option: Оберіть варіант
+Select field to edit:: Оберіть поле для редагування:
+Select options: Оберіть варіанти
+Standard boolean switch (classic Yes/No toggle).: Стандартний булевий перемикач (класичне Так/Ні).
+Standard multi-selection checkboxes.: Стандартний вибір декількох варіантів.
+Standard radio-button selection list.: Стандартний список вибору (radio-buttons).
+Text to display before waiting for user action.: Текст для відображення перед очікуванням дії користувача.
+Tip Type to filter the list: Порада почніть писати для фільтрації списку
+Toggle: Перемикач
+Toggle all: Вибрати все
+Toggle selection: Перемкнути вибір
+Use arrow-keys. Enter to select. TAB for search.: Використовуйте стрілки. Enter для вибору. TAB для пошуку.
+Use arrow-keys. Space to toggle. Enter to submit. TAB for search.: Використовуйте стрілки. Пробіл для вибору. Enter для підтвердження. TAB для пошуку.
+Use arrows to move. Space to grab or drop. Enter to confirm.: Використовуйте стрілки. Пробіл для того щоб схопити або відпустити. Enter для підтвердження.
+Validation error: Помилка валідації
+Value: Значення
+Viewer: Перегляд
+Visual task completion indicator.: Візуальний індикатор завершення завдання.
+filter: фільтр
+no: ні
+none: немає
+selected: вибрано
+yes: так
