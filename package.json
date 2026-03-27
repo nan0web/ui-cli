@@ -8,9 +8,9 @@
 	"files": [
 		"src/**/*.js",
 		"!src/**/*.test.js",
-		"!src/README.md.js",
+		"!src/**/README.md.js",
 		"types/**/*.d.ts",
-		"!types/README.md.d.ts",
+		"!types/**/README.md.d.ts",
 		"bin/**/*.js"
 	],
 	"exports": {
@@ -20,7 +20,7 @@
 		},
 		"./test": {
 			"import": "./src/ui/test/index.js",
-			"types": "./types/test/index.d.ts"
+			"types": "./types/ui/test/index.d.ts"
 		},
 		"./ui/cli": "./play/examples/ExampleApp.js"
 	},

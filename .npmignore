@@ -4,5 +4,5 @@ chat/
 play/
 releases/
 system.md
-src/README.md.js
-types/README.md.d.ts
+src/**/README.md.js
+types/**/README.md.d.ts

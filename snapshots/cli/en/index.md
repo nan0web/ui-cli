@@ -1,6 +1,6 @@
 # Interface Gallery: 🇬🇧 Англійська мова
 
-[⬅ Back to main gallery](../../../CLI_GALLERY.md)
+[⬅ Back to main gallery](../index.md)
 
 ## Updated Today
 None
