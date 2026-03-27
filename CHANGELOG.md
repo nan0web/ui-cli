@@ -1,6 +1,6 @@
 # Changelog @nan0web/ui-cli
 
-## [2.8.0] — 2026-03-27
+## [2.9.0] — 2026-03-27
 
 ### Added
 - **Model-as-Schema v2**: All UI components are now fully driven by domain models.
