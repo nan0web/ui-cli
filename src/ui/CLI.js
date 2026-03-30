@@ -52,10 +52,9 @@ export default class CLi {
 			const cmd = Class.name.toLowerCase()
 			this.#commands.set(cmd, async function* (msg) {
 				const validated = new Class(msg.body)
-				/** @ts-ignore – only `content` needed for tests */
-				yield new OutputMessage({
+				yield new OutputMessage(/** @type {any} */ ({
 					content: [`Executed ${cmd} with body: ${JSON.stringify(validated.body)}`],
-				})
+				}))
 				if (typeof Class.run === 'function') yield* Class.run(validated)
 				if (typeof validated.run === 'function') yield* validated.run(msg)
 			})
@@ -72,10 +71,8 @@ export default class CLi {
 		// const command = msg?.body?.command ?? this.#parseCommandName()
 		const command =
 			msg?.body?.command ??
-			/** @ts-ignore */
-			msg?.value?.body?.command ??
-			/** @ts-ignore */
-			msg?.value?.command ??
+			(/** @type {any} */ (msg))?.value?.body?.command ??
+			(/** @type {any} */ (msg))?.value?.command ??
 			this.#parseCommandName()
 		const fn = this.#commands.get(command)
 
@@ -124,8 +121,7 @@ export default class CLi {
 		// 3. the array of help lines
 		const body = [['No commands defined for the CLi'], { command: 'help', msg: undefined }, lines]
 
-		/** @ts-ignore – only `content` needed for tests */
-		yield new OutputMessage({ body, content: lines })
+		yield new OutputMessage(/** @type {any} */ ({ body, content: lines }))
 	}
 
 	/**

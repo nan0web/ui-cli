@@ -17,8 +17,7 @@ import { ProjectModel } from '@nan0web/core'
 
 let CatalogWatcherModel
 try {
-	// @ts-ignore
-	const m = await import('../../catalog-watch/src/domain/CatalogWatcherModel.js')
+	const m = await import(`${'../../catalog-watch/src/domain/CatalogWatcherModel.js'}`)
 	CatalogWatcherModel = m.CatalogWatcherModel
 } catch {
 	// catalog-watch may not be installed — skip

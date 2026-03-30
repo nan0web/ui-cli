@@ -56,12 +56,10 @@ export class VirtualTerminal extends EventEmitter {
 			self.stdinBus?.removeListener(event, handler)
 			return process.stdin
 		}
-		// @ts-ignore
-		process.stdin.pause = () => {}
-		// @ts-ignore
-		process.stdin.resume = () => {}
-		// @ts-ignore
-		process.stdin.setRawMode = () => {}
+		const stdin = /** @type {any} */ (process.stdin)
+		stdin.pause = () => {}
+		stdin.resume = () => {}
+		stdin.setRawMode = () => {}
 	}
 
 	restore() {
@@ -69,8 +67,7 @@ export class VirtualTerminal extends EventEmitter {
 		if (this._handlers && this.stdinBus) {
 			for (const [event, handlers] of this._handlers) {
 				for (const h of handlers) {
-					// @ts-ignore
-					this.stdinBus.removeListener(event, h)
+					this.stdinBus.removeListener(event, /** @type {any} */ (h))
 				}
 			}
 		}
@@ -90,8 +87,7 @@ export class VirtualTerminal extends EventEmitter {
 	 */
 	sendKey(name, extra = {}) {
 		const key = { name, ...extra }
-		// @ts-ignore
-		const str = extra.sequence || '' // Common in readline
+		const str = (/** @type {any} */ (extra)).sequence || '' // Common in readline
 		if (this.stdinBus) this.stdinBus.emit('keypress', str, key)
 	}
 

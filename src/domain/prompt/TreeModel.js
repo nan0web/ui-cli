@@ -1,23 +1,25 @@
+import { Model } from '@nan0web/types'
+
 /**
  * Model describing the Tree navigation component parameters.
  */
-export class TreeModel {
-	static UI = 'Select a file'
+export class TreeModel extends Model {
+	static UI = { alias: ['message', 'label', 'labels'], default: 'Select a file' }
 	static help = 'Recursive file or object tree selection.'
-	static UI_HINT_SINGLE = 'Use arrow-keys. Enter to select. TAB for search.'
-	static UI_HINT_MULTI = 'Use arrow-keys. Space to toggle. Enter to submit. TAB for search.'
-	static UI_EMPTY = '(empty)'
-	static UI_LOADING = '(loading...)'
-	static UI_SELECTED = 'selected'
+	static UI_HINT_SINGLE = { default: 'Use arrow-keys. Enter to select. TAB for search.' }
+	static UI_HINT_MULTI = { default: 'Use arrow-keys. Space to toggle. Enter to submit. TAB for search.' }
+	static UI_EMPTY = { default: '(empty)' }
+	static UI_LOADING = { default: '(loading...)' }
+	static UI_SELECTED = { default: 'selected' }
 
 	/**
-	 * @param {Object|string} props 
+	 * @param {Partial<TreeModel> | Record<string, any>} [data] Input model data.
+	 * @param {object} [options] Options.
 	 */
-	constructor(props = {}) {
-		if (typeof props === 'string') props = { UI: props }
-		Object.assign(this, props)
-		this.UI = props.UI || props.message || props.label || TreeModel.UI
-		this.multiple = !!props.multiple
-		this.UI_HINT = props.multiple ? TreeModel.UI_HINT_MULTI : TreeModel.UI_HINT_SINGLE
+	constructor(data = {}, options = {}) {
+		super(data, options)
+		/** @type {string} The message or label. */ this.UI
+		/** @type {boolean} Selection mode. */ this.multiple
+		/** @type {string} Instruction hint. */ this.UI_HINT = this.multiple ? TreeModel.UI_HINT_MULTI.default : TreeModel.UI_HINT_SINGLE.default
 	}
 }

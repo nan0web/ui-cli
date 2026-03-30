@@ -1,6 +1,7 @@
 import { generateForm } from '../impl/form.js'
 import { renderMarkdown } from '../impl/markdown.js'
 import { SelectModel } from '../../domain/prompt/SelectModel.js'
+import { ToggleModel } from '../../domain/prompt/ToggleModel.js'
 
 /**
  * Handles mapping OLMUI intents to CLI InputAdapter methods.
@@ -116,6 +117,9 @@ export default class IntentDispatcher {
 				return await this.adapter.requestSortable(config)
 			case 'DateTime':
 				return await this.adapter.requestDateTime(config)
+			case 'Button':
+				// Buttons in CLI are essentially "Confirm to proceed" or simple triggers
+				return await this.adapter.requestConfirm({ ...config, active: t(intent.model?.content || ToggleModel.UI_YES), inactive: t(ToggleModel.UI_NO) })
 			case 'ContentViewer': {
 				const { markdownViewer } = await import('../impl/markdown.js')
 				return await markdownViewer(config)
@@ -159,7 +163,14 @@ export default class IntentDispatcher {
 	 */
 	async logIntent(intent) {
 		const t = this.adapter.t.bind(this.adapter)
-		const { type, level, message, hint, ...extra } = intent
+		const { type, level, message, hint, component, ...extra } = intent
+		
+		if (component) {
+			const props = typeof message === 'object' ? { ...message, ...extra } : { content: message, ...extra }
+			await this.adapter.render(component, props)
+			return
+		}
+
 		const msg = t(message)
 		
 		if (hint === 'markdown') {

@@ -45,8 +45,7 @@ export default class CommandParser {
 				if (this.Messages.length === 1) RootClass = this.Messages[0]
 				else throw new Error(`Unknown root command: ${rootName}`)
 			}
-			// @ts-ignore – `RootClass` may not be a concrete `Message` subclass from TS view
-			const rootMessage = new RootClass({})
+			const rootMessage = new (/** @type {any} */ (RootClass))({})
 			if (rootName) {
 				if (!rootMessage.head) rootMessage.head = {}
 				rootMessage.head.name = rootName
@@ -55,9 +54,7 @@ export default class CommandParser {
 		}
 
 		if (this.Messages.length !== 1) throw new Error('Unable to infer root command from options')
-		// @ts-ignore – see comment above
-		const RootClass = this.Messages[0]
-		// @ts-ignore
+		const RootClass = /** @type {any} */ (this.Messages[0])
 		const rootMessage = new RootClass({})
 		if (!rootMessage.head) rootMessage.head = {}
 		return this.#processMessageTree(rootMessage, remaining)
@@ -74,17 +71,15 @@ export default class CommandParser {
 		let currentMessage = rootMessage
 		let remaining = remainingTokens
 
-		// @ts-ignore – `Children` is a static property on concrete message classes
-		while (currentMessage.constructor.Children && remaining.length) {
+		const children = /** @type {any} */ (currentMessage.constructor).Children
+		while (children && remaining.length) {
 			const subName = remaining[0]
-			// @ts-ignore
-			const SubClass = currentMessage.constructor.Children.find(
-				(cls) => cls.name.toLowerCase() === subName.toLowerCase()
+			const SubClass = children.find(
+				(/** @type {any} */ cls) => cls.name.toLowerCase() === subName.toLowerCase()
 			)
 			if (!SubClass) break
 
-			// @ts-ignore
-			const subMessage = new SubClass({})
+			const subMessage = new (/** @type {any} */ (SubClass))({})
 			subMessage.name = subName
 			currentMessage.body.subCommand = subMessage
 			currentMessage = subMessage
@@ -94,8 +89,7 @@ export default class CommandParser {
 		if (remaining.length) {
 			const parsedBody = this.#parseLeafBody(
 				remaining,
-				// @ts-ignore – `Body` may be undefined on some classes
-				currentMessage.constructor.Body
+				/** @type {any} */ (currentMessage.constructor).Body
 			)
 			currentMessage.body = { ...currentMessage.body, ...parsedBody }
 		}

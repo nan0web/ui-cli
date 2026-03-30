@@ -1,17 +1,21 @@
+import { Model } from '@nan0web/types'
+
 /**
  * Model describing the DateTime component parameters.
  */
-export class DateTimeModel {
-	static UI = 'Pick a date'
+export class DateTimeModel extends Model {
+	static UI = { alias: ['message', 'label', 'labels'], default: 'Pick a date' }
 	static help = 'Interactive date and time picker.'
+	static initial = { default: null }
 
 	/**
-	 * @param {Object|string} props 
+	 * @param {Partial<DateTimeModel> | Record<string, any>} [data] Input model data.
+	 * @param {object} [options] Options.
 	 */
-	constructor(props = {}) {
-		if (typeof props === 'string') props = { UI: props }
-		Object.assign(this, props)
-		this.UI = props.UI || props.message || props.label || DateTimeModel.UI
-		this.initial = props.initial instanceof Date ? props.initial : new Date()
+	constructor(data = {}, options = {}) {
+		super(data, options)
+		/** @type {string} The message or label. */ this.UI
+		/** @type {Date|string|number|null} Initial date. */ this.initial
 	}
 }
+

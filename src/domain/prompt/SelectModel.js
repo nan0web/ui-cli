@@ -1,24 +1,30 @@
+import { Model } from '@nan0web/types'
+
 /**
  * Model describing the Select component (Radio-button list).
  */
-export class SelectModel {
-	static UI = 'Select an option'
+export class SelectModel extends Model {
+	static UI = { alias: ['message', 'label', 'labels'], default: 'Select an option' }
 	static help = 'Standard radio-button selection list.'
-	static UI_HINT = 'Use arrow-keys. Enter to select. TAB for search.'
-	static UI_MORE = 'more'
-	static UI_RESULT = 'Result'
-	static UI_PROMPT = 'Select field to edit:'
-	static initial = 0
+	static UI_HINT = { alias: 'hint', default: 'Use arrow-keys. Enter to select. TAB for search.' }
+	static UI_MORE = { default: 'more' }
+	static UI_RESULT = { default: 'Result' }
+	static UI_PROMPT = { default: 'Select field to edit:' }
+	static initial = { default: 0 }
+	static options = { default: [] }
 
 	/**
-	 * @param {Object|string} props 
+	 * @param {Partial<SelectModel> | Record<string, any>} [data] Input model data.
+	 * @param {object} [options] Options.
 	 */
-	constructor(props = {}) {
-		if (typeof props === 'string') props = { UI: props }
-		Object.assign(this, props)
-		this.UI = props.UI || props.message || props.label || SelectModel.UI
-		this.UI_HINT = props.UI_HINT || props.hint || SelectModel.UI_HINT
-		this.initial = props.initial !== undefined ? props.initial : SelectModel.initial
-		this.options = props.options || []
+	constructor(data = {}, options = {}) {
+		super(data, options)
+		/** @type {string} The message or label. */ this.UI
+		/** @type {string} Hint text. */ this.UI_HINT
+		/** @type {string} More label. */ this.UI_MORE
+		/** @type {string} Result label. */ this.UI_RESULT
+		/** @type {string} Prompt label. */ this.UI_PROMPT
+		/** @type {number} Initial index. */ this.initial
+		/** @type {Array<any>} Options array. */ this.options
 	}
 }

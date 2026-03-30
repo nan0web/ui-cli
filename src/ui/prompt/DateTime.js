@@ -11,9 +11,12 @@ export { DateTimeModel }
 export function DateTime(props) {
 	const model = new DateTimeModel(props)
 	return createPrompt('DateTime', model, async (p) => {
+		const initialDate = p.initial instanceof Date ? p.initial : new Date(p.initial || Date.now())
+
 		return await datetime({
 			...p,
-			message: p.UI
+			message: p.UI,
+			initial: initialDate
 		})
 	})
 }

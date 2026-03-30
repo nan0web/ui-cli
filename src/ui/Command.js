@@ -127,8 +127,8 @@ export default class Command {
 			if (typeof this.run === 'function') yield* this.run(message)
 		} catch (e) {
 			if (e instanceof CommandError) throw e
-			/** @ts-ignore */
-			throw new CommandError('Command execution failed', { message: e.message, stack: e.stack })
+			const err = /** @type {any} */ (e)
+			throw new CommandError('Command execution failed', { message: err.message, stack: err.stack })
 		}
 	}
 

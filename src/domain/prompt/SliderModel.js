@@ -1,24 +1,26 @@
+import { Model } from '@nan0web/types'
+
 /**
  * Model describing the Slider (Number range) component.
  */
-export class SliderModel {
-	static UI = 'Value'
+export class SliderModel extends Model {
+	static UI = { alias: ['message', 'label', 'labels'], default: 'Value' }
 	static help = 'Interactive number range selector.'
-	static min = 0
-	static max = 100
-	static step = 1
-	static initial = 50
+	static min = { default: 0 }
+	static max = { default: 100 }
+	static step = { default: 1 }
+	static initial = { default: 0 }
 
 	/**
-	 * @param {Object|string} props 
+	 * @param {Partial<SliderModel> | Record<string, any>} [data] Input model data.
+	 * @param {object} [options] Options.
 	 */
-	constructor(props = {}) {
-		if (typeof props === 'string') props = { UI: props }
-		Object.assign(this, props)
-		this.UI = props.UI || props.message || props.label || SliderModel.UI
-		this.min = props.min !== undefined ? props.min : SliderModel.min
-		this.max = props.max !== undefined ? props.max : SliderModel.max
-		this.step = props.step !== undefined ? props.step : SliderModel.step
-		this.initial = props.initial !== undefined ? props.initial : SliderModel.initial
+	constructor(data = {}, options = {}) {
+		super(data, options)
+		/** @type {string} The message or label. */ this.UI
+		/** @type {number} Minimum. */ this.min
+		/** @type {number} Maximum. */ this.max
+		/** @type {number} Step size. */ this.step
+		/** @type {number} Initial value. */ this.initial
 	}
 }

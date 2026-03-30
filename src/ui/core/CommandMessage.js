@@ -165,8 +165,7 @@ export default class CommandMessage extends Message {
 					}
 				}
 			} else {
-				/** @ts-ignore */
-				result.argv.push(cur)
+				/** @type {string[]} */ (result.argv).push(cur)
 			}
 			i++
 		}
@@ -174,8 +173,7 @@ export default class CommandMessage extends Message {
 		if (BodyClass) {
 			const body = new BodyClass(result.opts)
 			msg.body = body
-			/** @ts-ignore */
-			const errors = body.getErrors?.() || {}
+			const errors = typeof (/** @type {any} */ (body).getErrors) === 'function' ? (/** @type {any} */ (body).getErrors()) : {}
 			if (Object.keys(errors).length) throw new CommandError('Validation failed', { errors })
 		}
 		return msg
@@ -190,8 +188,7 @@ export default class CommandMessage extends Message {
 	static from(input) {
 		if (input instanceof CommandMessage) return input
 		if (input instanceof Message) {
-			/** @ts-ignore */
-			return new CommandMessage({ body: input.body, name: input.name || '' })
+			return new CommandMessage({ body: input.body, name: (/** @type {any} */ (input)).name || input.head?.name || '' })
 		}
 		return new CommandMessage(input)
 	}

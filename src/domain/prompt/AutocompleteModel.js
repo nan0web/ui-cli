@@ -1,19 +1,22 @@
+import { Model } from '@nan0web/types'
+
 /**
  * Model describing the Autocomplete component parameters.
  */
-export class AutocompleteModel {
-	static UI = 'Choose'
+export class AutocompleteModel extends Model {
+	static UI = { alias: ['message', 'label', 'labels'], default: 'Choose' }
 	static help = 'Searchable input with real-time completion suggestions.'
-	static UI_HINT = 'Tip Type to filter the list'
+	static UI_HINT = { alias: 'hint', default: 'Tip Type to filter the list' }
+	static options = { default: [] }
 
 	/**
-	 * @param {Object|string} props 
+	 * @param {Partial<AutocompleteModel> | Record<string, any>} [data] Input model data.
+	 * @param {object} [options] Options.
 	 */
-	constructor(props = {}) {
-		if (typeof props === 'string') props = { UI: props }
-		Object.assign(this, props)
-		this.UI = props.UI || props.message || props.label || AutocompleteModel.UI
-		this.UI_HINT = props.UI_HINT || props.hint || AutocompleteModel.UI_HINT
-		this.options = props.options || []
+	constructor(data = {}, options = {}) {
+		super(data, options)
+		/** @type {string} The message or label. */ this.UI
+		/** @type {string} Tip Type to filter the list. */ this.UI_HINT
+		/** @type {Array<any>} Options array. */ this.options
 	}
 }

@@ -1,20 +1,22 @@
+import { Model } from '@nan0web/types'
+
 /**
  * Model describing the Spinner activity component.
  */
-export class SpinnerModel {
-	static UI = 'Processing...'
+export class SpinnerModel extends Model {
+	static UI = { alias: ['message', 'label', 'labels'], default: 'Processing...' }
 	static help = 'Animated activity indicator.'
-	static UI_DONE = 'Done'
-	static UI_ERROR = 'Error'
+	static UI_DONE = { alias: 'done', default: 'Done' }
+	static UI_ERROR = { alias: 'error', default: 'Error' }
 
 	/**
-	 * @param {Object|string} props 
+	 * @param {Partial<SpinnerModel> | Record<string, any>} [data] Input model data.
+	 * @param {object} [options] Options.
 	 */
-	constructor(props = {}) {
-		if (typeof props === 'string') props = { UI: props }
-		Object.assign(this, props)
-		this.UI = props.UI || props.message || props.label || SpinnerModel.UI
-		this.UI_DONE = props.UI_DONE || props.done || SpinnerModel.UI_DONE
-		this.UI_ERROR = props.UI_ERROR || props.error || SpinnerModel.UI_ERROR
+	constructor(data = {}, options = {}) {
+		super(data, options)
+		/** @type {string} The message or label. */ this.UI
+		/** @type {string} Status on completion. */ this.UI_DONE
+		/** @type {string} Status on error. */ this.UI_ERROR
 	}
 }

@@ -78,7 +78,7 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 			console: initialConsole = console,
 			stdout = process.stdout,
 			components = new Map(),
-			t = (key) => key,
+			t = (key, _vars) => key,
 		} = options
 
 		let { maxRetries = process.env.UI_CLI_MAX_RETRIES ?? DEFAULT_MAX_RETRIES } = options
@@ -325,8 +325,8 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 	async render(component, props) {
 		const builtIns = [
 			'Alert', 'Badge', 'Table', 'Breadcrumbs', 'Tabs', 'Steps', 'Toast',
-			'Banner', 'Hero', 'Pricing', 'Stats', 'Timeline', 'Testimonials',
-			'Accordion', 'Gallery', 'EmptyState', 'Header', 'Footer',
+			'Banner', 'Hero', 'Pricing', 'PricingSection', 'Stats', 'Timeline', 'Testimonials',
+			'Accordion', 'FAQ', 'Gallery', 'EmptyState', 'Header', 'Footer',
 			'Message', 'Init'
 		]
 		
@@ -349,7 +349,8 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 					compFn = compFn.default
 				}
 				if (typeof compFn === 'function') {
-					compFn.call(this, props)
+					const out = compFn.call(this, props)
+					this.console.info(String(out))
 					return
 				}
 			} catch (/** @type {any} */ err) {
@@ -364,6 +365,23 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 		} else {
 			this.console.info(String(component))
 		}
+	}
+
+	// ─── OLMUI Intent Handlers ───
+
+	/** @param {Object} intent */
+	async log(intent) {
+		return await this.dispatcher.logIntent(intent)
+	}
+
+	/** @param {Object} intent */
+	async progress(intent) {
+		return await this.dispatcher.progressIntent(intent)
+	}
+
+	/** @param {Object} intent */
+	async result(intent) {
+		return await this.dispatcher.resultIntent(intent)
 	}
 
 	/**
@@ -842,14 +860,19 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 	}
 
 	/**
-	 * Asks user a question or form and returns the completed form
-	 * @param {string | UiForm} question
+	 * Asks user a question or form, or handles an OLMUI intent.
+	 * @param {string | UiForm | Object} question
 	 * @param {object} [options={}]
 	 *
 	 */
 	async ask(question, options = {}) {
-		if (question instanceof UiForm) {
-			return await this.requestForm(question, options)
+		if (question && typeof question === 'object') {
+			if (question instanceof UiForm) {
+				return await this.requestForm(question, options)
+			}
+			if (question.type === 'ask') {
+				return await this.dispatcher.askIntent(question)
+			}
 		}
 		const predefined = this.answerQueue.next()
 		if (predefined !== null) {

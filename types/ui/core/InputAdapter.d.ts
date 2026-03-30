@@ -74,6 +74,15 @@ export default class CLiInputAdapter extends BaseInputAdapter {
      * @returns {Promise<void>}
      */
     render(component: string, props: object): Promise<void>;
+    /** @param {Object} intent */
+    log(intent: any): Promise<void>;
+    /** @param {Object} intent */
+    progress(intent: any): Promise<{
+        onData: (chunk: any) => void;
+        onEnd: () => void;
+    } | undefined>;
+    /** @param {Object} intent */
+    result(intent: any): Promise<void>;
     /**
      * Process a full form – thin wrapper around {@link requestForm}.
      *
@@ -223,12 +232,12 @@ export default class CLiInputAdapter extends BaseInputAdapter {
         cancelled: boolean;
     }>;
     /**
-     * Asks user a question or form and returns the completed form
-     * @param {string | UiForm} question
+     * Asks user a question or form, or handles an OLMUI intent.
+     * @param {string | UiForm | Object} question
      * @param {object} [options={}]
      *
      */
-    ask(question: string | UiForm, options?: object): Promise<any>;
+    ask(question: string | UiForm | any, options?: object): Promise<any>;
     /**
      * Map an OLMUI Intent to the corresponding CLI interaction.
      *

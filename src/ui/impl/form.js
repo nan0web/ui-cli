@@ -59,7 +59,7 @@ export function generateForm(BodyClass, options = {}) {
 		fields.push(
 			new FormInput({
 				...schema, 
-				name,
+				name: schema.alias || name,
 				label: translate(schema.help || name),
 				type,
 				required: Boolean(schema.required),
@@ -152,12 +152,9 @@ export default class Form {
 					type,
 					required,
 					placeholder: this.t(String(f.placeholder || '')),
-					// @ts-ignore - min/max/step are dynamically attached to FormInput in some cases
-					min: f.min,
-					// @ts-ignore
-					max: f.max,
-					// @ts-ignore
-					step: f.step,
+					min: /** @type {any} */ (f).min,
+					max: /** @type {any} */ (f).max,
+					step: /** @type {any} */ (f).step,
 					options: Array.isArray(f.options)
 						? f.options.map((opt) => {
 								if (typeof opt === 'string') return { label: this.t(opt), value: opt }
@@ -181,8 +178,7 @@ export default class Form {
 							}
 						: () => true,
 					schema: f,
-					// @ts-ignore
-					mask: f.mask,
+					mask: /** @type {any} */ (f).mask,
 				}
 			})
 		} else {
@@ -238,7 +234,7 @@ export default class Form {
 			if (type === 'date') type = 'datetime'
 
 			fields.push({
-				name,
+				name: schema.alias || name,
 				label: this.t(schema.help || name),
 				type,
 				required: isRequired,
@@ -343,15 +339,12 @@ export default class Form {
 					result = await autocompleteFn({
 						message: promptMsg,
 						options: field.options,
-						// @ts-ignore
-						initial: currentValue,
-						t: this.t,
+						limit: 30,
 					})
 				} else if (field.type === 'multiselect') {
 					result = await multiselectFn({
 						message: promptMsg,
 						options: field.options,
-						// @ts-ignore
 						initial: Array.isArray(currentValue) ? currentValue : [],
 						t: this.t,
 					})
@@ -359,8 +352,6 @@ export default class Form {
 					result = await maskFn({
 						message: promptMsg,
 						mask: field.mask,
-						// @ts-ignore
-						initial: currentValue,
 						t: this.t,
 					})
 				} else if (field.type === 'datetime' || field.type === 'date') {
@@ -373,15 +364,11 @@ export default class Form {
 					result = await toggleFn({
 						message: promptMsg,
 						initial: currentValue === true || currentValue === 'true',
-						// @ts-ignore
-						t: this.t,
 					})
 				} else if (field.type === 'confirm') {
 					result = await confirmFn({
 						message: promptMsg,
 						initial: currentValue === true || currentValue === 'true',
-						// @ts-ignore
-						t: this.t,
 					})
 				} else if (
 					field.type === 'slider' ||
@@ -458,13 +445,11 @@ export default class Form {
 								const itemSchema = field.item || (arr.length > 0 ? arr[0] : null)
 								for (const k of Object.keys(template)) {
 									const fieldSchema =
-										itemSchema && typeof itemSchema === 'object' && itemSchema[k]
-											? itemSchema[k]
-											: {}
-									const valSample = arr.length > 0 && typeof arr[0] === 'object' ? arr[0][k] : null
-
-									// @ts-ignore - dynamic construction
-									ArrayElement[k] = {
+										itemSchema && /** @type {any} */ (itemSchema)[k]
+											? /** @type {any} */ (itemSchema)[k]
+											: {};
+									const valSample = arr.length > 0 && typeof arr[0] === 'object' ? /** @type {any} */ (arr[0])[k] : null;
+									/** @type {any} */ (ArrayElement)[k] = {
 										...fieldSchema,
 										type:
 											fieldSchema.type ||
@@ -475,8 +460,7 @@ export default class Form {
 													: 'text'),
 									}
 								}
-								// @ts-ignore - dynamic class
-								const subForm = Form.createFromBodySchema(ArrayElement, {}, this.options)
+								const subForm = Form.createFromBodySchema(/** @type {any} */ (ArrayElement), {}, this.options)
 								const subRes = await subForm.requireInput()
 								if (!subRes.cancelled) arr.push({ ...subForm.body })
 							} else {
@@ -530,11 +514,10 @@ export default class Form {
 										const itemSchema = field.item || {}
 										for (const [k, v] of Object.entries(itemToEdit)) {
 											const fieldSchema =
-												itemSchema && typeof itemSchema === 'object' && itemSchema[k]
-													? itemSchema[k]
-													: {}
-											// @ts-ignore
-											ArrayElement[k] = {
+												itemSchema && /** @type {any} */ (itemSchema)[k]
+													? /** @type {any} */ (itemSchema)[k]
+													: {};
+											/** @type {any} */ (ArrayElement)[k] = {
 												...fieldSchema,
 												type:
 													fieldSchema.type ||
@@ -545,7 +528,6 @@ export default class Form {
 															: 'text'),
 											}
 										}
-										// @ts-ignore
 										const subForm = Form.createFromBodySchema(
 											/** @type {any} */ (ArrayElement),
 											itemToEdit,

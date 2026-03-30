@@ -1,55 +1,68 @@
-export function Banner(props?: {}): {
+/** @typedef {(key: string, vars?: Record<string, any>) => string} TFunction */
+/** @this {import('../core/InputAdapter.js').default} */
+export function Banner(this: import("../core/InputAdapter.js").default, props?: {}): {
     $$typeof: symbol;
     type: string;
     props: any;
 };
-export function Hero(props?: {}): {
+/** @this {import('../core/InputAdapter.js').default} */
+export function Hero(this: import("../core/InputAdapter.js").default, props?: {}): {
     $$typeof: symbol;
     type: string;
     props: any;
 };
-export function Pricing(props?: {}): {
+/** @this {import('../core/InputAdapter.js').default} */
+export function Pricing(this: import("../core/InputAdapter.js").default, props?: {}): {
     $$typeof: symbol;
     type: string;
     props: any;
 };
-export function Stats(props?: {}): {
+/** @this {import('../core/InputAdapter.js').default} */
+export function Stats(this: import("../core/InputAdapter.js").default, props?: {}): {
     $$typeof: symbol;
     type: string;
     props: any;
 };
-export function Timeline(props?: {}): {
+/** @this {import('../core/InputAdapter.js').default} */
+export function Timeline(this: import("../core/InputAdapter.js").default, props?: {}): {
     $$typeof: symbol;
     type: string;
     props: any;
 };
-export function Testimonials(props?: {}): {
+/** @this {import('../core/InputAdapter.js').default} */
+export function Testimonials(this: import("../core/InputAdapter.js").default, props?: {}): {
     $$typeof: symbol;
     type: string;
     props: any;
 };
-export function Accordion(props?: {}): {
+/** @this {import('../core/InputAdapter.js').default} */
+export function Accordion(this: import("../core/InputAdapter.js").default, props?: {}): {
     $$typeof: symbol;
     type: string;
     props: any;
 };
-export function Gallery(props?: {}): {
+/** @this {import('../core/InputAdapter.js').default} */
+export function Gallery(this: import("../core/InputAdapter.js").default, props?: {}): {
     $$typeof: symbol;
     type: string;
     props: any;
 };
-export function EmptyState(props?: {}): {
+/** @this {import('../core/InputAdapter.js').default} */
+export function EmptyState(this: import("../core/InputAdapter.js").default, props?: {}): {
     $$typeof: symbol;
     type: string;
     props: any;
 };
-export function Header(props?: {}): {
+/** @this {import('../core/InputAdapter.js').default} */
+export function Header(this: import("../core/InputAdapter.js").default, props?: {}): {
     $$typeof: symbol;
     type: string;
     props: any;
 };
-export function Footer(props?: {}): {
+/** @this {import('../core/InputAdapter.js').default} */
+export function Footer(this: import("../core/InputAdapter.js").default, props?: {}): {
     $$typeof: symbol;
     type: string;
     props: any;
 };
+export type TFunction = (key: string, vars?: Record<string, any>) => string;

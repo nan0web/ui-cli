@@ -1,22 +1,26 @@
+import { Model } from '@nan0web/types'
+
 /**
  * Model describing the Input component parameters.
  */
-export class InputModel {
-	static UI = 'Enter value'
+export class InputModel extends Model {
+	static UI = { alias: ['message', 'label', 'labels'], default: 'Enter value' }
 	static help = 'Question or label for the input fields.'
-	static initial = ''
-	static type = 'text'
+	static initial = { alias: 'defaultValue', default: '' }
+	static type = { default: 'text' }
+	static validate = { alias: 'validator' }
+	static format = { default: null }
 
 	/**
-	 * @param {Object|string} props 
+	 * @param {Partial<InputModel> | Record<string, any>} [data] Input model data.
+	 * @param {object} [options] Options.
 	 */
-	constructor(props = {}) {
-		if (typeof props === 'string') props = { UI: props }
-		Object.assign(this, props)
-		this.UI = props.UI || props.message || props.label || InputModel.UI
-		this.initial = props.initial !== undefined ? props.initial : (props.defaultValue || InputModel.initial)
-		this.type = props.type || InputModel.type
-		this.validate = props.validate || props.validator
-		this.format = props.format
+	constructor(data = {}, options = {}) {
+		super(data, options)
+		/** @type {string} The message or label. */ this.UI
+		/** @type {string} Initial value. */ this.initial
+		/** @type {string} Input type. */ this.type
+		/** @type {(input?: any, answers?: any) => any} Validation function. */ this.validate
+		/** @type {string|null} Format string. */ this.format
 	}
 }

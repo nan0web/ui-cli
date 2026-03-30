@@ -1,16 +1,27 @@
 /**
  * Model describing the Spinner activity component.
  */
-export class SpinnerModel {
-    static UI: string;
+export class SpinnerModel extends Model {
+    static UI: {
+        alias: string[];
+        default: string;
+    };
     static help: string;
-    static UI_DONE: string;
-    static UI_ERROR: string;
+    static UI_DONE: {
+        alias: string;
+        default: string;
+    };
+    static UI_ERROR: {
+        alias: string;
+        default: string;
+    };
     /**
-     * @param {Object|string} props
+     * @param {Partial<SpinnerModel> | Record<string, any>} [data] Input model data.
+     * @param {object} [options] Options.
      */
-    constructor(props?: any | string);
-    UI: any;
-    UI_DONE: any;
-    UI_ERROR: any;
+    constructor(data?: Partial<SpinnerModel> | Record<string, any>, options?: object);
+    /** @type {string} The message or label. */ UI: string;
+    /** @type {string} Status on completion. */ UI_DONE: string;
+    /** @type {string} Status on error. */ UI_ERROR: string;
 }
+import { Model } from '@nan0web/types';

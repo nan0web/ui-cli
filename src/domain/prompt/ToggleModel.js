@@ -1,22 +1,25 @@
+import { Model } from '@nan0web/types'
+
 /**
  * Model describing the Toggle (Yes/No Switch) component.
  */
-export class ToggleModel {
-	static UI = 'Toggle'
+export class ToggleModel extends Model {
+	static UI = { alias: ['message', 'label', 'labels'], default: 'Toggle' }
 	static help = 'Standard boolean switch (classic Yes/No toggle).'
-	static UI_YES = 'yes'
-	static UI_NO = 'no'
-	static initial = false
+	static UI_YES = { alias: 'active', default: 'yes' }
+	static UI_NO = { alias: 'inactive', default: 'no' }
+	static initial = { default: false }
 
 	/**
-	 * @param {Object|string} props 
+	 * @param {Partial<ToggleModel> | Record<string, any> | boolean} [data] Input model data or initial state.
+	 * @param {object} [options] Options.
 	 */
-	constructor(props = {}) {
-		if (typeof props === 'string') props = { UI: props }
-		Object.assign(this, props)
-		this.UI = props.UI || props.message || props.label || ToggleModel.UI
-		this.UI_YES = props.UI_YES || props.active || ToggleModel.UI_YES
-		this.UI_NO = props.UI_NO || props.inactive || ToggleModel.UI_NO
-		this.initial = props.initial !== undefined ? !!props.initial : ToggleModel.initial
+	constructor(data = {}, options = {}) {
+		if (typeof data === 'boolean') data = { initial: data }
+		super(data, options)
+		/** @type {string} The message or label. */ this.UI
+		/** @type {string} Active label. */ this.UI_YES
+		/** @type {string} Inactive label. */ this.UI_NO
+		/** @type {boolean} Initial state. */ this.initial
 	}
 }

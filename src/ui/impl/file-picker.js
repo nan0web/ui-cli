@@ -89,12 +89,9 @@ export async function filePicker(config = {}) {
 					}
 				})
 				.filter((a) => a !== null)
-				.sort((a, b) => {
-					// @ts-ignore
+				.sort((/** @type {any} */ a, /** @type {any} */ b) => {
 					if (a.type === 'dir' && b.type === 'file') return -1
-					// @ts-ignore
 					if (a.type === 'file' && b.type === 'dir') return 1
-					// @ts-ignore
 					return a.name.localeCompare(b.name)
 				})
 
