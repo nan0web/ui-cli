@@ -99,6 +99,11 @@ export function renderMarkdown(content) {
  * @param {number} [config.offset] - Initial scroll offset.
  * @param {number} [config.focusedIndex] - Initial focused interactive element index.
  * @param {Function} [config.t] - Translation function.
+ * @param {string} [config.UI_SELECT] - Selection label.
+ * @param {string} [config.UI_FOCUS] - Focus label.
+ * @param {string} [config.UI_SCROLL] - Scroll label.
+ * @param {string} [config.UI_BACK] - Back label.
+
  * @param {Object} [config.console] - Logger instance.
  * @returns {Promise<{value: any, type?: string, action?: string, cancelled: boolean}>}}
  *   - value: selected item (link object, form model, etc.)
@@ -313,10 +318,10 @@ export async function markdownViewer(config) {
 		out += lines.map(l => `${Logger.style(l.gutter, {color: Logger.DIM})} ${l.text}`).join('\n')
 		const percent = Math.min(100, Math.round((limit / lines.length) * 100))
 		
-		const labelSelect = t(ContentViewerModel.UI_SELECT.default)
-		const labelFocus = t(ContentViewerModel.UI_FOCUS.default)
-		const labelScroll = t(ContentViewerModel.UI_SCROLL.default)
-		const labelBack = t(ContentViewerModel.UI_BACK.default)
+		const labelSelect = t(config.UI_SELECT || ContentViewerModel.UI_SELECT.default)
+		const labelFocus = t(config.UI_FOCUS || ContentViewerModel.UI_FOCUS.default)
+		const labelScroll = t(config.UI_SCROLL || ContentViewerModel.UI_SCROLL.default)
+		const labelBack = t(config.UI_BACK || ContentViewerModel.UI_BACK.default)
 		
 		const footerTextRaw = `[ ${percent}% ] ${labelFocus}: ${interactives.length} | [Enter] ${labelSelect} [Esc] ${labelBack}`
 		
@@ -437,10 +442,10 @@ export async function markdownViewer(config) {
 		const percent = Math.min(100, Math.round(((visibleOffset + limit) / Math.max(1, lines.length)) * 100))
 		let focusSummary = interactives.length > 0 ? ` [${focusedIndex + 1}/${interactives.length}]` : ''
 		
-		const labelSelect = t(ContentViewerModel.UI_SELECT.default)
-		const labelFocus = t(ContentViewerModel.UI_FOCUS.default)
-		const labelScroll = t(ContentViewerModel.UI_SCROLL.default)
-		const labelBack = t(ContentViewerModel.UI_BACK.default)
+		const labelSelect = t(config.UI_SELECT || ContentViewerModel.UI_SELECT.default)
+		const labelFocus = t(config.UI_FOCUS || ContentViewerModel.UI_FOCUS.default)
+		const labelScroll = t(config.UI_SCROLL || ContentViewerModel.UI_SCROLL.default)
+		const labelBack = t(config.UI_BACK || ContentViewerModel.UI_BACK.default)
 		
 		const footerTextRaw = `[ ${percent}% ] ${labelFocus}: ${interactives.length}${focusSummary} | [Enter] ${labelSelect} [Tab/S-Tab] ${labelFocus} [Arrows] ${labelScroll} [Esc] ${labelBack}`
 		

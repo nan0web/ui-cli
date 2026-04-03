@@ -30,6 +30,12 @@ npm install @nan0web/ui-cli
 The `bootstrapApp` is the modern way to bootstrap CLI applications.
 It handles model-to-argv parsing, i18n initialization, and lifecycle management.
 
+### Security: The seal() Protocol
+
+To ensure system integrity, `bootstrapApp` automatically locks the database using `db.seal()`.
+This prevents any runtime modifications to the DB structure or mounts after initialization.
+**Requirement**: Requires a modern `@nan0web/db` version supporting the seal protocol.
+
 ### Quick Start
 
 How to bootstrap a CLI application?

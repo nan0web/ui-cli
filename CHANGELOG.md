@@ -1,5 +1,15 @@
 # Changelog @nan0web/ui-cli
 
+## [2.12.0] — 2026-04-03
+
+### Added
+- **Secure App Bootstrap (The seal() protocol)**: Implemented strict validation during `bootstrapApp` initialization. Applications now require a modern `@nan0web/db` version with the `seal()` capability.
+- **Model-First i18n Enforcement**: ContentViewer footer labels (Focus, Select, Scroll, Back) are now dynamically driven by the `ContentViewerModel` instance for better flexibility across different contexts.
+
+### Fixed
+- **Uncontrolled Process Exit**: Refactored `bootstrapApp` to be test-friendly by introducing the `noExit: true` configuration, preventing test runner process termination during verification.
+- **Incompatible DB Failfast**: Added immediate `TypeError` if a legacy DB attempt is made, preventing silent errors later in the lifecycle.
+
 ## [2.11.0] — 2026-04-03
 
 ### Added

@@ -8,4 +8,8 @@
  * 4. Generator Execution Loop (runGenerator)
  * 5. Process Exit Lifecycle
  */
-export function bootstrapApp(AppModel: any, config?: {}): Promise<void>;
+export function bootstrapApp(AppModel: any, config?: {}): Promise<{
+    success: boolean;
+    data: any;
+    cancelled: boolean;
+}>;

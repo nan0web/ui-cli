@@ -25,7 +25,7 @@ export async function bootstrapApp(AppModel, config = {}) {
 	const console = new Logger({ level: Logger.detectLevel(process.argv) })
 	const dbConsole = new Logger({ level: isDebug ? 'debug' : 'error' })
 	
-	const db = new DB({ console: /** @type {any} */ (dbConsole) })
+	const db = config.db || new DB({ console: /** @type {any} */ (dbConsole) })
 	const fs = new DBFS({ console: /** @type {any} */ (dbConsole) })
 
 	// 1. Identify application from package.json
@@ -33,16 +33,22 @@ export async function bootstrapApp(AppModel, config = {}) {
 	const appName = pkg.name ? pkg.name.replace(/^@nan0web\//, '') : 'app'
 
 	// 2. Setup standard NaN0Web mounts
-	db.mount('', new DBFS({ root: config.root || 'data', console: /** @type {any} */ (dbConsole) }))
+	if (!config.db) {
+		db.mount('', new DBFS({ root: config.root || 'data', console: /** @type {any} */ (dbConsole) }))
+		
+		const mockHome = process.env.UI_SNAPSHOT || process.env.NODE_ENV === 'test'
+		const homeDb = new DBFS({ 
+			cwd: mockHome ? process.cwd() : os.homedir(), 
+			root: mockHome ? path.resolve(process.cwd(), '.test_home') : `.${appName}`,
+			console: /** @type {any} */ (dbConsole)
+		})
+		db.mount('~', homeDb)
+	}
 	
-	const mockHome = process.env.UI_SNAPSHOT || process.env.NODE_ENV === 'test'
-	const homeDb = new DBFS({ 
-		cwd: mockHome ? process.cwd() : os.homedir(), 
-		root: mockHome ? path.resolve(process.cwd(), '.test_home') : `.${appName}`,
-		console: /** @type {any} */ (dbConsole)
-	})
-	db.mount('~', homeDb)
-	
+	if (typeof db.seal !== 'function') {
+		throw new TypeError('db.seal is not a function (Secure App Bootstrap requires a modern DB version)')
+	}
+
 	await db.connect()
 	db.seal()
 
@@ -63,11 +69,14 @@ export async function bootstrapApp(AppModel, config = {}) {
 	
 	try {
 		const res = await runGenerator(model, adapter, appOptions)
+		if (config.noExit) return res
 		process.exit(res.success && !res.cancelled && res.data?.status !== 'error' ? 0 : 1)
 	} catch (err) {
 		const error = /** @type {any} */ (err)
 		console.error(String(error.stack || error.message || error))
+		if (config.noExit) throw error
 		process.exit(1)
 	}
 }
+
 
