@@ -9,10 +9,10 @@
 
 ## 🖥 Екран: `Sandbox Breadcrumbs Lifecycle Uk` (`sandbox/breadcrumbs/lifecycle.uk.snap`)
 
-> 🚀 **Як запустити:** `node play/sandbox.js --comp=Breadcrumbs --lang=uk`
+> 📡 **Як запустити:** `node play/sandbox.js --comp=Breadcrumbs --lang=uk`
 
 ```text
-🧱 UI-CLI Sandbox 
+🧱 UI-CLI Sandbox
 Select a component to test:
  1) Alert
  2) Badge
@@ -37,7 +37,7 @@ Sandbox > Breadcrumbs. Choose variation:
  3) ← Back to Components
 ✔  [Variant] Default
 ==================================================
- Sandbox: > Breadcrumbs > Default < 
+ Sandbox: > Breadcrumbs > Default <
 ==================================================
 👀 LIVE PREVIEW:
 Home › App › Editor
@@ -53,7 +53,7 @@ Sandbox > Breadcrumbs. Choose variation:
 ✔  + Create New Variant
 ✔ Enter new variant name: TestVar
 ==================================================
- Sandbox: > Breadcrumbs > TestVar < 
+ Sandbox: > Breadcrumbs > TestVar <
 ==================================================
 👀 LIVE PREVIEW:
 Home › App › Editor
@@ -64,7 +64,7 @@ Variant Options:
  3) ← Back
 ✔  ↺ Reset to Defaults
 ==================================================
- Sandbox: > Breadcrumbs > TestVar < 
+ Sandbox: > Breadcrumbs > TestVar <
 ==================================================
 👀 LIVE PREVIEW:
 Home › App › Editor
@@ -100,8 +100,7 @@ Select a component to test:
 Exiting Sandbox. 👋
 ```
 
-> **💬 Коментарі щодо Sandbox Breadcrumbs Lifecycle Uk:
-> *(напишіть тут що змінити: кольори, відступи, тексти, логіку)*
+> \*_💬 Коментарі щодо Sandbox Breadcrumbs Lifecycle Uk:
+> _(напишіть тут що змінити: кольори, відступи, тексти, логіку)\*
 
 ---
-

@@ -9,6 +9,7 @@ import Form, { generateForm } from './ui/impl/form.js'
 // V2 Component Exports
 import { render } from './ui/core/render.js'
 import { runGenerator, runApp } from './ui/core/GeneratorRunner.js'
+import { bootstrapApp } from './ui/bootstrapApp.js'
 import { resolvePositionalArgs } from './ui/core/resolvePositionalArgs.js'
 import { modelFromArgv } from './ui/core/modelFromArgv.js'
 
@@ -70,6 +71,7 @@ export {
 	render,
 	runGenerator,
 	runApp,
+	bootstrapApp,
 	resolvePositionalArgs,
 	modelFromArgv,
 	CLiInputAdapter,

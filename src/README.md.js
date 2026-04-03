@@ -19,6 +19,8 @@ import {
 	Slider,
 	Toggle,
 	DateTime,
+	Tree,
+	Sortable,
 	Alert,
 	Table,
 	Spinner,
@@ -26,6 +28,7 @@ import {
 	CLiInputAdapter,
 	ask,
 	pause,
+	bootstrapApp,
 } from './index.js'
 
 const fs = new FS()
@@ -58,6 +61,7 @@ function testRender() {
 	 * The `@nan0web/ui-cli` package transforms basic CLI interactions into stunning, interactive experiences using the "One Logic, Many UI" philosophy.
 	 *
 	 * Key Features:
+	 * - **Universal Runner** — Start your CLI app in 1 line of code with `bootstrapApp`.
 	 * - **Interactive Prompts** — Sleek selection lists, masked inputs, and searchable autocomplete.
 	 * - **Schema-Driven Forms** — Generate complex CLI forms directly from your data models.
 	 * - **Premium Aesthetics** — Rich colors, clear structure, and intuitive navigation.
@@ -76,24 +80,18 @@ function testRender() {
 
 	/**
 	 * @docs
-	 * ## nan0cli — Universal CLI Runner
+	 * ## Universal CLI Runner
 	 *
-	 * The `nan0cli` binary provides a universal entry point for any nan0web application.
-	 * It reads the app's `package.json`, resolves the CLI entry point, and runs commands.
-	 */
-	it('The `nan0cli` binary is registered and available.', () => {
-		assert.ok(pkg.bin.nan0cli)
-	})
-
-	/**
-	 * @docs
-	 * ### Error Handling
+	 * The `bootstrapApp` is the modern way to bootstrap CLI applications.
+	 * It handles model-to-argv parsing, i18n initialization, and lifecycle management.
 	 *
-	 * When no entry point is found, `nan0cli` displays a styled `Alert` error and exits with code 1.
-	 * All errors are displayed via `Logger` + `Alert` components — never raw `console.log`.
+	 * ### Quick Start
 	 */
-	it('All errors are beautifully formatted.', () => {
-		assert.ok(pkg.files.includes('bin/**/*.js'))
+	it('How to bootstrap a CLI application?', async () => {
+		//import { bootstrapApp } from '@nan0web/ui-cli'
+		//import { MyModel } from './models.js'
+		// await bootstrapApp(MyModel)
+		assert.ok(typeof bootstrapApp === 'function')
 	})
 
 	/**
@@ -173,13 +171,26 @@ function testRender() {
 
 	/**
 	 * @docs
-	 * #### DateTime
+	 * #### Tree Selection
+	 * Hierarchical data selection made easy.
 	 */
-	it('How to use DateTime component?', async () => {
-		//import { render, DateTime } from '@nan0web/ui-cli'
-		const date = '2026-02-05'
-		console.info(`Date: ${date}`)
-		assert.equal(console.output()[0][1], 'Date: 2026-02-05')
+	it('How to use Tree component?', async () => {
+		//import { render, Tree } from '@nan0web/ui-cli'
+		const selected = '/src/index.js'
+		console.info(`Selected file: ${selected}`)
+		assert.equal(console.output()[0][1], 'Selected file: /src/index.js')
+	})
+
+	/**
+	 * @docs
+	 * #### Sortable Lists
+	 * Drag and drop items in the terminal.
+	 */
+	it('How to use Sortable component?', async () => {
+		//import { render, Sortable } from '@nan0web/ui-cli'
+		const items = ['First', 'Second', 'Third']
+		console.info(`Order: ${items.join(' > ')}`)
+		assert.equal(console.output()[0][1], 'Order: First > Second > Third')
 	})
 
 	/**
@@ -240,30 +251,6 @@ function testRender() {
 
 	/**
 	 * @docs
-	 * ### Functional Utilities
-	 *
-	 * #### ask()
-	 */
-	it('How to ask a question with ask()?', async () => {
-		//import { ask } from "@nan0web/ui-cli"
-		assert.ok(ask)
-	})
-
-	/**
-	 * @docs
-	 * #### Execution Control
-	 *
-	 * #### pause()
-	 */
-	it('How to pause code execution?', async () => {
-		//import { pause } from '@nan0web/ui-cli'
-		await pause(10)
-		console.info('Done')
-		assert.equal(console.output()[0][1], 'Done')
-	})
-
-	/**
-	 * @docs
 	 * ## Playground
 	 */
 	it('How to run the playground?', () => {
@@ -301,3 +288,4 @@ describe('Rendering README.md', async () => {
 		assert.ok(doc.content.includes('## License'))
 	})
 })
+

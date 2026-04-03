@@ -9,10 +9,10 @@
 
 ## 🖥 Екран: `Sandbox Tabs Lifecycle Uk` (`sandbox/tabs/lifecycle.uk.snap`)
 
-> 🚀 **Як запустити:** `node play/sandbox.js --comp=Tabs --lang=uk`
+> 📡 **Як запустити:** `node play/sandbox.js --comp=Tabs --lang=uk`
 
 ```text
-🧱 UI-CLI Sandbox 
+🧱 UI-CLI Sandbox
 Select a component to test:
  1) Alert
  2) Badge
@@ -37,10 +37,10 @@ Sandbox > Tabs. Choose variation:
  3) ← Back to Components
 ✔  [Variant] Default
 ==================================================
- Sandbox: > Tabs > Default < 
+ Sandbox: > Tabs > Default <
 ==================================================
 👀 LIVE PREVIEW:
- Dashboard │ Users │ Settings 
+ Dashboard │ Users │ Settings
 ==================================================
 Variant Options:
  1) > Edit active (curr: Users)
@@ -54,10 +54,10 @@ Sandbox > Tabs. Choose variation:
 ✔  + Create New Variant
 ✔ Enter new variant name: TestVar
 ==================================================
- Sandbox: > Tabs > TestVar < 
+ Sandbox: > Tabs > TestVar <
 ==================================================
 👀 LIVE PREVIEW:
- Dashboard │ Users │ Settings 
+ Dashboard │ Users │ Settings
 ==================================================
 Variant Options:
  1) > Edit active (curr: Users)
@@ -66,10 +66,10 @@ Variant Options:
  4) ← Back
 ✔  ↺ Reset to Defaults
 ==================================================
- Sandbox: > Tabs > TestVar < 
+ Sandbox: > Tabs > TestVar <
 ==================================================
 👀 LIVE PREVIEW:
- Dashboard │ Users │ Settings 
+ Dashboard │ Users │ Settings
 ==================================================
 Variant Options:
  1) > Edit active (curr: Users)
@@ -103,8 +103,7 @@ Select a component to test:
 Exiting Sandbox. 👋
 ```
 
-> **💬 Коментарі щодо Sandbox Tabs Lifecycle Uk:
-> *(напишіть тут що змінити: кольори, відступи, тексти, логіку)*
+> \*_💬 Коментарі щодо Sandbox Tabs Lifecycle Uk:
+> _(напишіть тут що змінити: кольори, відступи, тексти, логіку)\*
 
 ---
-

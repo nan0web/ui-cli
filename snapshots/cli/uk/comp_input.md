@@ -9,10 +9,10 @@
 
 ## 🖥 Екран: `Sandbox Input Lifecycle Uk` (`sandbox/input/lifecycle.uk.snap`)
 
-> 🚀 **Як запустити:** `node play/sandbox.js --comp=Input --lang=uk`
+> 📡 **Як запустити:** `node play/sandbox.js --comp=Input --lang=uk`
 
 ```javascript
-🧱 UI-CLI Sandbox 
+🧱 UI-CLI Sandbox
 Select a component to test:
  1) Alert
  2) Badge
@@ -37,7 +37,7 @@ Sandbox > Input. Choose variation:
  3) ← Back to Components
 ✔  [Variant] Default
 ==================================================
- Sandbox: > Input > Default < 
+ Sandbox: > Input > Default <
 ==================================================
 ⚡ This is a Prompt Component.
 ==================================================
@@ -51,7 +51,7 @@ Variant Options:
 Result: {"cancelled":true}
 Press any key to continue...
 ==================================================
- Sandbox: > Input > Default < 
+ Sandbox: > Input > Default <
 ==================================================
 ⚡ This is a Prompt Component.
 ==================================================
@@ -69,7 +69,7 @@ Sandbox > Input. Choose variation:
 ✔  + Create New Variant
 ✔ Enter new variant name: TestVar
 ==================================================
- Sandbox: > Input > TestVar < 
+ Sandbox: > Input > TestVar <
 ==================================================
 ⚡ This is a Prompt Component.
 ==================================================
@@ -107,8 +107,7 @@ Select a component to test:
 Exiting Sandbox. 👋
 ```
 
-> **💬 Коментарі щодо Sandbox Input Lifecycle Uk:
-> *(напишіть тут що змінити: кольори, відступи, тексти, логіку)*
+> \*_💬 Коментарі щодо Sandbox Input Lifecycle Uk:
+> _(напишіть тут що змінити: кольори, відступи, тексти, логіку)\*
 
 ---
-

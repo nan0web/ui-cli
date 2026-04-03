@@ -30,9 +30,17 @@ export function generateForm(BodyClass, options = {}) {
 	const { initialState = {}, t } = options
 	const fields = []
 
-	const ignoreKeys = ['head', 'id', 'type', 'data', 'schema', 'fields', 'state', 'title', 'meta']
+	const ignoreKeys = ['head', 'id', 'type', 'data', 'schema', 'fields', 'state', 'title', 'meta', 'prototype', 'length', 'name']
+	const entries = Object.entries(BodyClass)
+	
+	// Add static non-enumerable properties (modern JS classes)
+	Object.getOwnPropertyNames(BodyClass).forEach(name => {
+		if (ignoreKeys.includes(name)) return
+		if (entries.find(e => e[0] === name)) return
+		entries.push([name, BodyClass[name]])
+	})
 
-	for (const [name, schema] of Object.entries(BodyClass)) {
+	for (const [name, schema] of entries) {
 		if (ignoreKeys.includes(name)) continue
 		if (typeof schema !== 'object' || schema === null) continue
 		if (!schema.type && !schema.help && !schema.options && schema.defaultValue === undefined && schema.default === undefined) continue // Skip non-schema statics like UI dicts
@@ -629,7 +637,7 @@ export default class Form {
 		}
 	}
 
-	/** @returns {Object} The updated model instance. */
+	/** @returns {Object} The updated model instance or state object. */
 	get body() {
 		return this.#model
 	}

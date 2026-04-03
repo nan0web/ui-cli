@@ -241,6 +241,27 @@ describe('playground demo flow', () => {
 			'Output should contain PRICING section'
 		)
 	})
+	
+	it('runs content-viewer components demo then exits', async () => {
+		const { stdout, exitCode } = await runPlayground('content-viewer', 'en', {
+			PLAY_DEMO_SEQUENCE: 'esc',
+			UI_SNAPSHOT: '1',
+		})
+
+		assert.strictEqual(exitCode, 0)
+		const lines = cleanLines(stdout)
+		
+		assert.ok(
+
+			lines.some((l) => l.includes('Content Viewer Demo')),
+			'Output should contain demo title'
+		)
+
+		assert.ok(
+			lines.some((l) => /Focus:|Фокус:/.test(l)),
+			'Output should contain focus status in footer'
+		)
+	})
 })
 
 describe('playground cancel handling', () => {

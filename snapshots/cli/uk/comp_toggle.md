@@ -9,27 +9,27 @@
 
 ## 🖥 Екран: `Play Toggle Uk` (`play/toggle/toggle.uk.snap`)
 
-> 🚀 **Як запустити:** `node play/main.js --demo=toggle --lang=uk`
+> 📡 **Як запустити:** `node play/main.js --demo=toggle --lang=uk`
 
 ```text
-__   _ _______ __   _     _  _  _ _______ ______ 
-| \  | |_____| | \  |     |  |  | |______ |_____] 
-|  \_| |     | |  \_|  •  |__|__| |______ |_____] 
+__   _ _______ __   _     _  _  _ _______ ______
+| \  | |_____| | \  |     |  |  | |______ |_____]
+|  \_| |     | |  \_|  •  |__|__| |______ |_____]
 ✔ Підписатися на розсилку y
 ✓ Ви обрали: Так
 ```
 
-> **💬 Коментарі щодо Play Toggle Uk:
-> *(напишіть тут що змінити: кольори, відступи, тексти, логіку)*
+> \*_💬 Коментарі щодо Play Toggle Uk:
+> _(напишіть тут що змінити: кольори, відступи, тексти, логіку)\*
 
 ---
 
 ## 🖥 Екран: `Sandbox Toggle Lifecycle Uk` (`sandbox/toggle/lifecycle.uk.snap`)
 
-> 🚀 **Як запустити:** `node play/sandbox.js --comp=Toggle --lang=uk`
+> 📡 **Як запустити:** `node play/sandbox.js --comp=Toggle --lang=uk`
 
 ```text
-🧱 UI-CLI Sandbox 
+🧱 UI-CLI Sandbox
 Select a component to test:
  1) Alert
  2) Badge
@@ -54,7 +54,7 @@ Sandbox > Toggle. Choose variation:
  3) ← Back to Components
 ✔  [Variant] Default
 ==================================================
- Sandbox: > Toggle > Default < 
+ Sandbox: > Toggle > Default <
 ==================================================
 ⚡ This is a Prompt Component.
 ==================================================
@@ -67,7 +67,7 @@ Variant Options:
 Result: false
 Press any key to continue...
 ==================================================
- Sandbox: > Toggle > Default < 
+ Sandbox: > Toggle > Default <
 ==================================================
 ⚡ This is a Prompt Component.
 ==================================================
@@ -84,7 +84,7 @@ Sandbox > Toggle. Choose variation:
 ✔  + Create New Variant
 ✔ Enter new variant name: TestVar
 ==================================================
- Sandbox: > Toggle > TestVar < 
+ Sandbox: > Toggle > TestVar <
 ==================================================
 ⚡ This is a Prompt Component.
 ==================================================
@@ -121,8 +121,7 @@ Select a component to test:
 Exiting Sandbox. 👋
 ```
 
-> **💬 Коментарі щодо Sandbox Toggle Lifecycle Uk:
-> *(напишіть тут що змінити: кольори, відступи, тексти, логіку)*
+> \*_💬 Коментарі щодо Sandbox Toggle Lifecycle Uk:
+> _(напишіть тут що змінити: кольори, відступи, тексти, логіку)\*
 
 ---
-

@@ -1,21 +1,22 @@
 # @nan0web/ui-cli
 
-[🇬🇧 English version](../../README.md)
+[🇺🇦 Українська версія](./docs/uk/README.md) | [🇬🇧 English version](../../README.md)
 
-Сучасний інтерактивний адаптер введення для Node.js проєктів.
-Побудований на базі рушія `prompts`, він забезпечує преміальний "Lux-рівень" термінального досвіду.
+Сучасний, інтерактивний UI адаптер введення для проектів Node.js.
+Працює на двигуні `prompts`, забезпечуючи преміальний термінальний досвід рівня "Lux".
 
 <!-- %PACKAGE_STATUS% -->
 
 ## Опис
 
-Пакет `@nan0web/ui-cli` перетворює базові CLI-взаємодії на захопливі інтерактивні сценарії, використовуючи філософію "One Logic, Many UI".
+Пакет `@nan0web/ui-cli` перетворює базові CLI взаємодії на вражаючий інтерактивний досвід, використовуючи філософію "Одна логіка, багато інтерфейсів".
 
 Ключові особливості:
-- **Інтерактивні Промпти** — стильні списки вибору, масковані поля введення та автозаповнення з пошуком.
-- **Схема-Керовані Форми** — генерація складних CLI-форм безпосередньо з ваших моделей даних.
-- **Преміальна Естетика** — багаті кольори, чітка структура та інтуїтивно зрозуміла навігація.
-- **Одна Логіка, Багато UI** — використання однакової логіки як для Web, так і для Терміналу.
+- **Універсальний запуск** — Запускайте свій CLI додаток в 1 рядок коду з `bootstrapApp`.
+- **Інтерактивні запити** — Елегантні списки вибору, масковане введення та пошуковий автокомпліт.
+- **Форми на основі схем** — Генеруйте складні CLI форми прямо з моделей даних.
+- **Преміальна естетика** — Насичені кольори, чітка структура та інтуїтивна навігація.
+- **Одна логіка, багато інтерфейсів** — Використовуйте ту саму логіку для Web та Терміналу.
 
 ## Встановлення
 
@@ -24,25 +25,25 @@
 npm install @nan0web/ui-cli
 ```
 
-## nan0cli — Універсальний CLI-Запускач (Runner)
+## Універсальний запуск CLI
 
-Бінарний файл `nan0cli` забезпечує універсальну точку входу для будь-якого додатка nan0web.
-Він зчитує `package.json` додатка, знаходить CLI точку входу та виконує команди.
+`bootstrapApp` — це сучасний спосіб ініціалізації CLI додатків.
+Він бере на себе парсинг моделей в аргументи, ініціалізацію i18n та керування життєвим циклом.
 
-Бінарний файл `nan0cli` зареєстровано та доступно для використання.
+### Швидкий старт
 
-### Обробка Помилок
-
-Коли точку входу не знайдено, `nan0cli` відображає стилізовану помилку `Alert` та завершує роботу з кодом 1.
-Усі помилки відображаються через компоненти `Logger` + `Alert` — ми ніколи не використовуємо чистий `console.log`.
-
-Усі помилки красиво відформатовані.
+Як запустити CLI додаток?
+```js
+import { bootstrapApp } from '@nan0web/ui-cli'
+import { MyModel } from './models.js'
+// await bootstrapApp(MyModel)
+```
 
 ## Використання (Архітектура V2)
 
-Починаючи з версії v2.0, ми рекомендуємо використовувати функцію `render()` разом із Компонованими Компонентами (Composable Components).
+Починаючи з версії v2.0, ми рекомендуємо використовувати функцію `render()` з компонентами, що комбінуються.
 
-### Інтерактивні Промпти
+### Інтерактивні запити
 
 #### Введення та Пароль
 
@@ -52,7 +53,8 @@ import { render, Input, Password } from '@nan0web/ui-cli'
 const user = 'Alice'
 console.info(`User: ${user}`)
 ```
-#### Вибір та Мультиселект
+
+#### Вибір та Множинний вибір
 
 Як використовувати компонент Select?
 ```js
@@ -60,7 +62,8 @@ import { render, Select } from '@nan0web/ui-cli'
 const lang = { value: 'en' }
 console.info(`Selected: ${lang.value}`)
 ```
-#### Мультиселект
+
+#### Множинний вибір
 
 Як використовувати компонент Multiselect?
 ```js
@@ -68,7 +71,8 @@ import { render, Multiselect } from '@nan0web/ui-cli'
 const roles = ['admin', 'user']
 console.info(`Roles: ${roles.join(', ')}`)
 ```
-#### Масковане Введення
+
+#### Масковане введення
 
 Як використовувати компонент Mask?
 ```js
@@ -76,7 +80,8 @@ import { render, Mask } from '@nan0web/ui-cli'
 const phone = '123-456'
 console.info(`Phone: ${phone}`)
 ```
-#### Автозаповнення
+
+#### Автокомпліт
 
 Як використовувати компонент Autocomplete?
 ```js
@@ -84,7 +89,8 @@ import { render, Autocomplete } from '@nan0web/ui-cli'
 const model = 'gpt-4'
 console.info(`Model: ${model}`)
 ```
-#### Повзунок (Slider), Перемикач (Toggle) та Дата/Час (DateTime)
+
+#### Слайдер, Перемикач та Дата/Час
 
 Як використовувати Slider та Toggle?
 ```js
@@ -94,32 +100,47 @@ console.info(`Volume: ${volume}`)
 const active = true
 console.info(`Active: ${active}`)
 ```
-#### DateTime
 
-Як використовувати компонент DateTime?
+#### Вибір дерева
+Зручний вибір ієрархічних даних.
+
+Як використовувати компонент Tree?
 ```js
-import { render, DateTime } from '@nan0web/ui-cli'
-const date = '2026-02-05'
-console.info(`Date: ${date}`)
+import { render, Tree } from '@nan0web/ui-cli'
+const selected = '/src/index.js'
+console.info(`Selected file: ${selected}`)
 ```
-### Статичні Відображення (Static Views)
+
+#### Списки, що сортуються
+Перетягування елементів прямо в терміналі.
+
+Як використовувати компонент Sortable?
+```js
+import { render, Sortable } from '@nan0web/ui-cli'
+const items = ['First', 'Second', 'Third']
+console.info(`Order: ${items.join(' > ')}`)
+```
+
+### Статичні представлення
 
 #### Сповіщення (Alerts)
 
-Як відображати Alerts?
+Як відобразити Alert?
 ```js
 import { Alert } from '@nan0web/ui-cli'
 console.info('Success Operation')
 ```
-#### Динамічні Таблиці
 
-Як відображати Таблиці?
+#### Динамічні таблиці
+
+Як відобразити Table?
 ```js
 import { Table } from '@nan0web/ui-cli'
 const data = [{ id: 1, name: 'Alice' }]
 console.info(data)
 ```
-### Зворотний Зв'язок (Feedback) та Прогрес
+
+### Фідбек та прогрес
 
 #### Спінер (Spinner)
 
@@ -128,39 +149,24 @@ console.info(data)
 import { render, Spinner } from '@nan0web/ui-cli'
 console.info('Loading...')
 ```
-#### Індикатори Прогресу (Progress Bars)
+
+#### Прогрес-бари (ProgressBar)
 
 Як використовувати ProgressBar?
 ```js
 import { render, ProgressBar } from '@nan0web/ui-cli'
 console.info('Progress: 100%')
 ```
-## Legacy API
+
+## Застарілий API (Legacy)
 
 ### CLiInputAdapter
 
-Як створити запит форми через CLiInputAdapter?
+Як запитати введення форми через CLiInputAdapter?
 ```js
 import { CLiInputAdapter } from '@nan0web/ui-cli'
 ```
-### Функціональні Утиліти
 
-#### ask()
-
-Як поставити запитання за допомогою ask()?
-```js
-import { ask } from "@nan0web/ui-cli"
-```
-#### Контроль Виконання
-
-#### pause()
-
-Як призупинити виконання коду?
-```js
-import { pause } from '@nan0web/ui-cli'
-await pause(10)
-console.info('Done')
-```
 ## Пісочниця (Playground)
 
 Як запустити пісочницю?
@@ -170,4 +176,4 @@ npm run play
 
 ## Ліцензія
 
-Як перевірити ліцензію? - [ISC LICENSE](../../LICENSE) файл.
+Як перевірити ліцензію? - файл [ISC LICENSE](./LICENSE).

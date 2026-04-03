@@ -16,6 +16,7 @@
  * @template {new (data?: any) => any} T
  * @param {T} ModelClass - Model class with static field descriptors.
  * @param {string[]} argv - Raw CLI arguments (typically process.argv.slice(2)).
+ * @param {Object} [appOptions={}] - Options object to inject into the Model.
  * @returns {InstanceType<T>} A fully resolved Model instance.
  */
-export function modelFromArgv<T extends new (data?: any) => any>(ModelClass: T, argv?: string[]): InstanceType<T>;
+export function modelFromArgv<T extends new (data?: any) => any>(ModelClass: T, argv?: string[], appOptions?: any): InstanceType<T>;

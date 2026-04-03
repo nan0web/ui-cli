@@ -176,7 +176,7 @@ async function runShowcase(console, t) {
 			`${t('User')}: ${name || 'N/A'}`,
 			`${t('Env')}: ${category || 'N/A'}`,
 			`${t('Country')}: ${country || 'N/A'}`,
-			`${t('CPU')}: ${cpu ?? 0}%`,
+			`${t('CPU')}: ${isNaN(Number(cpu)) ? 0 : cpu}%`,
 			`${t('Target')}: ${targetFile || 'N/A'}`,
 			`${t('Features')}: ${Array.isArray(features) ? features.join(', ') : (features || 'None')}`
 		].join('\n'),

@@ -9,10 +9,10 @@
 
 ## 🖥 Екран: `Sandbox Toast Lifecycle Uk` (`sandbox/toast/lifecycle.uk.snap`)
 
-> 🚀 **Як запустити:** `node play/sandbox.js --comp=Toast --lang=uk`
+> 📡 **Як запустити:** `node play/sandbox.js --comp=Toast --lang=uk`
 
 ```text
-🧱 UI-CLI Sandbox 
+🧱 UI-CLI Sandbox
 Select a component to test:
  1) Alert
  2) Badge
@@ -37,7 +37,7 @@ Sandbox > Toast. Choose variation:
  3) ← Back to Components
 ✔  [Variant] Default
 ==================================================
- Sandbox: > Toast > Default < 
+ Sandbox: > Toast > Default <
 ==================================================
 👀 LIVE PREVIEW:
 ✔ Settings saved successfully.
@@ -55,7 +55,7 @@ Sandbox > Toast. Choose variation:
 ✔  + Create New Variant
 ✔ Enter new variant name: TestVar
 ==================================================
- Sandbox: > Toast > TestVar < 
+ Sandbox: > Toast > TestVar <
 ==================================================
 👀 LIVE PREVIEW:
 ✔ Settings saved successfully.
@@ -68,7 +68,7 @@ Variant Options:
  5) ← Back
 ✔  ↺ Reset to Defaults
 ==================================================
- Sandbox: > Toast > TestVar < 
+ Sandbox: > Toast > TestVar <
 ==================================================
 👀 LIVE PREVIEW:
 ✔ Settings saved successfully.
@@ -106,8 +106,7 @@ Select a component to test:
 Exiting Sandbox. 👋
 ```
 
-> **💬 Коментарі щодо Sandbox Toast Lifecycle Uk:
-> *(напишіть тут що змінити: кольори, відступи, тексти, логіку)*
+> \*_💬 Коментарі щодо Sandbox Toast Lifecycle Uk:
+> _(напишіть тут що змінити: кольори, відступи, тексти, логіку)\*
 
 ---
-

@@ -9,12 +9,12 @@
 
 ## 🖥 Екран: `Play Sortable Uk` (`play/sortable/sortable.uk.snap`)
 
-> 🚀 **Як запустити:** `node play/main.js --demo=sortable --lang=uk`
+> 📡 **Як запустити:** `node play/main.js --demo=sortable --lang=uk`
 
 ```text
-__   _ _______ __   _     _  _  _ _______ ______ 
-| \  | |_____| | \  |     |  |  | |______ |_____] 
-|  \_| |     | |  \_|  •  |__|__| |______ |_____] 
+__   _ _______ __   _     _  _  _ _______ ______
+| \  | |_____| | \  |     |  |  | |______ |_____]
+|  \_| |     | |  \_|  •  |__|__| |______ |_____]
 Демо сортування
 Перетасуйте: ↑/↓ — навігація, Пробіл — захопити, потім ↑/↓ — перемістити.
 Сценарій 1: Зміна пріоритетів
@@ -22,17 +22,17 @@ __   _ _______ __   _     _  _  _ _______ ______
 Фінальний порядок: high → medium → low → critical
 ```
 
-> **💬 Коментарі щодо Play Sortable Uk:
-> *(напишіть тут що змінити: кольори, відступи, тексти, логіку)*
+> \*_💬 Коментарі щодо Play Sortable Uk:
+> _(напишіть тут що змінити: кольори, відступи, тексти, логіку)\*
 
 ---
 
 ## 🖥 Екран: `Sandbox Sortable Lifecycle Uk` (`sandbox/sortable/lifecycle.uk.snap`)
 
-> 🚀 **Як запустити:** `node play/sandbox.js --comp=Sortable --lang=uk`
+> 📡 **Як запустити:** `node play/sandbox.js --comp=Sortable --lang=uk`
 
 ```text
-🧱 UI-CLI Sandbox 
+🧱 UI-CLI Sandbox
 Select a component to test:
  1) Alert
  2) Badge
@@ -57,7 +57,7 @@ Sandbox > Sortable. Choose variation:
  3) ← Back to Components
 ✔  [Variant] Default
 ==================================================
- Sandbox: > Sortable > Default < 
+ Sandbox: > Sortable > Default <
 ==================================================
 ⚡ This is a Prompt Component.
 ==================================================
@@ -75,7 +75,7 @@ Variant Options:
 Result: ["Apple","Banana","Cherry","Date"]
 Press any key to continue...
 ==================================================
- Sandbox: > Sortable > Default < 
+ Sandbox: > Sortable > Default <
 ==================================================
 ⚡ This is a Prompt Component.
 ==================================================
@@ -92,7 +92,7 @@ Sandbox > Sortable. Choose variation:
 ✔  + Create New Variant
 ✔ Enter new variant name: TestVar
 ==================================================
- Sandbox: > Sortable > TestVar < 
+ Sandbox: > Sortable > TestVar <
 ==================================================
 ⚡ This is a Prompt Component.
 ==================================================
@@ -129,8 +129,7 @@ Select a component to test:
 Exiting Sandbox. 👋
 ```
 
-> **💬 Коментарі щодо Sandbox Sortable Lifecycle Uk:
-> *(напишіть тут що змінити: кольори, відступи, тексти, логіку)*
+> \*_💬 Коментарі щодо Sandbox Sortable Lifecycle Uk:
+> _(напишіть тут що змінити: кольори, відступи, тексти, логіку)\*
 
 ---
-

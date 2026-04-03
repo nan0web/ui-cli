@@ -1,36 +1,36 @@
-# Interface Gallery: 🇬🇧 Англійська мова
+# 📸 CLI Gallery: en
 
 [⬅ Back to main gallery](../index.md)
 
-## Updated Today
-None
+## 🧱 Components & User Stories
 
-## Updated This Week
-None
-
-## All Components
-- [🔔 **Alert**](comp_alert.md)
-- [📦 **Autocomplete**](comp_autocomplete.md)
-- [📛 **Badge**](comp_badge.md)
-- [🥖 **Breadcrumbs**](comp_breadcrumbs.md)
-- [✅ **Confirm**](comp_confirm.md)
-- [📅 **Datetime**](comp_datetime.md)
-- [📋 **Form**](comp_form.md)
-- [📦 **Form-advanced**](comp_form-advanced.md)
-- [📦 **Form-object**](comp_form-object.md)
-- [⌨️ **Input**](comp_input.md)
-- [☑️ **Multiselect**](comp_multiselect.md)
-- [🔑 **Password**](comp_password.md)
-- [🟩 **Progressbar**](comp_progressbar.md)
-- [🔽 **Select**](comp_select.md)
-- [🎛 **Slider**](comp_slider.md)
-- [↕️ **Sortable**](comp_sortable.md)
-- [⏳ **Spinner**](comp_spinner.md)
-- [🪜 **Steps**](comp_steps.md)
-- [📊 **Table**](comp_table.md)
-- [📑 **Tabs**](comp_tabs.md)
-- [🍞 **Toast**](comp_toast.md)
-- [🎚 **Toggle**](comp_toggle.md)
-- [🌲 **Tree**](comp_tree.md)
-- [💬 **Ui-message**](comp_ui-message.md)
-
+- [Advanced-form](./comp_advanced-form.md)
+- [Alert](./comp_alert.md)
+- [Autocomplete](./comp_autocomplete.md)
+- [Badge](./comp_badge.md)
+- [Breadcrumbs](./comp_breadcrumbs.md)
+- [Confirm](./comp_confirm.md)
+- [Content-viewer](./comp_content-viewer.md)
+- [Datetime](./comp_datetime.md)
+- [Form-advanced](./comp_form-advanced.md)
+- [Form-object](./comp_form-object.md)
+- [Form](./comp_form.md)
+- [Input](./comp_input.md)
+- [Multiselect](./comp_multiselect.md)
+- [Nav](./comp_nav.md)
+- [Object-form](./comp_object-form.md)
+- [Password](./comp_password.md)
+- [Progressbar](./comp_progressbar.md)
+- [Select](./comp_select.md)
+- [Slider](./comp_slider.md)
+- [Sortable](./comp_sortable.md)
+- [Spinner](./comp_spinner.md)
+- [Steps](./comp_steps.md)
+- [Table](./comp_table.md)
+- [Tabs](./comp_tabs.md)
+- [Toast](./comp_toast.md)
+- [Toggle](./comp_toggle.md)
+- [Tree](./comp_tree.md)
+- [Ui-message](./comp_ui-message.md)
+- [V2](./comp_v2.md)
+- [View](./comp_view.md)

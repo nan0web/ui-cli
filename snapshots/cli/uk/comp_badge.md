@@ -9,10 +9,10 @@
 
 ## 🖥 Екран: `Sandbox Badge Lifecycle Uk` (`sandbox/badge/lifecycle.uk.snap`)
 
-> 🚀 **Як запустити:** `node play/sandbox.js --comp=Badge --lang=uk`
+> 📡 **Як запустити:** `node play/sandbox.js --comp=Badge --lang=uk`
 
 ```text
-🧱 UI-CLI Sandbox 
+🧱 UI-CLI Sandbox
 Select a component to test:
  1) Alert
  2) Badge
@@ -37,10 +37,10 @@ Sandbox > Badge. Choose variation:
  3) ← Back to Components
 ✔  [Variant] Default
 ==================================================
- Sandbox: > Badge > Default < 
+ Sandbox: > Badge > Default <
 ==================================================
 👀 LIVE PREVIEW:
- New Feature 
+ New Feature
 ==================================================
 Variant Options:
  1) > Edit label (curr: New Feature)
@@ -55,10 +55,10 @@ Sandbox > Badge. Choose variation:
 ✔  + Create New Variant
 ✔ Enter new variant name: TestVar
 ==================================================
- Sandbox: > Badge > TestVar < 
+ Sandbox: > Badge > TestVar <
 ==================================================
 👀 LIVE PREVIEW:
- New Feature 
+ New Feature
 ==================================================
 Variant Options:
  1) > Edit label (curr: New Feature)
@@ -68,10 +68,10 @@ Variant Options:
  5) ← Back
 ✔  ↺ Reset to Defaults
 ==================================================
- Sandbox: > Badge > TestVar < 
+ Sandbox: > Badge > TestVar <
 ==================================================
 👀 LIVE PREVIEW:
- New Feature 
+ New Feature
 ==================================================
 Variant Options:
  1) > Edit label (curr: New Feature)
@@ -106,8 +106,7 @@ Select a component to test:
 Exiting Sandbox. 👋
 ```
 
-> **💬 Коментарі щодо Sandbox Badge Lifecycle Uk:
-> *(напишіть тут що змінити: кольори, відступи, тексти, логіку)*
+> \*_💬 Коментарі щодо Sandbox Badge Lifecycle Uk:
+> _(напишіть тут що змінити: кольори, відступи, тексти, логіку)\*
 
 ---
-

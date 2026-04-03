@@ -19,16 +19,17 @@ import { resolvePositionalArgs } from './resolvePositionalArgs.js'
  * @template {new (data?: any) => any} T
  * @param {T} ModelClass - Model class with static field descriptors.
  * @param {string[]} argv - Raw CLI arguments (typically process.argv.slice(2)).
+ * @param {Object} [appOptions={}] - Options object to inject into the Model.
  * @returns {InstanceType<T>} A fully resolved Model instance.
  */
-export function modelFromArgv(ModelClass, argv = []) {
+export function modelFromArgv(ModelClass, argv = [], appOptions = {}) {
 	/** @type {import('node:util').ParseArgsConfig['options']} */
 	const options = {}
 
 	for (const [key, descriptor] of Object.entries(ModelClass)) {
 		if (!descriptor || typeof descriptor !== 'object') continue
 		if (!descriptor.help && descriptor.default === undefined) continue // Skip non-field descriptors
-		if (key === 'args' || key === 'UI') continue // Skip special convention keys
+		if (['args', 'UI', 'help'].includes(key)) continue // Skip special convention keys
 
 		/** @type {"boolean" | "string"} */
 		const parseType = descriptor.type === 'boolean' || typeof descriptor.default === 'boolean'
@@ -50,5 +51,6 @@ export function modelFromArgv(ModelClass, argv = []) {
 	})
 
 	const data = resolvePositionalArgs(ModelClass, positionals, values)
-	return new ModelClass(data)
+	// @ts-ignore
+	return new ModelClass(data, appOptions)
 }

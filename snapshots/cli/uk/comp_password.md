@@ -9,10 +9,10 @@
 
 ## 🖥 Екран: `Sandbox Password Lifecycle Uk` (`sandbox/password/lifecycle.uk.snap`)
 
-> 🚀 **Як запустити:** `node play/sandbox.js --comp=Password --lang=uk`
+> 📡 **Як запустити:** `node play/sandbox.js --comp=Password --lang=uk`
 
 ```javascript
-🧱 UI-CLI Sandbox 
+🧱 UI-CLI Sandbox
 Select a component to test:
  1) Alert
  2) Badge
@@ -37,7 +37,7 @@ Sandbox > Password. Choose variation:
  3) ← Back to Components
 ✔  [Variant] Default
 ==================================================
- Sandbox: > Password > Default < 
+ Sandbox: > Password > Default <
 ==================================================
 ⚡ This is a Prompt Component.
 ==================================================
@@ -50,7 +50,7 @@ Variant Options:
 Result: {"cancelled":true}
 Press any key to continue...
 ==================================================
- Sandbox: > Password > Default < 
+ Sandbox: > Password > Default <
 ==================================================
 ⚡ This is a Prompt Component.
 ==================================================
@@ -67,7 +67,7 @@ Sandbox > Password. Choose variation:
 ✔  + Create New Variant
 ✔ Enter new variant name: TestVar
 ==================================================
- Sandbox: > Password > TestVar < 
+ Sandbox: > Password > TestVar <
 ==================================================
 ⚡ This is a Prompt Component.
 ==================================================
@@ -104,8 +104,7 @@ Select a component to test:
 Exiting Sandbox. 👋
 ```
 
-> **💬 Коментарі щодо Sandbox Password Lifecycle Uk:
-> *(напишіть тут що змінити: кольори, відступи, тексти, логіку)*
+> \*_💬 Коментарі щодо Sandbox Password Lifecycle Uk:
+> _(напишіть тут що змінити: кольори, відступи, тексти, логіку)\*
 
 ---
-

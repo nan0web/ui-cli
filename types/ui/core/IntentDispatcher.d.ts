@@ -12,10 +12,14 @@ export default class IntentDispatcher {
      */
     static "__#private@#markdownToAnsi"(text: string): string;
     /**
-     * @param {import('./InputAdapter.js').default} adapter
+     * @param {import('./InputAdapter.js').default & {renderForm?: Function}} adapter
      */
-    constructor(adapter: import("./InputAdapter.js").default);
-    adapter: import("./InputAdapter.js").default;
+    constructor(adapter: import("./InputAdapter.js").default & {
+        renderForm?: Function;
+    });
+    adapter: import("./InputAdapter.js").default & {
+        renderForm?: Function;
+    };
     /**
      * Map an OLMUI Intent to the corresponding CLI interaction.
      *

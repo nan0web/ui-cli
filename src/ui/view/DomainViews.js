@@ -88,13 +88,13 @@ export function Timeline(props = {}) {
 	return createView('Timeline', props, () => {
 		const { title = '', items = [] } = props
 		let out = '\n'
-		if (title) out += Logger.style(` ${t(title)} `, { color: BOLD }) + '\n'
+		if (title) out += Logger.style(` ${t(title, props)} `, { color: BOLD }) + '\n'
 		if (Array.isArray(items)) {
 			items.forEach((item, idx) => {
 				const isLast = idx === items.length - 1
 				out += ` • ${Logger.style(item.date || '', { color: Logger.CYAN })}\n`
-				if (item.title) out += ` │   ${Logger.style(t(item.title), {})}\n`
-				if (item.description) out += ` │   ${Logger.style(t(item.description), { color: Logger.DIM })}\n`
+				if (item.title) out += ` │   ${Logger.style(t(item.title, item), {})}\n`
+				if (item.description) out += ` │   ${Logger.style(t(item.description, item), { color: Logger.DIM })}\n`
 				if (!isLast) out += ` │\n`
 			})
 		}
@@ -110,9 +110,9 @@ export function Testimonials(props = {}) {
 		const items = Array.isArray(props) ? props : props.items || []
 		let out = '\n'
 		items.forEach((item) => {
-			const text = t(item.content || item.text || '')
+			const text = t(item.content || item.text || '', item)
 			out += Logger.style(`  "${text}"`, { color: Logger.DIM }) + '\n'
-			if (item.author) out += `  — ${t(item.author)}`
+			if (item.author) out += `  — ${t(item.author, item)}`
 			if (item.rating) {
 				const stars = '★'.repeat(item.rating)
 				out += ` (${Logger.style(stars, { color: Logger.YELLOW })})`
@@ -183,8 +183,8 @@ export function EmptyState(props = {}) {
 	/** @type {TFunction} */
 	const t = this?.t || ((k) => k)
 	return createView('EmptyState', props, () => {
-		const title = t(props.title || '')
-		const description = t(props.description || '')
+		const title = t(props.title || '', props)
+		const description = t(props.description || '', props)
 		let out = '\n'
 		const w = Math.max(title.length, description.length, 20)
 		const icon = '∅'
@@ -203,9 +203,9 @@ export function Header(props = {}) {
 	return createView('Header', props, () => {
 		const { title = '', links = [] } = props
 		let out = '\n'
-		out += Logger.style(t(title), { color: BOLD })
+		out += Logger.style(t(title, props), { color: BOLD })
 		if (Array.isArray(links) && links.length) {
-			out += '  ' + links.map((l) => Logger.style(t(l.label || l.title || l), { color: Logger.CYAN })).join('  ')
+			out += '  ' + links.map((l) => Logger.style(t(l.label || l.title || l, l), { color: Logger.CYAN })).join('  ')
 		}
 		out += '\n' + '═'.repeat(40) + '\n'
 		return out
@@ -219,10 +219,10 @@ export function Footer(props = {}) {
 	return createView('Footer', props, () => {
 		const { title = '', text = '', links = [] } = props
 		let out = '\n' + '─'.repeat(40) + '\n'
-		if (title) out += Logger.style(t(title), {}) + '\n'
-		if (text) out += Logger.style(t(text), { color: Logger.DIM }) + '\n'
+		if (title) out += Logger.style(t(title, props), {}) + '\n'
+		if (text) out += Logger.style(t(text, props), { color: Logger.DIM }) + '\n'
 		if (Array.isArray(links) && links.length) {
-			out += links.map((l) => Logger.style(t(l.label || l.title || l), { color: Logger.DIM })).join(' | ') + '\n'
+			out += links.map((l) => Logger.style(t(l.label || l.title || l, l), { color: Logger.DIM })).join(' | ') + '\n'
 		}
 		return out
 	})

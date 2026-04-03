@@ -23,6 +23,8 @@ import { runV2Demo } from './v2_demo.js'
 import { runSortableDemo } from './sortable-demo.js'
 import { runObjectFormDemo } from './object-form-demo.js'
 import { runDomainViewsDemo } from './domain-views-demo.js'
+import { runContentViewerDemo } from './content-viewer-demo.js'
+import { runContentViewerShortDemo } from './content-viewer-short-demo.js'
 import { CancelError } from '../src/index.js'
 import getT, { localesMap } from './vocabs/index.js'
 
@@ -78,8 +80,9 @@ async function chooseDemo() {
 		{ name: t('Toggle Demo'), value: 'toggle' },
 		{ name: t('Slider Demo'), value: 'slider' },
 		{ name: t('ProgressBar Demo'), value: 'progress' },
-		{ name: t('Spinner Demo'), value: 'spinner' },
-		{ name: t('← Exit'), value: 'exit' },
+		{ name: t('Content Viewer Demo'), value: 'content-viewer' },
+		{ name: t('Short Content Viewer'), value: 'content-viewer-short' },
+		{ name: `← ${t('Exit')}`, value: 'exit' },
 	]
 
 	// Pass the real logger as `console` so the menu is printed.
@@ -178,6 +181,8 @@ async function main() {
 				{ name: t('Sortable'), value: 'sortable' },
 				{ name: t('Object Form'), value: 'object-form' },
 				{ name: t('Domain Views'), value: 'domain-views' },
+				{ name: t('Content Viewer'), value: 'content-viewer' },
+				{ name: t('Short Content Viewer'), value: 'content-viewer-short' },
 				{ name: `← ${t('Exit')}`, value: 'exit' },
 			]
 
@@ -290,8 +295,14 @@ async function main() {
 				case 'domain-views':
 					await runDomainViewsDemo(console, inputAdapter, t)
 					break
+				case 'content-viewer':
+					await runContentViewerDemo(console, inputAdapter, t)
+					break
+				case 'content-viewer-short':
+					await runContentViewerShortDemo(console, inputAdapter, t)
+					break
 				case 'exit':
-					console.success(t('Thanks for exploring UI‑CLI demos! 🚀'))
+					console.success(t('Thanks for exploring UI‑CLI demos! 📡'))
 					break
 			}
 

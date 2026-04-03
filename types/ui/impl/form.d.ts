@@ -128,7 +128,7 @@ export default class Form {
      * @returns {string|number|boolean} Typed value.
      */
     convertValue(field: any, value: any): string | number | boolean;
-    /** @returns {Object} The updated model instance. */
+    /** @returns {Object} The updated model instance or state object. */
     get body(): any;
     #private;
 }

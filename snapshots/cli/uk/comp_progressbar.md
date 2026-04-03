@@ -9,10 +9,10 @@
 
 ## 🖥 Екран: `Sandbox Progressbar Lifecycle Uk` (`sandbox/progressbar/lifecycle.uk.snap`)
 
-> 🚀 **Як запустити:** `node play/sandbox.js --comp=Progressbar --lang=uk`
+> 📡 **Як запустити:** `node play/sandbox.js --comp=Progressbar --lang=uk`
 
 ```text
-🧱 UI-CLI Sandbox 
+🧱 UI-CLI Sandbox
 Select a component to test:
  1) Alert
  2) Badge
@@ -37,7 +37,7 @@ Sandbox > ProgressBar. Choose variation:
  3) ← Back to Components
 ✔  [Variant] Default
 ==================================================
- Sandbox: > ProgressBar > Default < 
+ Sandbox: > ProgressBar > Default <
 ==================================================
 ⚡ This is a Prompt Component.
 ==================================================
@@ -47,9 +47,20 @@ Variant Options:
  3) ↺ Reset to Defaults
  4) ← Back
 ✔  > Run Prompt (Test)
-Downloading file: [PROGRESS_BAR]Downloading file: [PROGRESS_BAR]Downloading file: [PROGRESS_BAR]Downloading file: [PROGRESS_BAR]Downloading file: [PROGRESS_BAR]Downloading file: [PROGRESS_BAR]Downloading file: [PROGRESS_BAR]Downloading file: [PROGRESS_BAR]Downloading file: [PROGRESS_BAR]Downloading file: [PROGRESS_BAR]Downloading file: [PROGRESS_BAR]
+
+Downloading file: [PROGRESS_BAR]
+Downloading file: [PROGRESS_BAR]
+Downloading file: [PROGRESS_BAR]
+Downloading file: [PROGRESS_BAR]
+Downloading file: [PROGRESS_BAR]
+Downloading file: [PROGRESS_BAR]
+Downloading file: [PROGRESS_BAR]
+Downloading file: [PROGRESS_BAR]
+Downloading file: [PROGRESS_BAR]
+Downloading file: [PROGRESS_BAR]
+Downloading file: [PROGRESS_BAR]
 ==================================================
- Sandbox: > ProgressBar > Default < 
+ Sandbox: > ProgressBar > Default <
 ==================================================
 ⚡ This is a Prompt Component.
 ==================================================
@@ -66,7 +77,7 @@ Sandbox > ProgressBar. Choose variation:
 ✔  + Create New Variant
 ✔ Enter new variant name: TestVar
 ==================================================
- Sandbox: > ProgressBar > TestVar < 
+ Sandbox: > ProgressBar > TestVar <
 ==================================================
 ⚡ This is a Prompt Component.
 ==================================================
@@ -103,8 +114,7 @@ Select a component to test:
 Exiting Sandbox. 👋
 ```
 
-> **💬 Коментарі щодо Sandbox Progressbar Lifecycle Uk:
-> *(напишіть тут що змінити: кольори, відступи, тексти, логіку)*
+> \*_💬 Коментарі щодо Sandbox Progressbar Lifecycle Uk:
+> _(напишіть тут що змінити: кольори, відступи, тексти, логіку)\*
 
 ---
-

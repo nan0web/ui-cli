@@ -24,6 +24,9 @@ export default class CLiInputAdapter extends BaseInputAdapter {
     get t(): Function;
     /** @returns {NodeJS.WriteStream} */
     get stdout(): NodeJS.WriteStream;
+    set json(val: any);
+    get json(): any;
+    _json: any;
     /**
      * Proxy to set disabled state for testing previews
      */
@@ -69,11 +72,11 @@ export default class CLiInputAdapter extends BaseInputAdapter {
      *
      * The current CLI adapter only supports simple textual rendering.
      *
-     * @param {string} component - Component name (e.g. `"Alert"`).
-     * @param {object} props - Props object passed to the component.
+     * @param {string|Object} component - Component name (e.g. `"Alert"`) or render descriptor.
+     * @param {object} [props] - Props object passed to the component.
      * @returns {Promise<void>}
      */
-    render(component: string, props: object): Promise<void>;
+    render(component: string | any, props?: object): Promise<void>;
     /** @param {Object} intent */
     log(intent: any): Promise<void>;
     /** @param {Object} intent */
@@ -301,9 +304,22 @@ export default class CLiInputAdapter extends BaseInputAdapter {
      * @param {Function} SchemaClass - Schema constructor with static fields.
      * @returns {{fill: () => Promise<any>}} Form object with fill method.
      */
-    renderForm(data: any, SchemaClass: Function): {
-        fill: () => Promise<any>;
-    };
+    /**
+     * Generic request handler that dispatches to specific request methods based on type.
+     * @param {Object} config
+     * @returns {Promise<any>}
+     */
+    request(config: any): Promise<any>;
+    /**
+     * Request a content viewer (scrollable markdown with interactive elements).
+     * @param {Object} config
+     * @returns {Promise<{value: any, action?: string, cancelled: boolean}>}
+     */
+    requestContentViewer(config: any): Promise<{
+        value: any;
+        action?: string;
+        cancelled: boolean;
+    }>;
     #private;
 }
 export type ConsoleLike = {

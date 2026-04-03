@@ -115,6 +115,9 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 		return this.#stdout
 	}
 
+	get json() { return this._json || false }
+	set json(val) { this._json = val }
+
 	/**
 	 * Proxy to set disabled state for testing previews
 	 */
@@ -318,11 +321,21 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 	 *
 	 * The current CLI adapter only supports simple textual rendering.
 	 *
-	 * @param {string} component - Component name (e.g. `"Alert"`).
-	 * @param {object} props - Props object passed to the component.
+	 * @param {string|Object} component - Component name (e.g. `"Alert"`) or render descriptor.
+	 * @param {object} [props] - Props object passed to the component.
 	 * @returns {Promise<void>}
 	 */
 	async render(component, props) {
+		if (component && typeof component === 'object' && component.type === 'render') {
+			props = component.props
+			component = component.component
+		}
+
+		if (this.json) {
+			this.console.info(JSON.stringify({ component, props }, null, 2))
+			return
+		}
+		
 		const builtIns = [
 			'Alert', 'Badge', 'Table', 'Breadcrumbs', 'Tabs', 'Steps', 'Toast',
 			'Banner', 'Hero', 'Pricing', 'PricingSection', 'Stats', 'Timeline', 'Testimonials',
@@ -359,11 +372,11 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 			}
 		}
 		if (props && typeof props === 'object') {
-			const { variant, content } = props
-			const prefix = variant ? `[${variant}]` : ''
-			this.console.info(`${prefix} ${String(content)}`)
+			const contentStr = props.content || props.message || props.label || JSON.stringify(props)
+			const prefix = props.variant || props.level ? `[${props.variant || props.level}]` : `[${component}]`
+			this.console.info(`${prefix} ${String(contentStr)}`)
 		} else {
-			this.console.info(String(component))
+			this.console.info(`[${component}]`)
 		}
 	}
 
@@ -977,7 +990,39 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 	 * @param {Function} SchemaClass - Schema constructor with static fields.
 	 * @returns {{fill: () => Promise<any>}} Form object with fill method.
 	 */
-	renderForm(data, SchemaClass) {
-		return ObjectMapEditor.create(this, data, SchemaClass)
+	/**
+	 * Generic request handler that dispatches to specific request methods based on type.
+	 * @param {Object} config
+	 * @returns {Promise<any>}
+	 */
+	async request(config) {
+		const type = config.type || 'input'
+		const methodName = `request${type.charAt(0).toUpperCase()}${type.slice(1)}`
+		if (typeof this[methodName] === 'function') {
+			return await this[methodName](config)
+		}
+		// Fallback to base request if exists or error
+		return await this.requestInput(config)
 	}
+
+	/**
+	 * Request a content viewer (scrollable markdown with interactive elements).
+	 * @param {Object} config
+	 * @returns {Promise<{value: any, action?: string, cancelled: boolean}>}
+	 */
+	async requestContentViewer(config) {
+		const { ContentViewer } = await import('../prompt/ContentViewer.js')
+		const predefined = this.answerQueue.next()
+		if (predefined !== null) {
+			// In automated mode, we inject the choice for the viewer's internal prompt
+			prompts.inject([predefined])
+		}
+		const component = ContentViewer({
+			...config,
+			t: this.t
+		})
+		return await component.execute()
+	}
+
 }
+

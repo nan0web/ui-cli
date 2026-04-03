@@ -9,10 +9,10 @@
 
 ## 🖥 Екран: `Sandbox Table Lifecycle Uk` (`sandbox/table/lifecycle.uk.snap`)
 
-> 🚀 **Як запустити:** `node play/sandbox.js --comp=Table --lang=uk`
+> 📡 **Як запустити:** `node play/sandbox.js --comp=Table --lang=uk`
 
 ```text
-🧱 UI-CLI Sandbox 
+🧱 UI-CLI Sandbox
 Select a component to test:
  1) Alert
  2) Badge
@@ -37,13 +37,13 @@ Sandbox > Table. Choose variation:
  3) ← Back to Components
 ✔  [Variant] Default
 ==================================================
- Sandbox: > Table > Default < 
+ Sandbox: > Table > Default <
 ==================================================
 👀 LIVE PREVIEW:
 Users Table
-id name  role  
-1  Alice Admin 
-2  Bob   User  
+id name  role
+1  Alice Admin
+2  Bob   User
 ==================================================
 Variant Options:
  1) > Edit title (curr: Users Table)
@@ -57,13 +57,13 @@ Sandbox > Table. Choose variation:
 ✔  + Create New Variant
 ✔ Enter new variant name: TestVar
 ==================================================
- Sandbox: > Table > TestVar < 
+ Sandbox: > Table > TestVar <
 ==================================================
 👀 LIVE PREVIEW:
 Users Table
-id name  role  
-1  Alice Admin 
-2  Bob   User  
+id name  role
+1  Alice Admin
+2  Bob   User
 ==================================================
 Variant Options:
  1) > Edit title (curr: Users Table)
@@ -72,13 +72,13 @@ Variant Options:
  4) ← Back
 ✔  ↺ Reset to Defaults
 ==================================================
- Sandbox: > Table > TestVar < 
+ Sandbox: > Table > TestVar <
 ==================================================
 👀 LIVE PREVIEW:
 Users Table
-id name  role  
-1  Alice Admin 
-2  Bob   User  
+id name  role
+1  Alice Admin
+2  Bob   User
 ==================================================
 Variant Options:
  1) > Edit title (curr: Users Table)
@@ -112,8 +112,7 @@ Select a component to test:
 Exiting Sandbox. 👋
 ```
 
-> **💬 Коментарі щодо Sandbox Table Lifecycle Uk:
-> *(напишіть тут що змінити: кольори, відступи, тексти, логіку)*
+> \*_💬 Коментарі щодо Sandbox Table Lifecycle Uk:
+> _(напишіть тут що змінити: кольори, відступи, тексти, логіку)\*
 
 ---
-

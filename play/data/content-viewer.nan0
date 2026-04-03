@@ -1,0 +1,64 @@
+$Component: ContentViewerDemo
+$search: demo content viewer
+
+title: NaN•Web Explorer
+content:
+  - h1: NaN•Web Explorer
+  - p: Welcome to the universal explorer. This document tests the capabilities of the interactive CLI viewer using the OLMUI protocol.
+
+  - h2: Navigation & Controls
+  - ul:
+      - Arrow Keys (Up/Down) - Smooth scrolling
+      - Tab / Shift+Tab - Cycle interactive elements
+      - Enter - Select link or open form
+      - Esc - Exit viewer
+
+  - h3: Nested Components
+  - p: You can embed forms directly into the markdown stream. When selected, the form will pop up as a separate interactive context. Try it below.
+
+  - form:
+      title: Feedback Form
+      $id: feedback-form
+      $collapsed: true
+      fields:
+        name:
+          type: text
+          help: Your Name
+          required: true
+        rating:
+          type: select
+          help: How much do you like it?
+          options:
+            - Great
+            - Good
+            - Bad
+        comment:
+          type: text
+          help: Any additional comments?
+
+  - hr: true
+
+  - h2: Advanced Formatting
+  - p: The viewer handles wrapping, truncation, and even emojis! 📡
+  - ul:
+      - Nested list item support (Simulated)
+      - Color support via ANSI codes
+      - Automatic gutter indicators (p, H#, lnk, frm)
+
+  - p: Visit our [Documentation Site](https://docs.nan0web.app) or jump back to [#top](#top).
+
+  - hr: true
+
+  - p: This section is very long to test the scrolling behavior and ensures that the UI does not "slide away" when scrolling up and down multiple pages.
+  - p: Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+  - p: Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+  - p: Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+  - p: Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+  - p: Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+  - p: Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+  - p: Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+  - p: Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+  - p: Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+  - p: Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+
+  - p: End of document. [Go to start](#top)

@@ -12,6 +12,7 @@ Powered by the `prompts` engine, it provides a premium "Lux-level" terminal expe
 The `@nan0web/ui-cli` package transforms basic CLI interactions into stunning, interactive experiences using the "One Logic, Many UI" philosophy.
 
 Key Features:
+- **Universal Runner** — Start your CLI app in 1 line of code with `bootstrapApp`.
 - **Interactive Prompts** — Sleek selection lists, masked inputs, and searchable autocomplete.
 - **Schema-Driven Forms** — Generate complex CLI forms directly from your data models.
 - **Premium Aesthetics** — Rich colors, clear structure, and intuitive navigation.
@@ -24,20 +25,19 @@ How to install the package?
 npm install @nan0web/ui-cli
 ```
 
-## nan0cli — Universal CLI Runner
+## Universal CLI Runner
 
-The `nan0cli` binary provides a universal entry point for any nan0web application.
-It reads the app's `package.json`, resolves the CLI entry point, and runs commands.
+The `bootstrapApp` is the modern way to bootstrap CLI applications.
+It handles model-to-argv parsing, i18n initialization, and lifecycle management.
 
-The `nan0cli` binary is registered and available.
+### Quick Start
 
-### Error Handling
-
-When no entry point is found, `nan0cli` displays a styled `Alert` error and exits with code 1.
-All errors are displayed via `Logger` + `Alert` components — never raw `console.log`.
-
-All errors are beautifully formatted.
-
+How to bootstrap a CLI application?
+```js
+import { bootstrapApp } from '@nan0web/ui-cli'
+import { MyModel } from './models.js'
+// await bootstrapApp(MyModel)
+```
 ## Usage (V2 Architecture)
 
 Starting from v2.0, we recommend using the `render()` function with Composable Components.
@@ -94,13 +94,23 @@ console.info(`Volume: ${volume}`)
 const active = true
 console.info(`Active: ${active}`)
 ```
-#### DateTime
+#### Tree Selection
+Hierarchical data selection made easy.
 
-How to use DateTime component?
+How to use Tree component?
 ```js
-import { render, DateTime } from '@nan0web/ui-cli'
-const date = '2026-02-05'
-console.info(`Date: ${date}`)
+import { render, Tree } from '@nan0web/ui-cli'
+const selected = '/src/index.js'
+console.info(`Selected file: ${selected}`)
+```
+#### Sortable Lists
+Drag and drop items in the terminal.
+
+How to use Sortable component?
+```js
+import { render, Sortable } from '@nan0web/ui-cli'
+const items = ['First', 'Second', 'Third']
+console.info(`Order: ${items.join(' > ')}`)
 ```
 ### Static Views
 
@@ -142,24 +152,6 @@ console.info('Progress: 100%')
 How to request form input via CLiInputAdapter?
 ```js
 import { CLiInputAdapter } from '@nan0web/ui-cli'
-```
-### Functional Utilities
-
-#### ask()
-
-How to ask a question with ask()?
-```js
-import { ask } from "@nan0web/ui-cli"
-```
-#### Execution Control
-
-#### pause()
-
-How to pause code execution?
-```js
-import { pause } from '@nan0web/ui-cli'
-await pause(10)
-console.info('Done')
 ```
 ## Playground
 

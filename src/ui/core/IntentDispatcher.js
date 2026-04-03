@@ -1,5 +1,6 @@
 import { generateForm } from '../impl/form.js'
 import { renderMarkdown } from '../impl/markdown.js'
+import { ContentViewer } from '../prompt/ContentViewer.js'
 import { SelectModel } from '../../domain/prompt/SelectModel.js'
 import { ToggleModel } from '../../domain/prompt/ToggleModel.js'
 
@@ -9,7 +10,7 @@ import { ToggleModel } from '../../domain/prompt/ToggleModel.js'
  */
 export default class IntentDispatcher {
 	/**
-	 * @param {import('./InputAdapter.js').default} adapter 
+	 * @param {import('./InputAdapter.js').default & {renderForm?: Function}} adapter 
 	 */
 	constructor(adapter) {
 		this.adapter = adapter
@@ -30,7 +31,8 @@ export default class IntentDispatcher {
 		const config = { 
 			...intent.schema, 
 			message,
-			initial: intent.schema?.default !== undefined ? intent.schema.default : intent.schema?.initial
+			initial: intent.schema?.default !== undefined ? intent.schema.default : intent.schema?.initial,
+			t
 		}
 		
 		// Remove 'hint' from config if it's merely a structural directive
@@ -95,6 +97,7 @@ export default class IntentDispatcher {
 				if (intent.model || intent.instance) {
 					// Special handling for Sandbox Component: renders standard form tuning
 					const targetInstance = intent.instance || intent.model
+					if (!this.adapter.renderForm) return { value: undefined, cancelled: true }
 					const formController = this.adapter.renderForm(targetInstance, targetInstance.constructor)
 					const result = await formController.fill()
 					return { value: result.value, cancelled: result.cancelled }
@@ -121,8 +124,7 @@ export default class IntentDispatcher {
 				// Buttons in CLI are essentially "Confirm to proceed" or simple triggers
 				return await this.adapter.requestConfirm({ ...config, active: t(intent.model?.content || ToggleModel.UI_YES), inactive: t(ToggleModel.UI_NO) })
 			case 'ContentViewer': {
-				const { markdownViewer } = await import('../impl/markdown.js')
-				return await markdownViewer(config)
+				return await ContentViewer(config).execute()
 			}
 			default:
 				throw new Error(`Unsupported intent component mapping in CLI: ${component}`)
@@ -163,7 +165,8 @@ export default class IntentDispatcher {
 	 */
 	async logIntent(intent) {
 		const t = this.adapter.t.bind(this.adapter)
-		const { type, level, message, hint, component, ...extra } = intent
+		const normalizedIntent = typeof intent === 'string' ? { message: intent } : intent
+		const { type, level, message, hint, component, ...extra } = normalizedIntent
 		
 		if (component) {
 			const props = typeof message === 'object' ? { ...message, ...extra } : { content: message, ...extra }
@@ -171,7 +174,7 @@ export default class IntentDispatcher {
 			return
 		}
 
-		const msg = t(message)
+		const msg = t(message) || ''
 		
 		if (hint === 'markdown') {
 			this.adapter.console.info(`\n${renderMarkdown(msg)}\n`)
@@ -215,6 +218,7 @@ export default class IntentDispatcher {
 	 * @returns {string}
 	 */
 	static #markdownToAnsi(text) {
+		if (!text) return ''
 		return text
 			// **bold** → ANSI bold
 			.replace(/\*\*([^*]+)\*\*/g, '\x1b[1m$1\x1b[22m')
@@ -242,6 +246,7 @@ export default class IntentDispatcher {
 					return `${pad}${tKey}:\n${this.#toYaml(val, indent + 1)}`
 				}
 				const tVal = typeof val === 'string' ? t(val) : val
+				if (key === 'cpu') return `${pad}${tKey}: ${isNaN(Number(val)) ? 0 : val}%`
 				return `${pad}${tKey}: ${tVal}`
 			})
 			.join('\n')

@@ -9,12 +9,12 @@
 
 ## 🖥 Екран: `Play Tree Search Uk` (`play/tree/tree_search.uk.snap`)
 
-> 🚀 **Як запустити:** `node play/main.js --demo=tree --lang=uk`
+> 📡 **Як запустити:** `node play/main.js --demo=tree --lang=uk`
 
 ```text
-__   _ _______ __   _     _  _  _ _______ ______ 
-| \  | |_____| | \  |     |  |  | |______ |_____] 
-|  \_| |     | |  \_|  •  |__|__| |______ |_____] 
+__   _ _______ __   _     _  _  _ _______ ______
+| \  | |_____| | \  |     |  |  | |______ |_____]
+|  \_| |     | |  \_|  •  |__|__| |______ |_____]
 Демо перегляду дерева
 Сценарій 1: Вибір файлу (Статичне дерево)
 [TREE] Оберіть файл:
@@ -42,19 +42,19 @@ __   _ _______ __   _     _  _  _ _______ ______
 Ви обрали: /Users/i/src/nan.web/packages/ui-cli/project/README.md
 ```
 
-> **💬 Коментарі щодо Play Tree Search Uk:
-> *(напишіть тут що змінити: кольори, відступи, тексти, логіку)*
+> \*_💬 Коментарі щодо Play Tree Search Uk:
+> _(напишіть тут що змінити: кольори, відступи, тексти, логіку)\*
 
 ---
 
 ## 🖥 Екран: `Play Tree View Uk` (`play/tree/tree_view.uk.snap`)
 
-> 🚀 **Як запустити:** `node play/main.js --demo=tree --lang=uk`
+> 📡 **Як запустити:** `node play/main.js --demo=tree --lang=uk`
 
 ```text
-__   _ _______ __   _     _  _  _ _______ ______ 
-| \  | |_____| | \  |     |  |  | |______ |_____] 
-|  \_| |     | |  \_|  •  |__|__| |______ |_____] 
+__   _ _______ __   _     _  _  _ _______ ______
+| \  | |_____| | \  |     |  |  | |______ |_____]
+|  \_| |     | |  \_|  •  |__|__| |______ |_____]
 Демо перегляду дерева
 Сценарій 1: Вибір файлу (Статичне дерево)
 [TREE] Оберіть файл:
@@ -82,17 +82,17 @@ __   _ _______ __   _     _  _  _ _______ ______
 Ви обрали: /Users/i/src/nan.web/packages/ui-cli/project/README.md
 ```
 
-> **💬 Коментарі щодо Play Tree View Uk:
-> *(напишіть тут що змінити: кольори, відступи, тексти, логіку)*
+> \*_💬 Коментарі щодо Play Tree View Uk:
+> _(напишіть тут що змінити: кольори, відступи, тексти, логіку)\*
 
 ---
 
 ## 🖥 Екран: `Sandbox Tree Lifecycle Uk` (`sandbox/tree/lifecycle.uk.snap`)
 
-> 🚀 **Як запустити:** `node play/sandbox.js --comp=Tree --lang=uk`
+> 📡 **Як запустити:** `node play/sandbox.js --comp=Tree --lang=uk`
 
 ```text
-🧱 UI-CLI Sandbox 
+🧱 UI-CLI Sandbox
 Select a component to test:
  1) Alert
  2) Badge
@@ -117,7 +117,7 @@ Sandbox > Tree. Choose variation:
  3) ← Back to Components
 ✔  [Variant] Default
 ==================================================
- Sandbox: > Tree > Default < 
+ Sandbox: > Tree > Default <
 ==================================================
 ⚡ This is a Prompt Component.
 ==================================================
@@ -131,8 +131,7 @@ Variant Options:
 ===
 ```
 
-> **💬 Коментарі щодо Sandbox Tree Lifecycle Uk:
-> *(напишіть тут що змінити: кольори, відступи, тексти, логіку)*
+> \*_💬 Коментарі щодо Sandbox Tree Lifecycle Uk:
+> _(напишіть тут що змінити: кольори, відступи, тексти, логіку)\*
 
 ---
-

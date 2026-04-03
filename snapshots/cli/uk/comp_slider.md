@@ -9,12 +9,12 @@
 
 ## 🖥 Екран: `Play Slider Uk` (`play/slider/slider.uk.snap`)
 
-> 🚀 **Як запустити:** `node play/main.js --demo=slider --lang=uk`
+> 📡 **Як запустити:** `node play/main.js --demo=slider --lang=uk`
 
 ```text
-__   _ _______ __   _     _  _  _ _______ ______ 
-| \  | |_____| | \  |     |  |  | |______ |_____] 
-|  \_| |     | |  \_|  •  |__|__| |______ |_____] 
+__   _ _______ __   _     _  _  _ _______ ______
+| \  | |_____| | \  |     |  |  | |______ |_____]
+|  \_| |     | |  \_|  •  |__|__| |______ |_____]
 Демо повзунка
 Оберіть гучність (0-100) 10
 Обрано: 10
@@ -26,17 +26,17 @@ __   _ _______ __   _     _  _  _ _______ ______
 Обрано: 700
 ```
 
-> **💬 Коментарі щодо Play Slider Uk:
-> *(напишіть тут що змінити: кольори, відступи, тексти, логіку)*
+> \*_💬 Коментарі щодо Play Slider Uk:
+> _(напишіть тут що змінити: кольори, відступи, тексти, логіку)\*
 
 ---
 
 ## 🖥 Екран: `Sandbox Slider Lifecycle Uk` (`sandbox/slider/lifecycle.uk.snap`)
 
-> 🚀 **Як запустити:** `node play/sandbox.js --comp=Slider --lang=uk`
+> 📡 **Як запустити:** `node play/sandbox.js --comp=Slider --lang=uk`
 
 ```text
-🧱 UI-CLI Sandbox 
+🧱 UI-CLI Sandbox
 Select a component to test:
  1) Alert
  2) Badge
@@ -61,7 +61,7 @@ Sandbox > Slider. Choose variation:
  3) ← Back to Components
 ✔  [Variant] Default
 ==================================================
- Sandbox: > Slider > Default < 
+ Sandbox: > Slider > Default <
 ==================================================
 ⚡ This is a Prompt Component.
 ==================================================
@@ -77,7 +77,7 @@ Variant Options:
 Result: 50
 Press any key to continue...
 ==================================================
- Sandbox: > Slider > Default < 
+ Sandbox: > Slider > Default <
 ==================================================
 ⚡ This is a Prompt Component.
 ==================================================
@@ -97,7 +97,7 @@ Sandbox > Slider. Choose variation:
 ✔  + Create New Variant
 ✔ Enter new variant name: TestVar
 ==================================================
- Sandbox: > Slider > TestVar < 
+ Sandbox: > Slider > TestVar <
 ==================================================
 ⚡ This is a Prompt Component.
 ==================================================
@@ -137,8 +137,7 @@ Select a component to test:
 Exiting Sandbox. 👋
 ```
 
-> **💬 Коментарі щодо Sandbox Slider Lifecycle Uk:
-> *(напишіть тут що змінити: кольори, відступи, тексти, логіку)*
+> \*_💬 Коментарі щодо Sandbox Slider Lifecycle Uk:
+> _(напишіть тут що змінити: кольори, відступи, тексти, логіку)\*
 
 ---
-

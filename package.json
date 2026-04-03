@@ -1,6 +1,6 @@
 {
 	"name": "@nan0web/ui-cli",
-	"version": "2.10.0",
+	"version": "2.11.0",
 	"description": "NaN•Web UI CLI. Command line interface for One application logic (algorithm) and many UI.",
 	"main": "src/index.js",
 	"types": "types/index.d.ts",
@@ -22,6 +22,9 @@
 			"import": "./src/ui/test/index.js",
 			"types": "./types/ui/test/index.d.ts"
 		},
+		"./testing": {
+			"import": "./src/testing/index.js"
+		},
 		"./ui/cli": "./play/examples/ExampleApp.js"
 	},
 	"scripts": {
@@ -32,10 +35,10 @@
 		"test:coverage": "node --experimental-test-coverage --test-timeout=3333 --test-coverage-include=\"src/**/*.js\" --test-coverage-exclude=\"src/**/*.test.js\" --test \"src/**/*.test.js\"",
 		"test:coverage:collect": "nan0test coverage",
 		"test:docs": "node --test --test-timeout=3333 src/README.md.js",
-		"test:release": "node --test --test-timeout=3333 \"releases/**/*.test.js\"",
+		"test:release": "node --test --test-timeout=3333 \"releases/**/*.spec.js\" \"releases/**/*.test.js\"",
 		"test:status": "nan0test status --hide-name --debug",
 		"test:play": "UI_SNAPSHOT=1 node --test --test-concurrency=1 --test-timeout=15000 play/main.test.js",
-		"test:i18n": "node bin/inspect-i18n.js",
+		"test:i18n": "i18n audit",
 		"test:all": "npm run test && npm run test:docs && npm run test:play && npm run test:i18n && npm run build && npm run knip",
 		"test:all1": "npm run test && npm run test:docs && npm run test:status && npm run test:play && npm run build",
 		"knip": "knip --production",

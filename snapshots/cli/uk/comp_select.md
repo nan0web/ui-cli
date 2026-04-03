@@ -9,12 +9,12 @@
 
 ## 🖥 Екран: `Play Select Uk` (`play/select/select.uk.snap`)
 
-> 🚀 **Як запустити:** `node play/main.js --demo=select --lang=uk`
+> 📡 **Як запустити:** `node play/main.js --demo=select --lang=uk`
 
 ```text
-__   _ _______ __   _     _  _  _ _______ ______ 
-| \  | |_____| | \  |     |  |  | |______ |_____] 
-|  \_| |     | |  \_|  •  |__|__| |______ |_____] 
+__   _ _______ __   _     _  _  _ _______ ______
+| \  | |_____| | \  |     |  |  | |______ |_____]
+|  \_| |     | |  \_|  •  |__|__| |______ |_____]
 Вибір зі списку
 Оберіть колір
  1) Червоний
@@ -24,17 +24,17 @@ __   _ _______ __   _     _  _  _ _______ ______
 ✓ Ви обрали: Синій
 ```
 
-> **💬 Коментарі щодо Play Select Uk:
-> *(напишіть тут що змінити: кольори, відступи, тексти, логіку)*
+> \*_💬 Коментарі щодо Play Select Uk:
+> _(напишіть тут що змінити: кольори, відступи, тексти, логіку)\*
 
 ---
 
 ## 🖥 Екран: `Sandbox Select Lifecycle Uk` (`sandbox/select/lifecycle.uk.snap`)
 
-> 🚀 **Як запустити:** `node play/sandbox.js --comp=Select --lang=uk`
+> 📡 **Як запустити:** `node play/sandbox.js --comp=Select --lang=uk`
 
 ```javascript
-🧱 UI-CLI Sandbox 
+🧱 UI-CLI Sandbox
 Select a component to test:
  1) Alert
  2) Badge
@@ -59,7 +59,7 @@ Sandbox > Select. Choose variation:
  3) ← Back to Components
 ✔  [Variant] Default
 ==================================================
- Sandbox: > Select > Default < 
+ Sandbox: > Select > Default <
 ==================================================
 ⚡ This is a Prompt Component.
 ==================================================
@@ -72,7 +72,7 @@ Variant Options:
 Result: {"index":-1,"cancelled":true}
 Press any key to continue...
 ==================================================
- Sandbox: > Select > Default < 
+ Sandbox: > Select > Default <
 ==================================================
 ⚡ This is a Prompt Component.
 ==================================================
@@ -89,7 +89,7 @@ Sandbox > Select. Choose variation:
 ✔  + Create New Variant
 ✔ Enter new variant name: TestVar
 ==================================================
- Sandbox: > Select > TestVar < 
+ Sandbox: > Select > TestVar <
 ==================================================
 ⚡ This is a Prompt Component.
 ==================================================
@@ -126,8 +126,7 @@ Select a component to test:
 Exiting Sandbox. 👋
 ```
 
-> **💬 Коментарі щодо Sandbox Select Lifecycle Uk:
-> *(напишіть тут що змінити: кольори, відступи, тексти, логіку)*
+> \*_💬 Коментарі щодо Sandbox Select Lifecycle Uk:
+> _(напишіть тут що змінити: кольори, відступи, тексти, логіку)\*
 
 ---
-

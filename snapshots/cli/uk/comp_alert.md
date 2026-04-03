@@ -9,10 +9,10 @@
 
 ## 🖥 Екран: `Sandbox Alert Lifecycle Uk` (`sandbox/alert/lifecycle.uk.snap`)
 
-> 🚀 **Як запустити:** `node play/sandbox.js --comp=Alert --lang=uk`
+> 📡 **Як запустити:** `node play/sandbox.js --comp=Alert --lang=uk`
 
 ```text
-🧱 UI-CLI Sandbox 
+🧱 UI-CLI Sandbox
 Select a component to test:
  1) Alert
  2) Badge
@@ -37,11 +37,11 @@ Sandbox > Alert. Choose variation:
  3) ← Back to Components
 ✔  [Variant] Default
 ==================================================
- Sandbox: > Alert > Default < 
+ Sandbox: > Alert > Default <
 ==================================================
 👀 LIVE PREVIEW:
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- ℹ Attention  
+ ℹ Attention
 ────────────────────────────────────────────────────────────
    This is a sandbox alert preview.
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -60,11 +60,11 @@ Sandbox > Alert. Choose variation:
 ✔  + Create New Variant
 ✔ Enter new variant name: TestVar
 ==================================================
- Sandbox: > Alert > TestVar < 
+ Sandbox: > Alert > TestVar <
 ==================================================
 👀 LIVE PREVIEW:
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- ℹ Attention  
+ ℹ Attention
 ────────────────────────────────────────────────────────────
    This is a sandbox alert preview.
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -78,11 +78,11 @@ Variant Options:
  6) ← Back
 ✔  ↺ Reset to Defaults
 ==================================================
- Sandbox: > Alert > TestVar < 
+ Sandbox: > Alert > TestVar <
 ==================================================
 👀 LIVE PREVIEW:
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- ℹ Attention  
+ ℹ Attention
 ────────────────────────────────────────────────────────────
    This is a sandbox alert preview.
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -121,8 +121,7 @@ Select a component to test:
 Exiting Sandbox. 👋
 ```
 
-> **💬 Коментарі щодо Sandbox Alert Lifecycle Uk:
-> *(напишіть тут що змінити: кольори, відступи, тексти, логіку)*
+> \*_💬 Коментарі щодо Sandbox Alert Lifecycle Uk:
+> _(напишіть тут що змінити: кольори, відступи, тексти, логіку)\*
 
 ---
-

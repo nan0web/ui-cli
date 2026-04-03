@@ -9,10 +9,10 @@
 
 ## 🖥 Екран: `Sandbox Spinner Lifecycle Uk` (`sandbox/spinner/lifecycle.uk.snap`)
 
-> 🚀 **Як запустити:** `node play/sandbox.js --comp=Spinner --lang=uk`
+> 📡 **Як запустити:** `node play/sandbox.js --comp=Spinner --lang=uk`
 
 ```text
-🧱 UI-CLI Sandbox 
+🧱 UI-CLI Sandbox
 Select a component to test:
  1) Alert
  2) Badge
@@ -37,7 +37,7 @@ Sandbox > Spinner. Choose variation:
  3) ← Back to Components
 ✔  [Variant] Default
 ==================================================
- Sandbox: > Spinner > Default < 
+ Sandbox: > Spinner > Default <
 ==================================================
 ⚡ This is a Prompt Component.
 ==================================================
@@ -47,33 +47,58 @@ Variant Options:
  3) ↺ Reset to Defaults
  4) ← Back
 ✔  > Run Prompt (Test)
-[SPINNER_ANIMATION]
-[SPINNER_ANIMATION]
-[SPINNER_ANIMATION]
-[SPINNER_ANIMATION]
-[SPINNER_ANIMATION]
-[SPINNER_ANIMATION]
-[SPINNER_ANIMATION]
-[SPINNER_ANIMATION]
-[SPINNER_ANIMATION]
-[SPINNER_ANIMATION]
-[SPINNER_ANIMATION]
-[SPINNER_ANIMATION]
-[SPINNER_ANIMATION]
-[SPINNER_ANIMATION]
-[SPINNER_ANIMATION]
-[SPINNER_ANIMATION]
-[SPINNER_ANIMATION]
-[SPINNER_ANIMATION]
-[SPINNER_ANIMATION]
-[SPINNER_ANIMATION]
-[SPINNER_ANIMATION]
-[SPINNER_ANIMATION]
-[SPINNER_ANIMATION]
-[SPINNER_ANIMATION]
-Done! Loading resources...
+
+[SPINNER_ANIMATION]
+
+[SPINNER_ANIMATION]
+
+[SPINNER_ANIMATION]
+
+[SPINNER_ANIMATION]
+
+[SPINNER_ANIMATION]
+
+[SPINNER_ANIMATION]
+
+[SPINNER_ANIMATION]
+
+[SPINNER_ANIMATION]
+
+[SPINNER_ANIMATION]
+
+[SPINNER_ANIMATION]
+
+[SPINNER_ANIMATION]
+
+[SPINNER_ANIMATION]
+
+[SPINNER_ANIMATION]
+
+[SPINNER_ANIMATION]
+
+[SPINNER_ANIMATION]
+
+[SPINNER_ANIMATION]
+
+[SPINNER_ANIMATION]
+
+[SPINNER_ANIMATION]
+
+[SPINNER_ANIMATION]
+
+[SPINNER_ANIMATION]
+
+[SPINNER_ANIMATION]
+
+[SPINNER_ANIMATION]
+
+[SPINNER_ANIMATION]
+
+[SPINNER_ANIMATION]
+
+Done! Loading resources...
 ==================================================
- Sandbox: > Spinner > Default < 
+ Sandbox: > Spinner > Default <
 ==================================================
 ⚡ This is a Prompt Component.
 ==================================================
@@ -90,7 +115,7 @@ Sandbox > Spinner. Choose variation:
 ✔  + Create New Variant
 ✔ Enter new variant name: TestVar
 ==================================================
- Sandbox: > Spinner > TestVar < 
+ Sandbox: > Spinner > TestVar <
 ==================================================
 ⚡ This is a Prompt Component.
 ==================================================
@@ -127,8 +152,7 @@ Select a component to test:
 Exiting Sandbox. 👋
 ```
 
-> **💬 Коментарі щодо Sandbox Spinner Lifecycle Uk:
-> *(напишіть тут що змінити: кольори, відступи, тексти, логіку)*
+> \*_💬 Коментарі щодо Sandbox Spinner Lifecycle Uk:
+> _(напишіть тут що змінити: кольори, відступи, тексти, логіку)\*
 
 ---
-

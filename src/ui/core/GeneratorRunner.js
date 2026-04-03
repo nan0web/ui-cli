@@ -131,6 +131,7 @@ export async function runGenerator(model, adapter, options = {}) {
 					nextVal = undefined
 					break
 				}
+				case 'render':
 				case 'renderComponent': {
 					if (typeof adapter.render === 'function') {
 						await adapter.render(intent.component, intent.props)

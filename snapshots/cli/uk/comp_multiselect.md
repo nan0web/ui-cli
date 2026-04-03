@@ -9,10 +9,10 @@
 
 ## 🖥 Екран: `Sandbox Multiselect Lifecycle Uk` (`sandbox/multiselect/lifecycle.uk.snap`)
 
-> 🚀 **Як запустити:** `node play/sandbox.js --comp=Multiselect --lang=uk`
+> 📡 **Як запустити:** `node play/sandbox.js --comp=Multiselect --lang=uk`
 
 ```text
-🧱 UI-CLI Sandbox 
+🧱 UI-CLI Sandbox
 Select a component to test:
  1) Alert
  2) Badge
@@ -37,7 +37,7 @@ Sandbox > Multiselect. Choose variation:
  3) ← Back to Components
 ✔  [Variant] Default
 ==================================================
- Sandbox: > Multiselect > Default < 
+ Sandbox: > Multiselect > Default <
 ==================================================
 ⚡ This is a Prompt Component.
 ==================================================
@@ -50,7 +50,7 @@ Variant Options:
 Result: []
 Press any key to continue...
 ==================================================
- Sandbox: > Multiselect > Default < 
+ Sandbox: > Multiselect > Default <
 ==================================================
 ⚡ This is a Prompt Component.
 ==================================================
@@ -67,7 +67,7 @@ Sandbox > Multiselect. Choose variation:
 ✔  + Create New Variant
 ✔ Enter new variant name: TestVar
 ==================================================
- Sandbox: > Multiselect > TestVar < 
+ Sandbox: > Multiselect > TestVar <
 ==================================================
 ⚡ This is a Prompt Component.
 ==================================================
@@ -104,8 +104,7 @@ Select a component to test:
 Exiting Sandbox. 👋
 ```
 
-> **💬 Коментарі щодо Sandbox Multiselect Lifecycle Uk:
-> *(напишіть тут що змінити: кольори, відступи, тексти, логіку)*
+> \*_💬 Коментарі щодо Sandbox Multiselect Lifecycle Uk:
+> _(напишіть тут що змінити: кольори, відступи, тексти, логіку)\*
 
 ---
-

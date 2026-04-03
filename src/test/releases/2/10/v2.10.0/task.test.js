@@ -1,7 +1,7 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { Pricing, Gallery, Testimonials, EmptyState, Banner } from '../../../../src/ui/view/DomainViews.js'
-import CLiInputAdapter from '../../../../src/ui/core/InputAdapter.js'
+import { Pricing, Gallery, Testimonials, EmptyState, Banner } from '../../../../../../src/ui/view/DomainViews.js'
+import CLiInputAdapter from '../../../../../../src/ui/core/InputAdapter.js'
 import Logger from '@nan0web/log'
 import fs from 'node:fs'
 import path from 'node:path'
@@ -90,7 +90,7 @@ test('Release v2.10.0: I18n context passing in Banner', () => {
         return key
     }
     const props = { text: 'Hello', foo: 'bar' }
-    Banner.call({ t: tFn }, props)
+    String(Banner.call({ t: tFn }, props))
     
     assert.ok(capturedContext, 'Context should be passed to t()')
     assert.strictEqual(capturedContext.foo, 'bar', 'Context properties should persist')

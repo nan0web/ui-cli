@@ -9,36 +9,50 @@
 
 ## 🖥 Екран: `Play V2 Components Uk` (`play/v2/v2_components.uk.snap`)
 
-> 🚀 **Як запустити:** `node play/main.js --demo=v2 --lang=uk`
+> 📡 **Як запустити:** `node play/main.js --demo=v2 --lang=uk`
 
 ```text
-__   _ _______ __   _     _  _  _ _______ ______ 
-| \  | |_____| | \  |     |  |  | |______ |_____] 
-|  \_| |     | |  \_|  •  |__|__| |______ |_____] 
+__   _ _______ __   _     _  _  _ _______ ______
+| \  | |_____| | \  |     |  |  | |______ |_____]
+|  \_| |     | |  \_|  •  |__|__| |______ |_____]
 --- Презентація V2 Компонентів ---
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- ℹ Презентація V2 Архітектури  
+ ℹ Презентація V2 Архітектури
 ─────────────────────────────────────────────────────────────────────────────
    Демонстрація 100% функціональних компонентів у новому движку рендеринга.
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- МОДУЛЬНИЙ   БЕЗ ЗАЛЕЖНОСТЕЙ 
+ МОДУЛЬНИЙ   БЕЗ ЗАЛЕЖНОСТЕЙ
 ✔ Движок ініціалізовано
 ℹ Режим снапшотів активний
-[PROGRESS_BAR][PROGRESS_BAR][PROGRESS_BAR][PROGRESS_BAR][PROGRESS_BAR][PROGRESS_BAR][PROGRESS_BAR][PROGRESS_BAR][PROGRESS_BAR][PROGRESS_BAR]
-[SPINNER_ANIMATION]
-[SPINNER_ANIMATION]
-[SPINNER_ANIMATION]
-✔ Система Готова
+
+[PROGRESS_BAR]
+[PROGRESS_BAR]
+[PROGRESS_BAR]
+[PROGRESS_BAR]
+[PROGRESS_BAR]
+[PROGRESS_BAR]
+[PROGRESS_BAR]
+[PROGRESS_BAR]
+[PROGRESS_BAR]
+[PROGRESS_BAR]
+
+[SPINNER_ANIMATION]
+
+[SPINNER_ANIMATION]
+
+[SPINNER_ANIMATION]
+
+✔ Система Готова
 Навігаційні Види:
 Home › NanoWeb › UI-CLI › V2-Demo
- Settings │ Profile │ Security 
+ Settings │ Profile │ Security
 ✔ Plan ─ ● Build ─ ○ Verify
 Перегляд Даних (Статична Таблиця):
 Регістр Компонентів
-component type        status 
-Prompt    Interactive Stable 
-View      Static      LTS    
-Nav       Recursive   Alpha  
+component type        status
+Prompt    Interactive Stable
+View      Static      LTS
+Nav       Recursive   Alpha
 Інтерактивна Фаза 1: Ідентифікація
 Інтерактивна Фаза 2: Конфігурація
 Інтерактивна Фаза 3: Параметри
@@ -53,7 +67,7 @@ Nav       Recursive   Alpha
 ===
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- ✔ Налаштування Завершено  
+ ✔ Налаштування Завершено
 ────────────────────────────────────────────────────────────
    Користувач: showcase
    Оточення: N/A
@@ -64,8 +78,7 @@ Nav       Recursive   Alpha
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```
 
-> **💬 Коментарі щодо Play V2 Components Uk:
-> *(напишіть тут що змінити: кольори, відступи, тексти, логіку)*
+> \*_💬 Коментарі щодо Play V2 Components Uk:
+> _(напишіть тут що змінити: кольори, відступи, тексти, логіку)\*
 
 ---
-

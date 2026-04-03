@@ -9,12 +9,12 @@
 
 ## 🖥 Екран: `Play Datetime Uk` (`play/datetime/datetime.uk.snap`)
 
-> 🚀 **Як запустити:** `node play/main.js --demo=datetime --lang=uk`
+> 📡 **Як запустити:** `node play/main.js --demo=datetime --lang=uk`
 
 ```text
-__   _ _______ __   _     _  _  _ _______ ______ 
-| \  | |_____| | \  |     |  |  | |______ |_____] 
-|  \_| |     | |  \_|  •  |__|__| |______ |_____] 
+__   _ _______ __   _     _  _  _ _______ ______
+| \  | |_____| | \  |     |  |  | |______ |_____]
+|  \_| |     | |  \_|  •  |__|__| |______ |_____]
 Демо вибору дати та часу
 Сценарій 1: Вибір дати
 Оберіть дату: 2026-01-01
@@ -28,17 +28,17 @@ __   _ _______ __   _     _  _  _ _______ ______
 Натисніть будь-яку клавішу...
 ```
 
-> **💬 Коментарі щодо Play Datetime Uk:
-> *(напишіть тут що змінити: кольори, відступи, тексти, логіку)*
+> \*_💬 Коментарі щодо Play Datetime Uk:
+> _(напишіть тут що змінити: кольори, відступи, тексти, логіку)\*
 
 ---
 
 ## 🖥 Екран: `Sandbox Datetime Lifecycle Uk` (`sandbox/datetime/lifecycle.uk.snap`)
 
-> 🚀 **Як запустити:** `node play/sandbox.js --comp=Datetime --lang=uk`
+> 📡 **Як запустити:** `node play/sandbox.js --comp=Datetime --lang=uk`
 
 ```text
-🧱 UI-CLI Sandbox 
+🧱 UI-CLI Sandbox
 Select a component to test:
  1) Alert
  2) Badge
@@ -63,7 +63,7 @@ Sandbox > DateTime. Choose variation:
  3) ← Back to Components
 ✔  [Variant] Default
 ==================================================
- Sandbox: > DateTime > Default < 
+ Sandbox: > DateTime > Default <
 ==================================================
 ⚡ This is a Prompt Component.
 ==================================================
@@ -76,7 +76,7 @@ Variant Options:
 Result: "2026-01-01T10:00:00.000Z"
 Press any key to continue...
 ==================================================
- Sandbox: > DateTime > Default < 
+ Sandbox: > DateTime > Default <
 ==================================================
 ⚡ This is a Prompt Component.
 ==================================================
@@ -93,7 +93,7 @@ Sandbox > DateTime. Choose variation:
 ✔  + Create New Variant
 ✔ Enter new variant name: TestVar
 ==================================================
- Sandbox: > DateTime > TestVar < 
+ Sandbox: > DateTime > TestVar <
 ==================================================
 ⚡ This is a Prompt Component.
 ==================================================
@@ -130,8 +130,7 @@ Select a component to test:
 Exiting Sandbox. 👋
 ```
 
-> **💬 Коментарі щодо Sandbox Datetime Lifecycle Uk:
-> *(напишіть тут що змінити: кольори, відступи, тексти, логіку)*
+> \*_💬 Коментарі щодо Sandbox Datetime Lifecycle Uk:
+> _(напишіть тут що змінити: кольори, відступи, тексти, логіку)\*
 
 ---
-

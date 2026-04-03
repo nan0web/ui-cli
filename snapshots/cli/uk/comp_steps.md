@@ -9,10 +9,10 @@
 
 ## 🖥 Екран: `Sandbox Steps Lifecycle Uk` (`sandbox/steps/lifecycle.uk.snap`)
 
-> 🚀 **Як запустити:** `node play/sandbox.js --comp=Steps --lang=uk`
+> 📡 **Як запустити:** `node play/sandbox.js --comp=Steps --lang=uk`
 
 ```text
-🧱 UI-CLI Sandbox 
+🧱 UI-CLI Sandbox
 Select a component to test:
  1) Alert
  2) Badge
@@ -37,7 +37,7 @@ Sandbox > Steps. Choose variation:
  3) ← Back to Components
 ✔  [Variant] Default
 ==================================================
- Sandbox: > Steps > Default < 
+ Sandbox: > Steps > Default <
 ==================================================
 👀 LIVE PREVIEW:
 ✔ Cart ─ ● Address ─ ○ Payment
@@ -54,7 +54,7 @@ Sandbox > Steps. Choose variation:
 ✔  + Create New Variant
 ✔ Enter new variant name: TestVar
 ==================================================
- Sandbox: > Steps > TestVar < 
+ Sandbox: > Steps > TestVar <
 ==================================================
 👀 LIVE PREVIEW:
 ✔ Cart ─ ● Address ─ ○ Payment
@@ -66,7 +66,7 @@ Variant Options:
  4) ← Back
 ✔  ↺ Reset to Defaults
 ==================================================
- Sandbox: > Steps > TestVar < 
+ Sandbox: > Steps > TestVar <
 ==================================================
 👀 LIVE PREVIEW:
 ✔ Cart ─ ● Address ─ ○ Payment
@@ -103,8 +103,7 @@ Select a component to test:
 Exiting Sandbox. 👋
 ```
 
-> **💬 Коментарі щодо Sandbox Steps Lifecycle Uk:
-> *(напишіть тут що змінити: кольори, відступи, тексти, логіку)*
+> \*_💬 Коментарі щодо Sandbox Steps Lifecycle Uk:
+> _(напишіть тут що змінити: кольори, відступи, тексти, логіку)\*
 
 ---
-

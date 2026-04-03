@@ -26,7 +26,7 @@ console.info('')
 const commands = {
 	async *serve() {
 		const port = 3033
-		console.success(`🚀 Starting server on port ${port}`)
+		console.success(`📡 Starting server on port ${port}`)
 
 		const alert = new Alert({
 			type: 'info',
