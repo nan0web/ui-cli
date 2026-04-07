@@ -24,7 +24,8 @@ export function resolvePositionalArgs(ModelClass, args = [], existing = {}) {
 	if (!args || !args.length) return { ...existing }
 
 	const positionalFields = []
-	for (const [key, descriptor] of Object.entries(ModelClass)) {
+	for (const key of Object.getOwnPropertyNames(ModelClass)) {
+		const descriptor = ModelClass[key]
 		if (descriptor && typeof descriptor === 'object' && descriptor.positional === true) {
 			positionalFields.push(key)
 		}

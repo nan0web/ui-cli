@@ -6,7 +6,9 @@ export class SelectModel extends Model {
         alias: string[];
         default: string;
     };
-    static help: string;
+    static help: {
+        default: string;
+    };
     static UI_HINT: {
         alias: string;
         default: string;

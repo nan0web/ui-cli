@@ -57,7 +57,11 @@ export async function bootstrapApp(AppModel, config = {}) {
 	if (!t) {
 		const lang = process.env.LANG ? process.env.LANG.split('_')[0].split('-')[0] : 'uk'
 		const { I18nDb } = await import('@nan0web/i18n')
-		const i18nDb = new I18nDb({ db, locale: lang, tPath: '_/t.yaml', dataDir: '' })
+		
+		// Try .nan0 first, then .yaml
+		const tPath = (await fs.stat(`_/t.nan0`).catch(() => null)) ? '_/t.nan0' : '_/t.yaml'
+		
+		const i18nDb = new I18nDb({ db, locale: lang, tPath, dataDir: '' })
 		t = await i18nDb.createT(lang)
 	}
 

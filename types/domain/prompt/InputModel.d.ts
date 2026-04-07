@@ -6,7 +6,9 @@ export class InputModel extends Model {
         alias: string[];
         default: string;
     };
-    static help: string;
+    static help: {
+        default: string;
+    };
     static initial: {
         alias: string;
         default: string;

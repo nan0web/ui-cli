@@ -5,7 +5,7 @@ import { Model } from '@nan0web/types'
  */
 export class InputModel extends Model {
 	static UI = { alias: ['message', 'label', 'labels'], default: 'Enter value' }
-	static help = 'Question or label for the input fields.'
+	static help = { default: 'Question or label for the input fields.' }
 	static initial = { alias: 'defaultValue', default: '' }
 	static type = { default: 'text' }
 	static validate = { alias: 'validator' }

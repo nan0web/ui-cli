@@ -6,7 +6,9 @@ export class TreeModel extends Model {
         alias: string[];
         default: string;
     };
-    static help: string;
+    static help: {
+        default: string;
+    };
     static UI_HINT_SINGLE: {
         default: string;
     };

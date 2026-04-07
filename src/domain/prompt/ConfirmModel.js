@@ -5,7 +5,7 @@ import { Model } from '@nan0web/types'
  */
 export class ConfirmModel extends Model {
 	static UI = { alias: ['message', 'label', 'labels'], default: 'Are you sure?' }
-	static help = 'Question to be confirmed by user.'
+	static help = { default: 'Question to be confirmed by user.' }
 	static UI_YES = { alias: 'active', default: 'yes' }
 	static UI_NO = { alias: 'inactive', default: 'no' }
 	static initial = { default: false }

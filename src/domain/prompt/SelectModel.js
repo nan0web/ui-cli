@@ -5,7 +5,7 @@ import { Model } from '@nan0web/types'
  */
 export class SelectModel extends Model {
 	static UI = { alias: ['message', 'label', 'labels'], default: 'Select an option' }
-	static help = 'Standard radio-button selection list.'
+	static help = { default: 'Standard radio-button selection list.' }
 	static UI_HINT = { alias: 'hint', default: 'Use arrow-keys. Enter to select. TAB for search.' }
 	static UI_MORE = { default: 'more' }
 	static UI_RESULT = { default: 'Result' }

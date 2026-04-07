@@ -5,7 +5,7 @@ import { Model } from '@nan0web/types'
  */
 export class TreeModel extends Model {
 	static UI = { alias: ['message', 'label', 'labels'], default: 'Select a file' }
-	static help = 'Recursive file or object tree selection.'
+	static help = { default: 'Recursive file or object tree selection.' }
 	static UI_HINT_SINGLE = { default: 'Use arrow-keys. Enter to select. TAB for search.' }
 	static UI_HINT_MULTI = { default: 'Use arrow-keys. Space to toggle. Enter to submit. TAB for search.' }
 	static UI_EMPTY = { default: '(empty)' }

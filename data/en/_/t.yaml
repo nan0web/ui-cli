@@ -1,53 +1,130 @@
-"UI-CLI Example App": "UI-CLI Example App"
-"Choose an action": "Choose an action"
-"👋 Greeting Demo": "👋 Greeting Demo"
-"📋 Mini Survey": "📋 Mini Survey"
-"⏳ Progress Demo": "⏳ Progress Demo"
-"🧱 Component Sandbox": "🧱 Component Sandbox"
-"🌍 Change Language": "🌍 Change Language"
-"🚪 Exit": "🚪 Exit"
-"What is your name?": "What is your name?"
-"How old are you?": "How old are you?"
-"Favourite colour": "Favourite colour"
-"🔴 Red": "🔴 Red"
-"🟢 Green": "🟢 Green"
-"🔵 Blue": "🔵 Blue"
-"🟣 Purple": "🟣 Purple"
-"Really exit?": "Really exit?"
-"Hello, {name}! 🎉": "Hello, {name}! 🎉"
-"Processing step 1...": "Processing step 1..."
-"Step 1 complete": "Step 1 complete"
-"Processing step 2...": "Processing step 2..."
-"Step 2 complete": "Step 2 complete"
-"Finalising...": "Finalising..."
-"All steps finished! ✅": "All steps finished! ✅"
-"Show help": "Show help"
-"Select volume": "Select volume"
-"Options array is required and must not be empty": "Options array is required and must not be empty"
-"Items array is required and must not be empty": "Items array is required and must not be empty"
-"API server port": "API server port"
-"Data directory path or connection string (DSN)": "Data directory path or connection string (DSN)"
-"Non-interactive mode (no to all prompts)": "Non-interactive mode (no to all prompts)"
-"Non-interactive mode (yes to all prompts)": "Non-interactive mode (yes to all prompts)"
-"Output directory for SSG": "Output directory for SSG"
-"Path to config file (optional)": "Path to config file (optional)"
-"Public assets directory": "Public assets directory"
-"Remember my session for 1 year": "Remember my session for 1 year"
-"Infinite loop detected": "Infinite loop detected"
-"_save": "save"
-"_cancel": "cancel"
-"sep": "─"
-"──────────────────────────": "──────────────────────────"
-"Preview": "Preview"
-"Quiet mode": "Quiet mode"
-"Source path": "Source path"
-"Target path": "Target path"
-"✖": "✖"
-"add": "add"
-"done": "done"
-"[ASK]": "[ASK]"
-"[PROCESSING]": "[PROCESSING]"
-"[RENDER VIEW]": "[RENDER VIEW]"
-"[LOG]": "[LOG]"
-"": ""
-"en": "en"
+'': ''
+'${f.label}: [${displayVal}]': '${f.label}: [${displayVal}]'
+'${promptMsg} (${arr.length} items)': '${promptMsg} (${arr.length} items)'
+'+ ${this.t(FormModel.UI_ADD)}': '+ ${this.t(FormModel.UI_ADD)}'
+'<password>': '<password>'
+'<user>': '<user>'
+'A': 'A'
+'API server port': 'API server port'
+'All steps finished! ✅': 'All steps finished! ✅'
+'Are you sure?': 'Are you sure?'
+'B': 'B'
+'Big range': 'Big range'
+'Choose': 'Choose'
+'Choose an action': 'Choose an action'
+'Create an empty repository': 'Create an empty repository'
+'Custom step': 'Custom step'
+'Data directory path or connection string (DSN)': 'Data directory path or connection string (DSN)'
+'Decentralization & Sovereignty (Sovereignty)': 'Decentralization & Sovereignty (Sovereignty)'
+'Default max': 'Default max'
+'Default min': 'Default min'
+'Default step': 'Default step'
+'Domain Modeling (Data-Driven Models)': 'Domain Modeling (Data-Driven Models)'
+'Edit Item [${idxToEdit}]': 'Edit Item [${idxToEdit}]'
+'Favorite colour': 'Favorite colour'
+'Favourite colour': 'Favourite colour'
+'Finalising...': 'Finalising...'
+'Force operation': 'Force operation'
+'From': 'From'
+'From language': 'From language'
+'Full Meta Test': 'Full Meta Test'
+'Green': 'Green'
+'Hello ${this.data.name}': 'Hello ${this.data.name}'
+'Hello, {name}! 🎉': 'Hello, {name}! 🎉'
+'How much do you like it?': 'How much do you like it?'
+'How old are you?': 'How old are you?'
+'Infinite loop detected': 'Infinite loop detected'
+'Items array is required and must not be empty': 'Items array is required and must not be empty'
+'Lang': 'Lang'
+'Limit': 'Limit'
+'Logic Verification (CLI-First)': 'Logic Verification (CLI-First)'
+'Mission & World Impact (World Impact)': 'Mission & World Impact (World Impact)'
+'NaN0Web Project Blueprint Generator': 'NaN0Web Project Blueprint Generator'
+'Name': 'Name'
+'No results found': 'No results found'
+'Non-interactive mode (no to all prompts)': 'Non-interactive mode (no to all prompts)'
+'Non-interactive mode (yes to all prompts)': 'Non-interactive mode (yes to all prompts)'
+'Optional': 'Optional'
+'Options array is required and must not be empty': 'Options array is required and must not be empty'
+'Original Label': 'Original Label'
+'Output directory for SSG': 'Output directory for SSG'
+'Path to config file (optional)': 'Path to config file (optional)'
+'Philosophy & Abstraction (The Seed)': 'Philosophy & Abstraction (The Seed)'
+'Pick a color': 'Pick a color'
+'Preview': 'Preview'
+'Pro': 'Pro'
+'Pro Plan': 'Pro Plan'
+'Processing step 1...': 'Processing step 1...'
+'Processing step 2...': 'Processing step 2...'
+'Public assets directory': 'Public assets directory'
+'Quality & Distribution (Quality & Distribution)': 'Quality & Distribution (Quality & Distribution)'
+'Quiet mode': 'Quiet mode'
+'Really exit?': 'Really exit?'
+'Remember my session for 1 year': 'Remember my session for 1 year'
+'Reorder': 'Reorder'
+'Say hello': 'Say hello'
+'Select Volume': 'Select Volume'
+'Select temperature': 'Select temperature'
+'Select value': 'Select value'
+'Select volume': 'Select volume'
+'Select:': 'Select:'
+'Set brightness': 'Set brightness'
+'Show detailed output': 'Show detailed output'
+'Show help': 'Show help'
+'Sort': 'Sort'
+'Source': 'Source'
+'Source path': 'Source path'
+'Sovereign Workbench (The Master IDE)': 'Sovereign Workbench (The Master IDE)'
+'Step 1 complete': 'Step 1 complete'
+'Step 2 complete': 'Step 2 complete'
+'Subcommand': 'Subcommand'
+'Target': 'Target'
+'Target dir': 'Target dir'
+'Target path': 'Target path'
+'Test': 'Test'
+'Test Tree': 'Test Tree'
+'Test Viewer': 'Test Viewer'
+'Test command': 'Test command'
+'Theming & Interfaces (Theming)': 'Theming & Interfaces (Theming)'
+'To language': 'To language'
+'UI-CLI Example App': 'UI-CLI Example App'
+'Unique user name': 'Unique user name'
+'User age': 'User age'
+'User name': 'User name'
+'Value & Economy (Value & Economy)': 'Value & Economy (Value & Economy)'
+'Verbose': 'Verbose'
+'Volume': 'Volume'
+'What is your name?': 'What is your name?'
+'Your comment': 'Your comment'
+'Your name': 'Your name'
+'[${i}] ${lbl.length > 50 ? lbl.slice(0, 47) + ': "[${i}] ${lbl.length > 50 ? lbl.slice(0, 47) + "'
+'[ASK]': '[ASK]'
+'[LOG]': '[LOG]'
+'[PROCESSING]': '[PROCESSING]'
+'[RENDER VIEW]': '[RENDER VIEW]'
+'_cancel': 'cancel'
+'_save': 'save'
+'add': 'add'
+'custom': 'custom'
+'done': 'done'
+'en': 'en'
+'ok': 'ok'
+'sep': '─'
+'⏳ Progress Demo': '⏳ Progress Demo'
+'──────────────────────────': '──────────────────────────'
+'✅ ${adapter.t(FormModel.UI_DONE)}': '✅ ${adapter.t(FormModel.UI_DONE)}'
+'✔ ${this.t(FormModel.UI_DONE)}': '✔ ${this.t(FormModel.UI_DONE)}'
+'✖': '✖'
+'❌ ${adapter.t(ToggleModel.UI_NO)}': '❌ ${adapter.t(ToggleModel.UI_NO)}'
+'🌍 Change Language': '🌍 Change Language'
+'👁  CatalogWatcherModel': '👁  CatalogWatcherModel'
+'👋 Greeting Demo': '👋 Greeting Demo'
+'📋 Mini Survey': '📋 Mini Survey'
+'📝 ${adapter.t(FormModel.UI_EDIT)} ${adapter.t(SchemaClass.name)}': '📝 ${adapter.t(FormModel.UI_EDIT)} ${adapter.t(SchemaClass.name)}'
+'📦 ProjectModel': '📦 ProjectModel'
+'🔴 Red': '🔴 Red'
+'🔵 Blue': 'Blue'
+'🚪 Exit': 'Exit'
+'🟢 Green': 'Green'
+'🟣 Purple': 'Purple'
+'🧱 Component Sandbox': 'Component Sandbox'

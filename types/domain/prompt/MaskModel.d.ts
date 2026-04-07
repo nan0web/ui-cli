@@ -6,7 +6,9 @@ export class MaskModel extends Model {
         alias: string[];
         default: string;
     };
-    static help: string;
+    static help: {
+        default: string;
+    };
     static UI_FORMAT_MSG: {
         default: string;
     };

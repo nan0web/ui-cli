@@ -6,7 +6,9 @@ export class ConfirmModel extends Model {
         alias: string[];
         default: string;
     };
-    static help: string;
+    static help: {
+        default: string;
+    };
     static UI_YES: {
         alias: string;
         default: string;

@@ -1,53 +1,130 @@
-"UI-CLI Example App": "UI-CLI Демо Застосунок"
-"Choose an action": "Оберіть дію"
-"👋 Greeting Demo": "👋 Демо привітання"
-"📋 Mini Survey": "📋 Міні-опитування"
-"⏳ Progress Demo": "⏳ Демо прогресу"
-"🧱 Component Sandbox": "🧱 Пісочниця компонентів"
-"🌍 Change Language": "🌍 Змінити мову"
-"🚪 Exit": "🚪 Вихід"
-"What is your name?": "Як вас звати?"
-"How old are you?": "Скільки вам років?"
-"Favourite colour": "Улюблений колір"
-"🔴 Red": "🔴 Червоний"
-"🟢 Green": "🟢 Зелений"
-"🔵 Blue": "🔵 Синій"
-"🟣 Purple": "🟣 Фіолетовий"
-"Really exit?": "Дійсно вийти?"
-"Hello, {name}! 🎉": "Привіт, {name}! 🎉"
-"Processing step 1...": "Обробка кроку 1..."
-"Step 1 complete": "Крок 1 завершено"
-"Processing step 2...": "Обробка кроку 2..."
-"Step 2 complete": "Крок 2 завершено"
-"Finalising...": "Завершення..."
-"All steps finished! ✅": "Усі кроки завершено! ✅"
-"Show help": "Показати довідку"
-"Select volume": "Виберіть гучність"
-"Options array is required and must not be empty": "Масив опцій обов\x27язковий і не може бути порожнім"
-"Items array is required and must not be empty": "Масив елементів обов\x27язковий і не може бути порожнім"
-"API server port": "Порт API сервера"
-"Data directory path or connection string (DSN)": "Шлях до директорії даних або DSN"
-"Non-interactive mode (no to all prompts)": "Неінтерактивний режим (ні на всі запити)"
-"Non-interactive mode (yes to all prompts)": "Неінтерактивний режим (так на всі запити)"
-"Output directory for SSG": "Вихідна директорія для SSG"
-"Path to config file (optional)": "Шлях до конфігураційного файлу (опціонально)"
-"Public assets directory": "Директорія публічних активів"
-"Remember my session for 1 year": "Запам\x27ятати сесію на 1 рік"
-"Infinite loop detected": "Виявлено безкінечний цикл"
-"_save": "зберегти"
-"_cancel": "відмінити"
-"sep": "─"
-"──────────────────────────": "──────────────────────────"
-"Preview": "Прев\x27ю"
-"Quiet mode": "Тихий режим"
-"Source path": "Вихідний шлях"
-"Target path": "Цільовий шлях"
-"✖": "✖"
-"add": "додати"
-"done": "готово"
-"[ASK]": "[ЗАПИТ]"
-"[PROCESSING]": "[ОБРОБКА]"
-"[RENDER VIEW]": "[РЕНДЕР ФОРМИ]"
-"[LOG]": "[ЛОГ]"
-"": ""
-"en": "англ"
+'': ''
+'${f.label}: [${displayVal}]': '${f.label}: [${displayVal}]'
+'${promptMsg} (${arr.length} items)': '${promptMsg} (${arr.length} items)'
+'+ ${this.t(FormModel.UI_ADD)}': '+ ${this.t(FormModel.UI_ADD)}'
+<password>: <password>
+<user>: <user>
+A: A
+API server port: Порт API сервера
+All steps finished! ✅: Усі кроки завершено! ✅
+Are you sure?: Are you sure?
+B: B
+Big range: Big range
+Choose: Choose
+Choose an action: Оберіть дію
+Create an empty repository: Create an empty repository
+Custom step: Custom step
+Data directory path or connection string (DSN): Шлях до директорії даних або DSN
+Decentralization & Sovereignty (Sovereignty): Decentralization & Sovereignty (Sovereignty)
+Default max: Default max
+Default min: Default min
+Default step: Default step
+Domain Modeling (Data-Driven Models): Domain Modeling (Data-Driven Models)
+'Edit Item [${idxToEdit}]': 'Edit Item [${idxToEdit}]'
+Favorite colour: Favorite colour
+Favourite colour: Улюблений колір
+Finalising...: Завершення...
+Force operation: Force operation
+From: From
+From language: From language
+Full Meta Test: Full Meta Test
+Green: Green
+'Hello ${this.data.name}': 'Hello ${this.data.name}'
+"Hello, {name}! \U0001F389": "Привіт, {name}! \U0001F389"
+How much do you like it?: How much do you like it?
+How old are you?: Скільки вам років?
+Infinite loop detected: Виявлено безкінечний цикл
+Items array is required and must not be empty: Масив елементів обов'язковий і не може бути порожнім
+Lang: Lang
+Limit: Limit
+Logic Verification (CLI-First): Logic Verification (CLI-First)
+Mission & World Impact (World Impact): Mission & World Impact (World Impact)
+NaN0Web Project Blueprint Generator: NaN0Web Project Blueprint Generator
+Name: Name
+No results found: No results found
+Non-interactive mode (no to all prompts): Неінтерактивний режим (ні на всі запити)
+Non-interactive mode (yes to all prompts): Неінтерактивний режим (так на всі запити)
+Optional: Optional
+Options array is required and must not be empty: Масив опцій обов'язковий і не може бути порожнім
+Original Label: Original Label
+Output directory for SSG: Вихідна директорія для SSG
+Path to config file (optional): Шлях до конфігураційного файлу (опціонально)
+Philosophy & Abstraction (The Seed): Philosophy & Abstraction (The Seed)
+Pick a color: Pick a color
+Preview: Прев'ю
+Pro: Pro
+Pro Plan: Pro Plan
+Processing step 1...: Обробка кроку 1...
+Processing step 2...: Обробка кроку 2...
+Public assets directory: Директорія публічних активів
+Quality & Distribution (Quality & Distribution): Quality & Distribution (Quality & Distribution)
+Quiet mode: Тихий режим
+Really exit?: Дійсно вийти?
+Remember my session for 1 year: Запам'ятати сесію на 1 рік
+Reorder: Reorder
+Say hello: Say hello
+Select Volume: Select Volume
+Select temperature: Select temperature
+Select value: Select value
+Select volume: Виберіть гучність
+'Select:': 'Select:'
+Set brightness: Set brightness
+Show detailed output: Show detailed output
+Show help: Показати довідку
+Sort: Sort
+Source: Source
+Source path: Вихідний шлях
+Sovereign Workbench (The Master IDE): Sovereign Workbench (The Master IDE)
+Step 1 complete: Крок 1 завершено
+Step 2 complete: Крок 2 завершено
+Subcommand: Subcommand
+Target: Target
+Target dir: Target dir
+Target path: Цільовий шлях
+Test: Test
+Test Tree: Test Tree
+Test Viewer: Test Viewer
+Test command: Test command
+Theming & Interfaces (Theming): Theming & Interfaces (Theming)
+To language: To language
+UI-CLI Example App: UI-CLI Демо Застосунок
+Unique user name: Unique user name
+User age: User age
+User name: User name
+Value & Economy (Value & Economy): Value & Economy (Value & Economy)
+Verbose: Verbose
+Volume: Volume
+What is your name?: Як вас звати?
+Your comment: Your comment
+Your name: Your name
+'[${i}] ${lbl.length > 50 ? lbl.slice(0, 47) + ': '[${i}] ${lbl.length > 50 ? lbl.slice(0, 47) + '
+'[ASK]': '[ЗАПИТ]'
+'[LOG]': '[ЛОГ]'
+'[PROCESSING]': '[ОБРОБКА]'
+'[RENDER VIEW]': '[РЕНДЕР ФОРМИ]'
+_cancel: відмінити
+_save: зберегти
+add: додати
+custom: custom
+done: готово
+en: англ
+ok: ok
+sep: ─
+⏳ Progress Demo: ⏳ Демо прогресу
+──────────────────────────: ──────────────────────────
+'✅ ${adapter.t(FormModel.UI_DONE)}': '✅ ${adapter.t(FormModel.UI_DONE)}'
+'✔ ${this.t(FormModel.UI_DONE)}': '✔ ${this.t(FormModel.UI_DONE)}'
+✖: ✖
+'❌ ${adapter.t(ToggleModel.UI_NO)}': '❌ ${adapter.t(ToggleModel.UI_NO)}'
+"\U0001F30D Change Language": "\U0001F30D Змінити мову"
+"\U0001F441  CatalogWatcherModel": "\U0001F441  CatalogWatcherModel"
+"\U0001F44B Greeting Demo": "\U0001F44B Демо привітання"
+"\U0001F4CB Mini Survey": "\U0001F4CB Міні-опитування"
+"\U0001F4DD ${adapter.t(FormModel.UI_EDIT)} ${adapter.t(SchemaClass.name)}": "\U0001F4DD ${adapter.t(FormModel.UI_EDIT)} ${adapter.t(SchemaClass.name)}"
+"\U0001F4E6 ProjectModel": "\U0001F4E6 ProjectModel"
+"\U0001F534 Red": "\U0001F534 Червоний"
+"\U0001F535 Blue": "\U0001F535 Синій"
+"\U0001F6AA Exit": "\U0001F6AA Вихід"
+"\U0001F7E2 Green": "\U0001F7E2 Зелений"
+"\U0001F7E3 Purple": "\U0001F7E3 Фіолетовий"
+"\U0001F9F1 Component Sandbox": "\U0001F9F1 Пісочниця компонентів"

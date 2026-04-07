@@ -5,7 +5,7 @@ import { Model } from '@nan0web/types'
  */
 export class MaskModel extends Model {
 	static UI = { alias: ['message', 'label', 'labels'], default: 'Value' }
-	static help = 'Input field with fixed formatting mask (e.g. phone number).'
+	static help = { default: 'Input field with fixed formatting mask (e.g. phone number).' }
 	static UI_FORMAT_MSG = { default: 'Format must be' }
 	static mask = { default: '' }
 

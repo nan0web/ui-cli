@@ -115,8 +115,12 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 		return this.#stdout
 	}
 
-	get json() { return this._json || false }
-	set json(val) { this._json = val }
+	get json() {
+		return this._json || false
+	}
+	set json(val) {
+		this._json = val
+	}
 
 	/**
 	 * Proxy to set disabled state for testing previews
@@ -335,14 +339,32 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 			this.console.info(JSON.stringify({ component, props }, null, 2))
 			return
 		}
-		
+
 		const builtIns = [
-			'Alert', 'Badge', 'Table', 'Breadcrumbs', 'Tabs', 'Steps', 'Toast',
-			'Banner', 'Hero', 'Pricing', 'PricingSection', 'Stats', 'Timeline', 'Testimonials',
-			'Accordion', 'FAQ', 'Gallery', 'EmptyState', 'Header', 'Footer',
-			'Message', 'Init'
+			'Alert',
+			'Badge',
+			'Table',
+			'Breadcrumbs',
+			'Tabs',
+			'Steps',
+			'Toast',
+			'Banner',
+			'Hero',
+			'Pricing',
+			'PricingSection',
+			'Stats',
+			'Timeline',
+			'Testimonials',
+			'Accordion',
+			'FAQ',
+			'Gallery',
+			'EmptyState',
+			'Header',
+			'Footer',
+			'Message',
+			'Init',
 		]
-		
+
 		if (builtIns.includes(component)) {
 			try {
 				const uiCliExports = await import('../../index.js')
@@ -373,7 +395,8 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 		}
 		if (props && typeof props === 'object') {
 			const contentStr = props.content || props.message || props.label || JSON.stringify(props)
-			const prefix = props.variant || props.level ? `[${props.variant || props.level}]` : `[${component}]`
+			const prefix =
+				props.variant || props.level ? `[${props.variant || props.level}]` : `[${component}]`
 			this.console.info(`${prefix} ${String(contentStr)}`)
 		} else {
 			this.console.info(`[${component}]`)
@@ -604,7 +627,9 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 		if (predefined !== null) {
 			if (predefined === '_cancel') return { value: undefined, cancelled: true }
 			const val = ['y', 'yes', 'true', '1', 'так', '+'].includes(predefined.toLowerCase())
-			const display = val ? config.active || this.#t(ToggleModel.UI_YES) : config.inactive || this.#t(ToggleModel.UI_NO)
+			const display = val
+				? config.active || this.#t(ToggleModel.UI_YES)
+				: config.inactive || this.#t(ToggleModel.UI_NO)
 			this.console.info(`✔ ${prompt} ${display}`)
 			return { value: val, cancelled: false }
 		}
@@ -1019,10 +1044,8 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 		}
 		const component = ContentViewer({
 			...config,
-			t: this.t
+			t: this.t,
 		})
 		return await component.execute()
 	}
-
 }
-

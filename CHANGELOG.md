@@ -1,6 +1,14 @@
 # Changelog @nan0web/ui-cli
 
+## [2.12.1] — 2026-04-07
+
+### Added
+- **OLMUI v2.0 Hardening**: Updated `@nan0web/types` to `1.7.1` for enhanced Model-as-Schema metadata support and atomic logic isolation.
+- **Snapshot Integration**: Verified compatibility with `verifySnapshot` (JSONL) utility for logical intent sequence capturing across all CLI components.
+- **Model Modernization**: Upgraded core prompt models (`Input`, `Select`, `Confirm`, `Tree`, `Mask`) to use the new `{ default, alias }` pattern for the `help` property, ensuring OLMUI architectural consistency.
+
 ## [2.12.0] — 2026-04-03
+
 
 ### Added
 - **Secure App Bootstrap (The seal() protocol)**: Implemented strict validation during `bootstrapApp` initialization. Applications now require a modern `@nan0web/db` version with the `seal()` capability.
