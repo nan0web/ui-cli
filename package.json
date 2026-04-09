@@ -1,6 +1,6 @@
 {
 	"name": "@nan0web/ui-cli",
-	"version": "2.12.1",
+	"version": "2.12.2",
 	"description": "NaN•Web UI CLI. Command line interface for One application logic (algorithm) and many UI.",
 	"main": "src/index.js",
 	"types": "types/index.d.ts",
@@ -64,30 +64,31 @@
 	],
 	"author": "ЯRаСлав (YaRaSLove) <support@yaro.page>",
 	"license": "ISC",
-	"devDependencies": {
-		"@nan0web/db": "^1.4.4",
-		"@nan0web/db-fs": "^1.1.2",
-		"@nan0web/i18n": "^1.5.0",
-		"@nan0web/release": "^1.0.2",
-		"@nan0web/test": "^1.1.3",
-		"@nan0web/types": "^1.7.1",
-		"@types/node": "^24.12.0",
-		"knip": "^5.86.0",
-		"prettier": "^3.8.1"
-	},
 	"bin": {
 		"nan0cli": "bin/nan0cli.js",
 		"nan0gallery": "bin/gallery.js"
 	},
+	"devDependencies": {
+		"@nan0web/db": "workspace:*",
+		"@nan0web/db-fs": "workspace:*",
+		"@nan0web/i18n": "workspace:*",
+		"@nan0web/release": "workspace:*",
+		"@nan0web/test": "workspace:*",
+		"@nan0web/types": "workspace:*",
+		"@types/node": "^24.12.0",
+		"knip": "^5.86.0",
+		"prettier": "^3.8.1"
+	},
 	"dependencies": {
-		"@nan0web/event": "^1.0.1",
-		"@nan0web/icons": "^1.1.0",
-		"@nan0web/log": "^1.1.1",
+		"@nan0web/event": "workspace:*",
+		"@nan0web/icons": "workspace:*",
+		"@nan0web/log": "workspace:*",
+		"@nan0web/ui": "workspace:*",
 		"prompts": "^2.4.2"
 	},
 	"peerDependencies": {
-		"@nan0web/core": "^1.1.2",
-		"@nan0web/db": "^1.4.4",
-		"@nan0web/ui": "^1.10.0"
+		"@nan0web/core": "workspace:*",
+		"@nan0web/db": "workspace:*",
+		"@nan0web/ui": "workspace:*"
 	}
 }

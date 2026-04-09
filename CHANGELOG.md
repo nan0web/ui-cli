@@ -1,5 +1,10 @@
 # Changelog @nan0web/ui-cli
 
+## [2.12.2] — 2026-04-09
+
+### Changed
+- **Dependency Stabilization**: Synchronized core dependencies (`@nan0web/core`, `@nan0web/db`, `@nan0web/types`, `@nan0web/i18n`) strictly to `workspace:*` protocol to ensure atomic monorepo publishing compatibility with `@nan0web/co@2.0.1`.
+
 ## [2.12.1] — 2026-04-07
 
 ### Added

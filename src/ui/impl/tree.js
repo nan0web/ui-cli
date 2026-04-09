@@ -299,7 +299,7 @@ export async function tree(config) {
 		out += Logger.style(`? ${t(state.message)}\n`, { color: Logger.CYAN })
 
 		if (state.searching) {
-			out += Logger.style(`  ${iconBraille()} / ${state.filter}_ \n`, { color: Logger.YELLOW })
+			out += Logger.style(`  ${iconBraille({})} / ${state.filter}_ \n`, { color: Logger.YELLOW })
 		}
 
 		// Tree View

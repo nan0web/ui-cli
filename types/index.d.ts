@@ -24,6 +24,7 @@ import { runApp } from './ui/core/GeneratorRunner.js';
 import { resolvePositionalArgs } from './ui/core/resolvePositionalArgs.js';
 import { modelFromArgv } from './ui/core/modelFromArgv.js';
 import CLiInputAdapter from './ui/core/InputAdapter.js';
+import { CancelError } from '@nan0web/ui/core';
 import { Layout } from './ui/BlockRenderers/Layout.js';
 import { Control } from './ui/BlockRenderers/Control.js';
 import { Alert } from './ui/view/Alert.js';

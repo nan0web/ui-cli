@@ -16,7 +16,8 @@
 		"allowSyntheticDefaultImports": true,
 		"noImplicitAny": false,
 		"allowJs": true,
-		"checkJs": true
+		"checkJs": true,
+		"types": ["node"]
 	},
 	"include": ["src/**/*"],
 	"exclude": ["node_modules", "src/**/*.test.js", "src/README.md.js"]

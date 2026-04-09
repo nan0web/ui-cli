@@ -1,5 +1,6 @@
 import { parseArgs } from 'node:util'
 import { resolvePositionalArgs } from './resolvePositionalArgs.js'
+import { Model } from '@nan0web/types'
 
 /**
  * Creates a Model instance from CLI argv by auto-generating parseArgs config
@@ -16,7 +17,7 @@ import { resolvePositionalArgs } from './resolvePositionalArgs.js'
  * // Equivalent to:
  * //   parseArgs → resolvePositionalArgs → new TranslateDocsModel(data)
  *
- * @template {new (data?: any) => any} T
+ * @template {typeof Model} T
  * @param {T} ModelClass - Model class with static field descriptors.
  * @param {string[]} argv - Raw CLI arguments (typically process.argv.slice(2)).
  * @param {Object} [appOptions={}] - Options object to inject into the Model.
@@ -50,7 +51,7 @@ export function modelFromArgv(ModelClass, argv = [], appOptions = {}) {
 		strict: false,
 	})
 
-	const data = resolvePositionalArgs(ModelClass, positionals, values)
+	const data = resolvePositionalArgs(/** @type {any} */ (ModelClass), positionals, values)
 	// @ts-ignore
 	return new ModelClass(data, appOptions)
 }

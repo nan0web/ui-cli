@@ -3,10 +3,10 @@ import { CancelError } from '@nan0web/ui/core'
 /**
  * Universal Entry App Loop for OLMUI Apps.
  * Infinitely loops over an App/Entry Model until user fully exits.
- * 
+ *
  * @param {typeof Object|Function} AppEntryModel - The main application entry point class
  * @param {import('./InputAdapter.js').default} adapter - The CLI adapter
- * @param {Object} options 
+ * @param {Object} options
  */
 export async function runApp(AppEntryModel, adapter, options = {}) {
 	const { t = (k) => k } = options
@@ -21,19 +21,19 @@ export async function runApp(AppEntryModel, adapter, options = {}) {
 				model: true,
 				schema: AppEntryModel,
 			}
-			
+
 			const res = await adapter.askIntent(intent)
 			if (res.cancelled) {
 				adapter.console.info('')
 				break
 			}
-			
+
 			const selectedData = res.value
 			if (!selectedData) continue
 
 			// Extract command/model based on selection
 			let commandToRun = null
-			
+
 			if (typeof selectedData.run === 'function') {
 				commandToRun = selectedData
 			} else if (selectedData.command) {
@@ -63,7 +63,7 @@ export async function runApp(AppEntryModel, adapter, options = {}) {
 
 /**
  * Executes an OLMUI intent generator, mapping intents to CLI adapter methods.
- * 
+ *
  * @param {Object} model - Pre-instantiated model possessing a run() generator
  * @param {import('./InputAdapter.js').default} adapter - CLI Adapter
  * @param {Object} options
@@ -144,8 +144,8 @@ export async function runGenerator(model, adapter, options = {}) {
 						await adapter.resultIntent(intent)
 					} else {
 						// Fallback if older adapter used
-						const content = intent.data && typeof intent.data === 'object' 
-							? JSON.stringify(intent.data, null, 2) 
+						const content = intent.data && typeof intent.data === 'object'
+							? JSON.stringify(intent.data, null, 2)
 							: String(intent.data ?? '')
 						adapter.console.info(`\n${content}\n`)
 					}

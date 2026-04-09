@@ -3,7 +3,7 @@
  *
  * Рендерить "Логічні зліпки" у візуальні CLI-подібні блоки Markdown (Snapshot format).
  */
-export class VisualAdapter {
+export class VisualAdapter extends BaseVisualAdapter {
     /** @type {Map<string, Function>} */
     static "__#private@#renderers": Map<string, Function>;
     /**
@@ -20,3 +20,4 @@ export class VisualAdapter {
      */
     static render(intent: object, t?: Function, options?: object): string;
 }
+import { VisualAdapter as BaseVisualAdapter } from '@nan0web/ui/testing';

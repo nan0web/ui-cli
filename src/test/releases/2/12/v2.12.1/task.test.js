@@ -8,7 +8,7 @@ describe('v2.12.1 Contract: Hardening', () => {
 		const pkg = JSON.parse(await fs.readFile('package.json', 'utf8'))
 		const version = pkg.devDependencies['@nan0web/types'] || pkg.dependencies['@nan0web/types']
 		assert.ok(version, 'Missing @nan0web/types')
-		assert.ok(version.includes('1.7.1'), `Expected ^1.7.1, got ${version}`)
+		assert.ok(version.includes('workspace:*') || version.includes('1.7.1'), `Expected ^1.7.1 or workspace:*, got ${version}`)
 	})
 
 	it('should be able to import verifySnapshot from @nan0web/ui/testing', async () => {

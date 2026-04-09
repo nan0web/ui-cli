@@ -1,5 +1,5 @@
 import os from 'node:os'
-import path from 'node:path'
+import process from 'node:process'
 import DB from '@nan0web/db'
 import DBFS from '@nan0web/db-fs'
 import Logger from '@nan0web/log'
@@ -7,24 +7,38 @@ import { modelFromArgv } from './core/modelFromArgv.js'
 import CLiInputAdapter from './core/InputAdapter.js'
 import { runGenerator } from './core/GeneratorRunner.js'
 
+/**
+ * @typedef {Object} BootstrapAppConfig
+ * @property {string[]} [argv=process.argv.slice(2)] Arguments of the console app.
+ * @property {DB} [db] Root database with mounted all required databases already.
+ * @property {object} [env={}] Environment variables.
+ * @property {() => string} [cwd=process.cwd] Current working directory function.
+ * @property {import('@nan0web/i18n').TFunction} [t] Translation function.
+ * @property {boolean} [noExit=false] Provides a result instead of exit when true.
+ * @property {string} [root] Optional DB mount root path.
+ */
 
 /**
  * Universal App Runner (Bootstrap) for standalone OLMUI CLI applications.
- * 
+ *
  * It automatically handles:
  * 1. DB Mounting (Sovereign Local + Home ~/ namespaces)
  * 2. i18n Initialization (Sovereign i18n Protocol)
  * 3. Argument Parsing (Model-as-Schema)
  * 4. Generator Execution Loop (runGenerator)
  * 5. Process Exit Lifecycle
+ * @param {typeof import('@nan0web/types').Model} AppModel
+ * @param {BootstrapAppConfig} [config={}]
  */
 export async function bootstrapApp(AppModel, config = {}) {
-	const argv = config.argv || process.argv.slice(2)
-	const isDebug = process.argv.includes('--debug') || process.argv.includes('-d')
-	
-	const console = new Logger({ level: Logger.detectLevel(process.argv) })
+	const argv = config.argv ?? process.argv.slice(2)
+	const env = config.env ?? process.env
+	const cwd = config.cwd ?? process.cwd
+	const isDebug = argv.includes('--debug')
+
+	const console = new Logger({ level: Logger.detectLevel(argv) })
 	const dbConsole = new Logger({ level: isDebug ? 'debug' : 'error' })
-	
+
 	const db = config.db || new DB({ console: /** @type {any} */ (dbConsole) })
 	const fs = new DBFS({ console: /** @type {any} */ (dbConsole) })
 
@@ -35,18 +49,20 @@ export async function bootstrapApp(AppModel, config = {}) {
 	// 2. Setup standard NaN0Web mounts
 	if (!config.db) {
 		db.mount('', new DBFS({ root: config.root || 'data', console: /** @type {any} */ (dbConsole) }))
-		
-		const mockHome = process.env.UI_SNAPSHOT || process.env.NODE_ENV === 'test'
-		const homeDb = new DBFS({ 
-			cwd: mockHome ? process.cwd() : os.homedir(), 
-			root: mockHome ? path.resolve(process.cwd(), '.test_home') : `.${appName}`,
-			console: /** @type {any} */ (dbConsole)
+
+		const mockHome = env.UI_SNAPSHOT || env.NODE_ENV === 'test'
+		const homeDb = new DBFS({
+			cwd: mockHome ? cwd() : os.homedir(),
+			root: mockHome ? '.test_home' : `.${appName}`,
+			console: /** @type {any} */ (dbConsole),
 		})
 		db.mount('~', homeDb)
 	}
-	
+
 	if (typeof db.seal !== 'function') {
-		throw new TypeError('db.seal is not a function (Secure App Bootstrap requires a modern DB version)')
+		throw new TypeError(
+			'db.seal is not a function (Secure App Bootstrap requires a modern DB version)'
+		)
 	}
 
 	await db.connect()
@@ -57,11 +73,8 @@ export async function bootstrapApp(AppModel, config = {}) {
 	if (!t) {
 		const lang = process.env.LANG ? process.env.LANG.split('_')[0].split('-')[0] : 'uk'
 		const { I18nDb } = await import('@nan0web/i18n')
-		
-		// Try .nan0 first, then .yaml
-		const tPath = (await fs.stat(`_/t.nan0`).catch(() => null)) ? '_/t.nan0' : '_/t.yaml'
-		
-		const i18nDb = new I18nDb({ db, locale: lang, tPath, dataDir: '' })
+
+		const i18nDb = new I18nDb({ db, locale: lang, dataDir: '' })
 		t = await i18nDb.createT(lang)
 	}
 
@@ -70,7 +83,7 @@ export async function bootstrapApp(AppModel, config = {}) {
 	const model = modelFromArgv(AppModel, argv, appOptions)
 
 	const adapter = new CLiInputAdapter({ console, t })
-	
+
 	try {
 		const res = await runGenerator(model, adapter, appOptions)
 		if (config.noExit) return res
@@ -82,5 +95,3 @@ export async function bootstrapApp(AppModel, config = {}) {
 		process.exit(1)
 	}
 }
-
-
