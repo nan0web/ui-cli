@@ -71,7 +71,8 @@ export async function runGenerator(model, adapter, options = {}) {
 	const { t = (k) => k, db } = options
 	if (adapter) adapter.t = t
 
-	const iter = typeof model.run === 'function' ? model.run(options) : model
+	const runFn = /** @type {any} */ (model).run
+	const iter = typeof runFn === 'function' ? runFn.call(model, options) : /** @type {any} */ (model)
 	if (!iter || typeof iter.next !== 'function') {
 		throw new Error('Provided model does not have a run() generator or is not an iterator')
 	}

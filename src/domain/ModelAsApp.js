@@ -42,8 +42,8 @@ export class ModelAsApp extends ModelAsAppUi {
 		// ── Recursive Help ─────────────────────────────────────────────────────
 		// If any property is an instance of ModelAsApp and has help requested, delegate.
 		for (const key in this) {
-			const val = this[key]
-			if (val instanceof ModelAsApp && val.help) {
+			const val = /** @type {any} */ (this)[key]
+			if (val instanceof ModelAsApp && val['help']) {
 				return val.generateHelp(fullPath)
 			}
 		}
@@ -52,7 +52,7 @@ export class ModelAsApp extends ModelAsAppUi {
 		const lines = []
 
 		/** @type {any} */
-		const UI = typeof Class.UI === 'object' && Class.UI ? Class.UI : {}
+		const UI = typeof /** @type {any} */ (Class).UI === 'object' && /** @type {any} */ (Class).UI ? /** @type {any} */ (Class).UI : {}
 
 		if (UI.title) {
 			lines.push(`${UI.icon ? UI.icon + ' ' : ''}${t(UI.title)}`.trim())
@@ -114,7 +114,7 @@ export class ModelAsApp extends ModelAsAppUi {
 					maxLeft = Math.max(maxLeft, left.length)
 					parsedExamples.push({ left, sep, right })
 				} else {
-					parsedExamples.push({ left: `  ${rendered.trim()}`, sep: '', right: '' })
+					parsedExamples.push({ left: `  ${renderedStr.trim()}`, sep: '', right: '' })
 				}
 			}
 			for (const p of parsedExamples) {
@@ -132,7 +132,7 @@ export class ModelAsApp extends ModelAsAppUi {
 
 		let maxOptLen = 0
 		let hasAlias = false
-		/** @type {any[]} */
+		/** @type {Array<{key: string, meta: any, left: string}>} */
 		const parsedOptions = []
 
 		for (const key in Class) {
@@ -191,8 +191,8 @@ export class ModelAsApp extends ModelAsAppUi {
 
 		let finalData = null
 		for await (const intent of app.run()) {
-			if (intent && intent.type === 'result') {
-				finalData = intent.data
+			if (intent && /** @type {any} */ (intent).type === 'result') {
+				finalData = /** @type {any} */ (intent).data
 			}
 		}
 		return finalData

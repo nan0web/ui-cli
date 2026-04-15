@@ -1,6 +1,8 @@
 import { show, progress, result } from '@nan0web/ui'
 import { ModelAsApp } from './ModelAsApp.js'
 
+/** @typedef {import('@nan0web/ui').Intent} Intent */
+
 /**
  * App — NaN•Web CLI Runner (Model-as-App v2).
  *
@@ -104,10 +106,10 @@ export class App extends ModelAsApp {
 	 * Main execution generator.
 	 * Routes to the correct execution mode based on parsed args.
 	 *
-	 * @yields {import('@nan0web/ui').Intent}
-	 * @returns {AsyncGenerator<import('@nan0web/ui').Intent, import('@nan0web/ui').ResultIntent, any>}
+	 * @param {import('@nan0web/ui').ModelAsAppOptions} [options]
+	 * @returns {AsyncGenerator<any, any, any>}
 	 */
-	async *run() {
+	async *run(options) {
 		const t = this._.t || ((k) => k)
 
 		// ── Help mode ─────────────────────────────────────────────────────────
@@ -149,6 +151,7 @@ export class App extends ModelAsApp {
 	/**
 	 * Run a remote OLMUI server in thin-client mode.
 	 * @param {string} url
+	 * @returns {AsyncGenerator<any, any, any>}
 	 */
 	async *_runRemote(url) {
 		const t = this._.t || ((k) => k)
@@ -196,9 +199,9 @@ export class App extends ModelAsApp {
 
 			if (done) break
 
-			// Ask intent: delegate to adapter
-			const adapterRes = await adapter.ask(currentIntent)
-			if (adapterRes.cancelled) break
+			// Ask intent: delegate to adapter level
+			const adapterRes = yield currentIntent
+			if (adapterRes && adapterRes.cancelled) break
 			answerToSend = adapterRes
 		}
 
@@ -209,6 +212,7 @@ export class App extends ModelAsApp {
 	 * Resolve, import, and run a module by path or package specifier.
 	 * @param {string} specifier Path or package name
 	 * @param {string[]} argv Remaining argv for the sub-model
+	 * @returns {AsyncGenerator<any, any, any>}
 	 */
 	async *_runModule(specifier, argv) {
 		const { pathToFileURL } = await import('node:url')
@@ -257,6 +261,7 @@ export class App extends ModelAsApp {
 
 	/**
 	 * Auto-detect entry from package.json and run it.
+	 * @returns {AsyncGenerator<any, any, any>}
 	 */
 	async *_runFromPackage() {
 		const DBFS = (await import('@nan0web/db-fs')).default
@@ -330,6 +335,7 @@ export class App extends ModelAsApp {
 	 * Instantiate and run an AppModel generator, yielding all intents upstream.
 	 * @param {typeof ModelAsApp} AppModel
 	 * @param {string[]} argv Remaining positionals for the sub-model
+	 * @returns {AsyncGenerator<any, any, any>}
 	 */
 	async *_runModel(AppModel, argv) {
 		const { modelFromArgv } = await import('../ui/core/modelFromArgv.js')

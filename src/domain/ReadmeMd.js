@@ -36,9 +36,10 @@ export class ReadmeMd extends ModelAsApp {
 	}
 
 	/**
-	 * @returns {AsyncGenerator<import('@nan0web/ui').Intent, import('@nan0web/ui').ResultIntent, any>}
+	 * @param {import('@nan0web/ui').ModelAsAppOptions} [options]
+	 * @returns {AsyncGenerator<any, any, any>}
 	 */
-	async *run() {
+	async *run(options) {
 		const t = this._.t || ((k) => k)
 		const db = this._.db || new FS()
 		const pkg = await db.loadDocument('package.json', {})

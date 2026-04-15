@@ -88,7 +88,7 @@ export async function bootstrapApp(AppModel, config = {}) {
 	const model = modelFromArgv(AppModel, argv, appOptions)
 
 	try {
-		const res = await runGenerator(model, adapter, appOptions)
+		const res = await runGenerator(/** @type {any} */ (model), adapter, appOptions)
 		if (config.noExit) return res
 		process.exit(res.success && !res.cancelled && res.data?.status !== 'error' ? 0 : 1)
 	} catch (err) {
