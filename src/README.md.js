@@ -4,10 +4,7 @@ import fsNode from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import FS from '@nan0web/db-fs'
 import { NoConsole } from '@nan0web/log'
-import {
-	DatasetParser,
-	DocsParser,
-} from '@nan0web/test'
+import { DatasetParser, DocsParser } from '@nan0web/test'
 import {
 	render,
 	Input,
@@ -29,6 +26,8 @@ import {
 	ask,
 	pause,
 	bootstrapApp,
+	ModelAsApp,
+	show,
 } from './index.js'
 
 const fs = new FS()
@@ -49,7 +48,7 @@ function testRender() {
 	 * @docs
 	 * # @nan0web/ui-cli
 	 *
-	 * [🇺🇦 Українська версія](./docs/uk/README.md) | [🇬🇧 English version](./docs/en/README.md)
+	 * <!-- %LANGS% -->
 	 *
 	 * A modern, interactive UI input adapter for Node.js projects.
 	 * Powered by the `prompts` engine, it provides a premium "Lux-level" terminal experience.
@@ -84,20 +83,55 @@ function testRender() {
 	 *
 	 * The `bootstrapApp` is the modern way to bootstrap CLI applications.
 	 * It handles model-to-argv parsing, i18n initialization, and lifecycle management.
-	 * 
+	 *
 	 * ### Security: The seal() Protocol
 	 *
 	 * To ensure system integrity, `bootstrapApp` automatically locks the database using `db.seal()`.
 	 * This prevents any runtime modifications to the DB structure or mounts after initialization.
 	 * **Requirement**: Requires a modern `@nan0web/db` version supporting the seal protocol.
 	 *
-	 * ### Quick Start
+	 * ## Model-as-App (Recommended)
+	 *
+	 * The `ModelAsApp` class provides a unified architecture for both Domain Logic and UI Presentation.
+	 * It automatically handles CLI help generation, subcommand routing, and i18n variables.
 	 */
 	it('How to bootstrap a CLI application?', async () => {
-		//import { bootstrapApp } from '@nan0web/ui-cli'
-		//import { MyModel } from './models.js'
-		// await bootstrapApp(MyModel)
-		assert.ok(typeof bootstrapApp === 'function')
+		//import { bootstrapApp, ModelAsApp, show } from '@nan0web/ui-cli'
+		class StatusApp extends ModelAsApp {
+			static UI = { title: 'Status', fine: 'Everything is fine' }
+			static debug = { type: 'boolean', help: 'Debug mode', default: false }
+			async *run() {
+				yield show(StatusApp.UI.fine)
+			}
+		}
+
+		class RootApp extends ModelAsApp {
+			static command = { positional: true, type: [StatusApp] }
+		}
+		//await bootstrapApp(RootApp)
+		assert.ok(typeof RootApp === 'function')
+	})
+
+	/**
+	 * @docs
+	 * ### Headless Execution & Built-in Apps
+	 *
+	 * You can execute an OLMUI Model programmatically without any interactive UI adapter by calling `ModelAsApp.execute()`. 
+	 * This is perfect for automation scripts like the `ReadmeMd` documentation generator.
+	 *
+	 * Additionally, standard tools are natively aliased in `nan0cli`:
+	 */
+	it('How to run internal apps like ReadmeMd?', async () => {
+		/* Programmatic Headless Execution:
+		import { ReadmeMd } from '@nan0web/ui-cli/domain/ReadmeMd.js'
+		await ReadmeMd.execute({ data: 'docs' })
+		*/
+
+		/* Or via Terminal CLI Alias:
+		nan0cli docs --data=docs
+		*/
+		
+		assert.ok(true)
 	})
 
 	/**
@@ -246,6 +280,22 @@ function testRender() {
 
 	/**
 	 * @docs
+	 * ### Sub-path Exports (OLMUI)
+	 *
+	 * The package uses "One Logic, Many UI" (OLMUI) architecture, exposing only strict architectural boundaries.
+	 *
+	 * - `import { ModelAsApp } from '@nan0web/ui-cli/domain'` — Domain Base classes.
+	 * - `import { App } from '@nan0web/ui-cli/app'` — Main Application Model & Router.
+	 * - `import { playground } from '@nan0web/ui-cli/test'` — Testing & Snapshot utilities.
+	 */
+	it('How to use isolated domain models and UI adapters?', () => {
+		assert.ok(pkg.exports['./domain'])
+		assert.ok(pkg.exports['./app'])
+		assert.ok(pkg.exports['./test'])
+	})
+
+	/**
+	 * @docs
 	 * ## Legacy API
 	 *
 	 * ### CLiInputAdapter
@@ -279,19 +329,17 @@ function testRender() {
 	})
 }
 
+import { ReadmeMd } from './domain/ReadmeMd.js'
+
 describe('README.md testing', testRender)
 
-describe('Rendering README.md', async () => {
-	const parser = new DocsParser()
-	const sourceCode = fsNode.readFileSync(fileURLToPath(import.meta.url), 'utf-8')
-	const text = String(parser.decode(sourceCode))
-	await fs.saveDocument('README.md', text)
-	const dataset = DatasetParser.parse(text, pkg.name)
-	await fs.saveDocument('.datasets/README.dataset.jsonl', dataset)
+describe('Rendering README.md', () => {
+	before(async () => {
+		await ReadmeMd.execute()
+	})
 
 	it('document is rendered in README.md', async () => {
 		const doc = await fs.loadDocument('README.md')
 		assert.ok(doc.content.includes('## License'))
 	})
 })
-

@@ -48,7 +48,11 @@ export async function bootstrapApp(AppModel, config = {}) {
 
 	// 2. Setup standard NaN0Web mounts
 	if (!config.db) {
-		db.mount('', new DBFS({ root: config.root || 'data', console: /** @type {any} */ (dbConsole) }))
+		const isTestMode = argv.includes('--test') || env.UI_SNAPSHOT || env.NODE_ENV === 'test'
+		db.mount('', /** @type {any} */ (new DBFS({ root: isTestMode ? cwd() : (config.root || 'data'), console: /** @type {any} */ (dbConsole) })))
+		if (isTestMode) {
+			db.mount('snapshots', /** @type {any} */ (new DBFS({ root: 'snapshots', console: /** @type {any} */ (dbConsole) })))
+		}
 
 		const mockHome = env.UI_SNAPSHOT || env.NODE_ENV === 'test'
 		const homeDb = new DBFS({
@@ -56,7 +60,7 @@ export async function bootstrapApp(AppModel, config = {}) {
 			root: mockHome ? '.test_home' : `.${appName}`,
 			console: /** @type {any} */ (dbConsole),
 		})
-		db.mount('~', homeDb)
+		db.mount('~', /** @type {any} */ (homeDb))
 	}
 
 	if (typeof db.seal !== 'function') {
@@ -79,10 +83,9 @@ export async function bootstrapApp(AppModel, config = {}) {
 	}
 
 	// 4. Parse arguments and instantiate model (Model-as-Schema)
-	const appOptions = { db, logger: console, t, ...config }
-	const model = modelFromArgv(AppModel, argv, appOptions)
-
 	const adapter = new CLiInputAdapter({ console, t })
+	const appOptions = { db, logger: console, t, adapter, ...config }
+	const model = modelFromArgv(AppModel, argv, appOptions)
 
 	try {
 		const res = await runGenerator(model, adapter, appOptions)

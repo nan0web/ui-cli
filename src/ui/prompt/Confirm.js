@@ -15,8 +15,10 @@ export function Confirm(props) {
 		const yesLabel = p.t ? p.t(p.UI_YES) : p.UI_YES
 		const noLabel = p.t ? p.t(p.UI_NO) : p.UI_NO
 
+		const msg = p.t ? p.t(p.UI) : (typeof p.UI === 'object' ? p.UI?.default : p.UI)
+		
 		const result = await baseConfirm({
-			message: p.UI,
+			message: msg || 'Confirm',
 			initial: p.initial,
 			format: (val) => (val ? yesLabel : noLabel),
 			active: yesLabel,

@@ -335,40 +335,33 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 			return
 		}
 
-		const builtIns = [
-			'Alert',
-			'Badge',
-			'Table',
-			'Breadcrumbs',
-			'Tabs',
-			'Steps',
-			'Toast',
-			'Banner',
-			'Hero',
-			'Pricing',
-			'PricingSection',
-			'Stats',
-			'Timeline',
-			'Testimonials',
-			'Accordion',
-			'FAQ',
-			'Gallery',
-			'EmptyState',
-			'Header',
-			'Footer',
-			'Message',
-			'Init',
-		]
+		const builtIns = {
+			Alert: () => import('../view/Alert.js').then(m => m.Alert),
+			Message: () => import('../view/Alert.js').then(m => m.Alert),
+			Badge: () => import('../view/Badge.js').then(m => m.Badge),
+			Table: () => import('../view/Table.js').then(m => m.Table),
+			Breadcrumbs: () => import('../view/Nav.js').then(m => m.Breadcrumbs),
+			Tabs: () => import('../view/Nav.js').then(m => m.Tabs),
+			Steps: () => import('../view/Nav.js').then(m => m.Steps),
+			Toast: () => import('../view/Toast.js').then(m => m.Toast),
+			Banner: () => import('../view/DomainViews.js').then(m => m.Banner),
+			Hero: () => import('../view/DomainViews.js').then(m => m.Hero),
+			Pricing: () => import('../view/DomainViews.js').then(m => m.Pricing),
+			PricingSection: () => import('../view/DomainViews.js').then(m => m.Pricing),
+			Stats: () => import('../view/DomainViews.js').then(m => m.Stats),
+			Timeline: () => import('../view/DomainViews.js').then(m => m.Timeline),
+			Testimonials: () => import('../view/DomainViews.js').then(m => m.Testimonials),
+			Accordion: () => import('../view/DomainViews.js').then(m => m.Accordion),
+			FAQ: () => import('../view/DomainViews.js').then(m => m.Accordion),
+			Gallery: () => import('../view/DomainViews.js').then(m => m.Gallery),
+			EmptyState: () => import('../view/DomainViews.js').then(m => m.EmptyState),
+			Header: () => import('../view/DomainViews.js').then(m => m.Header),
+			Footer: () => import('../view/DomainViews.js').then(m => m.Footer),
+			Init: () => import('../prompt/Select.js').then(m => m.Select),
+		}
 
-		if (builtIns.includes(component)) {
-			try {
-				const uiCliExports = await import('../../index.js')
-				if (uiCliExports[component]) {
-					this.#components.set(component, () => Promise.resolve(uiCliExports[component]))
-				}
-			} catch (e) {
-				// Ignore if import fails
-			}
+		if (builtIns[component]) {
+			this.#components.set(component, builtIns[component])
 		}
 
 		const compLoader = this.#components.get(component)

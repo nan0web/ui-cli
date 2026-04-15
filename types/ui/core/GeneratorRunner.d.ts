@@ -10,11 +10,11 @@ export function runApp(AppEntryModel: typeof Object | Function, adapter: import(
 /**
  * Executes an OLMUI intent generator, mapping intents to CLI adapter methods.
  *
- * @param {Object} model - Pre-instantiated model possessing a run() generator
+ * @param {import('@nan0web/ui').ModelAsApp} model - Pre-instantiated model possessing a run() generator
  * @param {import('./InputAdapter.js').default} adapter - CLI Adapter
  * @param {Object} options
  */
-export function runGenerator(model: any, adapter: import("./InputAdapter.js").default, options?: any): Promise<{
+export function runGenerator(model: import("@nan0web/ui").ModelAsApp, adapter: import("./InputAdapter.js").default, options?: any): Promise<{
     success: boolean;
     data: any;
     cancelled: boolean;

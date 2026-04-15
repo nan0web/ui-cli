@@ -17,7 +17,7 @@ import { Model } from '@nan0web/types'
  * const data = resolvePositionalArgs(MyModel, ['src/', 'dist/'])
  * // → { source: 'src/', target: 'dist/' }
  *
- * @param {Model} ModelClass - The Model class with static field descriptors.
+ * @param {typeof Model} ModelClass - The Model class with static field descriptors.
  * @param {string[]} args - Positional arguments from the CLI (e.g., process.argv positionals).
  * @param {Object} [existing={}] - Existing named options (take priority over positionals).
  * @returns {Object} Merged data object with positional args resolved to named fields.
@@ -40,6 +40,11 @@ export function resolvePositionalArgs(ModelClass, args = [], existing = {}) {
 		if (result[field] === undefined || result[field] === null) {
 			result[field] = args[i]
 		}
+	}
+
+	// Preserve remaining positional arguments for subcommands
+	if (args.length > positionalFields.length) {
+		result._positionals = args.slice(positionalFields.length)
 	}
 
 	return result

@@ -49,7 +49,6 @@ export async function runApp(AppEntryModel, adapter, options = {}) {
 			if (commandToRun) {
 				await runGenerator(commandToRun, adapter, options)
 			}
-
 		} catch (err) {
 			const e = /** @type {any} */ (err)
 			if (e instanceof CancelError || e?.message?.includes('Cancel') || e?.message === 'exit') {
@@ -64,7 +63,7 @@ export async function runApp(AppEntryModel, adapter, options = {}) {
 /**
  * Executes an OLMUI intent generator, mapping intents to CLI adapter methods.
  *
- * @param {Object} model - Pre-instantiated model possessing a run() generator
+ * @param {import('@nan0web/ui').ModelAsApp} model - Pre-instantiated model possessing a run() generator
  * @param {import('./InputAdapter.js').default} adapter - CLI Adapter
  * @param {Object} options
  */
@@ -144,9 +143,10 @@ export async function runGenerator(model, adapter, options = {}) {
 						await adapter.resultIntent(intent)
 					} else {
 						// Fallback if older adapter used
-						const content = intent.data && typeof intent.data === 'object'
-							? JSON.stringify(intent.data, null, 2)
-							: String(intent.data ?? '')
+						const content =
+							intent.data && typeof intent.data === 'object'
+								? JSON.stringify(intent.data, null, 2)
+								: String(intent.data ?? '')
 						adapter.console.info(`\n${content}\n`)
 					}
 					nextVal = undefined
@@ -157,7 +157,11 @@ export async function runGenerator(model, adapter, options = {}) {
 			}
 		} catch (intentErr) {
 			const e = /** @type {any} */ (intentErr)
-			if (e instanceof CancelError || e?.message?.includes('cancel') || e?.message?.includes('Cancel')) {
+			if (
+				e instanceof CancelError ||
+				e?.message?.includes('cancel') ||
+				e?.message?.includes('Cancel')
+			) {
 				isThrowing = true
 				throwError = intentErr
 			} else {

@@ -1,11 +1,16 @@
 #!/usr/bin/env node
 
-import { CLI } from '../src/index.js'
+/**
+ * NaN•Web CLI v2 — Model-as-App entry point.
+ *
+ * Delegates all routing logic to `App extends Model`.
+ * Bootstrap handles: DB, i18n, argv parsing, process.exit.
+ */
 
-/*
-The CLI class likely expects arguments or a run method.
-I need to check src/index.js to see how to use CLI class.
-*/
+import { bootstrapApp } from '../src/ui/bootstrapApp.js'
+import App from '../src/domain/App.js'
 
-const cli = new CLI()
-// cli.run() ?
+bootstrapApp(App, {
+	// Pass remaining args to App (skip the node binary + this script)
+	argv: process.argv.slice(2),
+})

@@ -48,13 +48,14 @@ export function createPredefinedInput(predefined: any, console: any, stops?: any
  */
 export class Input {
     constructor(input?: {});
+    /** @type {boolean} */
+    _cancelled: boolean;
     /** @type {string} */
     value: string;
     /** @type {string[]} */
     stops: string[];
     get cancelled(): boolean;
     toString(): string;
-    #private;
 }
 /**
  * High‑level input helper `ask`.

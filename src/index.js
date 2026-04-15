@@ -12,6 +12,8 @@ import { runGenerator, runApp } from './ui/core/GeneratorRunner.js'
 export { bootstrapApp } from './ui/bootstrapApp.js'
 import { resolvePositionalArgs } from './ui/core/resolvePositionalArgs.js'
 import { modelFromArgv } from './ui/core/modelFromArgv.js'
+import { ModelAsApp } from './domain/ModelAsApp.js'
+export { show, result } from '@nan0web/ui'
 
 // Universal Blocks
 import { Layout } from './ui/BlockRenderers/Layout.js'
@@ -77,6 +79,7 @@ export {
 	CancelError,
 	Layout,
 	Control,
+	ModelAsApp,
 
 	// Components
 	Alert,
@@ -129,5 +132,3 @@ export {
 
 export { default as Command } from './ui/Command.js'
 export { str2argv } from './ui/utils/parse.js'
-
-export default CLiInputAdapter

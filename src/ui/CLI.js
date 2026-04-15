@@ -12,14 +12,6 @@ import CommandParser from './core/CommandParser.js'
  * Main CLi class.
  */
 export default class CLi {
-	/** @type {string[]} */
-	argv = []
-	#commands = new Map()
-	/** @type {Logger} */
-	logger
-	/** @type {Array<Function>} */
-	Messages = []
-
 	/**
 	 * @param {Object} [input={}]
 	 * @param {string[]} [input.argv] - Command‑line arguments (defaults to `process.argv.slice(2)`).
@@ -29,17 +21,20 @@ export default class CLi {
 	 */
 	constructor(input = {}) {
 		const { argv = process.argv.slice(2), commands = {}, logger, Messages = [] } = input
+		/** @type {string[]} */
 		this.argv = argv.map(String).filter(Boolean)
+		/** @type {Logger} */
 		this.logger = logger ?? new Logger({ level: Logger.detectLevel(this.argv) })
+		/** @type {Array<Function>} */
 		this.Messages = Messages
-		this.#commands = new Map(Object.entries(commands))
-		this.#commands.set('help', () => this.#help())
-		if (Messages.length > 0) this.#registerMessageCommands(Messages)
+		this._commands = new Map(Object.entries(commands))
+		this._commands.set('help', () => this._help())
+		if (Messages.length > 0) this._registerMessageCommands(Messages)
 	}
 
 	/** @returns {Map<string,Function>} The command map. */
 	get commands() {
-		return this.#commands
+		return this._commands
 	}
 
 	/**
@@ -47,10 +42,10 @@ export default class CLi {
 	 *
 	 * @param {any} cmdClasses - Array of Message classes exposing a `run` generator.
 	 */
-	#registerMessageCommands(cmdClasses) {
+	_registerMessageCommands(cmdClasses) {
 		cmdClasses.forEach((Class) => {
 			const cmd = Class.name.toLowerCase()
-			this.#commands.set(cmd, async function* (msg) {
+			this._commands.set(cmd, async function* (msg) {
 				const validated = new Class(msg.body)
 				yield new OutputMessage(/** @type {any} */ ({
 					content: [`Executed ${cmd} with body: ${JSON.stringify(validated.body)}`],
@@ -73,12 +68,12 @@ export default class CLi {
 			msg?.body?.command ??
 			(/** @type {any} */ (msg))?.value?.body?.command ??
 			(/** @type {any} */ (msg))?.value?.command ??
-			this.#parseCommandName()
-		const fn = this.#commands.get(command)
+			this._parseCommandName()
+		const fn = this._commands.get(command)
 
 		if (!fn) {
 			yield new OutputMessage(`Unknown command: ${command}`)
-			yield new OutputMessage(`Available commands: ${Array.from(this.#commands.keys()).join(', ')}`)
+			yield new OutputMessage(`Available commands: ${Array.from(this._commands.keys()).join(', ')}`)
 			return
 		}
 
@@ -102,7 +97,7 @@ export default class CLi {
 	 *
 	 * @returns {string}
 	 */
-	#parseCommandName() {
+	_parseCommandName() {
 		return this.argv.find((arg) => !arg.startsWith('-')) || 'help'
 	}
 
@@ -111,9 +106,9 @@ export default class CLi {
 	 *
 	 * @yields {OutputMessage}
 	 */
-	async *#help() {
+	async * _help() {
 		const lines = ['Available commands:']
-		for (const [name] of this.#commands) lines.push(`  ${name}`)
+		for (const [name] of this._commands) lines.push(`  ${name}`)
 
 		// The test expects a *single* message whose `body` is an array with three items:
 		// 1. placeholder error line (when no message‑based commands exist)

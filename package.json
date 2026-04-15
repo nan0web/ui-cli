@@ -22,10 +22,14 @@
 			"import": "./src/ui/test/index.js",
 			"types": "./types/ui/test/index.d.ts"
 		},
-		"./testing": {
-			"import": "./src/testing/index.js"
+		"./domain": {
+			"import": "./src/domain/index.js",
+			"types": "./types/domain/index.d.ts"
 		},
-		"./ui/cli": "./play/examples/ExampleApp.js"
+		"./app": {
+			"import": "./src/domain/App.js"
+		},
+		"./cli": "./src/domain/App.js"
 	},
 	"scripts": {
 		"build": "tsc",
@@ -66,6 +70,7 @@
 	"license": "ISC",
 	"bin": {
 		"nan0cli": "bin/nan0cli.js",
+		"nan0cli2": "bin/cli.js",
 		"nan0gallery": "bin/gallery.js"
 	},
 	"devDependencies": {

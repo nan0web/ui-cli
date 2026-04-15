@@ -25,21 +25,22 @@ export function beep() {
  * @property {boolean} cancelled – True when the answer matches a stop word.
  */
 export class Input {
-	/** @type {string} */
-	value = ''
-	/** @type {string[]} */
-	stops = []
-	#cancelled = false
-
 	constructor(input = {}) {
-		const { value = this.value, cancelled = this.#cancelled, stops = [] } = input
+		/** @type {boolean} */
+		this._cancelled = false
+		/** @type {string} */
+		this.value = ''
+		/** @type {string[]} */
+		this.stops = []
+
+		const { value = this.value, cancelled = this._cancelled, stops = [] } = input
 		this.value = String(value)
 		this.stops = stops
-		this.#cancelled = Boolean(cancelled)
+		this._cancelled = Boolean(cancelled)
 	}
 
 	get cancelled() {
-		return this.#cancelled || this.stops.includes(this.value)
+		return this._cancelled || this.stops.includes(this.value)
 	}
 
 	toString() {

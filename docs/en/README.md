@@ -1,6 +1,6 @@
 # @nan0web/ui-cli
 
-[🇺🇦 Українська версія](../uk/README.md) | [🇬🇧 English version](../../README.md)
+[🇬🇧 English](../en/README.md) | [🇺🇦 Українська](../uk/README.md)
 
 A modern, interactive UI input adapter for Node.js projects.
 Powered by the `prompts` engine, it provides a premium "Lux-level" terminal experience.
@@ -30,13 +30,48 @@ npm install @nan0web/ui-cli
 The `bootstrapApp` is the modern way to bootstrap CLI applications.
 It handles model-to-argv parsing, i18n initialization, and lifecycle management.
 
-### Quick Start
+### Security: The seal() Protocol
+
+To ensure system integrity, `bootstrapApp` automatically locks the database using `db.seal()`.
+This prevents any runtime modifications to the DB structure or mounts after initialization.
+**Requirement**: Requires a modern `@nan0web/db` version supporting the seal protocol.
+
+## Model-as-App (Recommended)
+
+The `ModelAsApp` class provides a unified architecture for both Domain Logic and UI Presentation.
+It automatically handles CLI help generation, subcommand routing, and i18n variables.
 
 How to bootstrap a CLI application?
 ```js
-import { bootstrapApp } from '@nan0web/ui-cli'
-import { MyModel } from './models.js'
-// await bootstrapApp(MyModel)
+import { bootstrapApp, ModelAsApp, show } from '@nan0web/ui-cli'
+class StatusApp extends ModelAsApp {
+	static UI = { title: 'Status', fine: 'Everything is fine' }
+	static debug = { type: 'boolean', help: 'Debug mode', default: false }
+	async *run() {
+		yield show(StatusApp.UI.fine)
+	}
+}
+class RootApp extends ModelAsApp {
+	static command = { positional: true, type: [StatusApp] }
+}
+await bootstrapApp(RootApp)
+```
+### Headless Execution & Built-in Apps
+
+You can execute an OLMUI Model programmatically without any interactive UI adapter by calling `ModelAsApp.execute()`. 
+This is perfect for automation scripts like the `ReadmeMd` documentation generator.
+
+Additionally, standard tools are natively aliased in `nan0cli`:
+
+How to run internal apps like ReadmeMd?
+```js
+/* Programmatic Headless Execution:
+import { ReadmeMd } from '@nan0web/ui-cli/domain/ReadmeMd.js'
+await ReadmeMd.execute({ data: 'docs' })
+*/
+/* Or via Terminal CLI Alias:
+nan0cli docs --data=docs
+*/
 ```
 ## Usage (V2 Architecture)
 
@@ -145,6 +180,16 @@ How to use ProgressBar?
 import { render, ProgressBar } from '@nan0web/ui-cli'
 console.info('Progress: 100%')
 ```
+### Sub-path Exports (OLMUI)
+
+The package uses "One Logic, Many UI" (OLMUI) architecture, exposing only strict architectural boundaries.
+
+- `import { ModelAsApp } from '@nan0web/ui-cli/domain'` — Domain Base classes.
+- `import { App } from '@nan0web/ui-cli/app'` — Main Application Model & Router.
+- `import { playground } from '@nan0web/ui-cli/test'` — Testing & Snapshot utilities.
+
+How to use isolated domain models and UI adapters?
+
 ## Legacy API
 
 ### CLiInputAdapter

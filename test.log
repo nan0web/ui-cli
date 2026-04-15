@@ -1,0 +1,329 @@
+
+> @nan0web/ui-cli@2.12.2 test /Users/i/src/nan.web/packages/ui-cli
+> node --test --test-timeout=3333 "src/**/*.test.js"
+
+▶ ModelAsApp
+  ✔ generateHelp() renders correct CLI usage and options (7.925792ms)
+  ✔ generateHelp() uses class name when alias is missing (0.912667ms)
+  ✔ generateHelp() respects i18n translation function (0.720333ms)
+  ✔ generateHelp() perfectly aligns dual columns for very long options and usage examples (0.712375ms)
+✔ ModelAsApp (76.288625ms)
+
+ Test Viewer                                                                    
+p  | Hello world!
+   | Example Link
+   | 
+[ 100% ] Focus: 1 | [Enter] Select [Esc] Back                                   
+
+ Full Meta Test                                                                 
+p  | Testing form injection:
+   | 
+frm| [ Form: Feedback Form ]
+   | 
+[ 100% ] Focus: 1 | [Enter] Select [Esc] Back                                   
+▶ ContentViewer Component
+  ✔ renders and allows navigation through links (10.501583ms)
+  ✔ handles inline forms with real interaction (460.468ms)
+✔ ContentViewer Component (473.639583ms)
+✔ Release v2.10.0: Pricing component aesthetics (10.548458ms)
+✔ Release v2.10.0: Testimonials rating colors (0.97525ms)
+✔ Release v2.10.0: EmptyState icon centering (15.724917ms)
+✔ Release v2.10.0: Gallery iTerm2 support (Mocked Terminal) (151.010291ms)
+✔ Release v2.10.0: CLiInputAdapter OLMUI intents (12.534584ms)
+✔ Release v2.10.0: I18n context passing in Banner (1.04125ms)
+✔ bootstrapApp should be an async function (1.213167ms)
+· Hello Antigravity
+✔ bootstrapApp handles model and argv successfully (189.603625ms)
+Error: Expected Failure
+    at FailModel.run (file:///Users/i/src/nan.web/packages/ui-cli/src/test/releases/2/11/v2.11.0/task.test.js:59:10)
+    at run.next (<anonymous>)
+    at runGenerator (file:///Users/i/src/nan.web/packages/ui-cli/src/ui/core/GeneratorRunner.js:94:22)
+    at bootstrapApp (file:///Users/i/src/nan.web/packages/ui-cli/src/ui/bootstrapApp.js:91:21)
+    at async TestContext.<anonymous> (file:///Users/i/src/nan.web/packages/ui-cli/src/test/releases/2/11/v2.11.0/task.test.js:64:3)
+    at async Test.run (node:internal/test_runner/test:1113:7)
+    at async Test.processPendingSubtests (node:internal/test_runner/test:788:7)
+✔ bootstrapApp handles failure with exit code 1 (19.561ms)
+✔ bootstrapApp: Secure Protocol - MUST throw TypeError if db.seal is missing (14.468125ms)
+✔ bootstrapApp: Secure Protocol - MUST call db.seal() after connects (28.984625ms)
+✔ v2.12.0 Contract: bootstrapApp MUST throw TypeError if db.seal is missing (30.421083ms)
+✔ v2.12.0 Contract: bootstrapApp MUST call db.seal() after connects (15.497917ms)
+▶ v2.12.1 Contract: Hardening
+  ✔ package.json should have @nan0web/types ^1.7.1 (48.373333ms)
+  ✔ should be able to import verifySnapshot from @nan0web/ui/testing (3.635625ms)
+  ✖ verifySnapshot should correctly save a JSONL sequence from LogicInspector (9121.094375ms)
+✖ v2.12.1 Contract: Hardening (9178.063334ms)
+▶ Release v2.12.2 Contract
+  ✔ Dependencies use workspace:* protocol (13.841041ms)
+✔ Release v2.12.2 Contract (15.514041ms)
+▶ CLI
+  ✔ initialises with defaults (3.916708ms)
+  ✔ initialises with custom argv (0.570791ms)
+  ✔ detects logger level from argv (0.269959ms)
+  ✔ adds help command automatically (0.258375ms)
+  ✔ runs help command and yields available commands (3.727167ms)
+  ✔ runs registered command (0.9405ms)
+  ✔ handles unknown command (0.430333ms)
+  ✔ creates CLI instance from object (0.454542ms)
+  ✔ returns same instance if already CLI (0.309625ms)
+✔ CLI (13.469375ms)
+▶ Command
+  ✔ should create command with config (2.794916ms)
+  ✔ should parse arguments correctly (3.938459ms)
+  ✔ should handle subcommands (0.834125ms)
+  ✔ should generate proper help text (0.56725ms)
+  ✔ should execute command function (2.569791ms)
+✔ Command (12.99575ms)
+▶ Command.findSubcommand
+  ✔ should find existing subcommand (0.524542ms)
+  ✔ should return null for non-existing subcommand (3.563084ms)
+✔ Command.findSubcommand (4.500333ms)
+▶ Command._applyDefaults
+  ✔ should apply default values to message (4.075542ms)
+  ✔ should not override existing values (0.363083ms)
+  ✔ should apply boolean defaults correctly (0.292292ms)
+✔ Command._applyDefaults (6.884917ms)
+▶ CommandError
+  ✔ should create error with message (0.934917ms)
+  ✔ should create error with data (0.149333ms)
+  ✔ should convert to string with data (0.461834ms)
+  ✔ should convert to string without data (0.235208ms)
+✔ CommandError (5.559041ms)
+▶ CommandHelp – extended scenarios
+  ✔ should render help for a command with alias‑only boolean flag (1.893542ms)
+  ✔ should render subcommands with mixed case names (0.6335ms)
+  ✔ should correctly pluralise help text even when already plural (3.406875ms)
+✔ CommandHelp – extended scenarios (7.844958ms)
+▶ CommandHelp
+  ✔ should create CommandHelp instance with correct properties (1.789458ms)
+  ✔ should generate help text correctly (1.378166ms)
+  ✔ should generate usage without body fields (0.594625ms)
+  ✔ should list subcommands when present (1.411084ms)
+  ✔ should prints the correct help (20.187041ms)
+  ✔ should validate AuthMessage.Body fields correctly (valid data) (17.527333ms)
+  ✔ should validate AuthMessage.Body fields correctly (invalid username) (0.514167ms)
+  ✔ should return an empty validation map for bodies without validators (0.240875ms)
+✔ CommandHelp (47.459875ms)
+▶ CommandMessage
+  ✔ should create with defaults (105.285459ms)
+  ✔ should set properties from input (0.908083ms)
+  ✔ should compute args correctly (1.577583ms)
+  ✔ should get subCommand and subCommandMessage (0.517208ms)
+  ✔ should add child message (0.213333ms)
+  ✔ should parse string input (0.796167ms)
+  ✔ should parse array input (0.645875ms)
+  ✔ should throw on empty input (0.946875ms)
+  ✔ should toString reconstruct input (0.832209ms)
+  ✔ should from create from various inputs (1.370209ms)
+✔ CommandMessage (115.34275ms)
+▶ CommandParser
+  ✔ should parse basic command with flags (118.610166ms)
+  ✔ should find nested commands (12.628167ms)
+  ✔ should throw error for unknown commands (0.982208ms)
+  ✔ should correctly convert types (0.373875ms)
+  ✔ should parse command with aliases (0.438708ms)
+  ✔ should parse only alias without value as boolean (0.589125ms)
+  ✔ should parse only alias glued together (0.47525ms)
+  ✔ should parse aliases along with full flags (0.666667ms)
+  ✔ should parse options only properly with only one command and = for option (2.188208ms)
+  ✔ should parse options only properly with only one command with space for option (0.715ms)
+✔ CommandParser (144.79875ms)
+Pick a colour
+ 1) Red
+ 2) Green
+ 3) Blue
+✔ [db]:  2
+First colour
+ 1) Red
+ 2) Green
+ 3) Blue
+✔ [db]:  2
+Second colour
+ 1) Red
+ 2) Green
+ 3) Blue
+✔ [db]:  3
+✔ What is your name?  John Doe
+✔ Name *: Alice
+✔ Age: 30
+▶ CLiInputAdapter – predefined answers (isolated)
+  ✔ requestSelect uses the first predefined answer (222.798209ms)
+  ✔ requestSelect consumes answers sequentially (3.137291ms)
+  ✔ requestInput uses the next predefined answer (48.867833ms)
+  ✔ requestForm consumes predefined answers in order (105.452833ms)
+✔ CLiInputAdapter – predefined answers (isolated) (384.321875ms)
+▶ CLiInputAdapter
+  ✔ should create instance (31.84675ms)
+  ✔ should handle form submission (98.576667ms)
+  ✔ should handle form cancellation (26.315166ms)
+  ✔ should handle requestSelect (6.256833ms)
+  ✔ should handle requestSelect cancellation (0.904916ms)
+  ✔ should handle requestInput (0.835375ms)
+  ✔ should render simple component fallback (434.16875ms)
+  ✔ should load and render component from map (1.058208ms)
+  ✔ should handle validation errors in form (2.637417ms)
+  ✔ should trigger infinite loop detection (1.649833ms)
+✔ CLiInputAdapter (638.49675ms)
+
+────────────────────────────────────────
+🎉 Result:
+processed
+────────────────────────────────────────
+
+▶ bootstrapApp
+  ✔ should load defaults (81.12675ms)
+✔ bootstrapApp (82.972375ms)
+▶ modelFromArgv
+  ✔ creates model with all defaults when no argv given (13.41375ms)
+  ✔ maps positional args to positional: true fields (1.272292ms)
+  ✔ parses named --options (276.818833ms)
+  ✔ parses short alias -q for boolean (1.205792ms)
+  ✔ combines positional + named + short (0.632167ms)
+  ✔ named options take priority over positionals (1.744333ms)
+  ✔ returns an instance of the Model class (0.642583ms)
+  ✔ handles only positionals without named options (3.345084ms)
+✔ modelFromArgv (306.154917ms)
+▶ resolvePositionalArgs
+  ✔ maps positional args to fields with positional: true (2.2195ms)
+  ✔ preserves declaration order (source before target) (0.28425ms)
+  ✔ named options take priority over positionals (0.122ms)
+  ✔ handles partial args (only first positional) (0.266666ms)
+  ✔ handles empty args (returns existing) (0.285875ms)
+  ✔ handles no args at all (1.882916ms)
+  ✔ ignores extra args beyond declared positional fields (0.75325ms)
+  ✔ skips non-positional fields (verbose, from) (3.892958ms)
+✔ resolvePositionalArgs (13.390375ms)
+▶ UiMessage with select field
+  ✔ should show select options and accept predefined answer (11.667167ms)
+✔ UiMessage with select field (13.717167ms)
+▶ Confirm utility
+  ✔ returns true when user confirms (17.731167ms)
+  ✔ returns false when user denies (0.701708ms)
+✔ Confirm utility (22.42875ms)
+
+Invalid username
+▶ Form class
+  ▶ constructor
+    ✔ should create with a valid model instance (2.45975ms)
+    ✔ should throw TypeError for invalid model (6.241583ms)
+  ✔ constructor (10.54275ms)
+  ▶ #generateFields (private, tested indirectly)
+    ✔ should generate fields from static schema (2.981625ms)
+    ✔ should skip non-object static properties (1.240792ms)
+  ✔ #generateFields (private, tested indirectly) (4.975792ms)
+  ▶ requireInput
+    ✔ should complete text input successfully with predefined answers (1.340917ms)
+    ✔ should retry on validation error for a field (2.178166ms)
+    ✔ should handle select field successfully (0.5555ms)
+    ✔ should cancel on stop word and return {cancelled: true} (0.235666ms)
+    ✔ should skip non-required empty input (0.691917ms)
+    ✔ should handle CancelError from select (0.703042ms)
+  ✔ requireInput (6.222416ms)
+  ▶ convertValue
+    ✔ should convert to string by default (0.294625ms)
+  ✔ convertValue (0.389041ms)
+  ▶ body getter
+    ✔ should return the updated model instance (0.199875ms)
+  ✔ body getter (0.241792ms)
+  ▶ i18n and Unicode support
+    ✔ should translate field labels and help text (0.468625ms)
+    ✔ should support Unicode (Cyrillic) in inputs and validation (0.4825ms)
+  ✔ i18n and Unicode support (1.086084ms)
+✔ Form class (24.384042ms)
+▶ ask (createInput) with predefined answer
+  ✔ returns the predefined answer as Input value (2.751083ms)
+✔ ask (createInput) with predefined answer (5.3345ms)
+▶ Input utilities
+  ✔ should create Input instance (3.276917ms)
+  ✔ should handle cancellation stops (1.08325ms)
+  ✔ should create input handler (1.221667ms)
+  ✔ should create input handler with stops (0.935541ms)
+✔ Input utilities (11.802917ms)
+▶ Select utility
+  ✔ throws on empty options (5.884959ms)
+  ✔ handles Map options (3.398916ms)
+  ✔ returns correct index and value for Array options (0.474792ms)
+✔ Select utility (11.178375ms)
+▶ slider component
+  ✔ returns a value within the specified range (29.438666ms)
+  ✔ respects min and max bounds (0.73575ms)
+  ✔ uses initial value when provided (2.761125ms)
+  ✔ translates message when t function provided (0.695792ms)
+  ✔ throws CancelError on cancellation (0.543083ms)
+  ✔ calculates jump value correctly (0.341083ms)
+  ✔ works with custom step size (0.127584ms)
+  ✔ defaults min to 0 if not provided (0.2695ms)
+  ✔ defaults max to 100 if not provided (1.882542ms)
+  ✔ defaults step to 1 if not provided (0.995541ms)
+✔ slider component (43.864792ms)
+▶ Sortable — unit
+  ✔ SortableList is accessible via Component.SortableList (1.426583ms)
+  ✔ SortableList.create() returns instance with full API (1.534917ms)
+  ✔ moveUp swaps adjacent items (2.271959ms)
+  ✔ moveDown swaps adjacent items (0.351583ms)
+  ✔ moveTo drags item to new position (0.25725ms)
+  ✔ reset restores initial order (2.208458ms)
+  ✔ onChange callback fires on mutations (0.434083ms)
+  ✔ moveUp(0) does not change order (0.288917ms)
+  ✔ moveDown(last) does not change order (0.424916ms)
+  ✔ sortable module exports function (23.251917ms)
+  ✔ sortable rejects empty items array (1.512083ms)
+  ✔ Sortable component creates a prompt descriptor (5.511166ms)
+✔ Sortable — unit (42.734583ms)
+▶ Tree Component
+  ✔ renders basic tree and returns selection (58.130708ms)
+  ✔ supports localization via t function (21.326792ms)
+  ✔ handles multi-select (51.038583ms)
+✔ Tree Component (133.16275ms)
+▶ Confirm Component
+  ✔ renders and returns boolean (3.08ms)
+✔ Confirm Component (4.633583ms)
+▶ Input Component
+  ✔ renders and returns text value (4.120334ms)
+✔ Input Component (9.017ms)
+▶ Select Component
+  ✔ renders and returns selection (8.566375ms)
+✔ Select Component (10.143208ms)
+▶ Slider Component
+  ✔ renders and returns value (4.117417ms)
+✔ Slider Component (8.616959ms)
+▶ PlaygroundTest – automated stdin sequence
+  ✔ feeds PLAY_DEMO_SEQUENCE values to child process stdin (714.928458ms)
+✔ PlaygroundTest – automated stdin sequence (719.079209ms)
+▶ PlaygroundTest class
+  ✔ should filter debugger lines when includeDebugger is false (6.222583ms)
+  ✔ should keep debugger lines when includeDebugger is true (0.219375ms)
+  ✔ slice should return correct lines from recentResult (0.939959ms)
+✔ PlaygroundTest class (9.696ms)
+▶ v2.4.0 — Universal Snapshot Output Normalizer
+  ✔ normalize() strips ANSI escape codes (20.033958ms)
+  ✔ normalize() strips leading whitespace (2.315333ms)
+  ✔ normalize() applies custom replacements (1.08075ms)
+  ✔ normalize() returns empty string for empty input (12.202167ms)
+  ✔ Spinner has snapshotReplacements static property (2.795583ms)
+  ✔ Spinner.snapshotReplacements normalizes spinner frames (1.83675ms)
+  ✔ Spinner.snapshotReplacements normalizes time durations (0.49825ms)
+  ✔ ProgressBar has snapshotReplacements static property (2.841083ms)
+  ✔ ProgressBar.snapshotReplacements normalizes progress bar output (0.821459ms)
+  ✔ collectReplacements() merges replacements from multiple components (3.288958ms)
+  ✔ collectReplacements() ignores components without snapshotReplacements (0.526ms)
+  ✔ normalize and collectReplacements are exported from @nan0web/ui-cli/test (89.396833ms)
+  ✔ Tree icons can be normalized via TREE_REPLACEMENTS (7.4995ms)
+✔ v2.4.0 — Universal Snapshot Output Normalizer (160.475625ms)
+▶ v2.5.0 — Event-Driven PlaygroundTest
+  ✔ PlaygroundTest constructor supports event driven feeding (47.628125ms)
+✔ v2.5.0 — Event-Driven PlaygroundTest (49.229042ms)
+ℹ tests 180
+ℹ suites 41
+ℹ pass 179
+ℹ fail 0
+ℹ cancelled 1
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 12220.033291
+
+✖ failing tests:
+
+test at src/test/releases/2/12/v2.12.1/task.test.js:19:2
+✖ verifySnapshot should correctly save a JSONL sequence from LogicInspector (9121.094375ms)
+  'test timed out after 3333ms'
+ ELIFECYCLE  Test failed. See above for more details.

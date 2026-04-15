@@ -5,7 +5,7 @@ import { fileURLToPath } from 'node:url'
 import path from 'node:path'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
-const packageJsonPath = path.resolve(__dirname, '../../../../package.json')
+const packageJsonPath = path.resolve(__dirname, '../../../../../../package.json')
 
 describe('Release v2.12.2 Contract', () => {
 	it('Dependencies use workspace:* protocol', async () => {

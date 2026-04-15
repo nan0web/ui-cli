@@ -3,6 +3,8 @@ import { renderMarkdown } from '../impl/markdown.js'
 import { ContentViewer } from '../prompt/ContentViewer.js'
 import { SelectModel } from '../../domain/prompt/SelectModel.js'
 import { ToggleModel } from '../../domain/prompt/ToggleModel.js'
+import { iconChar } from '@nan0web/icons/adapters/cli'
+import { BsCheck, BsExclamationTriangle, BsX } from '@nan0web/icons/bs'
 
 /**
  * Handles mapping OLMUI intents to CLI InputAdapter methods.
@@ -174,7 +176,11 @@ export default class IntentDispatcher {
 			return
 		}
 
-		const msg = t(message) || ''
+		let msg = typeof message === 'string' ? message : ''
+		try {
+			const translated = t(message)
+			if (translated) msg = translated
+		} catch (e) {}
 		
 		if (hint === 'markdown') {
 			this.adapter.console.info(`\n${renderMarkdown(msg)}\n`)
@@ -199,9 +205,9 @@ export default class IntentDispatcher {
 			}
 			this.adapter.console.info(alert(body, variant, { title }))
 		} else {
-			if (level === 'error') this.adapter.console.error(`🚨 ${formatted}`)
-			else if (level === 'warn') this.adapter.console.warn(`⚠️ ${formatted}`)
-			else if (level === 'success') this.adapter.console.info(`✅ ${formatted}`)
+			if (level === 'error') this.adapter.console.error(`\x1b[31m${iconChar(BsX)}\x1b[0m ${formatted}`)
+			else if (level === 'warn') this.adapter.console.warn(`\x1b[33m${iconChar(BsExclamationTriangle)}\x1b[0m ${formatted}`)
+			else if (level === 'success') this.adapter.console.info(`\x1b[32m${iconChar(BsCheck)}\x1b[0m ${formatted}`)
 			else this.adapter.console.info(`· ${formatted}`)
 		}
 
@@ -238,6 +244,18 @@ export default class IntentDispatcher {
 		const pad = '  '.repeat(indent)
 		if (obj === null) return 'null'
 		if (typeof obj !== 'object') return String(obj)
+
+		if (Array.isArray(obj)) {
+			if (obj.length === 0) return '[]'
+			return obj.map(val => {
+				if (val && typeof val === 'object') {
+					const yamlObj = this.#toYaml(val, indent + 1)
+					return `${pad}- ${yamlObj.trimStart()}`
+				}
+				const tVal = typeof val === 'string' ? t(val) : val
+				return `${pad}- ${tVal}`
+			}).join('\n')
+		}
 		
 		return Object.entries(obj)
 			.map(([key, val]) => {
@@ -267,7 +285,8 @@ export default class IntentDispatcher {
 
 		// Visual separation
 		this.adapter.console.info('\n' + '─'.repeat(40))
-		this.adapter.console.info(`🎉 ${this.adapter.t(SelectModel.UI_RESULT)}:`)
+		let resTitle = data?.title || this.adapter.t(SelectModel.UI_RESULT?.default || 'Result')
+		this.adapter.console.info(`🎉 ${resTitle}:`)
 		
 		if (typeof data === 'object' && data !== null) {
 			this.adapter.console.info(this.#toYaml(data))

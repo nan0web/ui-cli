@@ -1,11 +1,9 @@
 ---
 metadata:
-  description: "🦅 UI-CLI (User Interface Command Line) - Канонічна реалізація термінальних інтерфейсів для екосистеми nan.web."
-  tags: [ui, cli, terminal, interaction, framework]
-  status: active
+  description: ""
+  tags: []
+  status: planned
   locale: uk
-  i18n:
-    en: docs/en/project.md
 sections:
   - title: "🧭 Фаза 1: Філософія та Абстракція (The Seed)"
     content:
@@ -43,14 +41,20 @@ sections:
             completed: true
           - text: "`collection` -> Multiselect/Tree"
             completed: true
-        total: 4
-        completed: 4
+          - text: "`positional: true` -> Позиційний CLI аргумент (порядок = порядок оголошення `static` полів)"
+            completed: true
+        total: 5
+        completed: 5
   - title: "🛠 Фаза 3: Верифікація Логіки (CLI-First)"
     content:
       - "1. **Інтеграція з `ui-cli`:**"
       - "- Весь функціонал пакета доступний через `bin/cli.js`."
       - "- Команди будуються декларативно через `CommandParser.js`."
-      - "2. **Snapshot-тестування:**"
+      - "2. **Утиліти запуску (Core Runners):**"
+      - "- `runGenerator(model, adapter)` — з'єднує `async *run()` генератор моделі з `CLiInputAdapter`."
+      - "- `runApp(EntryModel, adapter)` — цикл додатку для multi-command OLMUI систем."
+      - "- `resolvePositionalArgs(Model, args, named)` — універсальний маппер CLI positional → model fields. Сканує `static` поля з `positional: true`, розподіляє за порядком оголошення. Іменовані опції мають пріоритет."
+      - "3. **Snapshot-тестування:**"
       - "- Кожен компонент покритий 34 \"Golden Master\" снепшотами."
       - "- Снепшоти фіксують точний ASCII-вивід, включаючи ANSI-кольори та спецсимволи."
       - "---"
@@ -121,9 +125,13 @@ sections:
             completed: true
           - text: "Вбудована дистрибуція (npm)."
             completed: true
-        total: 7
-        completed: 7
+          - text: "Core Utilities: `runGenerator`, `runApp`, `resolvePositionalArgs`."
+            completed: true
+          - text: "Model-as-Schema: `positional: true` конвенція для маппінгу CLI аргументів."
+            completed: true
+        total: 9
+        completed: 9
 stats:
-  totalTasks: 11
-  completedTasks: 11
+  totalTasks: 14
+  completedTasks: 14
   progress: 100

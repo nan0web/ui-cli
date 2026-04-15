@@ -3,25 +3,24 @@
  * Helps isolated tests and playground demos function correctly.
  */
 export default class AnswerQueue {
-	/** @type {string[]} Queue of predefined answers. */
-	#answers = []
-	/** @type {number} Current position in the answers queue. */
-	#cursor = 0
-	/** @type {boolean} Temporarily disable automated answers */
-	_disableNextAnswerLookup = false
-
 	constructor(options = {}) {
+		this._answers = []
+		this._cursor = 0
+
+		/** @type {boolean} Temporarily disable automated answers */
+		this._disableNextAnswerLookup = false
+
 		const {
 			predefined = process.env.PLAY_DEMO_SEQUENCE ?? [],
 			divider = process.env.PLAY_DEMO_DIVIDER ?? ',',
 		} = options
 
 		if (Array.isArray(predefined)) {
-			this.#answers = predefined.map((v) => String(v))
+			this._answers = predefined.map((v) => String(v))
 		} else if (typeof predefined === 'string') {
-			this.#answers = predefined.split(divider).map((v) => v.trim())
+			this._answers = predefined.split(divider).map((v) => v.trim())
 		} else {
-			this.#answers = []
+			this._answers = []
 		}
 	}
 
@@ -32,9 +31,9 @@ export default class AnswerQueue {
 	 */
 	next() {
 		if (this._disableNextAnswerLookup) return null 
-		if (this.#cursor < this.#answers.length) {
-			const val = this.#answers[this.#cursor]
-			this.#cursor++
+		if (this._cursor < this._answers.length) {
+			const val = this._answers[this._cursor]
+			this._cursor++
 			return val
 		}
 		return null
@@ -45,7 +44,7 @@ export default class AnswerQueue {
 	 * @returns {string[]}
 	 */
 	getRemaining() {
-		return this.#answers.slice(this.#cursor)
+		return this._answers.slice(this._cursor)
 	}
 
 	/**

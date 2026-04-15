@@ -29,8 +29,15 @@ export default class CLi {
     logger: Logger;
     /** @type {Array<Function>} */
     Messages: Array<Function>;
+    _commands: Map<string, any>;
     /** @returns {Map<string,Function>} The command map. */
     get commands(): Map<string, Function>;
+    /**
+     * Register message‑based commands derived from classes.
+     *
+     * @param {any} cmdClasses - Array of Message classes exposing a `run` generator.
+     */
+    _registerMessageCommands(cmdClasses: any): void;
     /**
      * Execute the CLi workflow.
      *
@@ -38,7 +45,18 @@ export default class CLi {
      * @returns {AsyncGenerator<OutputMessage>}
      */
     run(msg?: Message): AsyncGenerator<OutputMessage>;
-    #private;
+    /**
+     * Determine the command name from the positional arguments.
+     *
+     * @returns {string}
+     */
+    _parseCommandName(): string;
+    /**
+     * Generate help output for all registered commands.
+     *
+     * @yields {OutputMessage}
+     */
+    _help(): AsyncGenerator<OutputMessage, void, unknown>;
 }
 import Logger from '@nan0web/log';
 import { Message } from '@nan0web/co';

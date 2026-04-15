@@ -4,6 +4,8 @@
  */
 export default class AnswerQueue {
     constructor(options?: {});
+    _answers: any[];
+    _cursor: number;
     /** @type {boolean} Temporarily disable automated answers */
     _disableNextAnswerLookup: boolean;
     /**
@@ -21,5 +23,4 @@ export default class AnswerQueue {
      * @param {boolean} disable
      */
     setDisabled(disable: boolean): void;
-    #private;
 }

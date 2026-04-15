@@ -165,6 +165,17 @@ import { render, ProgressBar } from '@nan0web/ui-cli'
 console.info('Progress: 100%')
 ```
 
+### Вкладені точки експорту (OLMUI)
+
+Пакет використовує архітектуру "Одна логіка, багато інтерфейсів" (OLMUI), експортуючи доменні моделі окремо від UI-адаптерів. Це дозволяє імпортувати лише необхідні часткові бандли.
+
+- `import { InputModel } from '@nan0web/ui-cli/domain'`
+- `import { Select } from '@nan0web/ui-cli/ui/prompt'`
+- `import { Table } from '@nan0web/ui-cli/ui/view'`
+- `import { Layout } from '@nan0web/ui-cli/ui/BlockRenderers'`
+
+Як використовувати ізольовані доменні моделі та UI-адаптери?
+
 ## Застарілий API (Legacy)
 
 ### CLiInputAdapter
