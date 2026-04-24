@@ -59,6 +59,7 @@ export function createPrompt(displayName, props, executorFn) {
 		$$typeof: PromptSymbol,
 		type: displayName,
 		props,
+		model: props,
 		execute: () => executorFn(props),
 	}
 

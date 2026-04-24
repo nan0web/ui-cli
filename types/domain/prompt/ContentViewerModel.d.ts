@@ -3,24 +3,23 @@
  */
 export class ContentViewerModel extends Model {
     static UI: {
+        title: string;
+        focus: string;
+        scroll: string;
+        back: string;
+        select: string;
+    };
+    static content: {
         alias: string[];
         default: string;
     };
-    static UI_TITLE: {
+    static title: {
         alias: string[];
         default: string;
     };
-    static UI_FOCUS: {
-        default: string;
-    };
-    static UI_SCROLL: {
-        default: string;
-    };
-    static UI_BACK: {
-        default: string;
-    };
-    static UI_SELECT: {
-        default: string;
+    static print: {
+        type: string;
+        default: boolean;
     };
     static help: string;
     /**
@@ -28,11 +27,8 @@ export class ContentViewerModel extends Model {
      * @param {object} [options] Options.
      */
     constructor(data?: Partial<ContentViewerModel> | Record<string, any>, options?: object);
-    /** @type {string} The content to display. */ UI: string;
-    /** @type {string} The title of the viewer. */ UI_TITLE: string;
-    /** @type {string} Focus label. */ UI_FOCUS: string;
-    /** @type {string} Scroll label. */ UI_SCROLL: string;
-    /** @type {string} Back label. */ UI_BACK: string;
-    /** @type {string} Select label. */ UI_SELECT: string;
+    /** @type {string} The content to display. */ content: string;
+    /** @type {string} The title of the viewer. */ title: string;
+    /** @type {boolean} Print directly. */ print: boolean;
 }
 import { Model } from '@nan0web/types';

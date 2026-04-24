@@ -5,6 +5,7 @@ import CLI from './ui/CLI.js'
 import CommandParser from './ui/core/CommandParser.js'
 import CommandHelp from './ui/core/CommandHelp.js'
 import Form, { generateForm } from './ui/impl/form.js'
+import IntentDispatcher from './ui/core/IntentDispatcher.js'
 
 // V2 Component Exports
 import { render } from './ui/core/render.js'
@@ -13,6 +14,7 @@ export { bootstrapApp } from './ui/bootstrapApp.js'
 import { resolvePositionalArgs } from './ui/core/resolvePositionalArgs.js'
 import { modelFromArgv } from './ui/core/modelFromArgv.js'
 import { ModelAsApp } from './domain/ModelAsApp.js'
+export { App } from './domain/App.js'
 export { show, result } from '@nan0web/ui'
 
 // Universal Blocks
@@ -24,8 +26,21 @@ import { Alert } from './ui/view/Alert.js'
 import { Badge } from './ui/view/Badge.js'
 import { Table } from './ui/view/Table.js'
 import { Breadcrumbs, Tabs, Steps } from './ui/view/Nav.js'
+import { Markdown } from './ui/view/Markdown.js'
 import { Toast } from './ui/view/Toast.js'
-import { Banner, Hero, Pricing, Stats, Timeline, Testimonials, Accordion, Gallery, EmptyState, Header, Footer } from './ui/view/DomainViews.js'
+import {
+	Banner,
+	Hero,
+	Pricing,
+	Stats,
+	Timeline,
+	Testimonials,
+	Accordion,
+	Gallery,
+	EmptyState,
+	Header,
+	Footer,
+} from './ui/view/DomainViews.js'
 
 // Prompts
 import { Select, SelectModel } from './ui/prompt/Select.js'
@@ -87,6 +102,7 @@ export {
 	Select as Init, // SANE FALLBACK
 	Badge,
 	Table,
+	Markdown,
 	Breadcrumbs,
 	Tabs,
 	Steps,
@@ -104,22 +120,38 @@ export {
 	EmptyState,
 	Header,
 	Footer,
-	Select, SelectModel,
-	Input, InputModel,
-	Password, PasswordModel,
-	Confirm, ConfirmModel,
-	Multiselect, MultiselectModel,
-	Mask, MaskModel,
-	Autocomplete, AutocompleteModel,
-	Slider, SliderModel,
-	Toggle, ToggleModel,
-	DateTime, DateTimeModel,
-	Next, NextModel,
-	Pause, PauseModel,
-	Tree, TreeModel,
-	Spinner, SpinnerModel,
-	ProgressBar, ProgressBarModel,
-	Sortable, SortableModel,
+	Select,
+	SelectModel,
+	Input,
+	InputModel,
+	Password,
+	PasswordModel,
+	Confirm,
+	ConfirmModel,
+	Multiselect,
+	MultiselectModel,
+	Mask,
+	MaskModel,
+	Autocomplete,
+	AutocompleteModel,
+	Slider,
+	SliderModel,
+	Toggle,
+	ToggleModel,
+	DateTime,
+	DateTimeModel,
+	Next,
+	NextModel,
+	Pause,
+	PauseModel,
+	Tree,
+	TreeModel,
+	Spinner,
+	SpinnerModel,
+	ProgressBar,
+	ProgressBarModel,
+	Sortable,
+	SortableModel,
 
 	// Tools
 	CLI,
@@ -128,7 +160,10 @@ export {
 	OutputAdapter,
 	Form,
 	generateForm,
+	IntentDispatcher,
 }
 
 export { default as Command } from './ui/Command.js'
 export { str2argv } from './ui/utils/parse.js'
+
+/** @typedef {import('./ui/core/InputAdapter.js').RequestFormOptions} RequestFormOptions */

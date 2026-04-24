@@ -31,4 +31,14 @@ export class MultiselectModel extends Model {
 		/** @type {string} Complete label. */ this.UI_COMPLETE
 		/** @type {Array<any>} Options array. */ this.options
 	}
+	/**
+	 * Map a predefined comma-separated answer to a multiselect result.
+	 *
+	 * @param {string} predefined - Injected answer.
+	 * @returns {{value: any[], cancelled: boolean}}
+	 */
+	automatedInput(predefined) {
+		const values = String(predefined).split(',').map((v) => v.trim())
+		return { value: values, cancelled: false }
+	}
 }

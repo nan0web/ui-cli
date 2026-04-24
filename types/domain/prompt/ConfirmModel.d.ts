@@ -29,5 +29,15 @@ export class ConfirmModel extends Model {
     /** @type {string} Yes label. */ UI_YES: string;
     /** @type {string} No label. */ UI_NO: string;
     /** @type {boolean} Initial value. */ initial: boolean;
+    /**
+     * Map a predefined answer to a confirmation result.
+     *
+     * @param {string} predefined - Injected answer.
+     * @returns {{value: boolean, cancelled: boolean}}
+     */
+    automatedInput(predefined: string): {
+        value: boolean;
+        cancelled: boolean;
+    };
 }
 import { Model } from '@nan0web/types';

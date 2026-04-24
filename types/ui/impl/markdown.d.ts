@@ -8,10 +8,11 @@ export function renderMarkdown(content: any): string;
  * @param {number} [config.offset] - Initial scroll offset.
  * @param {number} [config.focusedIndex] - Initial focused interactive element index.
  * @param {Function} [config.t] - Translation function.
- * @param {string} [config.UI_SELECT] - Selection label.
- * @param {string} [config.UI_FOCUS] - Focus label.
- * @param {string} [config.UI_SCROLL] - Scroll label.
- * @param {string} [config.UI_BACK] - Back label.
+ * @param {boolean} [config.print] - If true, just print and exit.
+ * @param {string} [config.select] - Selection label.
+ * @param {string} [config.focus] - Focus label.
+ * @param {string} [config.scroll] - Scroll label.
+ * @param {string} [config.back] - Back label.
 
  * @param {Object} [config.console] - Logger instance.
  * @returns {Promise<{value: any, type?: string, action?: string, cancelled: boolean}>}}
@@ -25,10 +26,11 @@ export function markdownViewer(config: {
     offset?: number | undefined;
     focusedIndex?: number | undefined;
     t?: Function | undefined;
-    UI_SELECT?: string | undefined;
-    UI_FOCUS?: string | undefined;
-    UI_SCROLL?: string | undefined;
-    UI_BACK?: string | undefined;
+    print?: boolean | undefined;
+    select?: string | undefined;
+    focus?: string | undefined;
+    scroll?: string | undefined;
+    back?: string | undefined;
     console?: any;
 }): Promise<{
     value: any;

@@ -1,4 +1,5 @@
 import { Model } from '@nan0web/types'
+import { MaskHandler } from '@nan0web/ui/core'
 
 /**
  * Model describing the Mask component parameters.
@@ -18,5 +19,17 @@ export class MaskModel extends Model {
 		/** @type {string} The message or label. */ this.UI
 		/** @type {string} Format message. */ this.UI_FORMAT_MSG
 		/** @type {string} The mask. */ this.mask
+	}
+
+	/**
+	 * Map a predefined answer to a masked result.
+	 *
+	 * @param {string} predefined - Injected answer.
+	 * @returns {{value: string, cancelled: boolean}}
+	 */
+	automatedInput(predefined) {
+		const mh = new MaskHandler(this.mask)
+		mh.setValue(predefined)
+		return { value: mh.formatted, cancelled: false }
 	}
 }

@@ -1,0 +1,21 @@
+title: Form Demo (nan0)
+
+content:
+  - form:
+      fields:
+        username:
+          help: Username
+          default: alice
+        age:
+          help: Age
+          type: number
+          default: 30
+        plan:
+          help: Subscription Plan
+          hint: select
+          children:
+            - Free
+            - Pro
+            - Enterprise
+          default: Pro
+  - p: "User: ${this.lastResult?.username}, Age: ${this.lastResult?.age}, Plan: ${this.lastResult?.plan}"

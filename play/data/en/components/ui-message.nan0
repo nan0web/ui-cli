@@ -1,0 +1,12 @@
+title: UiMessage Demo (nan0)
+
+content:
+  - form:
+      fields:
+        name:
+          help: Name
+          default: Bob
+        feedback:
+          help: Message
+          default: Great tool!
+  - show: "Result: ${this.lastResult?.name} says ${this.lastResult?.feedback}"

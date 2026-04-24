@@ -17,7 +17,7 @@ content:
         theme:
           type: select
           help: Theme
-          options:
+          children:
             - Dark
             - Light
 

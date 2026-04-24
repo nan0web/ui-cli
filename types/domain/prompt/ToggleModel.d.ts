@@ -27,5 +27,15 @@ export class ToggleModel extends Model {
     /** @type {string} Active label. */ UI_YES: string;
     /** @type {string} Inactive label. */ UI_NO: string;
     /** @type {boolean} Initial state. */ initial: boolean;
+    /**
+     * Map a predefined answer to a toggle result.
+     *
+     * @param {string} predefined - Injected answer.
+     * @returns {{value: boolean, cancelled: boolean}}
+     */
+    automatedInput(predefined: string): {
+        value: boolean;
+        cancelled: boolean;
+    };
 }
 import { Model } from '@nan0web/types';

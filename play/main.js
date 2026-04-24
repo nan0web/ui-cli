@@ -29,6 +29,38 @@ import { CancelError } from '../src/index.js'
 import getT, { localesMap } from './vocabs/index.js'
 
 /**
+ * Unified Runner for .nan0 Containers.
+ * 
+ * @param {CLiInputAdapter} adapter 
+ * @param {Logger} logger 
+ * @param {string} name 
+ * @param {'flow' | 'app' | 'data'} mode 
+ * @param {object} options 
+ */
+async function runNan0Container(adapter, logger, name, mode, options = {}) {
+	const { locale, t } = options
+	const { App, bootstrapApp } = await import('../src/index.js')
+	const path = `play/${name}.nan0`
+	
+	const app = new App({ adapter, logger, locale, t })
+	const module = await app._loadModule(path)
+	
+	if (mode === 'flow') {
+		const { runGenerator } = await import('../src/ui/core/GeneratorRunner.js')
+		await runGenerator(app._runModule(path, []), adapter, { t })
+	} else if (mode === 'app') {
+		// ModelAsApp Container
+		const model = module.toModel()
+		await bootstrapApp(model, { adapter, console: logger, locale, noExit: true })
+	} else if (mode === 'data') {
+		// ModelAsData Container
+		const model = module.toModel()
+		const result = await adapter.requestForm(model)
+		logger.success(`✓ Data Captured: ${JSON.stringify(result)}`)
+	}
+}
+
+/**
  * UI‑CLI playground – runs a series of demo scripts.
  *
  * Use env PLAY_DEMO_SEQUENCE to automate choices, e.g.
@@ -183,6 +215,14 @@ async function main() {
 				{ name: t('Domain Views'), value: 'domain-views' },
 				{ name: t('Content Viewer'), value: 'content-viewer' },
 				{ name: t('Short Content Viewer'), value: 'content-viewer-short' },
+				{ name: t('Basic Logging (Flow .nan0)'), value: 'basic-flow' },
+				{ name: t('Slider (Flow .nan0)'), value: 'slider-flow' },
+				{ name: t('Select (Flow .nan0)'), value: 'select-flow' },
+				{ name: t('Form (Flow .nan0)'), value: 'form-flow' },
+				{ name: t('UiMessage (Flow .nan0)'), value: 'ui-message-flow' },
+				{ name: t('Object Form (Flow .nan0)'), value: 'object-form-flow' },
+				{ name: t('Model as App (Container)'), value: 'model-app' },
+				{ name: t('Model as Data (Container)'), value: 'model-data' },
 				{ name: `← ${t('Exit')}`, value: 'exit' },
 			]
 
@@ -301,12 +341,32 @@ async function main() {
 				case 'content-viewer-short':
 					await runContentViewerShortDemo(console, inputAdapter, t)
 					break
+				case 'basic-flow':
+				case 'slider-flow':
+				case 'select-flow':
+				case 'form-flow':
+				case 'ui-message-flow':
+				case 'object-form-flow': {
+					await runNan0Container(inputAdapter, console, demo.replace('-flow', ''), 'flow', { locale, t })
+					break
+				}
+				case 'model-app': {
+					await runNan0Container(inputAdapter, console, 'form', 'app', { locale, t })
+					break
+				}
+				case 'model-data': {
+					await runNan0Container(inputAdapter, console, 'form', 'data', { locale, t })
+					break
+				}
 				case 'exit':
 					console.success(t('Thanks for exploring UI‑CLI demos! 📡'))
 					break
 			}
 
-			if (demo === 'exit' || (firstRun && args.demo)) break
+			if (demo === 'exit' || (firstRun && (args.demo || inputAdapter.cancelled))) {
+				if (inputAdapter.cancelled) process.exit(1)
+				break
+			}
 
 			firstRun = false
 		} catch (error) {
@@ -318,7 +378,7 @@ async function main() {
 				console.info(
 					Logger.style('\n' + t('Selection cancelled. Returning to menu...'), { color: Logger.DIM })
 				)
-				if (firstRun && args.demo) break
+				if (firstRun && args.demo) process.exit(1)
 				continue
 			}
 			console.error(error)

@@ -40,5 +40,16 @@ export class SelectModel extends Model {
     /** @type {string} Prompt label. */ UI_PROMPT: string;
     /** @type {number} Initial index. */ initial: number;
     /** @type {Array<any>} Options array. */ options: Array<any>;
+    /**
+     * Map a predefined string answer to a selection result.
+     *
+     * @param {string} predefined - Injected answer.
+     * @returns {{value: any, index: number, cancelled: boolean}}
+     */
+    automatedInput(predefined: string): {
+        value: any;
+        index: number;
+        cancelled: boolean;
+    };
 }
 import { Model } from '@nan0web/types';

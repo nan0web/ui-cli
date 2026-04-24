@@ -34,5 +34,15 @@ export class SortableModel extends Model {
     /** @type {string} Grab instructions. */ UI_GRAB: string;
     /** @type {string} Confirm message. */ UI_CONFIRM: string;
     /** @type {Array<any>} Items to sort. */ items: Array<any>;
+    /**
+     * Map a predefined comma-separated answer to a sortable result.
+     *
+     * @param {string} predefined - Injected answer.
+     * @returns {{value: any[], cancelled: boolean}}
+     */
+    automatedInput(predefined: string): {
+        value: any[];
+        cancelled: boolean;
+    };
 }
 import { Model } from '@nan0web/types';

@@ -1,5 +1,6 @@
-import { show, progress, result } from '@nan0web/ui'
+import { show, progress, result, ask } from '@nan0web/ui'
 import { ModelAsApp } from './ModelAsApp.js'
+import { Data } from '@nan0web/db'
 
 /** @typedef {import('@nan0web/ui').Intent} Intent */
 
@@ -143,6 +144,134 @@ export class App extends ModelAsApp {
 			return result({})
 		}
 
+		// ── Data-Driven App (.nan0) ───────────────────────────────────────────
+		const db = this._.db
+		if (db) {
+			let currentPath = 'index'
+			const pathStack = ['index']
+			while (true) {
+				const locale = this._.locale || 'en'
+				let doc = await db.fetch(`${locale}/${currentPath}`)
+				if (!doc) doc = await db.fetch(`en/${currentPath}`)
+				if (!doc) doc = await db.fetch(currentPath)
+				
+				if (!doc) {
+					yield show(t(App.UI.noModel, { path: currentPath }), 'error')
+					if (currentPath === 'index') break
+					currentPath = 'index'
+					continue
+				}
+
+				// Optional: Breadcrumbs for sub-pages
+				if (currentPath !== 'index') {
+					const crumbs = ['Home']
+					if (doc.title) crumbs.push(doc.title)
+					else if (doc.nav?.title) crumbs.push(doc.nav.title)
+					else crumbs.push(currentPath)
+
+					yield { type: 'renderComponent', component: 'Breadcrumbs', props: { items: crumbs } }
+				}
+
+				// 1. Content Phase (Layout Engine)
+				const layout = doc.$content || [{ Content: true }]
+				if (Array.isArray(layout)) {
+					for (const step of layout) {
+						const type = Object.keys(step)[0]
+						let props = step[type]
+
+						if (props === true) props = {} // Expand simple flags
+
+						if (type === 'Content') {
+							// Render actual document content body
+							if (doc.content && Array.isArray(doc.content)) {
+								for (const contentStep of doc.content) {
+									const cType = Object.keys(contentStep)[0]
+									const cProps = contentStep[cType]
+									yield { type: 'renderComponent', component: cType, props: cProps }
+								}
+							}
+							continue
+						}
+
+						// Resolve variable bindings in layout props (e.g. title: '$title')
+						if (typeof props === 'object' && props !== null) {
+							props = { ...props }
+							for (const [key, val] of Object.entries(props)) {
+								if (typeof val === 'string' && val.startsWith('$')) {
+									const propName = val.slice(1)
+									const foundVal = Data.find(propName.split('.'), doc)
+									if (foundVal !== undefined) {
+										props[key] = foundVal
+									}
+								}
+							}
+						}
+
+						yield { type: 'renderComponent', component: type, props }
+					}
+				}
+
+				// 2. Navigation Phase (Optional)
+				if (!doc.nav) break
+
+				// Resolve global nav string
+				if (typeof doc.nav === 'string') {
+					let loadedNav = await db.fetch(`${locale}/${doc.nav}`)
+					if (!loadedNav) loadedNav = await db.fetch(doc.nav)
+					if (loadedNav) doc.nav = loadedNav
+				}
+
+				let navOptions = doc.nav.children || doc.nav.options || doc.nav
+				if (Array.isArray(navOptions)) {
+					navOptions = navOptions.map(opt => {
+						if (typeof opt === 'string') return { label: opt, value: opt }
+						return { label: opt.title || opt.label, value: opt.href || opt.action || opt.value }
+					})
+					// Auto-inject Language Switcher
+					if (doc.langs && Array.isArray(doc.langs) && doc.langs.length > 1) {
+						navOptions.push({ label: `🌐 ${doc.langs.title || t('Choose language')}`, value: '_lang_' })
+					}
+
+					// Auto-inject Back/Exit
+					if (currentPath === 'index') {
+						navOptions.unshift({ label: `🚪 ${t('Exit')}`, value: 'exit' })
+					} else {
+						navOptions.push({ label: `⬅ ${t('Back')}`, value: '_back_' })
+					}
+
+					doc.nav = { ...doc.nav, options: navOptions }
+				}
+
+				const answer = yield ask('nav', doc.nav)
+				if (!answer || answer.cancelled || answer.value === 'exit') break
+
+				if (answer.value === '_lang_') {
+					const langOptions = doc.langs.map(l => ({ label: l.title || l.label, value: l.locale || l.value }))
+					const langAnswer = yield ask('select', { title: doc.langs.title || t('Choose language'), options: langOptions })
+					if (langAnswer && langAnswer.value) {
+						this._.locale = langAnswer.value
+					}
+					continue // Reload current doc in new language
+				}
+
+				if (answer.value === '_back_') {
+					pathStack.pop()
+					currentPath = pathStack[pathStack.length - 1] || 'index'
+					continue
+				}
+
+				if (answer.value !== currentPath && answer.value !== 'index') {
+					pathStack.push(answer.value)
+				} else if (answer.value === 'index') {
+					pathStack.length = 0
+					pathStack.push('index')
+				}
+				
+				currentPath = answer.value
+			}
+			return result({})
+		}
+
 		// ── Auto-detect from package.json (Legacy fallback) ───────────────────
 		yield* this._runFromPackage()
 		return result({})
@@ -244,7 +373,8 @@ export class App extends ModelAsApp {
 			resolvedPath = path.default.resolve(process.cwd(), specifier)
 		}
 
-		const mod = await import(String(pathToFileURL(resolvedPath)))
+		const appThis = /** @type {any} */ (this)
+		const mod = await (appThis._import ? appThis._import(String(pathToFileURL(resolvedPath))) : import(String(pathToFileURL(resolvedPath))))
 		const AppModel =
 			mod.default ||
 			mod.App ||

@@ -16,8 +16,10 @@ export async function runApp(AppEntryModel, adapter, options = {}) {
 		try {
 			// Ask the user to select a command from the app entry model
 			const intent = {
+				/** @type {'ask'} */
 				type: 'ask',
 				field: 'app',
+				/** @type {true} */
 				model: true,
 				schema: AppEntryModel,
 			}
@@ -126,6 +128,7 @@ export async function runGenerator(model, adapter, options = {}) {
 					nextVal = await adapter.progressIntent(intent)
 					break
 				}
+				case 'show':
 				case 'log': {
 					await adapter.logIntent(intent)
 					nextVal = undefined

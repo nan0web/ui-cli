@@ -50,7 +50,7 @@ export function alert(message, variant = 'info', options = {}) {
 		out += Logger.style('─'.repeat(len) + '\n', { color: Logger.DIM })
 	}
 	lines.forEach((line) => {
-		out += '   ' + Logger.style(line.trim(), { color }) + '\n'
+		out += '   ' + Logger.style(line, { color }) + '\n'
 	})
 	out += `${border}\n`
 

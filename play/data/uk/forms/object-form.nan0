@@ -1,0 +1,26 @@
+title: Object Map Form Demo – Premium UX
+
+content:
+  - form:
+      fields:
+        address:
+          help: Адреса
+          default: вул. Київська, 1
+        city:
+          help: Місто
+          default: Київ
+        onDuty:
+          help: На чергуванні
+          type: boolean
+          default: true
+          active: Так
+          inactive: Ні
+        type:
+          help: Тип
+          hint: select
+          children:
+            - label: Відділення
+              href: Branch
+            - label: Банкомат
+              href: ATM
+          default: Branch

@@ -23,4 +23,14 @@ export class SliderModel extends Model {
 		/** @type {number} Step size. */ this.step
 		/** @type {number} Initial value. */ this.initial
 	}
+
+	/**
+	 * Map a predefined answer to a numeric result.
+	 *
+	 * @param {string} predefined - Injected answer.
+	 * @returns {{value: number, cancelled: boolean}}
+	 */
+	automatedInput(predefined) {
+		return { value: Number(predefined), cancelled: false }
+	}
 }

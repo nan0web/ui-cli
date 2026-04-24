@@ -1,0 +1,24 @@
+$Component: ContentViewerShortDemo
+$search: demo content viewer short adaptive
+
+title: Short Document
+content:
+  - h2: Adaptive Navigation Test
+  - p: Testing Tab/Shift+Tab between multiple elements in a short view:
+
+  - p: [Button 1](#1) [Button 2](#2) [Button 3](#3)
+  - p: [Button 4](#4) [Button 5](#5) [Button 6](#6)
+
+  - form:
+      title: Quick Settings
+      $id: short-form
+      $collapsed: true
+      fields:
+        theme:
+          type: select
+          help: Theme
+          children:
+            - Dark
+            - Light
+
+  - p: End of navigation test.

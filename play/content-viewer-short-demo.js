@@ -7,7 +7,7 @@ const fs = new DBFS({ root: 'play/data' })
 export async function runContentViewerShortDemo(console, inputAdapter, t) {
 	console.info(Logger.style(t('Content Viewer Short Demo (Adaptive Height)'), { color: Logger.MAGENTA }))
 
-	const doc = await fs.fetch('content-viewer-short')
+	const doc = await fs.fetch('en/components/content-viewer-short')
 
 	const translateDeep = (obj) => {
 		if (typeof obj === 'string') return t(obj)

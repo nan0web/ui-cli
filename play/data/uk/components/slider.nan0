@@ -1,0 +1,31 @@
+title: Slider Demo
+
+content:
+  - slider:
+      id: volume
+      message: Select Volume (0-100)
+      min: 0
+      max: 100
+      step: 1
+      initial: 50
+  - slider:
+      id: speed
+      message: Select Speed (0-1000)
+      min: 0
+      max: 1_000
+      step: 10
+      initial: 500
+  - slider:
+      id: reward
+      message: Select Reward (0-1M)
+      min: 0
+      max: 1_000_000
+      step: 1_000
+      initial: 50_000
+  - slider:
+      id: disk
+      message: Select Disk Size (TB)
+      min: 0
+      max: 1_000
+      step: 1
+      initial: 100

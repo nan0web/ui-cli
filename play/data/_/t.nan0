@@ -16,7 +16,7 @@ Duration to pause execution in milliseconds.: Duration to pause execution in mil
 Edit: Edit
 Enter password: Enter password
 Enter text to filter or type exit to quit: Enter text to filter or type exit to quit
-Enter value: Enter value
+Enter href: Enter value
 Error: Error
 Field is required: Field is required
 Format must be: Format must be
@@ -42,7 +42,7 @@ Secure mask for the password input field.: Secure mask for the password input fi
 Select: Select
 Select a file: Select a file
 Select an option: Select an option
-Select options: Select options
+Select children: Select options
 Standard boolean switch (classic Yes/No toggle).: Standard boolean switch (classic Yes/No toggle).
 Standard multi-selection checkboxes.: Standard multi-selection checkboxes.
 Standard radio-button selection list.: Standard radio-button selection list.

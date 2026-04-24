@@ -1,6 +1,6 @@
 {
 	"name": "@nan0web/ui-cli",
-	"version": "2.12.3",
+	"version": "2.13.0",
 	"description": "NaN•Web UI CLI. Command line interface for One application logic (algorithm) and many UI.",
 	"main": "src/index.js",
 	"types": "types/index.d.ts",
@@ -29,7 +29,8 @@
 		"./app": {
 			"import": "./src/domain/App.js"
 		},
-		"./cli": "./src/domain/App.js"
+		"./cli": "./src/domain/App.js",
+		"./ui/cli": "./src/domain/App.js"
 	},
 	"scripts": {
 		"build": "tsc",
@@ -46,7 +47,7 @@
 		"test:all": "npm run test && npm run test:docs && npm run test:play && (npm run test:i18n || echo \"⚠️  I18n Audit Skipped due to noise\") && npm run build && npm run knip",
 		"test:all1": "npm run test && npm run test:docs && npm run test:status && npm run test:play && npm run build",
 		"knip": "knip --production",
-		"play": "node play/main.js --demo=v2",
+		"play": "node bin/nan0cli.js --data play/data",
 		"play:v1": "node play/main.js",
 		"play:v2": "node play/main.js --demo=v2",
 		"play:mask": "node play/main.js --demo=mask",

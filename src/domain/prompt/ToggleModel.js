@@ -22,4 +22,15 @@ export class ToggleModel extends Model {
 		/** @type {string} Inactive label. */ this.UI_NO
 		/** @type {boolean} Initial state. */ this.initial
 	}
+
+	/**
+	 * Map a predefined answer to a toggle result.
+	 *
+	 * @param {string} predefined - Injected answer.
+	 * @returns {{value: boolean, cancelled: boolean}}
+	 */
+	automatedInput(predefined) {
+		const val = ['y', 'yes', 'true', '1', 'так', '+', 'ok'].includes(String(predefined).toLowerCase())
+		return { value: val, cancelled: false }
+	}
 }

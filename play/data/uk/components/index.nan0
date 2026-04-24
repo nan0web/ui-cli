@@ -1,0 +1,17 @@
+title: UI Компоненти
+content:
+  - Header:
+      title: Інтерактивні Компоненти
+  - p: Різноманітні промпти одного наміру та UI віджети.
+nav:
+  children:
+    - title: Демонстрація вибору
+      href: components/select
+    - title: Слайдер
+      href: components/slider
+    - title: UI Повідомлення
+      href: components/ui-message
+    - title: Переглядач Markdown
+      href: components/content-viewer
+    - title: Короткий переглядач Markdown
+      href: components/content-viewer-short

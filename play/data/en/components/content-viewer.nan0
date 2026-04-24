@@ -28,7 +28,7 @@ content:
         rating:
           type: select
           help: How much do you like it?
-          options:
+          children:
             - Great
             - Good
             - Bad

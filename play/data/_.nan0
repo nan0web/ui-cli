@@ -1,0 +1,8 @@
+$content:
+  - Header:
+      title: $title
+      nav: $nav
+  - Content: true
+  - Footer:
+      nav: $nav
+      langs: $langs

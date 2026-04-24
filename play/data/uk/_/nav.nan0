@@ -1,0 +1,8 @@
+title: Головне меню
+children:
+  - title: Демонстрація базового логування
+    href: basic
+  - title: Інтерактивні Форми
+    href: forms/index
+  - title: UI Компоненти
+    href: components/index

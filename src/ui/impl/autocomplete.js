@@ -45,59 +45,69 @@ export async function autocomplete(input) {
 	const isTest = process.env.NODE_TEST_CONTEXT || process.env.PLAY_DEMO_SEQUENCE
 	const isSnapshot = !!process.env.UI_SNAPSHOT
 
-	if (isTest || isSnapshot) {
-		if (prompts._injected && prompts._injected.length > 0) {
-			const predefined = prompts._injected.shift()
-			if (predefined instanceof Error) throw new CancelError()
-			return { value: predefined, index: 0, cancelled: false } // naive mock
-		}
-	}
-
 	const fetchSync = (query = '') => {
 		let currentOptions = typeof initOptions === 'function' ? [] : initOptions
-
-		// Filter
 		const filtered = currentOptions.filter((el) => {
 			const label = typeof el === 'string' ? el : el.title || el.label || ''
 			return label.toLowerCase().includes(query.toLowerCase())
 		})
-
 		return filtered.map((el) => {
 			const label = typeof el === 'string' ? el : el.title || el.label
 			const value = typeof el === 'string' ? el : el.value
-			return {
-				title: highlight(label, query),
-				value: value,
-			}
+			return { title: highlight(label, query), value }
 		})
 	}
 
 	const fetch = async (query = '') => {
 		if (typeof initOptions !== 'function') return fetchSync(query)
-
 		let currentOptions = await initOptions(query)
-
-		// Normalize Map or Array
 		if (currentOptions instanceof Map) {
-			currentOptions = Array.from(currentOptions.entries()).map(([value, label]) => ({
-				label,
-				value,
-			}))
+			currentOptions = Array.from(currentOptions.entries()).map(([value, label]) => ({ label, value }))
 		}
-
 		const filtered = currentOptions.filter((el) => {
 			const label = typeof el === 'string' ? el : el.title || el.label || ''
 			return label.toLowerCase().includes(query.toLowerCase())
 		})
-
 		return filtered.map((el) => {
 			const label = typeof el === 'string' ? el : el.title || el.label
 			const value = typeof el === 'string' ? el : el.value
-			return {
-				title: highlight(label, query),
-				value: value,
-			}
+			return { title: highlight(label, query), value }
 		})
+	}
+
+	if (isTest || isSnapshot) {
+		if (prompts._injected && prompts._injected.length > 0) {
+			const predefined = prompts._injected.shift()
+			if (predefined instanceof Error) throw new CancelError()
+
+			if (isSnapshot && predefined !== null) {
+				const logger = new Logger()
+				const prompt = message || title || 'Search: '
+				const frames = []
+				const p = String(predefined)
+				if (p.length > 1) frames.push(p.charAt(0))
+				if (p.length > 2) frames.push(p.slice(0, 2))
+				frames.push(p)
+
+				for (let i = 0; i < frames.length; i++) {
+					const text = frames[i]
+					logger.info(`${prompt} ${text}`)
+					try {
+						const list = await fetch(text)
+						list.slice(0, limit).forEach((item) => {
+							logger.info(`  ${typeof item === 'string' ? item : item.title || item.label || item.value}`)
+						})
+					} catch (e) {}
+
+					if (i < frames.length - 1) {
+						logger.info('\n[SNAPSHOT_FRAME]\n')
+						await new Promise((r) => setTimeout(r, 200))
+					}
+				}
+			}
+
+			return { value: predefined, index: 0, cancelled: false }
+		}
 	}
 
 	choices = typeof initOptions === 'function' ? await fetch('') : fetchSync('')

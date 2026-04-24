@@ -44,11 +44,6 @@ export default class IntentDispatcher {
      * @param {Object} intent
      */
     resultIntent(intent: any): Promise<void>;
-    /**
-     * Handle OLMUI Progress intents via Spinner/ProgressBar.
-     *
-     * @param {Object} intent
-     */
     progressIntent(intent: any): Promise<{
         onData: (chunk: any) => void;
         onEnd: () => void;

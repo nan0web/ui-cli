@@ -1,5 +1,4 @@
 import { generateForm } from '../impl/form.js'
-import { renderMarkdown } from '../impl/markdown.js'
 import { ContentViewer } from '../prompt/ContentViewer.js'
 import { SelectModel } from '../../domain/prompt/SelectModel.js'
 import { ToggleModel } from '../../domain/prompt/ToggleModel.js'
@@ -12,7 +11,7 @@ import { BsCheck, BsExclamationTriangle, BsX } from '@nan0web/icons/bs'
  */
 export default class IntentDispatcher {
 	/**
-	 * @param {import('./InputAdapter.js').default & {renderForm?: Function}} adapter 
+	 * @param {import('./InputAdapter.js').default & {renderForm?: Function}} adapter
 	 */
 	constructor(adapter) {
 		this.adapter = adapter
@@ -25,18 +24,19 @@ export default class IntentDispatcher {
 	 * @returns {Promise<{value: any, cancelled: boolean}>}
 	 */
 	async askIntent(intent) {
+		this.#clearActiveProgress()
 		const t = this.adapter.t.bind(this.adapter)
-		
+
 		let message = t(intent.schema?.help || intent.field)
 		if (intent.schema?.suffix) message += intent.schema.suffix
-		
-		const config = { 
-			...intent.schema, 
+
+		const config = {
+			...intent.schema,
 			message,
 			initial: intent.schema?.default !== undefined ? intent.schema.default : intent.schema?.initial,
 			t
 		}
-		
+
 		// Remove 'hint' from config if it's merely a structural directive
 		if (['select', 'multiselect', 'sortable', 'radio', 'autocomplete', 'tree', 'table', 'toggle', 'slider', 'mask', 'datetime'].includes(config.hint)) {
 			delete config.hint
@@ -50,10 +50,10 @@ export default class IntentDispatcher {
 				return res
 			}
 		}
-		
+
 		if (Array.isArray(config.options)) {
-			config.options = config.options.map(opt => 
-				typeof opt === 'string' ? { label: t(opt), value: opt } 
+			config.options = config.options.map(opt =>
+				typeof opt === 'string' ? { label: t(opt), value: opt }
 				: { ...opt, label: t(opt.label || opt.title) }
 			)
 		} else if (config.options instanceof Map) {
@@ -106,8 +106,6 @@ export default class IntentDispatcher {
 				}
 				return { value: undefined, cancelled: true }
 			}
-			case 'Table':
-				return await this.adapter.requestTable(config)
 			case 'Tree':
 				return await this.adapter.requestTree(config)
 			case 'Multiselect':
@@ -166,10 +164,11 @@ export default class IntentDispatcher {
 	 * @param {Object} intent
 	 */
 	async logIntent(intent) {
+		this.#hideActiveProgress()
 		const t = this.adapter.t.bind(this.adapter)
 		const normalizedIntent = typeof intent === 'string' ? { message: intent } : intent
-		const { type, level, message, hint, component, ...extra } = normalizedIntent
-		
+		const { type, level, message, hint, component, format, ...extra } = normalizedIntent
+
 		if (component) {
 			const props = typeof message === 'object' ? { ...message, ...extra } : { content: message, ...extra }
 			await this.adapter.render(component, props)
@@ -181,16 +180,17 @@ export default class IntentDispatcher {
 			const translated = t(message)
 			if (translated) msg = translated
 		} catch (e) {}
-		
-		if (hint === 'markdown') {
-			this.adapter.console.info(`\n${renderMarkdown(msg)}\n`)
+
+		if (hint === 'markdown' || hint === 'md' || component === 'markdown' || component === 'md') {
+			const { renderMarkdown } = await import('../impl/markdown.js')
+			this.adapter.console.info(renderMarkdown(msg))
 			return
 		}
 
 		const formatted = IntentDispatcher.#markdownToAnsi(msg)
 
-		// Multi-line content → render as Alert box
-		if (msg.includes('\n')) {
+		// Multi-line content → render as Alert box (unless pure text requested)
+		if (msg.includes('\n') && format !== 'text') {
 			const { alert } = await import('../impl/alert.js')
 			const variant = level === 'error' ? 'error'
 				: level === 'warn' ? 'warning'
@@ -204,6 +204,8 @@ export default class IntentDispatcher {
 				body = lines.slice(1).join('\n').trim()
 			}
 			this.adapter.console.info(alert(body, variant, { title }))
+		} else if (format === 'text') {
+			this.adapter.console.info(formatted)
 		} else {
 			if (level === 'error') this.adapter.console.error(`\x1b[31m${iconChar(BsX)}\x1b[0m ${formatted}`)
 			else if (level === 'warn') this.adapter.console.warn(`\x1b[33m${iconChar(BsExclamationTriangle)}\x1b[0m ${formatted}`)
@@ -235,8 +237,8 @@ export default class IntentDispatcher {
 
 	/**
 	 * Convert object to YAML-like string with indentation.
-	 * @param {any} obj 
-	 * @param {number} [indent=0] 
+	 * @param {any} obj
+	 * @param {number} [indent=0]
 	 * @returns {string}
 	 */
 	#toYaml(obj, indent = 0) {
@@ -256,7 +258,7 @@ export default class IntentDispatcher {
 				return `${pad}- ${tVal}`
 			}).join('\n')
 		}
-		
+
 		return Object.entries(obj)
 			.map(([key, val]) => {
 				const tKey = t(key)
@@ -276,35 +278,199 @@ export default class IntentDispatcher {
 	 * @param {Object} intent
 	 */
 	async resultIntent(intent) {
+		this.#clearActiveProgress()
+		if (intent.silent) return
+
 		const data = intent.data
 		if (data === undefined) return
-		
-		if (typeof data === 'object' && data !== null && data.exit && Object.keys(data).length === 1) {
-			return
+
+		if (typeof data === 'object' && data !== null) {
+			if (Object.keys(data).length === 0 || (data.exit && Object.keys(data).length === 1)) {
+				return
+			}
 		}
 
 		// Visual separation
 		this.adapter.console.info('\n' + '─'.repeat(40))
 		let resTitle = data?.title || this.adapter.t(SelectModel.UI_RESULT?.default || 'Result')
 		this.adapter.console.info(`🎉 ${resTitle}:`)
-		
+
 		if (typeof data === 'object' && data !== null) {
 			this.adapter.console.info(this.#toYaml(data))
 		} else {
 			this.adapter.console.info(String(data))
 		}
-		
+
 		this.adapter.console.info('─'.repeat(40) + '\n')
 	}
 
-	/**
-	 * Handle OLMUI Progress intents via Spinner/ProgressBar.
-	 *
-	 * @param {Object} intent
-	 */
+	/** @type {NodeJS.Timeout|null} */
+	#progressInterval = null
+	#lastTotalLines = 0
+
+	#startProgressManager() {
+		if (this.#progressInterval) return
+		this.#lastTotalLines = 0
+
+		let fps = 25
+		for (const indicator of this.adapter.activeProgresses.values()) {
+			if (indicator.fps > fps) fps = indicator.fps
+		}
+
+		this.#progressInterval = setInterval(() => {
+			this.#renderAllProgresses()
+		}, Math.floor(1000 / fps))
+	}
+
+	#stopProgressManager() {
+		if (this.#progressInterval) {
+			clearInterval(this.#progressInterval)
+			this.#progressInterval = null
+		}
+	}
+
+	#renderAllProgresses() {
+		if (!this.adapter.activeProgresses || this.adapter.activeProgresses.size === 0) {
+			this.#stopProgressManager()
+			return
+		}
+
+		let clearSeq = '\r'
+		if (this.#lastTotalLines && this.#lastTotalLines > 1) {
+			clearSeq += `\x1b[${this.#lastTotalLines - 1}A`
+		}
+		clearSeq += '\x1b[J'
+
+		let allOutput = ''
+		
+		if (this.adapter.activeProgresses.size > 1) {
+			let totalPercent = 0
+			let countWithTotal = 0
+			let maxRemaining = 0
+			let minStartTime = Date.now()
+
+			for (const indicator of this.adapter.activeProgresses.values()) {
+				if (indicator.startTime && indicator.startTime < minStartTime) minStartTime = indicator.startTime
+
+				if (indicator.total !== undefined && indicator.total > 0) {
+					const percent = Math.min(100, Math.max(0, (indicator.current / indicator.total) * 100))
+					totalPercent += percent
+					countWithTotal++
+
+					const elapsed = (Date.now() - indicator.startTime) / 1000
+					const rate = elapsed > 0 ? indicator.current / elapsed : 0
+					const remaining = rate > 0 ? (indicator.total - indicator.current) / rate : 0
+					if (remaining > maxRemaining) maxRemaining = remaining
+				}
+			}
+
+			const avgPercent = countWithTotal > 0 ? totalPercent / countWithTotal : 0
+			const elapsedTotal = (Date.now() - minStartTime) / 1000
+
+			const formatTime = (/** @type {number} */ sec) => {
+				const minutes = Math.floor(sec / 60)
+				const seconds = Math.floor(sec % 60)
+				return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`
+			}
+
+			const timeStrElapsed = formatTime(elapsedTotal)
+			const etaStr = formatTime(maxRemaining)
+			const timeStr = `[${timeStrElapsed} < ${etaStr}]`
+
+			const width = 12
+			const filledWidth = Math.round((width * avgPercent) / 100)
+			const emptyWidth = width - filledWidth
+			const innerBar = '='.repeat(filledWidth) + (filledWidth < width ? '>' : '') + '-'.repeat(Math.max(0, emptyWidth - 1))
+			const barStr = `[\x1b[36m${innerBar}\x1b[0m]`
+
+			const titleText = this.adapter.t('OVERALL PROGRESS') || 'OVERALL PROGRESS'
+			const title = `\x1b[1m${titleText}\x1b[0m`
+			const percentStr = `${avgPercent.toFixed(0)}%`
+			const overallStr = `${timeStr} ${barStr} ${percentStr} ${title}`
+			
+			allOutput += overallStr + '\n'
+		}
+
+		const indicatorOutputs = []
+		const maxVisible = Math.max(10, (process.stdout.rows || 24) - 5)
+		let renderedCount = 0
+		for (const indicator of this.adapter.activeProgresses.values()) {
+			if (renderedCount >= maxVisible) break
+			indicatorOutputs.push(indicator.renderToString())
+			renderedCount++
+		}
+		if (this.adapter.activeProgresses.size > maxVisible) {
+			indicatorOutputs.push(`\x1b[90m... and ${this.adapter.activeProgresses.size - maxVisible} more tasks running\x1b[0m`)
+		}
+		allOutput += indicatorOutputs.join('\n')
+
+		let currentLines = 0
+		const columns = process.stdout.columns || 80
+
+		for (const part of allOutput.split('\n')) {
+			const len = part.replace(/\x1b\[[0-9;]*m/g, '').length
+			currentLines += Math.max(1, Math.ceil(len / columns))
+		}
+
+		process.stdout.write(clearSeq + allOutput)
+		this.#lastTotalLines = currentLines
+	}
+
 	async progressIntent(intent) {
-		const spinner = this.adapter.requestSpinner(intent.message)
 		const isAutomated = this.adapter.getRemainingAnswers().length > 0
+		if (isAutomated) return
+
+		let options = intent.options || {}
+		if (typeof options === 'string') options = { id: options }
+		const id = intent.id || options.id || 'default'
+		const isSpinner = options.type === 'spinner' || (intent.value === undefined && intent.total === undefined && options.total === undefined)
+
+		if (!process.stdout.isTTY) {
+			// Pipeline / Non-TTY mode: skip interactive updates, log only stop events
+			if (options.stop) {
+				const msg = intent.message ? this.adapter.t(intent.message) || intent.message : ''
+				if (msg) {
+					if (options.stop === 'error') this.adapter.console.error(`✖ ${msg}`)
+					else this.adapter.console.info(`✔ ${msg}`)
+				}
+			}
+			return
+		}
+
+		if (!this.adapter.activeProgresses) {
+			this.adapter.activeProgresses = new Map()
+		}
+
+		let indicator = this.adapter.activeProgresses.get(id)
+		const msg = intent.message ? this.adapter.t(intent.message) || intent.message : undefined
+
+		if (!indicator) {
+			if (!isSpinner) {
+				indicator = this.adapter.requestProgress({ title: msg || '', total: intent.total, ...options })
+			} else {
+				indicator = this.adapter.requestSpinner({ message: msg || '', ...options })
+			}
+			this.adapter.activeProgresses.set(id, indicator)
+			this.#startProgressManager()
+		}
+
+		if (options.stop) {
+			this.#stopIndicator(id, indicator, options, msg)
+			this.adapter.activeProgresses.delete(id)
+			if (this.adapter.activeProgresses.size === 0) {
+				this.#stopProgressManager()
+			}
+			return
+		}
+
+		// Update
+		if (indicator.update) {
+			if (!isSpinner) {
+				indicator.update(intent.value, { ...options, title: msg, total: intent.total || options.total })
+			} else {
+				indicator.update(msg, options)
+			}
+		}
 
 		if (intent.stream) {
 			return {
@@ -312,24 +478,67 @@ export default class IntentDispatcher {
 					if (!chunk) return
 					const str = typeof chunk === 'string' ? chunk : chunk.toString()
 					const cleanLines = str.trim().split('\n').filter(l => l.trim().length > 0)
-					
+
 					if (intent.stream === 'inline') {
 						if (cleanLines.length > 0) {
-							spinner.message = `${intent.message} \x1b[90m| ${cleanLines[cleanLines.length - 1].substring(0, 100)}\x1b[0m`
+							const newText = `${intent.message} \x1b[90m| ${cleanLines[cleanLines.length - 1].substring(0, 100)}\x1b[0m`
+							if (!isSpinner) indicator.update(undefined, { title: newText })
+							else indicator.update(newText)
 						}
 					} else {
+						this.#hideActiveProgress()
 						for (const line of cleanLines) {
 							this.adapter.console.info(`\x1b[90m  | ${line.substring(0, 150)}\x1b[0m`)
 						}
 					}
 				},
-				onEnd: () => spinner.clear()
+				onEnd: () => {
+					this.#stopIndicator(id, indicator, options, msg)
+				}
 			}
 		}
 
-		if (!isAutomated) {
-			await new Promise((r) => setTimeout(r, 800))
+		if (options.stop || (indicator.total !== undefined && indicator.current >= indicator.total)) {
+			this.#stopIndicator(id, indicator, options, msg)
 		}
-		spinner.stop()
+	}
+
+	#stopIndicator(id, indicator, options = {}, msg) {
+		if (indicator.success && options.stop === 'success') indicator.success(msg)
+		else if (indicator.error && options.stop === 'error') indicator.error(msg)
+		else if (indicator.success) indicator.success(msg) // mark as done
+		
+		const finalStr = indicator.renderToString()
+		this.#hideActiveProgress()
+		this.adapter.console.info(finalStr)
+		
+		this.adapter.activeProgresses.delete(id)
+		if (this.adapter.activeProgresses.size === 0) {
+			this.#stopProgressManager()
+		}
+	}
+
+	#hideActiveProgress() {
+		if (process.stdout.isTTY && this.adapter.activeProgresses && this.adapter.activeProgresses.size > 0) {
+			let clearSeq = '\r'
+			if (this.#lastTotalLines && this.#lastTotalLines > 1) {
+				clearSeq += `\x1b[${this.#lastTotalLines - 1}A`
+			}
+			clearSeq += '\x1b[J'
+			process.stdout.write(clearSeq)
+			this.#lastTotalLines = 0
+		}
+	}
+
+	#clearActiveProgress() {
+		this.#hideActiveProgress()
+		if (this.adapter.activeProgresses) {
+			for (const indicator of this.adapter.activeProgresses.values()) {
+				if (indicator.success) indicator.success()
+				this.adapter.console.info(indicator.renderToString())
+			}
+			this.adapter.activeProgresses.clear()
+		}
+		this.#stopProgressManager()
 	}
 }

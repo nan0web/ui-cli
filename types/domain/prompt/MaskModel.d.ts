@@ -23,5 +23,15 @@ export class MaskModel extends Model {
     /** @type {string} The message or label. */ UI: string;
     /** @type {string} Format message. */ UI_FORMAT_MSG: string;
     /** @type {string} The mask. */ mask: string;
+    /**
+     * Map a predefined answer to a masked result.
+     *
+     * @param {string} predefined - Injected answer.
+     * @returns {{value: string, cancelled: boolean}}
+     */
+    automatedInput(predefined: string): {
+        value: string;
+        cancelled: boolean;
+    };
 }
 import { Model } from '@nan0web/types';

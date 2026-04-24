@@ -11,8 +11,8 @@ export default class AnswerQueue {
 		this._disableNextAnswerLookup = false
 
 		const {
-			predefined = process.env.PLAY_DEMO_SEQUENCE ?? [],
-			divider = process.env.PLAY_DEMO_DIVIDER ?? ',',
+			predefined = options.predefined ?? process.env.UI_ANSWERS ?? process.env.PLAY_DEMO_SEQUENCE ?? [],
+			divider = options.divider ?? process.env.PLAY_DEMO_DIVIDER ?? ',',
 		} = options
 
 		if (Array.isArray(predefined)) {

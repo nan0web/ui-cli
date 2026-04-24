@@ -1,0 +1,8 @@
+title: Main Menu
+children:
+  - title: Basic Logging Demo
+    href: basic
+  - title: Interactive Forms
+    href: forms/index
+  - title: UI Components
+    href: components/index

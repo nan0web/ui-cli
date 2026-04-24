@@ -1,0 +1,17 @@
+title: UI Components
+content:
+  - Header:
+      title: Interactive Components
+  - p: Various single-intent prompts and UI widgets.
+nav:
+  children:
+    - title: Select Prompt
+      href: components/select
+    - title: Slider Prompt
+      href: components/slider
+    - title: UI Message
+      href: components/ui-message
+    - title: Markdown Viewer
+      href: components/content-viewer
+    - title: Short Markdown Viewer
+      href: components/content-viewer-short

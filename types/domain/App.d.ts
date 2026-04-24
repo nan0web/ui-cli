@@ -74,7 +74,6 @@ export class App extends ModelAsApp {
     /** @type {string | undefined} Locale override */ locale: string | undefined;
     /** @type {string | undefined} Working directory override */ cwd: string | undefined;
     /** @type {boolean} Blueprint mode */ blueprint: boolean;
-    /** @type {boolean} Help mode */ help: boolean;
     /** @type {string[]} Remaining positionals for sub-model */ _positionals: string[];
     /**
      * Main execution generator.

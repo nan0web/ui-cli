@@ -11,6 +11,9 @@
 	],
 	"project": ["src/**/*.js", "play/**/*.js", "types/**/*.d.ts"],
 	"ignore": ["**/*.test.js"],
+	"rules": {
+		"duplicates": "off"
+	},
 	"ignoreExportsUsedInFile": true,
 	"ignoreDependencies": [
 		"@nan0web/core",

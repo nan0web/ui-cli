@@ -6,6 +6,7 @@ export function Table(props: any): {
     $$typeof: symbol;
     type: string;
     props: any;
+    model: any;
     execute: () => any;
 };
 export { TableModel };

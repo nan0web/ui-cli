@@ -1,27 +1,20 @@
-# 🏗️ Architecture Audit — Healing Report
+# 🚀 Пул завдань @nan0web/ui-cli (next.md)
 
-**Score: {passed}/{total} ({pct}%)**
+## ✅ Завершено (Release v2.13.0)
+- [x] **Identity-Aware Runner**: `bootstrapApp` тепер автоматично визначає пакет та модель додатка.
+- [x] **Mount Protocol**: Реалізовано DSN-монтування (`fs://`, `memory://` тощо) та стандартні системні префікси.
+- [x] **Secure Bootstrap**: Впроваджено обов'язковий `db.seal()` драйвера для захисту VFS при запуску додатків.
+- [x] **Refactored modelFromArgv**: Покращено парсинг аргументів з підтримкою рекурсивних команд.
+- [x] **TypeScript Stability**: Виправлено всі помилки типізації у `ui-cli`.
 
-## Issues Found
-- [x] [feature] `resolvePositionalArgs`: Preserves unused args into `_positionals` for subcommands
-- [x] [phase] CONTRIBUTING.md: `Missing fundamental file: {file}`
-- [x] [exports] src/index.js: `Default export found in {file} — only named exports allowed`
-- [x] [exports] src/domain/index.js: `src/domain/ exists but src/domain/index.js is missing`
-- [x] [exports] exports["./ui/BlockRenderers"]: `UI adapter dir {dir}/ exists but not declared in package.json exports`
-- [x] [exports] exports["./ui/blueprint"]: `UI adapter dir {dir}/ exists but not declared in package.json exports`
-- [x] [exports] exports["./ui/core"]: `UI adapter dir {dir}/ exists but not declared in package.json exports`
-- [x] [exports] exports["./ui/impl"]: `UI adapter dir {dir}/ exists but not declared in package.json exports`
-- [x] [exports] exports["./ui/prompt"]: `UI adapter dir {dir}/ exists but not declared in package.json exports`
-- [x] [exports] exports["./ui/test"]: `UI adapter dir {dir}/ exists but not declared in package.json exports`
-- [x] [exports] exports["./ui/utils"]: `UI adapter dir {dir}/ exists but not declared in package.json exports`
-- [x] [exports] exports["./ui/view"]: `UI adapter dir {dir}/ exists but not declared in package.json exports`
-- [x] [domain] /Users/i/src/nan.web/packages/ui-cli/src/ui/CLI.js: `Class field outside constructor in {file} (line {line})`
-- [x] [domain] /Users/i/src/nan.web/packages/ui-cli/src/ui/CLI.js: `Class field outside constructor in {file} (line {line})`
-- [x] [domain] /Users/i/src/nan.web/packages/ui-cli/src/ui/core/AnswerQueue.js: `Class field outside constructor in {file} (line {line})`
-- [x] [domain] /Users/i/src/nan.web/packages/ui-cli/src/ui/impl/input.js: `Class field outside constructor in {file} (line {line})`
-- [x] [domain] /Users/i/src/nan.web/packages/ui-cli/src/ui/impl/input.js: `Class field outside constructor in {file} (line {line})`
+## 🛠 Поточні завдання
+- [ ] **Config Persistence**: Реалізувати `~/.nan0web/config.nan0` для збереження кастомних маунтів.
+- [ ] **CLI Component Gallery**: Оновити галерею знімків (snapshots) для нових компонентів та VFS-шляхів.
+- [ ] **I18n Context**: Стабілізувати передачу контексту перекладів у вкладені моделі через `modelFromArgv`.
 
-## Recommended Subagents
-- `@[/inspect-structure]`
-- `@[/inspect-anti-pattern]`
-- `@[/inspect-models]`
+## 📅 Roadmap
+- [ ] **Unified Error Handling**: Впровадження `ModelError` як єдиного стандарту доставки помилок валідації в CLI.
+- [ ] **Background Progresses**: Оптимізація `IntentDispatcher` для паралельного відображення декількох прогрес-барів.
+
+---
+*Останнє оновлення: 2026-04-20 15:47 (Antigravity Stabilization)*

@@ -46,5 +46,15 @@ export class MultiselectModel extends Model {
     /** @type {string} Toggle all label. */ UI_TOGGLE_ALL: string;
     /** @type {string} Complete label. */ UI_COMPLETE: string;
     /** @type {Array<any>} Options array. */ options: Array<any>;
+    /**
+     * Map a predefined comma-separated answer to a multiselect result.
+     *
+     * @param {string} predefined - Injected answer.
+     * @returns {{value: any[], cancelled: boolean}}
+     */
+    automatedInput(predefined: string): {
+        value: any[];
+        cancelled: boolean;
+    };
 }
 import { Model } from '@nan0web/types';

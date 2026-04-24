@@ -1,0 +1,14 @@
+title: Select Prompt Demo (nan0)
+
+content:
+  - select:
+      help: Select your favorite color
+      children:
+        - label: Red
+          href: red
+        - label: Green
+          href: green
+        - label: Blue
+          href: blue
+      default: blue
+  - p: "selected: ${this.lastResult?.value}"

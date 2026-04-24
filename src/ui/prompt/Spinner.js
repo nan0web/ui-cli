@@ -22,7 +22,7 @@ export function Spinner(props) {
 			try {
 				const res = await p.action
 				const doneMsg = p.successMessage ? t(p.successMessage) : t(p.UI_DONE)
-				s.stop(doneMsg || '✔')
+				s.success(doneMsg || '✔')
 				return res
 			} catch (err) {
 				const errorMsg = p.errorMessage ? t(p.errorMessage) : t(p.UI_ERROR)

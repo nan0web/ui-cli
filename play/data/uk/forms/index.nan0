@@ -1,0 +1,11 @@
+title: Категорія Форм
+content:
+  - Header:
+      title: Демонстрація Форм
+  - p: Інтерактивні компоненти для збору даних через форми.
+nav:
+  children:
+    - title: Проста Форма
+      href: forms/form
+    - title: Форма з Об'єктом
+      href: forms/object-form

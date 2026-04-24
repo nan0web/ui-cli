@@ -6,6 +6,7 @@ export function Tree(props: any | string): {
     $$typeof: symbol;
     type: string;
     props: any;
+    model: any;
     execute: () => any;
 };
 export { TreeModel };

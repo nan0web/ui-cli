@@ -6,6 +6,7 @@
 
 import prompts from './prompts.js'
 import { CancelError } from '@nan0web/ui/core'
+import Logger from '@nan0web/log'
 import { validateString, validateFunction, validateNumber } from '../core/PropValidation.js'
 
 /**
@@ -33,6 +34,48 @@ import { validateString, validateFunction, validateNumber } from '../core/PropVa
 export async function select(input) {
 	const { title, prompt, message, label, options: initOptins, limit = 30, initial } = input
 
+	// In test mode with PLAY_DEMO_SEQUENCE, simulate input
+	const isTest = process.env.NODE_TEST_CONTEXT || process.env.PLAY_DEMO_SEQUENCE
+	const isSnapshot = !!process.env.UI_SNAPSHOT
+
+	if (isTest || isSnapshot) {
+		if (prompts._injected && prompts._injected.length > 0) {
+			const predefined = prompts._injected.shift()
+			if (predefined instanceof Error) throw new CancelError()
+			if (predefined === '_cancel' || predefined === undefined || predefined === null) {
+				return { value: undefined, index: -1, cancelled: true }
+			}
+
+			// Normalize choices to search for the injected value
+			const t = input.t || ((k) => k)
+			let rawOptions = initOptins
+			if (rawOptions instanceof Map) rawOptions = Array.from(rawOptions.entries()).map(([value, label]) => ({ label, value }))
+			
+			const choices = rawOptions.map(el => {
+				const label = typeof el === 'string' ? el : (el.label || el.title || el.name || '')
+				const value = typeof el === 'object' && el !== null ? el.value : el
+				return { title: t(label), value }
+			})
+
+			let index = -1
+			let value = predefined
+
+			const idx = Number(predefined) - 1
+			if (!isNaN(idx) && idx >= 0 && idx < choices.length) {
+				index = idx
+				value = choices[idx].value
+			} else {
+				index = choices.findIndex(c => 
+					String(c.title).toLowerCase().includes(String(predefined).toLowerCase()) ||
+					String(c.value).toLowerCase() === String(predefined).toLowerCase()
+				)
+				if (index !== -1) value = choices[index].value
+			}
+
+			return { value, index, cancelled: false }
+		}
+	}
+
 	// Prop Validation
 	const displayTitle = title || prompt || message || label
 	validateString(displayTitle, 'title', 'Select', true)
@@ -52,14 +95,24 @@ export async function select(input) {
 	const t = input.t || ((k) => k)
 	const choices = options.map((el) => {
 		if (typeof el === 'string') {
-			return { title: t(el), value: el }
+			return { title: t(el) ?? el, value: el }
 		}
-		const titleStr = el.label || el.title || el.name
-		const descStr = el.description || el.desc || el.help
+		const c = (typeof el === 'object' && el.constructor && el.constructor !== Object) ? el.constructor : el
+		const uiTitle = c.UI ? (typeof c.UI === 'string' ? c.UI : c.UI.title) : undefined
+		
+		const titleStr = uiTitle || el.title || el.label || c.title || c.help || c.alias || c.name
+
+		let descStr = el.description || el.desc || el.help
+		if (!descStr && c !== el) {
+			descStr = c.description || c.desc || c.help
+		}
+		let title = titleStr ? t(titleStr) : ''
+		if (title === 'undefined') title = '' // Guard against faulty t()
+
 		return {
-			title: titleStr ? t(titleStr) : '',
-			value: el.value,
-			description: descStr ? t(descStr) : undefined,
+			title: title || titleStr || '',
+			value: el.value !== undefined ? el.value : el,
+			description: descStr ? (t(descStr) ?? descStr) : undefined,
 		}
 	})
 

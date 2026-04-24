@@ -1,6 +1,23 @@
 # Changelog @nan0web/ui-cli
 
-## [2.12.2] — 2026-04-09
+## [2.13.0] — 2026-04-23
+
+### Added
+- **Build Speed Optimization**: Introduced `maxNodeModuleJsDepth: 0` in `tsconfig.json` to prevent recursive type-checking of sibling packages, reducing build time from minutes to 22 seconds.
+- **CI-Ready Snapshots**: Added `UI_SNAPSHOT` environment variable support to bypass TTY checks in `markdownViewer`, enabling automated snapshot testing in non-interactive environments.
+- **Data-Driven App Shell**: Fully stabilized OLMUI architecture with a native, zero-hardcode `while(true)` execution loop in `App.run()`.
+- **Auto-Injection of Language Switcher**: The interactive menu will dynamically append a "🌐 Choose language" option when `doc.langs` is detected.
+- **Recursive Menu & History Stack**: Introduced deep navigation history in `App.run()`, automatically injecting "🚪 Exit" at the root menu and "⬅ Back" in sub-menus.
+- **Dynamic Breadcrumbs**: Natively integrated context-aware Breadcrumbs during sub-page traversal via `doc.title` or `doc.nav.title`.
+
+### Changed
+- **Terminal Aesthetics**: Standardized the 5-character gutter (`{}  |`) across all components (code blocks, lists, forms) for a pixel-perfect layout.
+- **Aligned Help Generation**: Refactored `ModelAsApp.generateHelp()` to ensure consistent indentation for options with and without aliases.
+
+### Fixed
+- **TS2610 Accessor Conflict**: Resolved property/accessor name collision in `SnapshotAuditor`.
+
+
 
 ### Changed
 - **Dependency Stabilization**: Synchronized core dependencies (`@nan0web/core`, `@nan0web/db`, `@nan0web/types`, `@nan0web/i18n`) strictly to `workspace:*` protocol to ensure atomic monorepo publishing compatibility with `@nan0web/co@2.0.1`.

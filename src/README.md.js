@@ -62,8 +62,9 @@ function testRender() {
 	 * Key Features:
 	 * - **Universal Runner** — Start your CLI app in 1 line of code with `bootstrapApp`.
 	 * - **Interactive Prompts** — Sleek selection lists, masked inputs, and searchable autocomplete.
+	 * - **Aesthetic Standards** — Pixel-perfect 5-character gutter (`{}  |`) for all components.
 	 * - **Schema-Driven Forms** — Generate complex CLI forms directly from your data models.
-	 * - **Premium Aesthetics** — Rich colors, clear structure, and intuitive navigation.
+	 * - **Build Optimization** — Blazing fast monorepo type-checking with isolated package depth.
 	 * - **One Logic, Many UI** — Use the same shared logic across Web and Terminal.
 	 *
 	 * ## Installation
@@ -116,7 +117,7 @@ function testRender() {
 	 * @docs
 	 * ### Headless Execution & Built-in Apps
 	 *
-	 * You can execute an OLMUI Model programmatically without any interactive UI adapter by calling `ModelAsApp.execute()`. 
+	 * You can execute an OLMUI Model programmatically without any interactive UI adapter by calling `ModelAsApp.execute()`.
 	 * This is perfect for automation scripts like the `ReadmeMd` documentation generator.
 	 *
 	 * Additionally, standard tools are natively aliased in `nan0cli`:
@@ -130,7 +131,7 @@ function testRender() {
 		/* Or via Terminal CLI Alias:
 		nan0cli docs --data=docs
 		*/
-		
+
 		assert.ok(true)
 	})
 
@@ -329,13 +330,16 @@ function testRender() {
 	})
 }
 
-import { ReadmeMd } from './domain/ReadmeMd.js'
+// import { ReadmeMd } from './domain/ReadmeMd.js'
 
 describe('README.md testing', testRender)
 
 describe('Rendering README.md', () => {
 	before(async () => {
-		await ReadmeMd.execute()
+		const parser = new DocsParser()
+		const source = await fs.loadDocument('src/README.md.js')
+		const doc = parser.decode(source)
+		await fs.saveDocument('README.md', doc.content)
 	})
 
 	it('document is rendered in README.md', async () => {

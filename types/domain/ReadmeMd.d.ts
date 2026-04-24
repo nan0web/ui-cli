@@ -25,9 +25,8 @@ export class ReadmeMd extends ModelAsApp {
     /** @type {string} Directory to save generated documentation */ data: string;
     /** @type {string} Root index file name */ root: string;
     /**
-     * @param {import('@nan0web/ui').ModelAsAppOptions} [options]
-     * @returns {AsyncGenerator<any, any, any>}
+     * @returns {AsyncGenerator<import('@nan0web/ui').Intent, import('@nan0web/ui').ResultIntent, any>}
      */
-    run(options?: import("@nan0web/ui").ModelAsAppOptions): AsyncGenerator<any, any, any>;
+    run(): AsyncGenerator<import("@nan0web/ui").Intent, import("@nan0web/ui").ResultIntent, any>;
 }
 import { ModelAsApp } from './ModelAsApp.js';

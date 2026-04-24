@@ -52,19 +52,23 @@ describe('ModelAsApp', () => {
 		const helpText = app.generateHelp()
 
 		assert.deepStrictEqual(helpText.split('\n'), [
-			'Test CLI App',
-			'  This is a test CLI application.',
+			'# Test CLI App',
+			'This is a test CLI application.',
 			'',
-			'Usage:',
-			'  testcli <command> [options]',
-			'  testcli status   — show status',
-			'  testcli pull     — pull changes',
+			'## Usage:',
+			'```bash',
+			'testcli <command> [options]',
+			'testcli status   — show status',
+			'testcli pull     — pull changes',
+			'```',
 			'',
-			'Options:',
-			'      --command   - Command to run (status or pull)',
-			'  -d, --debug     - Enable debug mode [false]',
-			'      --verbose   - Enable verbose output [false]',
-			'      --help      - Show help',
+			'## Options:',
+			'```bash',
+			'           --command   - Command to run (status or pull)',
+			'       -d, --debug     - Enable debug mode [false]',
+			'           --verbose   - Enable verbose output [false]',
+			'           --help      - Show help',
+			'```',
 			'',
 		])
 	})
@@ -81,12 +85,16 @@ describe('ModelAsApp', () => {
 		const helpText = app.generateHelp()
 
 		assert.deepStrictEqual(helpText.split('\n'), [
-			'Usage:',
-			'  default [target] [options]',
+			'## Usage:',
+			'```bash',
+			'default [target] [options]',
+			'```',
 			'',
-			'Options:',
-			'  --target   - Target positional',
-			'  --help     - Show help',
+			'## Options:',
+			'```bash',
+			'       --target   - Target positional',
+			'       --help     - Show help',
+			'```',
 			'',
 		])
 	})
@@ -111,6 +119,7 @@ describe('ModelAsApp', () => {
 			const dict = {
 				'App title': 'Заголовок утиліти',
 				'Usage:': 'Використання:',
+				'Options:': 'Опції:',
 				'Show debug info': 'Увімкнути відлагодження',
 			}
 			return dict[key] ?? key
@@ -120,14 +129,18 @@ describe('ModelAsApp', () => {
 		const helpText = app.generateHelp()
 
 		assert.deepStrictEqual(helpText.split('\n'), [
-			'Заголовок утиліти',
+			'# Заголовок утиліти',
 			'',
-			'Використання:',
-			'  i18ncli [options]',
+			'## Використання:',
+			'```bash',
+			'i18ncli [options]',
+			'```',
 			'',
-			'Options:',
-			'  --debug   - Увімкнути відлагодження',
-			'  --help    - Show help',
+			'## Опції:',
+			'```bash',
+			'       --debug   - Увімкнути відлагодження',
+			'       --help    - Show help',
+			'```',
 			'',
 		])
 	})
@@ -174,16 +187,20 @@ describe('ModelAsApp', () => {
 		// "- Wow such a long name [true]"
 
 		assert.deepStrictEqual(helpText.split('\n'), [
-			'Usage:',
-			'  longcli [options]',
-			'  longcli run-super-long-subcommand-name-here   — starts the engine',
-			'  longcli start                                 — starts standard',
-			'  longcli short                                 — s',
+			'## Usage:',
+			'```bash',
+			'longcli [options]',
+			'longcli run-super-long-subcommand-name-here   — starts the engine',
+			'longcli start                                 — starts standard',
+			'longcli short                                 — s',
+			'```',
 			'',
-			'Options:',
-			'      --theMostInsanelyLongOptionThatEverExisted   - Wow such a long name [true]',
-			'  -a, --append                                     - Short option',
-			'      --help                                       - Show help',
+			'## Options:',
+			'```bash',
+			'           --theMostInsanelyLongOptionThatEverExisted   - Wow such a long name [true]',
+			'       -a, --append                                     - Short option',
+			'           --help                                       - Show help',
+			'```',
 			'',
 		])
 	})
@@ -213,14 +230,18 @@ describe('ModelAsApp', () => {
 
 		const helpText = root.generateHelp()
 		assert.deepStrictEqual(helpText.split('\n'), [
-			'SubSub Help',
+			'# SubSub Help',
 			'',
-			'Usage:',
-			'  root sub subsub [options]',
+			'## Usage:',
+			'```bash',
+			'root sub subsub [options]',
+			'```',
 			'',
-			'Options:',
-			'  --suboption   - Deep option',
-			'  --help        - Show help',
+			'## Options:',
+			'```bash',
+			'       --suboption   - Deep option',
+			'       --help        - Show help',
+			'```',
 			'',
 		])
 	})

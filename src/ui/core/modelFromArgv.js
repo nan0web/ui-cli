@@ -27,22 +27,38 @@ export function modelFromArgv(ModelClass, argv = [], appOptions = {}) {
 	/** @type {import('node:util').ParseArgsConfig['options']} */
 	const options = {}
 
-	for (const [key, descriptor] of Object.entries(ModelClass)) {
-		if (!descriptor || typeof descriptor !== 'object') continue
-		if (!descriptor.help && descriptor.default === undefined) continue // Skip non-field descriptors
-		if (['args', 'UI', 'help'].includes(key)) continue // Skip special convention keys
+	const extract = (TargetClass) => {
+		for (const [key, descriptor] of Object.entries(TargetClass)) {
+			if (!descriptor || typeof descriptor !== 'object') continue
 
-		/** @type {"boolean" | "string"} */
-		const parseType = descriptor.type === 'boolean' || typeof descriptor.default === 'boolean'
-			? 'boolean'
-			: 'string'
+			if (Array.isArray(descriptor.options)) {
+				descriptor.options.forEach((C) => typeof C === 'function' && extract(C))
+			} else if (Array.isArray(descriptor.type)) {
+				descriptor.type.forEach((C) => typeof C === 'function' && extract(C))
+			}
 
-		const opt = { type: parseType }
-		if (descriptor.alias && typeof descriptor.alias === 'string' && descriptor.alias.length === 1) {
-			opt.short = descriptor.alias
+			if (!descriptor.help && descriptor.default === undefined) continue // Skip non-field descriptors
+			if (['args', 'UI', 'help'].includes(key)) continue // Skip special convention keys
+
+			/** @type {"boolean" | "string"} */
+			const parseType =
+				descriptor.type === 'boolean' || typeof descriptor.default === 'boolean'
+					? 'boolean'
+					: 'string'
+
+			const opt = { type: parseType }
+			if (
+				descriptor.alias &&
+				typeof descriptor.alias === 'string' &&
+				descriptor.alias.length === 1
+			) {
+				opt.short = descriptor.alias
+			}
+			options[key] = opt
 		}
-		options[key] = opt
 	}
+
+	extract(ModelClass)
 
 	const { positionals, values } = parseArgs({
 		args: argv,
@@ -52,6 +68,7 @@ export function modelFromArgv(ModelClass, argv = [], appOptions = {}) {
 	})
 
 	const data = resolvePositionalArgs(/** @type {any} */ (ModelClass), positionals, values)
+	data._argv = argv
 	// @ts-ignore
-	return new ModelClass(data, appOptions)
+	return /** @type {InstanceType<T>} */ (new ModelClass(data, appOptions))
 }

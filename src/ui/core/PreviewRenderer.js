@@ -13,9 +13,11 @@ export default class PreviewRenderer {
 		adapter.console.info('─'.repeat(40))
 		try {
 			const intent = {
+				/** @type {'ask'} */
 				type: 'ask',
+				field: 'preview',
 				component: componentName,
-				schema: { message: 'Preview' },
+				schema: { message: 'Preview', type: 'text', help: '', default: undefined },
 				model: data,
 				options: data.options || ['a', 'b'],
 			}

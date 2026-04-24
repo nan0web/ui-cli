@@ -21,4 +21,14 @@ export class ConfirmModel extends Model {
 		/** @type {string} No label. */ this.UI_NO
 		/** @type {boolean} Initial value. */ this.initial
 	}
+	/**
+	 * Map a predefined answer to a confirmation result.
+	 *
+	 * @param {string} predefined - Injected answer.
+	 * @returns {{value: boolean, cancelled: boolean}}
+	 */
+	automatedInput(predefined) {
+		const val = ['y', 'yes', 'true', '1', 'так', '+', 'ok'].includes(String(predefined).toLowerCase())
+		return { value: val, cancelled: false }
+	}
 }

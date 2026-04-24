@@ -1,0 +1,24 @@
+export namespace builtIns {
+    function Alert(): Promise<typeof import("../view/Alert.js").Alert>;
+    function Message(): Promise<typeof import("../view/Alert.js").Alert>;
+    function Badge(): Promise<typeof import("../view/Badge.js").Badge>;
+    function Table(): Promise<typeof import("../view/Table.js").Table>;
+    function Breadcrumbs(): Promise<typeof import("../view/Nav.js").Breadcrumbs>;
+    function Tabs(): Promise<typeof import("../view/Nav.js").Tabs>;
+    function Steps(): Promise<typeof import("../view/Nav.js").Steps>;
+    function Toast(): Promise<typeof import("../view/Toast.js").Toast>;
+    function Banner(): Promise<typeof import("../view/DomainViews.js").Banner>;
+    function Hero(): Promise<typeof import("../view/DomainViews.js").Hero>;
+    function Pricing(): Promise<typeof import("../view/DomainViews.js").Pricing>;
+    function PricingSection(): Promise<typeof import("../view/DomainViews.js").Pricing>;
+    function Stats(): Promise<typeof import("../view/DomainViews.js").Stats>;
+    function Timeline(): Promise<typeof import("../view/DomainViews.js").Timeline>;
+    function Testimonials(): Promise<typeof import("../view/DomainViews.js").Testimonials>;
+    function Accordion(): Promise<typeof import("../view/DomainViews.js").Accordion>;
+    function FAQ(): Promise<typeof import("../view/DomainViews.js").Accordion>;
+    function Gallery(): Promise<typeof import("../view/DomainViews.js").Gallery>;
+    function EmptyState(): Promise<typeof import("../view/DomainViews.js").EmptyState>;
+    function Header(): Promise<typeof import("../view/DomainViews.js").Header>;
+    function Footer(): Promise<typeof import("../view/DomainViews.js").Footer>;
+    function Init(): Promise<typeof import("../prompt/Select.js").Select>;
+}

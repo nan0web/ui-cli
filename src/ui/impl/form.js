@@ -124,14 +124,15 @@ export default class Form {
 	 * @param {Object} [options={}] - Options.
 	 * @param {string[]} [options.stops=["quit", "cancel", "exit"]] - Stop words.
 	 * @param {(config: any) => Promise<any>} [options.inputFn] - Custom input function (supports config object).
-	 * @param {(config: any) => Promise<{index:number, value:any, cancelled?: boolean}>} [options.selectFn] - Custom select function.
+	 * @param {(config: any) => Promise<import('@nan0web/ui').AskResponse>} [options.selectFn] - Custom select function.
 	 * @param {(config: any) => Promise<any>} [options.autocompleteFn] - Custom autocomplete function.
 	 * @param {(config: any) => Promise<any>} [options.maskFn] - Custom mask function.
 	 * @param {(config: any) => Promise<any>} [options.multiselectFn] - Custom multiselect function.
 	 * @param {(config: any) => Promise<any>} [options.datetimeFn] - Custom datetime function.
 	 * @param {(config: any) => Promise<any>} [options.confirmFn] - Custom confirm function.
-	 * @param {(config: any) => Promise<{value: number|undefined, cancelled: boolean}>} [options.sliderFn] - Custom slider function.
-	 * @param {(config: any) => Promise<{value: boolean|undefined, cancelled: boolean}>} [options.toggleFn] - Custom toggle function.
+	 * @param {(config: any) => Promise<import('@nan0web/ui').AskResponse>} [options.sliderFn] - Custom slider function.
+	 * @param {(config: any) => Promise<import('@nan0web/ui').AskResponse>} [options.toggleFn] - Custom toggle function.
+	 * @param {Object} [options.adapter] - Optional input adapter for global cancellation state.
 	 * @param {Object} [options.console] - Optional console for logging.
 	 * @param {Function} [options.t] - Optional translation function.
 	 * @param {number} [options.maxRetries] - Max retries before infinite loop detection.
@@ -299,7 +300,7 @@ export default class Form {
 	 * Prompts for input, validates, and updates the model.
 	 * Supports linear navigation (::prev/::next) and all advanced CLI types.
 	 *
-	 * @returns {Promise<{cancelled:boolean}>} Result indicating if cancelled.
+	 * @returns {Promise<{cancelled: boolean}>} Result indicating if cancelled.
 	 * @throws {Error} Propagates non-cancellation errors.
 	 */
 	async requireInput() {
@@ -562,7 +563,7 @@ export default class Form {
 					result = await this.input(promptMsg, field)
 				}
 
-				if (result && result.cancelled) {
+				if (result?.cancelled || (this.options.adapter && this.options.adapter.cancelled)) {
 					return { cancelled: true }
 				}
 
@@ -585,6 +586,10 @@ export default class Form {
 						retries++
 						continue
 					}
+				}
+
+				if (val === undefined || val === null) {
+					return { cancelled: true }
 				}
 
 				const validRes = field.validation(val)

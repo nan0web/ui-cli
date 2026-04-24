@@ -23,6 +23,7 @@ export function createPrompt(displayName: string, props: any, executorFn: Functi
     $$typeof: symbol;
     type: string;
     props: any;
+    model: any;
     execute: () => any;
 };
 /**

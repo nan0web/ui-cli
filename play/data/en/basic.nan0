@@ -1,0 +1,5 @@
+title: Basic Logging Demo
+
+content:
+  - p: ✓ Logger initialized
+  - p: ✓ This demo simply logs messages

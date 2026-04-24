@@ -4,38 +4,28 @@
  * @module InputAdapter
  */
 
-import { UiForm, InputAdapter as BaseInputAdapter, UiMessage } from '@nan0web/ui'
-import { CancelError, MaskHandler } from '@nan0web/ui/core'
-import prompts from '../impl/prompts.js'
-import readline from 'node:readline'
-
-import {
-	ask as baseAsk,
-	text as baseText,
-	createInput,
-	Input,
-} from '../impl/input.js'
-import { next } from '../impl/next.js'
-import { select as baseSelect } from '../impl/select.js'
-import { confirm as baseConfirm } from '../impl/confirm.js'
-import { autocomplete as baseAutocomplete } from '../impl/autocomplete.js'
-import { table as baseTable } from '../impl/table.js'
-import { multiselect as baseMultiselect } from '../impl/multiselect.js'
-import { mask as baseMask } from '../impl/mask.js'
-import { toggle as baseToggle } from '../impl/toggle.js'
-import { slider as baseSlider } from '../impl/slider.js'
-import { progress as baseProgress } from '../impl/progress.js'
-import { spinner as baseSpinner } from '../impl/spinner.js'
-import { tree as baseTree } from '../impl/tree.js'
-import { datetime as baseDateTime } from '../impl/date-time.js'
-import { sortable as baseSortable } from '../impl/sortable.js'
+import { UiForm } from '@nan0web/ui'
+import { InputAdapter as BaseInputAdapter } from '@nan0web/ui/core'
+import { CancelError } from '@nan0web/ui/core'
 import { Form } from '../impl/form.js'
+import prompts from '../impl/prompts.js'
 import IntentDispatcher from './IntentDispatcher.js'
 import AnswerQueue from './AnswerQueue.js'
 import MessageHandler from './MessageHandler.js'
-import { SelectModel } from '../../domain/prompt/SelectModel.js'
-import { MultiselectModel } from '../../domain/prompt/MultiselectModel.js'
-import { ToggleModel } from '../../domain/prompt/ToggleModel.js'
+
+import { progress as rawProgress } from '../impl/progress.js'
+import { spinner as rawSpinner } from '../impl/spinner.js'
+import { ContentViewer } from '../prompt/ContentViewer.js'
+import { Input } from '../prompt/Input.js'
+
+/**
+ * @typedef {Object} RequestFormOptions
+ * @property {boolean} [silent=true] - Suppress console output if `true`.
+ */
+
+/** @typedef {import('@nan0web/ui/core').AskResponse} AskResponse */
+/** @typedef {import('@nan0web/ui/core').Intent} Intent */
+/** @typedef {import('@nan0web/ui/core').AskOptions} AskOptions */
 
 const DEFAULT_MAX_RETRIES = 100
 
@@ -54,6 +44,7 @@ const DEFAULT_MAX_RETRIES = 100
  * @class
  * @extends BaseInputAdapter
  */
+// @ts-ignore TS2742: Intent.js path cannot be named, but types are fine
 export default class CLiInputAdapter extends BaseInputAdapter {
 	/** @type {ConsoleLike} */
 	#console
@@ -64,16 +55,18 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 	#maxRetries
 	/** @type {Function} */
 	#t
+	/** @type {Map<string, any>} */
+	activeProgresses = new Map()
 
 	constructor(options = {}) {
 		super()
 		const {
-			predefined = process.env.PLAY_DEMO_SEQUENCE ?? [],
-			divider = process.env.PLAY_DEMO_DIVIDER ?? ',',
-			console: initialConsole = console,
-			stdout = process.stdout,
-			components = new Map(),
-			t = (key, _vars) => key,
+			predefined = options.predefined ?? process.env.UI_ANSWERS ?? process.env.PLAY_DEMO_SEQUENCE ?? [],
+			divider = options.divider ?? process.env.PLAY_DEMO_DIVIDER ?? ',',
+			console: initialConsole = options.console || console,
+			stdout = options.stdout || process.stdout,
+			components = options.components || new Map(),
+			t = options.t || ((key, _vars) => key),
 		} = options
 
 		let { maxRetries = process.env.UI_CLI_MAX_RETRIES ?? DEFAULT_MAX_RETRIES } = options
@@ -91,6 +84,7 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 
 		this.answerQueue = new AnswerQueue({ predefined, divider })
 		this.dispatcher = new IntentDispatcher(this)
+		this.cancelled = false
 	}
 
 	/** @returns {ConsoleLike} */
@@ -133,6 +127,18 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 		return this.answerQueue.getRemaining()
 	}
 
+	// Legacy test compatibility (brutal hacks support)
+	get _answers() { return this.answerQueue._answers }
+	set _answers(val) { this.answerQueue._answers = val }
+	get _cursor() { return this.answerQueue._cursor }
+	set _cursor(val) { this.answerQueue._cursor = val }
+
+	// Support for tests using #answers as string key
+	get '#answers'() { return this.answerQueue._answers }
+	set '#answers'(val) { this.answerQueue._answers = val }
+	get '#cursor'() { return this.answerQueue._cursor }
+	set '#cursor'(val) { this.answerQueue._cursor = val }
+
 	/**
 	 * Normalise a value that can be either a raw string or an {@link Input}
 	 * instance (which carries the actual value in its `value` property).
@@ -145,6 +151,49 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 			return String(val.value)
 		}
 		return String(val ?? '')
+	}
+
+	/**
+	 * Execute an interactive prompt component, handling automated answers.
+	 *
+	 * @param {Object} component - Prompt component to execute.
+	 * @returns {Promise<AskResponse>}
+	 */
+	async executePrompt(component) {
+		const predefined = this.answerQueue.next()
+		const isSnapshot = !!process.env.UI_SNAPSHOT
+		
+		if (predefined !== null) {
+			if (predefined === '_cancel' || predefined === 'cancel' || predefined === 'exit') {
+				this.cancelled = true
+				return { value: undefined, cancelled: true }
+			}
+			
+			if (!isSnapshot) {
+				const model = component.model || component.props
+				const t = this.t || ((k) => k)
+				const title = model.UI || model.message || model.title || 'Input'
+				
+				// Log simulated result (masking passwords/secrets)
+				const isSecret = model.type === 'password' || model.type === 'secret' || component.type === 'Password'
+				const displayValue = isSecret ? '*'.repeat(String(predefined).length) : predefined
+				this.console.info(`✔ ${t(title)} ${displayValue}`)
+				
+				// If model has a specific automated mapper, use it
+				if (model.automatedInput && typeof model.automatedInput === 'function') {
+					return model.automatedInput(predefined)
+				}
+				
+				return { value: predefined, cancelled: false }
+			}
+		}
+
+		if (predefined !== null && isSnapshot) {
+			// In snapshot mode, we MUST run the component but inject the answer
+			prompts.inject([predefined])
+		}
+
+		return await component.execute()
 	}
 
 	/**
@@ -178,59 +227,18 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 	 * @returns {Function}
 	 */
 	createHandler(stops = []) {
-		const self = this
-		return async (question, loop = false, nextQuestion = undefined) => {
-			const predefined = self.answerQueue.next()
-			if (predefined !== null) {
-				if (predefined === '_cancel') return { value: undefined, cancelled: true }
-				this.stdout.write(`${question}${predefined}\n`)
-				const input = new Input({ value: predefined, stops })
-				if (input.cancelled) {
-					throw new CancelError('Cancelled via stop word')
-				}
-				return input
-			}
-			const interactive = createInput(stops)
-			return interactive(question, loop, nextQuestion)
+		return async (question) => {
+			const res = await this.requestInput({ 
+				message: typeof question === 'object' ? (question.message || '') : question, 
+				stops 
+			})
+			return { value: res.value, cancelled: res.cancelled }
 		}
 	}
 
-	/**
-	 * Create a select handler that supports predefined answers.
-	 * @returns {Function}
-	 */
 	createSelectHandler() {
-		const self = this
 		return async (config) => {
-			const predefined = self.answerQueue.next()
-			if (predefined !== null) {
-				if (predefined === '_cancel') return { value: undefined, cancelled: true }
-				// Normalize options to find value
-				let choices = []
-				const options = config.options || []
-				if (options instanceof Map) {
-					choices = Array.from(options.entries()).map(([value, label]) => ({ label, value }))
-				} else if (Array.isArray(options)) {
-					choices = options.map((el) => (typeof el === 'string' ? { label: el, value: el } : el))
-				}
-
-				const idx = Number(predefined) - 1
-				let valToInject = predefined
-				if (!isNaN(idx) && idx >= 0 && idx < choices.length) {
-					valToInject = choices[idx].value
-				}
-
-				if (config.console) {
-					if (config.title) config.console.info(config.title)
-					choices.forEach((c, i) => {
-						config.console.info(` ${i + 1}) ${c.label}`)
-					})
-					const p = config.prompt ?? ''
-					config.console.info(`${p}${predefined}`)
-				}
-				prompts.inject([valToInject])
-			}
-			return self.select(config)
+			return await this.requestSelect(config)
 		}
 	}
 
@@ -249,16 +257,16 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 			return
 		}
 		// Interactive mode
-		await next()
+		await prompts({ type: 'text', name: 'pause', message: '' })
 	}
+
 
 	/**
 	 * Prompt the user for a full form, handling navigation and validation.
 	 *
 	 * @param {UiForm} form - Form definition to present.
-	 * @param {Object} [options={}]
-	 * @param {boolean} [options.silent=true] - Suppress console output if `true`.
-	 * @returns {Promise<Object>} Result object containing form data and meta‑information.
+	 * @param {RequestFormOptions} [options={}]
+	 * @returns {Promise<AskResponse>} Result object containing form data and meta‑information.
 	 */
 	async requestForm(form, options = {}) {
 		const { silent = true } = options
@@ -288,6 +296,7 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 					body: { action: 'form-cancel', cancelled: true, error: 'Infinite loop detected' },
 					cancelled: true,
 					action: 'form-cancel',
+					value: undefined,
 				}
 			}
 			throw e
@@ -298,6 +307,7 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 				body: { action: 'form-cancel', cancelled: true },
 				cancelled: true,
 				action: 'form-cancel',
+				value: undefined,
 			}
 		}
 
@@ -312,6 +322,7 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 			form: finalForm,
 			cancelled: false,
 			action: 'form-submit',
+			value: finalForm.state,
 		}
 	}
 
@@ -335,30 +346,7 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 			return
 		}
 
-		const builtIns = {
-			Alert: () => import('../view/Alert.js').then(m => m.Alert),
-			Message: () => import('../view/Alert.js').then(m => m.Alert),
-			Badge: () => import('../view/Badge.js').then(m => m.Badge),
-			Table: () => import('../view/Table.js').then(m => m.Table),
-			Breadcrumbs: () => import('../view/Nav.js').then(m => m.Breadcrumbs),
-			Tabs: () => import('../view/Nav.js').then(m => m.Tabs),
-			Steps: () => import('../view/Nav.js').then(m => m.Steps),
-			Toast: () => import('../view/Toast.js').then(m => m.Toast),
-			Banner: () => import('../view/DomainViews.js').then(m => m.Banner),
-			Hero: () => import('../view/DomainViews.js').then(m => m.Hero),
-			Pricing: () => import('../view/DomainViews.js').then(m => m.Pricing),
-			PricingSection: () => import('../view/DomainViews.js').then(m => m.Pricing),
-			Stats: () => import('../view/DomainViews.js').then(m => m.Stats),
-			Timeline: () => import('../view/DomainViews.js').then(m => m.Timeline),
-			Testimonials: () => import('../view/DomainViews.js').then(m => m.Testimonials),
-			Accordion: () => import('../view/DomainViews.js').then(m => m.Accordion),
-			FAQ: () => import('../view/DomainViews.js').then(m => m.Accordion),
-			Gallery: () => import('../view/DomainViews.js').then(m => m.Gallery),
-			EmptyState: () => import('../view/DomainViews.js').then(m => m.EmptyState),
-			Header: () => import('../view/DomainViews.js').then(m => m.Header),
-			Footer: () => import('../view/DomainViews.js').then(m => m.Footer),
-			Init: () => import('../prompt/Select.js').then(m => m.Select),
-		}
+		const { builtIns } = await import('./builtInComponents.js')
 
 		if (builtIns[component]) {
 			this.#components.set(component, builtIns[component])
@@ -413,7 +401,7 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 	 *
 	 * @param {UiForm} form - Form definition.
 	 * @param {object} [_state] - Unused, kept for compatibility with `CLiMessage`.
-	 * @returns {Promise<Object>} Same shape as {@link requestForm} result.
+	 * @returns {Promise<AskResponse>} Same shape as {@link requestForm} result.
 	 */
 	async processForm(form, _state) {
 		return this.requestForm(form)
@@ -423,353 +411,92 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 	 * Prompt the user to select an option from a list.
 	 *
 	 * @param {Object} config - Configuration object.
-	 * @returns {Promise<{value: string|undefined, index: number, cancelled: boolean}>} Selected value (or undefined on cancel).
+	 * @returns {Promise<AskResponse>} Selected value (or null on cancel).
 	 */
 	async requestSelect(config) {
-		config.limit = config.limit ?? Math.max(5, (this.stdout.rows || 24) - 4)
-		try {
-			const predefined = this.answerQueue.next()
-			if (!config.console) config.console = this.#console
-
-			if (predefined !== null) {
-				if (predefined === '_cancel') return { value: undefined, cancelled: true, index: -1 }
-				// Normalize options to find value
-				let choices = []
-				const options = config.options || []
-				if (options instanceof Map) {
-					choices = Array.from(options.entries()).map(([value, label]) => ({ label, value }))
-				} else if (Array.isArray(options)) {
-					choices = options.map((el) => {
-						if (typeof el === 'string') return { label: el, value: el }
-						return { label: el.label || el.title, value: el.value }
-					})
-				}
-
-				const idx = Number(predefined) - 1
-				let valToInject = predefined
-				if (!isNaN(idx) && idx >= 0 && idx < choices.length) {
-					valToInject = choices[idx].value
-				} else {
-					// Search by label (case-insensitive)
-					const match = choices.find(
-						(c) =>
-							String(c.label).toLowerCase().includes(predefined.toLowerCase()) ||
-							String(c.value).toLowerCase() === predefined.toLowerCase()
-					)
-					if (match) valToInject = match.value
-				}
-
-				if (config.console) {
-					if (config.title) config.console.info(config.title)
-					const limit = config.limit || choices.length
-					choices.slice(0, limit).forEach((c, i) => {
-						config.console.info(` ${i + 1}) ${this.#t(c.label)}`)
-					})
-					if (choices.length > limit) {
-						config.console.info(`  ↓ (${choices.length - limit} ${this.#t(SelectModel.UI_MORE)})`)
-					}
-					const p = config.prompt ?? ''
-					config.console.info(`✔ ${p} ${predefined}`)
-				}
-				if (predefined === '_cancel') {
-					return { value: undefined, index: -1, cancelled: true }
-				}
-				if (predefined === '_save') {
-					const saveIdx = choices.findIndex((c) => c.value === '_save')
-					return { value: '_save', index: saveIdx, cancelled: false }
-				}
-
-				const matchedIdx = choices.findIndex(
-					(c) =>
-						String(c.label).toLowerCase().includes(predefined.toLowerCase()) ||
-						String(c.value).toLowerCase() === predefined.toLowerCase()
-				)
-				return { value: valToInject, index: matchedIdx, cancelled: false }
-			}
-			config.t = this.t
-			if (config.title) config.title = this.t(config.title)
-			if (config.message) config.message = this.t(config.message)
-			if (config.prompt) config.prompt = this.t(config.prompt)
-			if (config.label) config.label = this.t(config.label)
-			if (Array.isArray(config.options)) {
-				config.options = config.options.map((el) => {
-					if (typeof el === 'string') return { label: this.t(el), value: el }
-					return { ...el, label: this.t(el.label || el.title || el.name) }
-				})
-			}
-			const res = await baseSelect(config)
-			return { value: res.value, index: res.index, cancelled: res.cancelled ?? false }
-		} catch (e) {
-			if (e instanceof CancelError) return { value: undefined, index: -1, cancelled: true }
-			throw e
-		}
+		const { Select } = await import('../prompt/Select.js')
+		return /** @type {any} */ (await this.executePrompt(Select({ ...config, t: this.t })))
 	}
 
 	/**
 	 * Prompt for a single string input.
 	 *
 	 * @param {Object} config - Prompt configuration.
-	 * @returns {Promise<{value: string|undefined, cancelled: boolean}>} User response string or undefined on cancel.
+	 * @returns {Promise<AskResponse>} User response string or null on cancel.
 	 */
 	async requestInput(config) {
-		const predefined = this.answerQueue.next()
-		const promptOrig =
-			config.prompt ?? config.message ?? `${config.label ?? config.name ?? 'Input'}: `
-		const prompt = this.#t(promptOrig)
-		if (predefined !== null) {
-			if (predefined === '_cancel') return { value: undefined, cancelled: true }
-			if (config.type !== 'password' && config.type !== 'secret') {
-				this.console.info(`✔ ${prompt} ${predefined}`)
-			} else {
-				this.console.info(`✔ ${prompt} ${'*'.repeat(predefined.length)}`)
-			}
-			return { value: predefined, cancelled: false }
-		} else if (config.yes === true && config.value !== undefined) {
-			return { value: config.value, cancelled: false }
-		}
+		const { Input } = await import('../prompt/Input.js')
+		return /** @type {any} */ (await this.executePrompt(Input({ ...config, t: this.t })))
+	}
 
-		try {
-			const res = await baseText({
-				message: prompt,
-				initial: config.initial !== undefined ? String(config.initial) : config.placeholder,
-				type: config.type === 'password' || config.type === 'secret' ? 'password' : 'text',
-				validate: config.validate || config.validation,
-			})
-			return res
-		} catch (e) {
-			if (e instanceof CancelError) return { value: undefined, cancelled: true }
-			throw e
-		}
+	async requestPassword(config) {
+		const { Password } = await import('../prompt/Password.js')
+		return await this.executePrompt(Password({ ...config, t: this.t }))
 	}
 
 	/**
 	 * Prompt the user for an autocomplete selection.
 	 *
 	 * @param {Object} config - Configuration object.
-	 * @returns {Promise<{value: any, cancelled: boolean}>} Selected value.
+	 * @returns {Promise<AskResponse>} Selected value.
 	 */
 	async requestAutocomplete(config) {
-		config.limit = config.limit ?? Math.max(5, (this.stdout.rows || 24) - 4)
-		const predefined = this.answerQueue.next()
-		const prompt = config.message || config.title || 'Search: '
-		if (predefined !== null) {
-			if (predefined === '_cancel') return { value: undefined, cancelled: true }
-
-			if (process.env.UI_SNAPSHOT && config.options) {
-				const frames = []
-				const p = String(predefined)
-				if (p.length > 1) frames.push(p.charAt(0))
-				if (p.length > 2) frames.push(p.slice(0, 2))
-				frames.push(p)
-
-				for (let i = 0; i < frames.length; i++) {
-					const text = frames[i]
-					this.console.info(`${prompt} ${text}`)
-					try {
-						let results = []
-						if (typeof config.options === 'function') {
-							results = await config.options(text)
-						} else if (Array.isArray(config.options)) {
-							results = config.options.filter((el) => {
-								const label = typeof el === 'string' ? el : el.title || el.label || ''
-								return label.toLowerCase().includes(text.toLowerCase())
-							})
-						}
-
-						const list = Array.isArray(results) ? results : []
-						list.slice(0, config.limit).forEach((item) => {
-							this.console.info(
-								`  ${typeof item === 'string' ? item : item.title || item.label || item.value}`
-							)
-						})
-					} catch (e) {}
-
-					if (i < frames.length - 1) {
-						this.console.info('\n[SNAPSHOT_FRAME]\n')
-						await new Promise((r) => setTimeout(r, 200))
-					}
-				}
-				return { value: predefined, cancelled: false }
-			}
-
-			this.console.info(`${prompt} ${predefined}`)
-			return { value: predefined, cancelled: false }
-		}
-		try {
-			return await baseAutocomplete(config)
-		} catch (e) {
-			if (e instanceof CancelError) return { value: undefined, cancelled: true }
-			throw e
-		}
+		const { Autocomplete } = await import('../prompt/Autocomplete.js')
+		return await this.executePrompt(Autocomplete({ ...config, t: this.t }))
 	}
 
 	/**
 	 * Requests confirmation (yes/no).
 	 *
 	 * @param {Object} config - Confirmation configuration.
-	 * @returns {Promise<{value: boolean|undefined, cancelled: boolean}>} User confirmation.
+	 * @returns {Promise<AskResponse>} User confirmation.
 	 */
 	async requestConfirm(config) {
-		const predefined = this.answerQueue.next()
-		const prompt = config.message || 'Confirm: '
-		if (predefined !== null) {
-			if (predefined === '_cancel') return { value: undefined, cancelled: true }
-			const val = ['y', 'yes', 'true', '1', 'так', '+'].includes(predefined.toLowerCase())
-			const display = val
-				? config.active || this.#t(ToggleModel.UI_YES)
-				: config.inactive || this.#t(ToggleModel.UI_NO)
-			this.console.info(`✔ ${prompt} ${display}`)
-			return { value: val, cancelled: false }
-		}
-		try {
-			const active = config.active || (this.#t ? this.#t(ToggleModel.UI_YES) : 'Yes')
-			const inactive = config.inactive || (this.#t ? this.#t(ToggleModel.UI_NO) : 'No')
-			if (typeof config === 'object' && config !== null) config.t = this.t
-			return await baseConfirm({ ...config, message: prompt, active, inactive, t: this.t })
-		} catch (e) {
-			if (e instanceof CancelError) return { value: undefined, cancelled: true }
-			throw e
-		}
+		const { Confirm } = await import('../prompt/Confirm.js')
+		return await this.executePrompt(Confirm({ ...config, t: this.t }))
 	}
 
-	/**
-	 * Display an interactive table.
-	 *
-	 * @param {Object} config - Table configuration.
-	 * @returns {Promise<{value: any, cancelled: boolean}>}
-	 */
-	async requestTable(config) {
-		config.t = this.t
-		config.prompt = (c) => this.requestInput(c)
-		config.logger = config.logger || this.console
-		try {
-			return await baseTable(config)
-		} catch (e) {
-			if (e instanceof CancelError) return { value: undefined, cancelled: true }
-			throw e
-		}
-	}
 
 	/**
 	 * Requests multiple selection.
 	 *
 	 * @param {Object} config - Multiselect configuration.
-	 * @returns {Promise<{value: any[]|undefined, cancelled: boolean}>} Selected values.
+	 * @returns {Promise<AskResponse>} Selected values.
 	 */
 	async requestMultiselect(config) {
-		const predefined = this.answerQueue.next()
-		const prompt = config.message || 'Select: '
-		if (predefined !== null) {
-			if (predefined === '_cancel') return { value: undefined, cancelled: true }
-			this.console.info(`${prompt} ${predefined}`)
-			return { value: predefined.split(',').map((v) => v.trim()), cancelled: false }
-		}
-		const instructions =
-			`\n${this.#t(MultiselectModel.UI_HELP)}:\n` +
-			`    ↑/↓: ${this.#t(MultiselectModel.UI_HIGHLIGHT)}\n` +
-			`    ←/→/[space]: ${this.#t(MultiselectModel.UI_TOGGLE)}\n` +
-			`    a: ${this.#t(MultiselectModel.UI_TOGGLE_ALL)}\n` +
-			`    enter/return: ${this.#t(MultiselectModel.UI_COMPLETE)}`
-
-		// Pass instructions to multiselect config
-		config.instructions = instructions
-		config.t = this.t
-
-		try {
-			return await baseMultiselect(config)
-		} catch (e) {
-			if (e instanceof CancelError) return { value: undefined, cancelled: true }
-			throw e
-		}
+		const { Multiselect } = await import('../prompt/Multiselect.js')
+		return /** @type {any} */ (await this.executePrompt(Multiselect({ ...config, t: this.t })))
 	}
 
 	/**
 	 * Requests masked input.
 	 *
 	 * @param {Object} config - Mask configuration.
-	 * @returns {Promise<{value: string|undefined, cancelled: boolean}>} Masked value.
+	 * @returns {Promise<AskResponse>} Masked value.
 	 */
 	async requestMask(config) {
-		const predefined = this.answerQueue.next()
-		const prompt = config.message || 'Input: '
-		if (predefined !== null) {
-			if (predefined === '_cancel') return { value: undefined, cancelled: true }
-			// Use MaskHandler to format the predefined value correctly
-			const mh = new MaskHandler(config.mask)
-			mh.setValue(predefined)
-			const display = mh.formatted
-			this.console.info(`✔ ${prompt} ${display}`)
-			return { value: display, cancelled: false }
-		}
-		try {
-			const maskImpl = this.#components.get('mask') || baseMask
-			const res = await maskImpl({ ...config, message: prompt })
-			if (res && !res.cancelled) {
-				try {
-					readline.moveCursor(this.#stdout, 0, -1)
-					readline.clearLine(this.#stdout, 0)
-					this.console.info(`✔ ${prompt} ${res.value}`)
-				} catch (e) {
-					this.console.error('Cursor op failed:', e)
-					// Ignore cursor errors in non-TTY environments, but ensure output is logged
-					// If cursor moved failed, we might have duplicate log.
-					// But we prioritize showing correct value.
-					// If readline failed, we assume console.info needs to run?
-					// If readline failed, console.info might have been cleared? No.
-					// We only print if we tried to clear.
-				}
-			}
-			return res
-		} catch (e) {
-			if (e instanceof CancelError) return { value: undefined, cancelled: true }
-			throw e
-		}
+		const { Mask } = await import('../prompt/Mask.js')
+		return await this.executePrompt(Mask({ ...config, t: this.t }))
 	}
 
 	/**
 	 * Request a toggle switch.
 	 * @param {Object} config
-	 * @returns {Promise<{value: boolean|undefined, cancelled: boolean}>}
+	 * @returns {Promise<AskResponse>}
 	 */
 	async requestToggle(config) {
-		const predefined = this.answerQueue.next()
-		const prompt = config.message || 'Confirm: '
-		if (predefined !== null) {
-			if (predefined === '_cancel') return { value: undefined, cancelled: true }
-			this.console.info(`✔ ${prompt} ${predefined}`)
-			return {
-				value: ['y', 'yes', 'true', '1', 'так'].includes(predefined.toLowerCase()),
-				cancelled: false,
-			}
-		}
-		try {
-			return await baseToggle(config)
-		} catch (e) {
-			if (e instanceof CancelError) return { value: undefined, cancelled: true }
-			throw e
-		}
+		const { Toggle } = await import('../prompt/Toggle.js')
+		return await this.executePrompt(Toggle({ ...config, t: this.t }))
 	}
 
 	/**
 	 * Request a numeric slider.
 	 * @param {Object} config
-	 * @returns {Promise<{value: number|undefined, cancelled: boolean}>}
+	 * @returns {Promise<AskResponse>}
 	 */
 	async requestSlider(config) {
-		const predefined = this.answerQueue.next()
-		const prompt = config.message || 'Value: '
-		if (predefined !== null) {
-			if (predefined === '_cancel') return { value: undefined, cancelled: true }
-			this.console.info(`${prompt} ${predefined}`)
-			return { value: Number(predefined), cancelled: false }
-		}
-		try {
-			config.t = this.t
-			return await baseSlider(config)
-		} catch (e) {
-			if (e instanceof CancelError) return { value: undefined, cancelled: true }
-			throw e
-		}
+		const { Slider } = await import('../prompt/Slider.js')
+		return await this.executePrompt(Slider({ ...config, t: this.t }))
 	}
 
 	/**
@@ -778,33 +505,23 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 	 * @returns {import('../impl/progress.js').ProgressBar}
 	 */
 	requestProgress(options) {
-		return baseProgress(options)
+		return /** @type {any} */ (rawProgress(options))
 	}
 
-	requestSpinner(message) {
-		return baseSpinner(this.t(message))
+	requestSpinner(config) {
+		if (typeof config === 'string') config = { message: config }
+		if (config.message) config.message = this.t(config.message) || config.message
+		return /** @type {any} */ (rawSpinner(config))
 	}
 
 	/**
 	 * Request a selection from a tree view.
 	 * @param {Object} config
-	 * @returns {Promise<{value: any, cancelled: boolean}>} Selected node(s).
+	 * @returns {Promise<AskResponse>} Selected node(s).
 	 */
 	async requestTree(config) {
-		const predefined = this.answerQueue.next()
-		if (predefined !== null) {
-			if (predefined === '_cancel') return { value: undefined, cancelled: true }
-			const prompt = config.message || 'Select: '
-			this.console.info(`${prompt} ${predefined}`)
-			return { value: predefined, cancelled: false }
-		}
-		try {
-			config.t = this.t
-			return await baseTree(config)
-		} catch (e) {
-			if (e instanceof CancelError) return { value: undefined, cancelled: true }
-			throw e
-		}
+		const { Tree } = await import('../prompt/Tree.js')
+		return await this.executePrompt(Tree({ ...config, t: this.t }))
 	}
 
 	/**
@@ -819,77 +536,28 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 	 * @param {Array<string|{label:string,value:any}>} config.items - Items to sort.
 	 * @param {string} [config.hint] - Hint text.
 	 * @param {Function} [config.onChange] - Callback on every reorder.
-	 * @returns {Promise<{value: any[]|undefined, cancelled: boolean}>}
+	 * @returns {Promise<AskResponse>}
 	 */
 	async requestSortable(config) {
-		const predefined = this.answerQueue.next()
-		const prompt = config.message || 'Reorder: '
-		if (predefined !== null) {
-			if (predefined === '_cancel') return { value: undefined, cancelled: true }
-			// Normalise items to {label, value}
-			const normalised = (config.items || []).map((el) =>
-				typeof el === 'string' ? { label: el, value: el } : el
-			)
-			// Predefined = comma-separated values in desired order
-			const order = predefined
-				.split(',')
-				.map((v) => v.trim())
-				.filter(Boolean)
-			const ordered = []
-			for (const val of order) {
-				const item = normalised.find((it) => String(it.value) === val)
-				if (item) ordered.push(item.value)
-			}
-			// Append any items not mentioned in the predefined order
-			for (const item of normalised) {
-				if (!ordered.includes(item.value)) ordered.push(item.value)
-			}
-			this.console.info(`✔ ${prompt} ${ordered.join(' → ')}`)
-			return { value: ordered, cancelled: false }
-		}
-		try {
-			return await baseSortable({ ...config, t: this.t })
-		} catch (e) {
-			if (e instanceof CancelError) return { value: undefined, cancelled: true }
-			throw e
-		}
+		const { Sortable } = await import('../prompt/Sortable.js')
+		return await this.executePrompt(Sortable({ ...config, t: this.t }))
 	}
 
 	/**
 	 * Request a date or time from the user.
 	 * @param {Object} config
-	 * @returns {Promise<{value: Date|undefined, cancelled: boolean}>}
+	 * @returns {Promise<AskResponse>}
 	 */
 	async requestDateTime(config) {
-		const predefined = this.answerQueue.next()
-		const promptOrig = config.message || config.label || config.name || 'Date: '
-		const prompt = this.#t(promptOrig)
-		if (predefined !== null) {
-			if (predefined === '_cancel') return { value: undefined, cancelled: true }
-			this.console.info(`${prompt} ${predefined}`)
-			let val = new Date(predefined)
-			if (isNaN(val.getTime())) {
-				if (/^\d{1,2}:\d{2}/.test(predefined)) {
-					const today = new Date().toISOString().split('T')[0]
-					val = new Date(`${today}T${predefined}`)
-				}
-			}
-			return { value: isNaN(val.getTime()) ? undefined : val, cancelled: false }
-		}
-		try {
-			const res = await baseDateTime({ t: this.t, ...config, message: prompt })
-			return res
-		} catch (e) {
-			if (e instanceof CancelError) return { value: undefined, cancelled: true }
-			throw e
-		}
+		const { DateTime } = await import('../prompt/DateTime.js')
+		return await this.executePrompt(DateTime({ ...config, t: this.t }))
 	}
 
 	/**
 	 * Asks user a question or form, or handles an OLMUI intent.
 	 * @param {string | UiForm | Object} question
-	 * @param {object} [options={}]
-	 *
+	 * @param {AskOptions} [options={}]
+	 * @returns {Promise<AskResponse>}
 	 */
 	async ask(question, options = {}) {
 		if (question && typeof question === 'object') {
@@ -900,30 +568,25 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 				return await this.dispatcher.askIntent(question)
 			}
 		}
-		const predefined = this.answerQueue.next()
-		if (predefined !== null) {
-			if (predefined === '_cancel') return { value: undefined, cancelled: true }
-			this.stdout.write(`${question}${predefined}\n`)
-			prompts.inject([predefined])
-		}
-		const result = await baseAsk(question)
-		return result
+		const { Input } = await import('../prompt/Input.js')
+		return await this.executePrompt(Input({ message: question, t: this.t }))
 	}
 
 	/**
-	 * Map an OLMUI Intent to the corresponding CLI interaction.
+	 * Handle OLMUI Ask intents.
 	 *
-	 * @param {Object} intent
-	 * @returns {Promise<{value: any, cancelled: boolean}>}
+	 * @param {import('@nan0web/ui/core').Intent} intent
+	 * @returns {Promise<AskResponse>}
 	 */
 	async askIntent(intent) {
 		return this.dispatcher.askIntent(intent)
 	}
 
 	/**
-	 * Handle OLMUI Log intents.
+	 * Handle OLMUI Log / Show intents.
 	 *
-	 * @param {Object} intent
+	 * @param {import('@nan0web/ui/core').Intent} intent
+	 * @returns {Promise<void>}
 	 */
 	async logIntent(intent) {
 		return this.dispatcher.logIntent(intent)
@@ -932,7 +595,8 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 	/**
 	 * Handle OLMUI Result intents.
 	 *
-	 * @param {Object} intent
+	 * @param {import('@nan0web/ui/core').Intent} intent
+	 * @returns {Promise<void>}
 	 */
 	async resultIntent(intent) {
 		return this.dispatcher.resultIntent(intent)
@@ -941,13 +605,17 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 	/**
 	 * Handle OLMUI Progress intents via Spinner/ProgressBar.
 	 *
-	 * @param {Object} intent
+	 * @param {import('@nan0web/ui/core').Intent} intent
+	 * @returns {Promise<any>}
 	 */
 	async progressIntent(intent) {
 		return this.dispatcher.progressIntent(intent)
 	}
 
-	/** @inheritDoc */
+	/** 
+	 * @param {Object} cfg 
+	 * @returns {Promise<{ index?: number, value: string | null }>} 
+	 */
 	async select(cfg) {
 		const predefined = this.answerQueue.next()
 		if (predefined !== null) {
@@ -976,10 +644,11 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 						)
 					: -1
 
-			return { index: idx, value: predefined, cancelled: false }
+			return { index: idx, value: predefined ?? null }
 		}
 
-		return baseSelect(cfg)
+		const res = await this.requestSelect(cfg)
+		return { value: res.value, index: res.index }
 	}
 
 	/**
@@ -988,7 +657,7 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 	 * Validates the message according to its static Body schema, presents a
 	 * generated form and returns the updated body.
 	 *
-	 * @param {UiMessage} msg - Message instance needing input.
+	 * @param {any} msg - Message instance needing input.
 	 * @returns {Promise<any>} Updated message body.
 	 * @throws {CancelError} When user cancels the input process.
 	 */
@@ -1006,13 +675,14 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 	/**
 	 * Generic request handler that dispatches to specific request methods based on type.
 	 * @param {Object} config
-	 * @returns {Promise<any>}
+	 * @returns {Promise<AskResponse>}
 	 */
 	async request(config) {
 		const type = config.type || 'input'
 		const methodName = `request${type.charAt(0).toUpperCase()}${type.slice(1)}`
-		if (typeof this[methodName] === 'function') {
-			return await this[methodName](config)
+		const handler = /** @type {any} */ (this)[methodName]
+		if (typeof handler === 'function') {
+			return await handler.call(this, config)
 		}
 		// Fallback to base request if exists or error
 		return await this.requestInput(config)
@@ -1021,19 +691,9 @@ export default class CLiInputAdapter extends BaseInputAdapter {
 	/**
 	 * Request a content viewer (scrollable markdown with interactive elements).
 	 * @param {Object} config
-	 * @returns {Promise<{value: any, action?: string, cancelled: boolean}>}
+	 * @returns {Promise<AskResponse>}
 	 */
 	async requestContentViewer(config) {
-		const { ContentViewer } = await import('../prompt/ContentViewer.js')
-		const predefined = this.answerQueue.next()
-		if (predefined !== null) {
-			// In automated mode, we inject the choice for the viewer's internal prompt
-			prompts.inject([predefined])
-		}
-		const component = ContentViewer({
-			...config,
-			t: this.t,
-		})
-		return await component.execute()
+		return await this.executePrompt(ContentViewer({ ...config, t: this.t }))
 	}
 }

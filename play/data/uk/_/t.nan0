@@ -16,7 +16,7 @@ Duration to pause execution in milliseconds.: Тривалість паузи в
 Edit: Редагувати
 Enter password: Введіть пароль
 Enter text to filter or type exit to quit: Введіть текст для фільтрації або exit для виходу
-Enter value: Введіть значення
+Enter href: Введіть значення
 Focus: Фокус
 Error: Помилка
 Field is required: Поле обов'язкове для заповнення
@@ -47,7 +47,7 @@ Select: Обрати
 Select a file: Оберіть файл
 Select an option: Оберіть варіант
 Select field to edit:: Оберіть поле для редагування:
-Select options: Оберіть варіанти
+Select children: Оберіть варіанти
 Standard boolean switch (classic Yes/No toggle).: Стандартний булевий перемикач (класичне Так/Ні).
 Standard multi-selection checkboxes.: Стандартний вибір декількох варіантів.
 Standard radio-button selection list.: Стандартний список вибору (radio-buttons).
@@ -68,3 +68,8 @@ no: ні
 none: немає
 selected: вибрано
 yes: так
+Main Menu: Головне меню
+Forms Category: Категорія Форм
+Interactive Forms: Інтерактивні Форми
+UI Components: UI Компоненти
+Exit: Вихід

@@ -10,7 +10,7 @@ export async function runContentViewerDemo(console, inputAdapter, t) {
 		Logger.style(t('Content Viewer Demo (Interactive Layout)'), { color: Logger.MAGENTA })
 	)
 
-	const doc = await fs.fetch('content-viewer')
+	const doc = await fs.fetch('en/components/content-viewer')
 
 	const translateDeep = (obj) => {
 		if (typeof obj === 'string') return t(obj)

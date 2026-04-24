@@ -14,8 +14,11 @@
  */
 export default class CLiInputAdapter extends BaseInputAdapter {
     constructor(options?: {});
+    /** @type {Map<string, any>} */
+    activeProgresses: Map<string, any>;
     answerQueue: AnswerQueue;
     dispatcher: IntentDispatcher;
+    cancelled: boolean;
     /** @returns {ConsoleLike} */
     get console(): ConsoleLike;
     /** @param {Function} val */
@@ -34,6 +37,21 @@ export default class CLiInputAdapter extends BaseInputAdapter {
     get _disableNextAnswerLookup(): boolean;
     /** @returns {string[]} */
     getRemainingAnswers(): string[];
+    set _answers(val: any[]);
+    get _answers(): any[];
+    set _cursor(val: number);
+    get _cursor(): number;
+    set '#answers'(val: any[]);
+    get '#answers'(): any[];
+    set '#cursor'(val: number);
+    get '#cursor'(): number;
+    /**
+     * Execute an interactive prompt component, handling automated answers.
+     *
+     * @param {Object} component - Prompt component to execute.
+     * @returns {Promise<AskResponse>}
+     */
+    executePrompt(component: any): Promise<AskResponse>;
     /**
      * Create a handler with stop words that supports predefined answers.
      *
@@ -41,11 +59,7 @@ export default class CLiInputAdapter extends BaseInputAdapter {
      * @returns {Function}
      */
     createHandler(stops?: string[]): Function;
-    /**
-     * Create a select handler that supports predefined answers.
-     * @returns {Function}
-     */
-    createSelectHandler(): Function;
+    createSelectHandler(): (config: any) => Promise<import("@nan0web/ui/src/core/Intent.js").AskResponse>;
     /**
      * Pause execution and wait for user input (Press any key).
      *
@@ -60,13 +74,10 @@ export default class CLiInputAdapter extends BaseInputAdapter {
      * Prompt the user for a full form, handling navigation and validation.
      *
      * @param {UiForm} form - Form definition to present.
-     * @param {Object} [options={}]
-     * @param {boolean} [options.silent=true] - Suppress console output if `true`.
-     * @returns {Promise<Object>} Result object containing form data and meta‑information.
+     * @param {RequestFormOptions} [options={}]
+     * @returns {Promise<AskResponse>} Result object containing form data and meta‑information.
      */
-    requestForm(form: UiForm, options?: {
-        silent?: boolean | undefined;
-    }): Promise<any>;
+    requestForm(form: UiForm, options?: RequestFormOptions): Promise<AskResponse>;
     /**
      * Render a UI component in the CLI environment.
      *
@@ -91,114 +102,77 @@ export default class CLiInputAdapter extends BaseInputAdapter {
      *
      * @param {UiForm} form - Form definition.
      * @param {object} [_state] - Unused, kept for compatibility with `CLiMessage`.
-     * @returns {Promise<Object>} Same shape as {@link requestForm} result.
+     * @returns {Promise<AskResponse>} Same shape as {@link requestForm} result.
      */
-    processForm(form: UiForm, _state?: object): Promise<any>;
+    processForm(form: UiForm, _state?: object): Promise<AskResponse>;
     /**
      * Prompt the user to select an option from a list.
      *
      * @param {Object} config - Configuration object.
-     * @returns {Promise<{value: string|undefined, index: number, cancelled: boolean}>} Selected value (or undefined on cancel).
+     * @returns {Promise<AskResponse>} Selected value (or null on cancel).
      */
-    requestSelect(config: any): Promise<{
-        value: string | undefined;
-        index: number;
-        cancelled: boolean;
-    }>;
+    requestSelect(config: any): Promise<AskResponse>;
     /**
      * Prompt for a single string input.
      *
      * @param {Object} config - Prompt configuration.
-     * @returns {Promise<{value: string|undefined, cancelled: boolean}>} User response string or undefined on cancel.
+     * @returns {Promise<AskResponse>} User response string or null on cancel.
      */
-    requestInput(config: any): Promise<{
-        value: string | undefined;
-        cancelled: boolean;
-    }>;
+    requestInput(config: any): Promise<AskResponse>;
+    requestPassword(config: any): Promise<import("@nan0web/ui/src/core/Intent.js").AskResponse>;
     /**
      * Prompt the user for an autocomplete selection.
      *
      * @param {Object} config - Configuration object.
-     * @returns {Promise<{value: any, cancelled: boolean}>} Selected value.
+     * @returns {Promise<AskResponse>} Selected value.
      */
-    requestAutocomplete(config: any): Promise<{
-        value: any;
-        cancelled: boolean;
-    }>;
+    requestAutocomplete(config: any): Promise<AskResponse>;
     /**
      * Requests confirmation (yes/no).
      *
      * @param {Object} config - Confirmation configuration.
-     * @returns {Promise<{value: boolean|undefined, cancelled: boolean}>} User confirmation.
+     * @returns {Promise<AskResponse>} User confirmation.
      */
-    requestConfirm(config: any): Promise<{
-        value: boolean | undefined;
-        cancelled: boolean;
-    }>;
-    /**
-     * Display an interactive table.
-     *
-     * @param {Object} config - Table configuration.
-     * @returns {Promise<{value: any, cancelled: boolean}>}
-     */
-    requestTable(config: any): Promise<{
-        value: any;
-        cancelled: boolean;
-    }>;
+    requestConfirm(config: any): Promise<AskResponse>;
     /**
      * Requests multiple selection.
      *
      * @param {Object} config - Multiselect configuration.
-     * @returns {Promise<{value: any[]|undefined, cancelled: boolean}>} Selected values.
+     * @returns {Promise<AskResponse>} Selected values.
      */
-    requestMultiselect(config: any): Promise<{
-        value: any[] | undefined;
-        cancelled: boolean;
-    }>;
+    requestMultiselect(config: any): Promise<AskResponse>;
     /**
      * Requests masked input.
      *
      * @param {Object} config - Mask configuration.
-     * @returns {Promise<{value: string|undefined, cancelled: boolean}>} Masked value.
+     * @returns {Promise<AskResponse>} Masked value.
      */
-    requestMask(config: any): Promise<{
-        value: string | undefined;
-        cancelled: boolean;
-    }>;
+    requestMask(config: any): Promise<AskResponse>;
     /**
      * Request a toggle switch.
      * @param {Object} config
-     * @returns {Promise<{value: boolean|undefined, cancelled: boolean}>}
+     * @returns {Promise<AskResponse>}
      */
-    requestToggle(config: any): Promise<{
-        value: boolean | undefined;
-        cancelled: boolean;
-    }>;
+    requestToggle(config: any): Promise<AskResponse>;
     /**
      * Request a numeric slider.
      * @param {Object} config
-     * @returns {Promise<{value: number|undefined, cancelled: boolean}>}
+     * @returns {Promise<AskResponse>}
      */
-    requestSlider(config: any): Promise<{
-        value: number | undefined;
-        cancelled: boolean;
-    }>;
+    requestSlider(config: any): Promise<AskResponse>;
     /**
      * Create a progress bar.
      * @param {Object} options
      * @returns {import('../impl/progress.js').ProgressBar}
      */
     requestProgress(options: any): import("../impl/progress.js").ProgressBar;
-    requestSpinner(message: any): import("../impl/spinner.js").Spinner;
+    requestSpinner(config: any): any;
     /**
      * Request a selection from a tree view.
      * @param {Object} config
-     * @returns {Promise<{value: any, cancelled: boolean}>} Selected node(s).
+     * @returns {Promise<AskResponse>} Selected node(s).
      */
-    requestTree(config: any): Promise<{
-        value: any;
-        cancelled: boolean;
-    }>;
+    requestTree(config: any): Promise<AskResponse>;
     /**
      * Request a sortable (reorderable) list.
      *
@@ -211,7 +185,7 @@ export default class CLiInputAdapter extends BaseInputAdapter {
      * @param {Array<string|{label:string,value:any}>} config.items - Items to sort.
      * @param {string} [config.hint] - Hint text.
      * @param {Function} [config.onChange] - Callback on every reorder.
-     * @returns {Promise<{value: any[]|undefined, cancelled: boolean}>}
+     * @returns {Promise<AskResponse>}
      */
     requestSortable(config: {
         message: string;
@@ -221,82 +195,52 @@ export default class CLiInputAdapter extends BaseInputAdapter {
         }>;
         hint?: string | undefined;
         onChange?: Function | undefined;
-    }): Promise<{
-        value: any[] | undefined;
-        cancelled: boolean;
-    }>;
+    }): Promise<AskResponse>;
     /**
      * Request a date or time from the user.
      * @param {Object} config
-     * @returns {Promise<{value: Date|undefined, cancelled: boolean}>}
+     * @returns {Promise<AskResponse>}
      */
-    requestDateTime(config: any): Promise<{
-        value: Date | undefined;
-        cancelled: boolean;
-    }>;
+    requestDateTime(config: any): Promise<AskResponse>;
     /**
-     * Asks user a question or form, or handles an OLMUI intent.
-     * @param {string | UiForm | Object} question
-     * @param {object} [options={}]
+     * Handle OLMUI Ask intents.
      *
+     * @param {import('@nan0web/ui/core').Intent} intent
+     * @returns {Promise<AskResponse>}
      */
-    ask(question: string | UiForm | any, options?: object): Promise<any>;
+    askIntent(intent: import("@nan0web/ui/core").Intent): Promise<AskResponse>;
     /**
-     * Map an OLMUI Intent to the corresponding CLI interaction.
+     * Handle OLMUI Log / Show intents.
      *
-     * @param {Object} intent
-     * @returns {Promise<{value: any, cancelled: boolean}>}
+     * @param {import('@nan0web/ui/core').Intent} intent
+     * @returns {Promise<void>}
      */
-    askIntent(intent: any): Promise<{
-        value: any;
-        cancelled: boolean;
-    }>;
-    /**
-     * Handle OLMUI Log intents.
-     *
-     * @param {Object} intent
-     */
-    logIntent(intent: any): Promise<void>;
+    logIntent(intent: import("@nan0web/ui/core").Intent): Promise<void>;
     /**
      * Handle OLMUI Result intents.
      *
-     * @param {Object} intent
+     * @param {import('@nan0web/ui/core').Intent} intent
+     * @returns {Promise<void>}
      */
-    resultIntent(intent: any): Promise<void>;
+    resultIntent(intent: import("@nan0web/ui/core").Intent): Promise<void>;
     /**
      * Handle OLMUI Progress intents via Spinner/ProgressBar.
      *
-     * @param {Object} intent
+     * @param {import('@nan0web/ui/core').Intent} intent
+     * @returns {Promise<any>}
      */
-    progressIntent(intent: any): Promise<{
-        onData: (chunk: any) => void;
-        onEnd: () => void;
-    } | undefined>;
-    /** @inheritDoc */
-    select(cfg: any): Promise<{
-        index: number;
-        value: any;
-        cancelled: boolean;
-    } | {
-        value: null;
-        index: number;
-        cancelled?: undefined;
-    } | {
-        index: any;
-        value: string;
-        cancelled: boolean;
-    }>;
+    progressIntent(intent: import("@nan0web/ui/core").Intent): Promise<any>;
     /**
      * **New API** – Require input for a {@link UiMessage} instance.
      *
      * Validates the message according to its static Body schema, presents a
      * generated form and returns the updated body.
      *
-     * @param {UiMessage} msg - Message instance needing input.
+     * @param {any} msg - Message instance needing input.
      * @returns {Promise<any>} Updated message body.
      * @throws {CancelError} When user cancels the input process.
      */
-    requireInput(msg: UiMessage): Promise<any>;
+    requireInput(msg: any): Promise<any>;
     /**
      * Render a form for the given data and schema class.
      *
@@ -307,21 +251,26 @@ export default class CLiInputAdapter extends BaseInputAdapter {
     /**
      * Generic request handler that dispatches to specific request methods based on type.
      * @param {Object} config
-     * @returns {Promise<any>}
+     * @returns {Promise<AskResponse>}
      */
-    request(config: any): Promise<any>;
+    request(config: any): Promise<AskResponse>;
     /**
      * Request a content viewer (scrollable markdown with interactive elements).
      * @param {Object} config
-     * @returns {Promise<{value: any, action?: string, cancelled: boolean}>}
+     * @returns {Promise<AskResponse>}
      */
-    requestContentViewer(config: any): Promise<{
-        value: any;
-        action?: string;
-        cancelled: boolean;
-    }>;
+    requestContentViewer(config: any): Promise<AskResponse>;
     #private;
 }
+export type RequestFormOptions = {
+    /**
+     * - Suppress console output if `true`.
+     */
+    silent?: boolean | undefined;
+};
+export type AskResponse = import("@nan0web/ui/core").AskResponse;
+export type Intent = import("@nan0web/ui/core").Intent;
+export type AskOptions = import("@nan0web/ui/core").AskOptions;
 export type ConsoleLike = {
     debug: (...args: any[]) => void;
     log: (...args: any[]) => void;
@@ -329,8 +278,7 @@ export type ConsoleLike = {
     warn: (...args: any[]) => void;
     error: (...args: any[]) => void;
 };
-import { InputAdapter as BaseInputAdapter } from '@nan0web/ui';
+import { InputAdapter as BaseInputAdapter } from '@nan0web/ui/core';
 import AnswerQueue from './AnswerQueue.js';
 import IntentDispatcher from './IntentDispatcher.js';
 import { UiForm } from '@nan0web/ui';
-import { UiMessage } from '@nan0web/ui';

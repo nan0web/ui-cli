@@ -1,22 +1,23 @@
 # @nan0web/ui-cli
 
-[🇺🇦 Українська версія](./docs/uk/README.md) | [🇬🇧 English version](../../README.md)
+[🇬🇧 English](../en/README.md) | [🇺🇦 Українська](../uk/README.md)
 
-Сучасний, інтерактивний UI адаптер введення для проектів Node.js.
-Працює на двигуні `prompts`, забезпечуючи преміальний термінальний досвід найвищого UX рівня.
+Сучасний інтерактивний UI-адаптер для проектів на Node.js. 
+Працює на базі рушія `prompts`, забезпечуючи преміальний досвід терміналу рівня "Lux".
 
 <!-- %PACKAGE_STATUS% -->
 
 ## Опис
 
-Пакет `@nan0web/ui-cli` перетворює базові CLI взаємодії на вражаючий інтерактивний досвід, використовуючи філософію "Одна логіка, багато інтерфейсів".
+Пакет `@nan0web/ui-cli` перетворює базові взаємодії в командному рядку на приголомшливий інтерактивний досвід, використовуючи філософію "One Logic, Many UI".
 
 Ключові особливості:
-- **Універсальний запуск** — Запускайте свій CLI додаток в 1 рядок коду з `bootstrapApp`.
-- **Інтерактивні запити** — Елегантні списки вибору, масковане введення та пошуковий автокомпліт.
-- **Форми на основі схем** — Генеруйте складні CLI форми прямо з моделей даних.
-- **Преміальна естетика** — Насичені кольори, чітка структура та інтуїтивна навігація.
-- **Одна логіка, багато інтерфейсів** — Використовуйте ту саму логіку для Web та Терміналу.
+- **Універсальний запуск** — Запуск CLI-додатку в 1 рядок коду через `bootstrapApp`.
+- **Інтерактивні запити** — Списки вибору, маскований ввід та пошук з автодоповненням.
+- **Естетичні стандарти** — Піксельно-точний 5-символьний відступ (`{}  |`) для всіх компонентів.
+- **Форми на базі Схем** — Генерація складних CLI-форм безпосередньо з ваших моделей даних.
+- **Оптимізація збірки** — Надшвидка перевірка типів у монорепозиторії завдяки ізоляції глибини пакетів.
+- **One Logic, Many UI** — Використання єдиної бізнес-логіки для Web та Терміналу.
 
 ## Встановлення
 
@@ -25,25 +26,54 @@
 npm install @nan0web/ui-cli
 ```
 
-## Універсальний запуск CLI
+## Універсальний CLI-раннер
 
-`bootstrapApp` — це сучасний спосіб ініціалізації CLI додатків.
-Він бере на себе парсинг моделей в аргументи, ініціалізацію i18n та керування життєвим циклом.
-
-### Швидкий старт
+`bootstrapApp` — це сучасний спосіб запуску CLI-додатків. 
+Він автоматизує парсинг аргументів (model-to-argv), ініціалізацію i18n та керування життєвим циклом додатку.
 
 ### Безпека: Протокол seal()
 
 Для забезпечення цілісності системи, `bootstrapApp` автоматично блокує базу даних за допомогою `db.seal()`.
-Це запобігає будь-яким змінам структури БД або точок монтування після завершення ініціалізації.
-**Вимога**: Необхідна сучасна версія `@nan0web/db` з підтримкою протоколу seal.
+Це запобігає будь-яким змінам структури БД або точок монтування під час роботи.
+**Вимога**: Потрібна сучасна версія `@nan0web/db` з підтримкою протоколу seal.
 
-### Як запустити CLI додаток?
+## Model-as-App (Рекомендовано)
 
+Клас `ModelAsApp` забезпечує єдину архітектуру як для доменної логіки, так і для UI-презентації.
+Він автоматично генерує текст допомоги (help), маршрутизацію підкоманд та змінні i18n.
+
+Як запустити CLI-додаток?
 ```js
-import { bootstrapApp } from '@nan0web/ui-cli'
-import { MyModel } from './models.js'
-// await bootstrapApp(MyModel)
+import { bootstrapApp, ModelAsApp, show } from '@nan0web/ui-cli'
+class StatusApp extends ModelAsApp {
+	static UI = { title: 'Статус', fine: 'Все гаразд' }
+	static debug = { type: 'boolean', help: 'Режим налагодження', default: false }
+	async *run() {
+		yield show(StatusApp.UI.fine)
+	}
+}
+class RootApp extends ModelAsApp {
+	static command = { positional: true, type: [StatusApp] }
+}
+await bootstrapApp(RootApp)
+```
+
+### Фонове виконання та вбудовані додатки
+
+Ви можете виконувати OLMUI-модель програмно без інтерактивного UI-адаптера через `ModelAsApp.execute()`. 
+Це ідеально підходить для скриптів автоматизації, таких як генератор документації `ReadmeMd`.
+
+Також стандартні інструменти мають нативні аліаси в `nan0cli`:
+
+Як запустити вбудовані додатки, наприклад ReadmeMd?
+```js
+/* Програмне виконання:
+import { ReadmeMd } from '@nan0web/ui-cli/domain/ReadmeMd.js'
+await ReadmeMd.execute({ data: 'docs' })
+*/
+/* Або через аліас у терміналі:
+nan0cli docs --data=docs
+*/
 ```
 
 ## Використання (Архітектура V2)
@@ -52,13 +82,13 @@ import { MyModel } from './models.js'
 
 ### Інтерактивні запити
 
-#### Введення та Пароль
+#### Ввід та Пароль
 
 Як використовувати компоненти Input та Password?
 ```js
 import { render, Input, Password } from '@nan0web/ui-cli'
 const user = 'Alice'
-console.info(`User: ${user}`)
+console.info(`Користувач: ${user}`)
 ```
 
 #### Вибір та Множинний вибір
@@ -66,8 +96,8 @@ console.info(`User: ${user}`)
 Як використовувати компонент Select?
 ```js
 import { render, Select } from '@nan0web/ui-cli'
-const lang = { value: 'en' }
-console.info(`Selected: ${lang.value}`)
+const lang = { value: 'uk' }
+console.info(`Вибрано: ${lang.value}`)
 ```
 
 #### Множинний вибір
@@ -76,25 +106,25 @@ console.info(`Selected: ${lang.value}`)
 ```js
 import { render, Multiselect } from '@nan0web/ui-cli'
 const roles = ['admin', 'user']
-console.info(`Roles: ${roles.join(', ')}`)
+console.info(`Ролі: ${roles.join(', ')}`)
 ```
 
-#### Масковане введення
+#### Маскований ввід
 
 Як використовувати компонент Mask?
 ```js
 import { render, Mask } from '@nan0web/ui-cli'
 const phone = '123-456'
-console.info(`Phone: ${phone}`)
+console.info(`Телефон: ${phone}`)
 ```
 
-#### Автокомпліт
+#### Автодоповнення
 
 Як використовувати компонент Autocomplete?
 ```js
 import { render, Autocomplete } from '@nan0web/ui-cli'
 const model = 'gpt-4'
-console.info(`Model: ${model}`)
+console.info(`Модель: ${model}`)
 ```
 
 #### Слайдер, Перемикач та Дата/Час
@@ -103,84 +133,85 @@ console.info(`Model: ${model}`)
 ```js
 import { render, Slider, Toggle } from '@nan0web/ui-cli'
 const volume = 50
-console.info(`Volume: ${volume}`)
+console.info(`Гучність: ${volume}`)
 const active = true
-console.info(`Active: ${active}`)
+console.info(`Активно: ${active}`)
 ```
 
-#### Вибір дерева
+#### Вибір у дереві
+
 Зручний вибір ієрархічних даних.
 
 Як використовувати компонент Tree?
 ```js
 import { render, Tree } from '@nan0web/ui-cli'
 const selected = '/src/index.js'
-console.info(`Selected file: ${selected}`)
+console.info(`Вибраний файл: ${selected}`)
 ```
 
-#### Списки, що сортуються
+#### Списки з сортуванням
+
 Перетягування елементів прямо в терміналі.
 
 Як використовувати компонент Sortable?
 ```js
 import { render, Sortable } from '@nan0web/ui-cli'
-const items = ['First', 'Second', 'Third']
-console.info(`Order: ${items.join(' > ')}`)
+const items = ['Перший', 'Другий', 'Третій']
+console.info(`Порядок: ${items.join(' > ')}`)
 ```
 
 ### Статичні представлення
 
 #### Сповіщення (Alerts)
 
-Як відобразити Alert?
+Як відображати Alert?
 ```js
 import { Alert } from '@nan0web/ui-cli'
-console.info('Success Operation')
+console.info('Операція успішна')
 ```
 
 #### Динамічні таблиці
 
-Як відобразити Table?
+Як відображати таблиці?
 ```js
 import { Table } from '@nan0web/ui-cli'
 const data = [{ id: 1, name: 'Alice' }]
 console.info(data)
 ```
 
-### Фідбек та прогрес
+### Зворотній зв'язок та Прогрес
 
 #### Спінер (Spinner)
 
 Як використовувати Spinner?
 ```js
 import { render, Spinner } from '@nan0web/ui-cli'
-console.info('Loading...')
+console.info('Завантаження...')
 ```
 
-#### Прогрес-бари (ProgressBar)
+#### Прогрес-бари
 
 Як використовувати ProgressBar?
 ```js
 import { render, ProgressBar } from '@nan0web/ui-cli'
-console.info('Progress: 100%')
+console.info('Прогрес: 100%')
 ```
 
-### Вкладені точки експорту (OLMUI)
+### Експорт підшляхів (OLMUI)
 
-Пакет використовує архітектуру "Одна логіка, багато інтерфейсів" (OLMUI), експортуючи доменні моделі окремо від UI-адаптерів. Це дозволяє імпортувати лише необхідні часткові бандли.
+Пакет використовує архітектуру "One Logic, Many UI" (OLMUI), експортуючи лише суворі архітектурні межі.
 
-- `import { InputModel } from '@nan0web/ui-cli/domain'`
-- `import { Select } from '@nan0web/ui-cli/ui/prompt'`
-- `import { Table } from '@nan0web/ui-cli/ui/view'`
-- `import { Layout } from '@nan0web/ui-cli/ui/BlockRenderers'`
+- `import { ModelAsApp } from '@nan0web/ui-cli/domain'` — базові класи домену.
+- `import { App } from '@nan0web/ui-cli/app'` — головна модель додатку та роутер.
+- `import { playground } from '@nan0web/ui-cli/test'` — утиліти для тестування та знімків (snapshots).
 
-Як використовувати ізольовані доменні моделі та UI-адаптери?
+Як використовувати ізольовані моделі домену та UI-адаптери?
 
-## Застарілий API (Legacy)
+## Legacy API
 
 ### CLiInputAdapter
 
-Як запитати введення форми через CLiInputAdapter?
+Як запитувати ввід через CLiInputAdapter?
 ```js
 import { CLiInputAdapter } from '@nan0web/ui-cli'
 ```

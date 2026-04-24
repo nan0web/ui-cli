@@ -1,6 +1,7 @@
 import { createPrompt } from '../core/Component.js'
 import { markdownViewer } from '../impl/markdown.js'
 import { ContentViewerModel } from '../../domain/prompt/ContentViewerModel.js'
+import process from 'node:process'
 
 export { ContentViewerModel }
 
@@ -11,6 +12,12 @@ export { ContentViewerModel }
 export function ContentViewer(props) {
 	const model = new ContentViewerModel(props)
 	return createPrompt('ContentViewer', model, async (p) => {
+		if (model.print || (!process.stdout.isTTY && !process.env.UI_SNAPSHOT)) {
+			const { renderMarkdown } = await import('../impl/markdown.js')
+			console.info(renderMarkdown(model.content))
+			return { action: 'exit', cancelled: false }
+		}
+
 		let result = null
 		let offset = 0
 		let focusedIndex = 0
@@ -18,8 +25,8 @@ export function ContentViewer(props) {
 		while (true) {
 			result = await markdownViewer({
 				...p,
-				content: p.UI,
-				title: p.t ? p.t(p.UI_TITLE) : p.UI_TITLE,
+				content: p.content,
+				title: p.t ? p.t(p.title || ContentViewerModel.UI.title) : (p.title || ContentViewerModel.UI.title),
 				offset,
 				focusedIndex
 			})

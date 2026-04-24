@@ -266,12 +266,12 @@ describe('playground demo flow', () => {
 
 describe('playground cancel handling', () => {
 	it('cancels direct demo execution and exits', async () => {
-		const { stdout, exitCode } = await runPlayground('form', 'en', {
+		const { stdout, stderr, exitCode } = await runPlayground('form', 'en', {
 			PLAY_DEMO_SEQUENCE: 'cancel',
 		})
 
-		assert.strictEqual(exitCode, 0)
-		const clean = stripAnsi(stdout).toLowerCase()
-		assert.ok(clean.includes('cancel'), 'Should report cancellation')
+		assert.strictEqual(exitCode, 1, 'Should exit with code 1 on cancel')
+		const clean = (stripAnsi(stdout) + stripAnsi(stderr)).toLowerCase()
+		assert.ok(clean.includes('cancel'), 'Should report cancellation message')
 	})
 })

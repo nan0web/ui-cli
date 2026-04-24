@@ -1,5 +1,5 @@
 ---
-description: 🦅 UI-CLI (User Interface Command Line) - Канонічна реалізація термінальних інтерфейсів для екосистеми nan.web.
+description: 🦅 UI-CLI (User Interface Command Line) - Канонічна реалізація термінальних інтерфейсів для екосистеми nan•web.
 tags: [ui, cli, terminal, interaction, framework]
 status: active
 locale: uk
@@ -8,6 +8,17 @@ i18n:
 ---
 
 # 🦅 UI-CLI Project & Architecture
+
+- package: `@nan0web/ui-cli`
+- version: `2.13.0`
+- status: `Stable`
+
+## History
+
+### [2.13.0] — 2026-04-23
+- Standardized terminal gutter (5-char).
+- Optimized build speed (22s).
+- Fixed CI snapshot testing.
 
 **Призначення:** Пакет `@nan0web/ui-cli` забезпечує текстову репрезентацію "One Logic — Many UI" архітектури. Він перетворює Доменні Моделі на інтерактивні діалоги в терміналі.
 
@@ -35,7 +46,7 @@ i18n:
 
 1. **Створення Model.js:**
    - Моделі використовують JSDoc для опису типів, які `ui-cli` автоматично мапить на конкретні промпти.
-   - Наприклад, `type: "Model"` автоматично відкриває рекурсивне меню вибору.
+   - Наприклад, `type: "Model"` автоматично відкриває рекурсивне меню вибору, або якщо type не вказано, а default: Model, то теж відкриває рекурсивне меню вибору, або якщо options: [ModelA, ModelB, ...] то відкриває меню вибору з цих моделей.
 
 2. **Metadata Types:**
    - [x] `text` -> Input
@@ -45,7 +56,7 @@ i18n:
    - [x] `positional: true` -> Позиційний CLI аргумент (порядок = порядок оголошення `static` полів)
 
 3. **Data Sources:**
-   - Взаємодіє з YAML-сховищами через `@nan0web/db-fs`, забезпечуючи миттєвий відгук без накладних витрат на мережу.
+   - Взаємодіє з NaN•Web-сховищами через `@nan0web/db`, забезпечуючи миттєвий відгук без накладних витрат на мережу.
 
 ---
 

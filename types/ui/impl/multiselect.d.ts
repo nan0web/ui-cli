@@ -9,7 +9,7 @@
  * @param {string|boolean} [config.instructions] - Custom instructions
  * @param {string} [config.hint] - Navigation hint
  * @param {Function} [config.t] - Translation function
- * @returns {Promise<{value: Array<any>, cancelled: boolean}>}
+ * @returns {Promise<{value: Array<any>|undefined, cancelled: boolean}>}
  */
 export function multiselect(config: {
     message: string;
@@ -20,6 +20,6 @@ export function multiselect(config: {
     hint?: string | undefined;
     t?: Function | undefined;
 }): Promise<{
-    value: Array<any>;
+    value: Array<any> | undefined;
     cancelled: boolean;
 }>;
