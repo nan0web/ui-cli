@@ -167,7 +167,9 @@ export default class IntentDispatcher {
 		this.#hideActiveProgress()
 		const t = this.adapter.t.bind(this.adapter)
 		const normalizedIntent = typeof intent === 'string' ? { message: intent } : intent
-		const { type, level, message, hint, component, format, ...extra } = normalizedIntent
+		const { type, level, message, hint, component, format, raw, ...extra } = normalizedIntent
+		delete extra.raw
+		delete extra.silent
 
 		if (component) {
 			const props = typeof message === 'object' ? { ...message, ...extra } : { content: message, ...extra }
@@ -188,9 +190,10 @@ export default class IntentDispatcher {
 		}
 
 		const formatted = IntentDispatcher.#markdownToAnsi(msg)
+		const isRaw = normalizedIntent.raw || extra.raw
 
-		// Multi-line content → render as Alert box (unless pure text requested)
-		if (msg.includes('\n') && format !== 'text') {
+		// Multi-line content → render as Alert box (unless pure text or raw requested)
+		if (msg.includes('\n') && format !== 'text' && !isRaw) {
 			const { alert } = await import('../impl/alert.js')
 			const variant = level === 'error' ? 'error'
 				: level === 'warn' ? 'warning'
@@ -204,7 +207,7 @@ export default class IntentDispatcher {
 				body = lines.slice(1).join('\n').trim()
 			}
 			this.adapter.console.info(alert(body, variant, { title }))
-		} else if (format === 'text') {
+		} else if (format === 'text' || isRaw) {
 			this.adapter.console.info(formatted)
 		} else {
 			if (level === 'error') this.adapter.console.error(`\x1b[31m${iconChar(BsX)}\x1b[0m ${formatted}`)
@@ -283,6 +286,13 @@ export default class IntentDispatcher {
 
 		const data = intent.data
 		if (data === undefined) return
+
+		if (intent.raw) {
+			// Pure raw output for piping, NO UI decorations
+			const content = typeof data === 'object' ? JSON.stringify(data, null, 2) : String(data)
+			process.stdout.write(content)
+			return
+		}
 
 		if (typeof data === 'object' && data !== null) {
 			if (Object.keys(data).length === 0 || (data.exit && Object.keys(data).length === 1)) {

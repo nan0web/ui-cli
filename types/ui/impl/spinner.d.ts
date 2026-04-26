@@ -48,8 +48,18 @@ export class Spinner {
      * @param {Object} [options]
      */
     update(message: string, options?: any): void;
-    success(msg: any): void;
-    error(msg: any): void;
+    /**
+     * @param {string} [msg]
+     */
+    success(msg?: string): void;
+    /**
+     * @param {string} [msg]
+     */
+    error(msg?: string): void;
+    /**
+     * @param {string} [msg]
+     */
+    stop(msg?: string): void;
     formatTime(seconds: any): string;
     renderToString(): any;
     #private;

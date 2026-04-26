@@ -6,6 +6,13 @@ export class ModelAsApp extends ModelAsAppUi {
 		help: 'Show help',
 		default: false,
 	}
+
+	static raw = {
+		help: 'Raw output (no UI decorations)',
+		type: 'boolean',
+		default: false,
+	}
+
 	/**
 	 * @param {Partial<ModelAsApp> | Record<string, any>} [data={}]
 	 * @param {import('@nan0web/ui').ModelAsAppOptions} [options={}]
@@ -13,6 +20,9 @@ export class ModelAsApp extends ModelAsAppUi {
 	constructor(data = {}, options = {}) {
 		super(data, options)
 		/** @type {boolean} Show help */ this.help
+		/** @type {boolean} Raw output */ this.raw
+		/** @type {string} Parent command path for help generation */ this.parentPath = options.parentPath || ''
+		/** @internal Flag for explicit instantiation from CLI args */ this._isExplicit = !!options._isExplicit
 
 		// ── Automated Sub-Command Instantiation ──
 		const Class = /** @type {typeof ModelAsApp} */ (this.constructor)
@@ -42,6 +52,7 @@ export class ModelAsApp extends ModelAsAppUi {
 		if (!meta || !Array.isArray(meta.options)) return val
 
 		let SubClass = null
+		let isExplicit = false
 		if (typeof val === 'function' && val.prototype && typeof val.prototype.run === 'function') {
 			SubClass = val
 		} else if (typeof val === 'string') {
@@ -50,11 +61,15 @@ export class ModelAsApp extends ModelAsAppUi {
 				const alias = C.alias || C.name?.replace(/Command|App/g, '').toLowerCase()
 				return alias === val
 			})
+			isExplicit = !!SubClass
 		}
 
 		if (SubClass) {
+			const myAlias = Class?.['alias'] || Class.name.replace(/Command|App/g, '').toLowerCase()
+			const fullPath = this.parentPath ? `${this.parentPath} ${myAlias}` : myAlias
+
 			const finalData = resolvePositionalArgs(SubClass, data._positionals || [], data)
-			return new SubClass(finalData, this._)
+			return new SubClass(finalData, { ...this._, parentPath: fullPath, _isExplicit: isExplicit })
 		}
 
 		return val
@@ -62,40 +77,17 @@ export class ModelAsApp extends ModelAsAppUi {
 
 	/**
 	 * Generate help text for the model
-	 * @example
-	 * ```
-	 * import { StatusCommand } from './StatusCommand.js'
-	 * import { PullCommand } from './PullCommand.js'
-	 * class App extends ModelAsApp {
-	 * 	static alias = 'nan0cli'
-	 * 	static UI = {
-	 * 		title: 'App',
-	 * 		description: 'App description',
-	 * 		usageTitle: 'Usage:',
-	 * 		usageExamples: ['App example'],
-	 * 		optionsTitle: 'Options:',
-	 * 	}
-	 * 	static command = {
-	 * 		description: 'Command description',
-	 *		options: [StatusCommand, PullCommand],
-	 * 		positional: true,
-	 * 		required: true,
-	 * 		default: StatusCommand,
-	 * 	}
-	 * }
-	 * const app = new App()
-	 * console.info(app.generateHelp())
-	 * ```
 	 * @param {string} [parentPath]
 	 * @returns {string}
 	 */
-	generateHelp(parentPath = '') {
+	generateHelp(parentPath = this.parentPath) {
 		const Class = /** @type {typeof ModelAsApp} */ (this.constructor)
 
-		// If any property is an instance of ModelAsApp and has help requested, delegate.
+		// Delegate help to sub-command ONLY if it was explicitly requested via arguments.
+		// This prevents "store --help" from showing "store list --help" documentation.
 		for (const key in this) {
 			const val = /** @type {any} */ (this)[key]
-			if (val instanceof ModelAsApp && val['help']) {
+			if (val instanceof ModelAsApp && val['help'] && val._isExplicit) {
 				const myAlias = Class?.['alias'] || Class.name.replace(/Command|App/g, '').toLowerCase()
 				const fullPath = parentPath ? `${parentPath} ${myAlias}` : myAlias
 				return val.generateHelp(fullPath)
@@ -120,11 +112,13 @@ export class ModelAsApp extends ModelAsAppUi {
 			lines.push('')
 		}
 
+		const posMeta = []
 		const posNames = []
 		for (const key in Class) {
 			const meta = /** @type {any} */ (Class)[key]
 			if (meta && typeof meta === 'object' && meta.help && meta.positional) {
 				posNames.push(meta.required ? `<${key}>` : `[${key}]`)
+				posMeta.push({ key, meta })
 			}
 		}
 
@@ -187,6 +181,24 @@ export class ModelAsApp extends ModelAsAppUi {
 		lines.push('```')
 		lines.push('')
 
+		if (posMeta.length > 0) {
+			lines.push(`## Arguments:`)
+			lines.push('```bash')
+			let maxPosLen = 0
+			for (const p of posMeta) maxPosLen = Math.max(maxPosLen, p.key.length)
+			for (const p of posMeta) {
+				const desc = t(p.meta.help)
+				let defValue = p.meta.default
+				if (typeof defValue === 'function' && defValue.prototype) {
+					defValue = defValue.alias || defValue.name.replace(/Command|App/g, '').toLowerCase()
+				}
+				const def = defValue !== undefined ? ` [${defValue}]` : ''
+				lines.push(`  ${p.key.padEnd(maxPosLen + 2)} - ${desc}${def}`)
+			}
+			lines.push('```')
+			lines.push('')
+		}
+
 		const optionsTitle = t(UI.optionsTitle || 'Options:')
 		lines.push(`## ${optionsTitle}`)
 		lines.push('```bash')
@@ -198,19 +210,19 @@ export class ModelAsApp extends ModelAsAppUi {
 
 		for (const key in Class) {
 			const meta = /** @type {any} */ (Class)[key]
-			if (!meta || typeof meta !== 'object' || !meta.help || key === 'UI') continue
+			if (!meta || typeof meta !== 'object' || !meta.help || key === 'UI' || meta.positional) continue
 			if (meta.alias) hasAlias = true
 		}
 
 		for (const key in Class) {
 			const meta = /** @type {any} */ (Class)[key]
-			if (!meta || typeof meta !== 'object' || !meta.help || key === 'UI') continue
+			if (!meta || typeof meta !== 'object' || !meta.help || key === 'UI' || meta.positional) continue
 
 			let left
 			if (hasAlias) {
-				left = meta.alias ? `       -${meta.alias}, --${key}` : `           --${key}`
+				left = meta.alias ? `  -${meta.alias}, --${key}` : `      --${key}`
 			} else {
-				left = `       --${key}`
+				left = `  --${key}`
 			}
 
 			maxOptLen = Math.max(maxOptLen, left.length)
@@ -230,7 +242,7 @@ export class ModelAsApp extends ModelAsAppUi {
 					right += ` [${opt.meta.default}]`
 				}
 			}
-			lines.push(`${opt.left.padEnd(maxOptLen + 3)}- ${right}`)
+			lines.push(`${opt.left.padEnd(maxOptLen + 2)} - ${right}`)
 		}
 
 		lines.push('```')
@@ -240,9 +252,6 @@ export class ModelAsApp extends ModelAsAppUi {
 
 	/**
 	 * Execute the model programmatically without a UI adapter.
-	 * Instantiates the class and drains the `run()` generator, suppressing visual intents
-	 * (ask, log, render) but automatically providing necessary context if available.
-	 * Useful for backend scripts, docs generation (`ReadmeMd`), or API integrations.
 	 * @param {any} [data]
 	 * @param {import('@nan0web/ui').ModelAsAppOptions} [options]
 	 * @returns {Promise<any>}

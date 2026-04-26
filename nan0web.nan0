@@ -1,0 +1,9 @@
+name: "@nan0web/ui-cli"
+agents:
+  - id: 'cli-architect'
+    description: 'UI-CLI Interface Creation (Step 5)'
+    workflows:
+      - 'src/agents/workflows/pipeline-no5-ui-cli.md'
+      - 'src/agents/workflows/ui-cli-standards.md'
+    inspectors:
+      - 'src/agents/inspectors/cli-gallery.md'

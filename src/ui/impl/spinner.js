@@ -69,14 +69,28 @@ export class Spinner {
 		if (message !== undefined) this.message = message
 	}
 
+	/**
+	 * @param {string} [msg]
+	 */
 	success(msg) {
 		if (msg) this.message = msg
 		this.status = '✔'
 	}
 
+	/**
+	 * @param {string} [msg]
+	 */
 	error(msg) {
 		if (msg) this.message = msg
 		this.status = '✖'
+	}
+
+	/**
+	 * @param {string} [msg]
+	 */
+	stop(msg) {
+		if (msg) this.message = msg
+		this.status = '✔'
 	}
 
 	formatTime(seconds) {

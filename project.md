@@ -10,10 +10,15 @@ i18n:
 # 🦅 UI-CLI Project & Architecture
 
 - package: `@nan0web/ui-cli`
-- version: `2.13.0`
+- version: `2.13.1`
 - status: `Stable`
 
 ## History
+
+### [2.13.1] — 2026-04-25
+- **Polymorphic Router**: Simplified `AiAppModel` using `run()` polymorphism.
+- **Nested Commands**: Added support for nested model options (`store add`, `store list`).
+- **Piping Support**: Integrated `raw` intent flag in `IntentDispatcher` for clean data output.
 
 ### [2.13.0] — 2026-04-23
 - Standardized terminal gutter (5-char).
